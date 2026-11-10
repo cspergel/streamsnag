@@ -387,5 +387,14 @@ body.sidebar .hero .thumb { width: 160px; height: 90px; }
 .libline .dirs li { display: flex; gap: 8px; justify-content: space-between; }
 .libline .dirs span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 10.5px/1.4 ui-monospace, Consolas, monospace; }
 
+/* ---------------------------------------------------------------- download all, speed and time left */
+.bulk { display: flex; align-items: center; gap: 12px; min-height: 30px; }
+.bulk .secondary, .bulk .primary { padding: 5px 11px; font-size: 12px; font-weight: 600; }
+.bulk .spinner { width: 12px; height: 12px; }
+/* A row of the downloads list: the speed sits by the status; the counters drop to their own line when tight. */
+#jobs .status { flex-wrap: wrap; font-variant-numeric: tabular-nums; }
+#jobs .status > span:last-child { margin-left: auto; }
+.tray-pct { flex: none; white-space: nowrap; }
+
 /* "See downloads" scrolls here: stay clear of the header that sticks to the top. */
 #jobs-section { scroll-margin-top: 64px; }

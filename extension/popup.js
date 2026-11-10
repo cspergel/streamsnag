@@ -1,6 +1,8 @@
 import { formatBytes, formatDuration, hostOf, ytdlpCommand, ffmpegCommand, rankVideoOptions, isHttpUrl } from './lib/util.js';
 import { sameItem } from './lib/match.js';
 import { docStatus } from './lib/files.js';
+import { pickPreferred, qualityChips, canBulkDownload, bulkSummary } from './lib/quality.js';
+import { rateText } from './lib/rate.js';
 
 const $ = (sel) => document.querySelector(sel);
 // The same page runs as the toolbar popup and (with ?view=panel) as Chrome's side panel.
@@ -237,7 +239,15 @@ function heroBusyText(j) {
   if (j.status === 'recording') return 'Recording live…';
   if (j.status === 'muxing') return 'Merging video and audio…';
   const { pct, indeterminate } = jobProgress(j);
+  // Once the speed is known: "42% · 3.1 MB/s · about 2 min left".
+  const speed = jobSpeed(j);
+  if (speed) return indeterminate ? `Downloading · ${speed}` : `${Math.round(pct)}% · ${speed}`;
   return indeterminate ? 'Downloading…' : `Downloading ${Math.round(pct)}%`;
+}
+
+/** "3.1 MB/s · about 2 min left" for a running download, '' while that isn't known. */
+function jobSpeed(j) {
+  return j?.status === 'running' ? rateText(j.rate) : '';
 }
 
 function stTag(st, m) {
@@ -549,8 +559,9 @@ function heroCard(m) {
   // While it can be downloaded, the card itself shows reading / error / qualities.
   const own = ['new', 'failed', 'missing'].includes(st) || !!drm;
   const vids = rankVideoOptions(open.options);
-  const chosen = vids.find((o) => o.id === heroPick.get(m.id)) || vids[0] || (open.options || [])[0];
-  const chips = own && !drm && vids.length > 1 ? vids.slice(0, 4) : [];
+  // Your own click, else the quality set in Settings ("Quality to pick first"), else the best.
+  const chosen = vids.find((o) => o.id === heroPick.get(m.id)) || pickPreferred(open.options, state.preferredQuality) || vids[0] || (open.options || [])[0];
+  const chips = own && !drm && vids.length > 1 ? qualityChips(vids, chosen) : [];
   if (chips.length) {
     card.append(h('div', { class: 'qualities', role: 'group', 'aria-label': 'Quality' }, chips.map((o) => {
       const { q, s } = splitLabel(o.label);
@@ -734,6 +745,55 @@ function convertButtons(m, st, open) {
   ];
 }
 
+// ------------------------------------------------------------------ download all
+
+let bulkIds = []; // what "Download all" would start: the downloadable videos shown right now
+let bulkArmed = 0; // when the button turned into its question (0: it hasn't)
+let bulkBusy = false;
+let bulkSig = '';
+
+/** "Download all (N)" above the list; one click turns it into "Download N videos?" with Cancel. */
+function renderBulk(shown, statusOf) {
+  bulkIds = shown.filter((m) => canBulkDownload(m) && !openMedia.get(m.id)?.protected && ['new', 'failed', 'missing'].includes(statusOf.get(m.id))).map((m) => m.id);
+  const n = bulkIds.length;
+  if (n < 2) bulkArmed = 0;
+  const box = $('#bulk');
+  box.hidden = n < 2 && !bulkBusy;
+  // Rebuilt only when it changes, so a click isn't lost to the background refresh.
+  const sig = JSON.stringify([n, !!bulkArmed, bulkBusy]);
+  if (sig === bulkSig) return;
+  bulkSig = sig;
+  if (bulkBusy) {
+    box.replaceChildren(h('button', { class: 'secondary', disabled: true }, h('span', { class: 'spinner' }), 'Starting…'));
+  } else if (bulkArmed) {
+    box.replaceChildren(
+      h('button', { id: 'bulk-confirm', class: 'primary', onclick: confirmBulk }, ICON.download(), `Download ${n} videos?`),
+      h('button', { id: 'bulk-cancel', class: 'link', onclick: () => { bulkArmed = 0; render(); $('#bulk-start')?.focus(); } }, 'Cancel'));
+  } else {
+    box.replaceChildren(h('button', {
+      id: 'bulk-start', class: 'secondary', title: 'Download every video shown here that you don\'t have yet',
+      onclick: () => { bulkArmed = Date.now(); render(); $('#bulk-confirm')?.focus(); },
+    }, ICON.download(), `Download all (${n})`));
+  }
+}
+
+async function confirmBulk() {
+  // A double-click on "Download all" lands on this button: wait until the question has been on screen.
+  if (!bulkArmed || bulkBusy || Date.now() - bulkArmed < 500) return;
+  const mediaIds = [...bulkIds];
+  bulkArmed = 0;
+  bulkBusy = true;
+  render();
+  try {
+    const r = await send('downloadMany', { mediaIds });
+    banner(bulkSummary(r), r.failed.length > 0);
+  } catch (e) {
+    banner(e.message, true);
+  }
+  bulkBusy = false;
+  refresh();
+}
+
 // ------------------------------------------------------------------ jobs
 
 const STATUS_TEXT = {
@@ -765,6 +825,9 @@ function jobCard(j) {
     h('div', { class: `status ${cls}` }, h('span', {}, j.status === 'error' ? j.error : j.kind === 'convert' && j.status === 'running' ? 'Converting with ffmpeg' : STATUS_TEXT[j.status] || j.status), h('span', {}, detail.join(' · '))),
     j.note ? h('div', { class: 'status' }, j.note) : null,
   );
+  // The speed and time left go next to "Downloading", and are painted in place on every tick.
+  if (j.status === 'running') card.querySelector('.status > span').append(h('span', { class: 'job-rate' }));
+  paintJobRate(card, j);
 
   const actions = h('div', { class: 'job-actions' });
   if (j.status === 'recording') actions.append(h('button', { class: 'primary', onclick: () => send('stopLive', { jobId: j.id }).then(refresh) }, '■ Stop & save'));
@@ -798,6 +861,15 @@ function jobCard(j) {
   return card;
 }
 
+/** Update a download row's speed and time left without rebuilding the row. */
+function paintJobRate(card, j) {
+  const el = card.querySelector('.job-rate');
+  if (!el) return;
+  const speed = jobSpeed(j);
+  const next = speed ? ` · ${speed}` : '';
+  if (el.textContent !== next) el.textContent = next;
+}
+
 /** The bar pinned to the bottom while something is downloading. */
 function renderTray(jobs) {
   const running = jobs.filter((j) => ACTIVE.includes(j.status));
@@ -809,6 +881,8 @@ function renderTray(jobs) {
   const { pct, indeterminate } = jobProgress(first);
   $('#tray-title').textContent = first.title || baseName(first.filename);
   $('#tray-pct').textContent = first.status === 'queued' ? 'Waiting' : first.status === 'recording' ? 'Live' : indeterminate ? '' : `${Math.round(pct)}%`;
+  const speed = jobSpeed(first);
+  if (speed) $('#tray-pct').textContent = [$('#tray-pct').textContent, speed].filter(Boolean).join(' · ');
   const bar = $('#tray-bar');
   bar.parentElement.classList.toggle('indeterminate', indeterminate && first.status !== 'queued');
   bar.style.width = indeterminate ? '' : `${pct}%`;
@@ -1226,6 +1300,7 @@ function render() {
     || (activeFilter === 'done' ? st === 'done' : st === 'new' || st === 'failed' || st === 'missing')).map(({ m }) => m)
     .filter((m) => matchesQuery(m, q));
   renderFilters(counts, videos.length);
+  renderBulk(shown, new Map(withStatus.map(({ m, st }) => [m.id, st])));
   $('#list-head').hidden = few;
   const barOpen = !few && (searchOpen || !!q);
   $('#listbar').hidden = !barOpen;
@@ -1253,7 +1328,7 @@ function render() {
   const sig = (m) => m.group ? JSON.stringify(m) : JSON.stringify([
     m.listed, m.playlist ? JSON.stringify(playlistEntries(m)) : '', m.playlistIndex, m.label, m.size, m.seen, m.library, m.fingerprint, m.poster, m.hint, m.title, m.customName, m.course, m.nameSource, m.source, m.alsoAi, m.info, m.duration, m.protected, m.mark, m.section, statusFor(m), progressSig(m), state.page.title,
     PANEL && statusFor(m) === 'done' ? ago(lastDownload(m)?.at) : '', PANEL ? ago(m.detectedAt) : '',
-    openMedia.get(m.id) || null, expanded.has(`m:${m.id}`), m === hero ? [activeFilter, heroWhy, heroPick.get(m.id) || ''] : '',
+    openMedia.get(m.id) || null, expanded.has(`m:${m.id}`), m === hero ? [activeFilter, heroWhy, heroPick.get(m.id) || '', state.preferredQuality] : '',
   ]);
   const rest = arrange(shown.filter((m) => m !== hero));
   // Show the boxes before filling them: a name is measured as it is added, and a hidden one measures 0.
@@ -1301,7 +1376,12 @@ function render() {
 
   const jobs = state.jobs || [];
   $('#jobs-section').hidden = !jobs.length;
-  patchList($('#jobs'), jobs, (j) => j.id, (j) => JSON.stringify([j, expanded.has(`j:${j.id}`), expanded.has(`jf:${j.id}`)]), jobCard);
+  // The speed changes on every tick: it is left out of the signature and painted onto the row instead.
+  patchList($('#jobs'), jobs, (j) => j.id, (j) => JSON.stringify([{ ...j, rate: null }, expanded.has(`j:${j.id}`), expanded.has(`jf:${j.id}`)]), jobCard);
+  for (const j of jobs) {
+    const row = j.status === 'running' && [...$('#jobs').children].find((el) => el.dataset.key === j.id);
+    if (row) paintJobRate(row, j);
+  }
   renderTray(jobs);
 
   // The sidebar has room for a log of what was saved before (across all sites).

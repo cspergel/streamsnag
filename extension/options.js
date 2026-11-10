@@ -1,6 +1,7 @@
 import { DEFAULT_SETTINGS, getSettings } from './lib/settings.js';
 import { normalizeRecipe } from './lib/recipes.js';
 import { formatBytes, isHttpUrl, importableFolder, cleanHistoryEntry } from './lib/util.js';
+import { QUALITY_PREFS } from './lib/quality.js';
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -44,7 +45,7 @@ if (initialTab) document.querySelector(`.tabs button[data-tab="${initialTab}"]`)
 // ---------------------------------------------------------------- settings form
 const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'openaiKey', 'openaiModel', 'chatgptModel', 'minSizeKB', 'concurrency',
   'includeSubtitles', 'useFfmpeg', 'embedSubtitles', 'keepSubtitleFiles', 'aiFilenames', 'filenameTemplate', 'subfolder', 'saveFolder', 'notify',
-  'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode', 'showDocuments'];
+  'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode', 'showDocuments', 'preferredQuality'];
 
 function syncProviderSections(provider) {
   $$('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== provider; });
@@ -76,6 +77,7 @@ async function saveForm() {
   if (s.chatgptModel && !/^[a-z0-9][a-z0-9.\-_]*$/i.test(s.chatgptModel)) s.chatgptModel = '';
   s.concurrency = Math.min(16, s.concurrency);
   s.maxParallel = Math.min(6, Math.max(1, s.maxParallel || 2));
+  if (!QUALITY_PREFS.includes(s.preferredQuality)) s.preferredQuality = DEFAULT_SETTINGS.preferredQuality;
   await chrome.storage.local.set({ settings: s });
   syncProviderSections(s.aiProvider);
   flashSaved();

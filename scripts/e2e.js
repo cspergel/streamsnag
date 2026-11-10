@@ -70,6 +70,29 @@ const DOCS = {
 };
 const docHits = []; // [path, who asked]: 'page' for the page's own <object>, 'extension' for a download
 let refererRejections = 0;
+// "Download all", the preferred quality, and speed / time left: a page with several videos (each its own
+// size), a stream with three qualities, and files that arrive slowly, like a real download.
+const GALLERY = { g1: VARIANT(13, 11), g2: VARIANT(17, 12), g3: VARIANT(19, 13), g4: VARIANT(23, 14) };
+const GALLERY_RATE = 600 * 1024; // bytes a second: each takes a few seconds, so the queue can be seen
+const SLOW = Buffer.alloc(5 * 1024 * 1024 + 29 * 1024, 15);
+const SLOW_RATE = 400 * 1024;
+let brokenStream = false; // the gallery's stream stops answering, like a link that has expired
+/** Send a file at `perSec` bytes a second. */
+function trickle(res, type, body, perSec) {
+  res.writeHead(200, { 'content-type': type, 'content-length': body.length });
+  const step = Math.ceil(perSec / 10);
+  let at = 0;
+  const timer = setInterval(() => {
+    if (res.destroyed) return clearInterval(timer);
+    res.write(body.subarray(at, at + step));
+    at += step;
+    if (at >= body.length) {
+      clearInterval(timer);
+      res.end();
+    }
+  }, 100);
+  res.on('close', () => clearInterval(timer));
+}
 let base = '';
 const guardHits = []; // requests that reached the "local device" in the local-network guard check
 
@@ -269,6 +292,56 @@ const server = http.createServer((req, res) => {
     }
     return send(200, 'video/mp2t', SEGMENTS[Number(seg[1])]);
   }
+  if (url.pathname === '/gallery') {
+    // Four videos, a stream, a protected stream and a subtitle file. The players are small, so each video
+    // is named from its own label.
+    return send(200, 'text/html', `<!doctype html><title>Gallery</title>
+      ${['one', 'two', 'three', 'four'].map((n, i) => `<video src="/media/g${i + 1}.mp4" title="Gallery clip ${n}" preload="auto" muted width="160" height="90"></video>`).join('\n')}
+      <video width="160" height="90" preload="none"><track kind="subtitles" srclang="en" label="English" src="/subs/gallery.vtt"></video>
+      <script>fetch('/gone/master.m3u8'); fetch('/drm/master.m3u8');</script>`);
+  }
+  if (url.pathname === '/watch/slow') {
+    return send(200, 'text/html', `<!doctype html><title>Slow Clip</title>
+      <video src="/media/slow.mp4" title="Slow clip" preload="auto" muted width="160" height="90"></video>`);
+  }
+  const slowFile = /^\/media\/(g[1-4]|slow)\.mp4$/.exec(url.pathname);
+  if (slowFile) {
+    const body = slowFile[1] === 'slow' ? SLOW : GALLERY[slowFile[1]];
+    // The page's player and StreamSnag's size check ask for a range and get it at once; a download
+    // (Chrome asks for the whole file) arrives at a steady, slow speed.
+    const range = /bytes=(\d+)-(\d*)/.exec(req.headers.range || '');
+    if (range) {
+      const start = Number(range[1]);
+      const end = range[2] ? Math.min(Number(range[2]), body.length - 1) : body.length - 1;
+      return send(206, 'video/mp4', body.subarray(start, end + 1), { 'content-range': `bytes ${start}-${end}/${body.length}`, 'accept-ranges': 'bytes' });
+    }
+    return trickle(res, 'video/mp4', body, slowFile[1] === 'slow' ? SLOW_RATE : GALLERY_RATE);
+  }
+  if (url.pathname === '/subs/gallery.vtt') return send(200, 'text/vtt', SUBS_VTT);
+  if (url.pathname === '/gone/master.m3u8') {
+    if (brokenStream) return send(404, 'text/plain', 'gone');
+    return send(200, 'application/vnd.apple.mpegurl', '#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\nv720.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=500000,RESOLUTION=640x360\nv360.m3u8\n');
+  }
+  if (url.pathname === '/drm/master.m3u8') {
+    return send(200, 'application/vnd.apple.mpegurl', '#EXTM3U\n#EXT-X-SESSION-KEY:METHOD=SAMPLE-AES,URI="skd://key",KEYFORMAT="com.apple.streamingkeydelivery"\n'
+      + '#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\nv720.m3u8\n');
+  }
+  if (url.pathname === '/watch/ladder') {
+    return send(200, 'text/html', `<!doctype html><title>Ladder Clip</title><h1>Ladder Clip</h1>
+      <video muted width="160" height="90"></video><script>fetch('/ladder/master.m3u8')</script>`);
+  }
+  if (url.pathname === '/ladder/master.m3u8') {
+    // Three qualities, not listed best-first.
+    return send(200, 'application/vnd.apple.mpegurl', '#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=500000,RESOLUTION=640x360\nv360.m3u8\n'
+      + '#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080\nv1080.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\nv720.m3u8\n');
+  }
+  if (/^\/(ladder|gone|drm)\/v\d+\.m3u8$/.test(url.pathname)) {
+    const body = ['#EXTM3U', '#EXT-X-TARGETDURATION:4', '#EXT-X-MEDIA-SEQUENCE:0',
+      ...SEGMENTS.flatMap((_, i) => ['#EXTINF:4.0,', `seg${i}.ts`]), '#EXT-X-ENDLIST'].join('\n');
+    return send(200, 'application/vnd.apple.mpegurl', body);
+  }
+  const ladderSeg = /^\/ladder\/seg(\d)\.ts$/.exec(url.pathname);
+  if (ladderSeg) return send(200, 'video/mp2t', SEGMENTS[Number(ladderSeg[1])]);
   send(404, 'text/plain', 'not found');
 });
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
@@ -1117,6 +1190,281 @@ try {
     await new Promise((r) => setTimeout(r, Math.max(0, lagAt + 14500 - Date.now()))); // past the 9 s switch and the 12 s re-check
     const afterSwitch = (await stateOf(lagTab)).media.find((m) => m.kind === 'hls');
     check('clicking the next lecture does not rename the one before it', /^009/.test(afterSwitch?.title || ''), `${afterSwitch?.title}`);
+  }
+
+  // Download all: one button for every video shown that you don't have yet, behind a confirmation.
+  {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const galleryPage = await browser.newPage();
+    await galleryPage.goto(`${base}/gallery`, { waitUntil: 'networkidle0' });
+    const galleryTab = await tabOf(`${base}/gallery`);
+    const ready = await waitFor(async () => {
+      const ms = (await stateOf(galleryTab)).media;
+      const clips = ms.filter((m) => /\/media\/g\d\.mp4$/.test(m.url));
+      return clips.length === 4 && clips.every((m) => m.title && m.size) && ms.some((m) => m.url.includes('/gone/') && m.info?.duration)
+        && ms.some((m) => m.url.includes('/drm/') && m.protected) && ms.some((m) => m.kind === 'subtitle') ? ms : null;
+    }, 10000) || (await stateOf(galleryTab)).media;
+    const clip = (n) => ready.find((m) => m.url.endsWith(`/media/g${n}.mp4`));
+    const gone = ready.find((m) => m.url.includes('/gone/'));
+    const drm = ready.find((m) => m.url.includes('/drm/'));
+    check('the gallery page lists four videos, a stream, a protected stream and a subtitle file',
+      [1, 2, 3, 4].every((n) => clip(n)?.title?.startsWith('Gallery clip')) && !!gone && drm?.protected === true && ready.length === 7,
+      ready.map((m) => `${m.kind}:${m.title || m.url.split('/').pop()}${m.protected ? ' (DRM)' : ''}`).join(' | '));
+    const galleryJobs = async () => (await stateOf(galleryTab)).jobs.filter((j) => j.tabId === galleryTab);
+
+    const gp = await browser.newPage();
+    const gpErrors = [];
+    gp.on('pageerror', (e) => gpErrors.push(e.message));
+    await gp.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
+    await gp.goto(`chrome-extension://${extId}/popup.html?tabId=${galleryTab}`);
+    const bulk = () => gp.evaluate(() => {
+      const box = document.querySelector('#bulk');
+      return {
+        shown: !box.hidden, buttons: [...box.querySelectorAll('button')].map((b) => b.textContent),
+        cards: document.querySelectorAll('#hero > li.card, #media > li.card').length, banner: document.querySelector('#banner').hidden ? '' : document.querySelector('#banner').textContent,
+      };
+    });
+    const bulkIs = (label, ms = 6000) => waitFor(async () => { const b = await bulk(); return b.shown && b.buttons.join('|') === label ? b : null; }, ms);
+    const chip = (name) => gp.evaluate((t) => [...document.querySelectorAll('#filters .chip')].find((c) => c.textContent.startsWith(t)).click(), name);
+    const search = (text) => gp.evaluate((t) => {
+      if (document.querySelector('#listbar').hidden) document.querySelector('#btn-search').click();
+      const box = document.querySelector('#search');
+      box.value = t;
+      box.dispatchEvent(new Event('input'));
+    }, text);
+
+    // Five can be downloaded: the four files and the stream. Not the protected stream, not the subtitle file.
+    const five = await bulkIs('Download all (5)') || await bulk();
+    check('"Download all (5)" counts the videos that can be downloaded (not the protected one, not subtitles)',
+      five.shown && five.buttons.join('|') === 'Download all (5)' && five.cards === 6, JSON.stringify(five));
+    if (process.env.SHOT) {
+      await gp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-bulk.png'), fullPage: true });
+      // The same in the sidebar, with the question showing.
+      const side = await browser.newPage();
+      await side.setViewport({ width: 460, height: 900, deviceScaleFactor: 2 });
+      await side.goto(`chrome-extension://${extId}/popup.html?view=panel&tabId=${galleryTab}`);
+      await side.waitForSelector('#bulk-start');
+      await side.click('#bulk-start');
+      await side.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-bulk-panel.png') });
+      await side.close();
+    }
+
+    // One of them is downloaded on its own: it no longer counts.
+    await call('download', { tabId: galleryTab, mediaId: clip(1).id, optionId: 'file' });
+    await waitFor(async () => (await galleryJobs()).find((j) => j.mediaId === clip(1).id && j.status === 'done'), 15000);
+    // (Wait for the popup to show it as downloaded: while it downloads it is left out as well.)
+    await waitFor(() => gp.evaluate(() => [...document.querySelectorAll('#filters .chip')].some((c) => c.textContent === 'Downloaded1')), 8000);
+    const four = await bulk();
+    check('a video you already downloaded is left out: "Download all (4)"', four.shown && four.buttons.join('|') === 'Download all (4)', JSON.stringify(four));
+    await chip('Downloaded');
+    await sleep(150);
+    const onDone = await bulk();
+    check('under "Downloaded" there is nothing to download, so the button is gone', !onDone.shown && onDone.cards === 1, JSON.stringify(onDone));
+    await chip('Not downloaded');
+    await sleep(150);
+    const onNew = await bulk();
+    check('under "Not downloaded" it offers the same four', onNew.shown && onNew.buttons.join('|') === 'Download all (4)' && onNew.cards === 5, JSON.stringify(onNew));
+    // It acts on what is shown: a search narrows it, and under two videos there is no button.
+    await search('clip');
+    await sleep(150);
+    const onSearch = await bulk();
+    await search('three');
+    await sleep(150);
+    const onOne = await bulk();
+    await search('');
+    await sleep(150);
+    check('a search narrows it to the videos shown ("clip": 3; one match: no button)',
+      onSearch.shown && onSearch.buttons.join('|') === 'Download all (3)' && onSearch.cards === 3 && !onOne.shown && onOne.cards === 1,
+      JSON.stringify({ onSearch, onOne }));
+
+    // The first click only asks. A second click right away (a double-click) does nothing either.
+    const before = (await galleryJobs()).length;
+    await gp.evaluate(() => { document.querySelector('#bulk-start').click(); document.querySelector('#bulk-confirm')?.click(); });
+    await sleep(300);
+    const asked = await bulk();
+    const afterAsk = (await galleryJobs()).length;
+    check('the first click asks "Download 4 videos?" with Cancel, and starts nothing (not even on a double-click)',
+      asked.buttons.join('|') === 'Download 4 videos?|Cancel' && before === 1 && afterAsk === 1, JSON.stringify({ asked, before, afterAsk }));
+    if (process.env.SHOT) {
+      await gp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-bulk-ask.png'), fullPage: true });
+      await gp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
+      await sleep(300);
+      await gp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-bulk-ask-dark.png'), fullPage: true });
+      await gp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
+    }
+    await sleep(2500); // the question survives a background refresh
+    const stillAsked = await bulk();
+    await gp.click('#bulk-cancel');
+    await sleep(700);
+    const canceled = await bulk();
+    check('Cancel puts the button back, and nothing was started',
+      stillAsked.buttons.join('|') === 'Download 4 videos?|Cancel' && canceled.buttons.join('|') === 'Download all (4)' && (await galleryJobs()).length === 1,
+      JSON.stringify({ stillAsked, canceled }));
+
+    // Confirm. The stream's link has "expired" by now: it can't start, the three files do.
+    brokenStream = true;
+    await gp.click('#bulk-start');
+    await sleep(700);
+    await gp.click('#bulk-confirm');
+    const told = await waitFor(async () => { const b = await bulk(); return b.banner ? b : null; }, 15000) || await bulk();
+    const started = await galleryJobs();
+    const mine = (n) => started.filter((j) => j.mediaId === clip(n).id);
+    check('confirming starts the three files: one job each, none for the downloaded, protected or broken ones',
+      started.length === 4 && [2, 3, 4].every((n) => mine(n).length === 1) && mine(1).length === 1 && mine(1)[0].status === 'done'
+      && !started.some((j) => j.mediaId === gone.id || j.mediaId === drm.id),
+      started.map((j) => `${j.title}: ${j.status}`).join(' | '));
+    check('what could not start is told once, in one line: "Started 3, 1 couldn\'t start: …"',
+      /^Started 3, 1 couldn't start: HTTP 404 /.test(told.banner), told.banner);
+    const others = started.filter((j) => j.mediaId !== clip(1).id).map((j) => j.status).sort().join();
+    check('they go through the queue: two run, the third waits its turn', others === 'queued,running,running', others);
+    if (process.env.SHOT) await gp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-bulk-running.png'), fullPage: true });
+    const finished = await waitFor(async () => {
+      const js = (await galleryJobs()).filter((j) => j.mediaId !== clip(1).id);
+      return js.length === 3 && js.every((j) => j.status === 'done') ? js : null;
+    }, 30000) || [];
+    const names = finished.map((j) => path.basename(j.outputs?.[0]?.path || '')).sort().join('|');
+    const intact = finished.every((j) => {
+      const n = [2, 3, 4].find((x) => clip(x).id === j.mediaId);
+      const file = j.outputs?.[0]?.path;
+      return n && file && fs.existsSync(file) && fs.readFileSync(file).equals(GALLERY[`g${n}`]);
+    });
+    check('all three finish, each saved whole under its own name', finished.length === 3 && intact
+      && names === 'Gallery clip four.mp4|Gallery clip three.mp4|Gallery clip two.mp4', names);
+    const afterAll = await waitFor(async () => { const b = await bulk(); return !b.shown ? b : null; }, 6000) || await bulk();
+    check('with one video left to download the button is gone, and the popup had no errors', !afterAll.shown && !gpErrors.length, `${JSON.stringify(afterAll)} ${gpErrors.join('; ')}`);
+    // Leave the list as the next popup expects it: all videos, search closed.
+    await chip('All');
+    await gp.evaluate(() => { if (!document.querySelector('#listbar').hidden) document.querySelector('#btn-search').click(); });
+    await gp.close();
+    await galleryPage.close();
+  }
+
+  // The quality to pick first (Settings → Downloads) is the one already chosen on the big card, and the
+  // one "Download all" uses.
+  {
+    const ladderPage = await browser.newPage();
+    await ladderPage.goto(`${base}/watch/ladder`, { waitUntil: 'networkidle0' });
+    const ladderTab = await tabOf(`${base}/watch/ladder`);
+    const ladder = await waitFor(async () => (await stateOf(ladderTab)).media.find((m) => m.kind === 'hls' && m.info?.variantCount === 3), 8000);
+    const lq = await browser.newPage();
+    await lq.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
+    await lq.goto(`chrome-extension://${extId}/popup.html?tabId=${ladderTab}`);
+    const heroQuality = () => lq.evaluate(() => ({
+      chips: [...document.querySelectorAll('#hero .quality .q')].map((q) => q.textContent),
+      pressed: [...document.querySelectorAll('#hero .quality[aria-pressed="true"] .q')].map((q) => q.textContent).join(),
+      button: document.querySelector('#hero .primary.big')?.textContent || '',
+    }));
+    const heroOn = async (q) => await waitFor(async () => { const x = await heroQuality(); return x.pressed === q ? x : null; }, 6000) || await heroQuality();
+    const best = await heroOn('1080p');
+    check('with "Best available" the big card starts on the best quality', best.chips.join() === '1080p,720p,360p' && best.pressed === '1080p' && best.button === 'Download 1080p', JSON.stringify(best));
+
+    // Change it in Settings, the way a person would.
+    const qp = await browser.newPage();
+    await qp.goto(`chrome-extension://${extId}/options.html#downloads`);
+    await qp.waitForSelector('#preferredQuality');
+    const form = await qp.evaluate(() => {
+      const sel = document.querySelector('#preferredQuality');
+      return { value: sel.value, label: sel.closest('label').firstChild.textContent.trim(), options: [...sel.options].map((o) => `${o.value}=${o.textContent}`), visible: sel.getBoundingClientRect().height > 0 };
+    });
+    await qp.select('#preferredQuality', '720');
+    const saved = await waitFor(() => ext.evaluate(async () => (await chrome.storage.local.get('settings')).settings?.preferredQuality === '720'), 3000);
+    check('Settings → Downloads has "Quality to pick first" (Best available by default), and it saves',
+      form.visible && form.value === 'best' && form.label === 'Quality to pick first' && !!saved
+      && form.options.join('|') === 'best=Best available|1080=Up to 1080p|720=Up to 720p|480=Up to 480p|smallest=Smallest file', JSON.stringify({ form, saved }));
+    const hd = await heroOn('720p');
+    check('with "Up to 720p" the open popup moves to 720p on the three-quality stream', hd.pressed === '720p' && hd.button === 'Download 720p', JSON.stringify(hd));
+    if (process.env.SHOT) await lq.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-quality.png'), fullPage: true });
+    await qp.select('#preferredQuality', '480');
+    const sd = await heroOn('360p');
+    check('with "Up to 480p" it takes the best one below the cap (360p)', sd.pressed === '360p' && sd.button === 'Download 360p', JSON.stringify(sd));
+    // Your own click on the card still wins over the setting.
+    await lq.evaluate(() => [...document.querySelectorAll('#hero .quality')].find((b) => b.querySelector('.q').textContent === '1080p').click());
+    await new Promise((r) => setTimeout(r, 2500));
+    const own = await heroQuality();
+    check('a quality you click on the card wins over the setting', own.pressed === '1080p' && own.button === 'Download 1080p', JSON.stringify(own));
+    // "Download all" (here: one message, as the popup sends it) picks by the setting too.
+    await qp.select('#preferredQuality', '720');
+    await waitFor(() => ext.evaluate(async () => (await chrome.storage.local.get('settings')).settings?.preferredQuality === '720'), 3000);
+    const many = await call('downloadMany', { tabId: ladderTab, mediaIds: [ladder?.id, 'no-such-item'] });
+    const ladderJob = await waitFor(async () => (await stateOf(ladderTab)).jobs.find((j) => j.mediaId === ladder?.id && ['done', 'error'].includes(j.status)), 30000);
+    check('"Download all" downloads the stream at the preferred quality (720p), and reports the item it could not find',
+      many.ok && many.data.started === 1 && many.data.failed.length === 1 && many.data.failed[0].id === 'no-such-item'
+      && ladderJob?.status === 'done' && ladderJob.optionId === 'v1' && /720p/.test(ladderJob.filename),
+      JSON.stringify({ many: many.data || many.error, job: ladderJob && [ladderJob.status, ladderJob.optionId, ladderJob.filename, ladderJob.error] }));
+    await qp.select('#preferredQuality', 'best');
+    await waitFor(() => ext.evaluate(async () => (await chrome.storage.local.get('settings')).settings?.preferredQuality === 'best'), 3000);
+    await qp.close();
+    await lq.close();
+    await ladderPage.close();
+  }
+
+  // Speed and time left: a file that arrives at about 400 KB a second for about thirteen seconds.
+  {
+    const slowPage = await browser.newPage();
+    await slowPage.goto(`${base}/watch/slow`, { waitUntil: 'networkidle0' });
+    const slowTab = await tabOf(`${base}/watch/slow`);
+    await waitFor(async () => (await stateOf(slowTab)).media.find((m) => m.size === SLOW.length && m.title), 8000);
+    const sq = await browser.newPage();
+    const sqErrors = [];
+    sq.on('pageerror', (e) => sqErrors.push(e.message));
+    await sq.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
+    await sq.goto(`chrome-extension://${extId}/popup.html?tabId=${slowTab}`);
+    await sq.waitForSelector('#hero .primary.big');
+    await sq.click('#hero .primary.big');
+    // From here on the card must stay the same element: only its text and bar may change.
+    await sq.waitForSelector('#hero .hero-state.busy');
+    await sq.evaluate(() => { document.querySelector('#hero > li').dataset.mark = 'kept'; });
+    // Watch the popup and the worker until the download is over.
+    const seen = [];
+    let shot = !process.env.SHOT;
+    for (let i = 0; i < 150; i++) {
+      const dom = await sq.evaluate(() => ({
+        hero: document.querySelector('#hero .busy-text')?.textContent || '',
+        tray: document.querySelector('#tray').hidden ? '' : document.querySelector('#tray-pct').textContent,
+        row: document.querySelector('#jobs .job-rate')?.textContent || '',
+        status: document.querySelector('#jobs .status')?.textContent || '',
+        kept: document.querySelector('#hero > li')?.dataset.mark === 'kept',
+        busy: !!document.querySelector('#hero .hero-state.busy'),
+        cut: (() => { const t = document.querySelector('#hero .busy-text'); return t ? t.scrollWidth - t.clientWidth : 0; })(),
+      }));
+      const job = (await stateOf(slowTab)).jobs.find((j) => j.kind === 'direct');
+      seen.push({ ...dom, rate: job?.rate, jobStatus: job?.status });
+      if (!shot && / left$/.test(dom.hero)) {
+        shot = true;
+        await sq.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-speed.png'), fullPage: true });
+        await sq.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
+        await new Promise((r) => setTimeout(r, 250));
+        await sq.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-speed-dark.png'), fullPage: true });
+        await sq.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
+      }
+      if (job && job.status !== 'running') break;
+      await new Promise((r) => setTimeout(r, 150));
+    }
+    const FULL = /^\d+% · (\d+(?:\.\d+)?) (KB|MB)\/s · (?:about (\d+) s left|a few seconds left)$/;
+    const heroTexts = [...new Set(seen.map((s) => s.hero).filter((t) => FULL.test(t)))];
+    const kbps = heroTexts.map((t) => { const m = FULL.exec(t); return Number(m[1]) * (m[2] === 'MB' ? 1024 : 1); });
+    const lefts = heroTexts.map((t) => Number(FULL.exec(t)[3])).filter(Number.isFinite);
+    // The server's timer runs a little late, so "about 400" is 250 to 500 for the typical reading.
+    const median = (list) => [...list].sort((a, b) => a - b)[Math.floor(list.length / 2)];
+    check('while it downloads, the big card reads like "42% · 400 KB/s · about 5 s left", at about the real speed',
+      heroTexts.length >= 2 && kbps.every((k) => k > 100 && k < 800) && median(kbps) > 250 && median(kbps) < 500 && lefts.length >= 1 && lefts.every((s) => s >= 5 && s <= 20),
+      [...new Set(seen.map((s) => s.hero))].join(' | '));
+    check('the first two seconds show the plain "Downloading N%" (no speed is guessed from nothing)',
+      seen.some((s) => /^Downloading( \d+%|…)$/.test(s.hero)) && !FULL.test(seen.find((s) => s.busy)?.hero || ''), seen.slice(0, 6).map((s) => s.hero).join(' | '));
+    check('the bottom bar and the row under Downloads show the same speed and time left',
+      seen.some((s) => FULL.test(s.tray)) && seen.some((s) => /^ · \d+(\.\d+)? (KB|MB)\/s · (about \d+ s|a few seconds) left$/.test(s.row) && /^Downloading · /.test(s.status)),
+      `tray: ${[...new Set(seen.map((s) => s.tray))].slice(0, 6).join(' | ')}; row: ${[...new Set(seen.map((s) => s.status))].slice(0, 4).join(' | ')}`);
+    const rates = seen.map((s) => s.rate).filter((r) => r && r.bytesPerSec != null);
+    check('the worker reports each running job\'s rate (about 400 KB/s here) and time left, and none once it is done',
+      rates.length >= 5 && rates.every((r) => r.bytesPerSec > 100 * 1024 && r.bytesPerSec < 800 * 1024 && (r.etaSeconds === null || (r.etaSeconds >= 0 && r.etaSeconds < 20)))
+      && median(rates.map((r) => r.bytesPerSec)) > 250 * 1024 && median(rates.map((r) => r.bytesPerSec)) < 500 * 1024
+      && rates.some((r) => r.etaSeconds > 0) && seen.at(-1).jobStatus === 'done' && seen.at(-1).rate === null,
+      JSON.stringify({ n: rates.length, first: rates[0], last: rates.at(-1), end: [seen.at(-1).jobStatus, seen.at(-1).rate] }));
+    check('the big card is updated in place while the numbers change (never rebuilt), and the text fits',
+      seen.filter((s) => s.busy).length >= 10 && seen.filter((s) => s.busy).every((s) => s.kept && s.cut <= 1) && !sqErrors.length,
+      `${seen.filter((s) => s.busy).length} looks, kept ${seen.filter((s) => s.busy && s.kept).length}, widest overflow ${Math.max(...seen.map((s) => s.cut))}px ${sqErrors.join('; ')}`);
+    await sq.close();
+    await slowPage.close();
   }
 
   const errState = await call('aiFind');

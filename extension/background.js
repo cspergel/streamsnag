@@ -13,6 +13,8 @@ import { getSettings } from './lib/settings.js';
 import { findInLibrary, nameKey, serviceId, leadNumber, sameItem } from './lib/match.js';
 import { applyRefererRules, installLocalGuard, allowLocal } from './lib/headers.js';
 import { DOC_EXTS, frameDocs, mergeDocs, docLabel, docFilename, docStatus } from './lib/files.js';
+import { pickPreferred, canBulkDownload } from './lib/quality.js';
+import { newRate, feedRate, readRate } from './lib/rate.js';
 
 // Settings (with the API key) and history are for StreamSnag's own pages, not for scripts running in web pages.
 chrome.storage.local.setAccessLevel?.({ accessLevel: 'TRUSTED_CONTEXTS' }).catch(() => {});
@@ -917,9 +919,34 @@ function persistJobs(immediate = false) {
   else jobsPersistTimer = setTimeout(write, 250);
 }
 
+// Speed and time left of each running download. Kept in memory only: after a worker restart the
+// measuring simply starts again.
+const rates = new Map(); // jobId -> meter (lib/rate.js)
+
+/** Take a reading of a job's progress. `fresh`: a new file of the job starts, so forget the last one. */
+function noteProgress(job, fresh = false) {
+  if (job.live) return; // a recording runs as long as the broadcast: no speed or time left to tell
+  if (fresh || !rates.has(job.id)) {
+    for (const id of rates.keys()) if (jobs.get(id)?.status !== 'running') rates.delete(id); // finished since
+    rates.set(job.id, newRate());
+  }
+  const p = job.progress || {};
+  // Chrome's own downloads count bytes; streams count segments (plus the bytes so far); yt-dlp a percentage.
+  const bytes = p.isBytes ? p.done : p.percent ? null : p.bytes;
+  feedRate(rates.get(job.id), { at: Date.now(), done: p.done, total: p.total, bytes });
+}
+
+/** {bytesPerSec, etaSeconds} of a running download, or null (not running, or nothing measured yet). */
+function jobRate(j) {
+  if (j.status !== 'running') return null;
+  const meter = rates.get(j.id);
+  return meter ? readRate(meter, Date.now()) : null;
+}
+
 function publicJob(j) {
   return {
     id: j.id, tabId: j.tabId, title: j.title, filename: j.filename, status: j.status, error: j.error, optionId: j.optionId || 'file',
+    rate: jobRate(j),
     progress: j.progress, startedAt: j.startedAt, finishedAt: j.finishedAt, live: j.live, kind: j.kind,
     outputs: j.outputs || [], note: j.note || '', mediaUrl: j.mediaUrl, diagnosis: j.diagnosis || null,
     mediaId: j.mediaId || '', mediaKeys: j.mediaKeys || [], mediaSize: j.mediaSize || null, fingerprint: j.fingerprint || '',
@@ -1047,6 +1074,7 @@ async function runNextTrack(jobId) {
   tr.status = 'running';
   job.status = job.live ? 'recording' : 'running';
   job.progress = { done: 0, total: tr.plan ? tr.plan.segments.length : 0, bytes: 0 };
+  noteProgress(job, true);
   persistJobs();
   if (tr.kind === 'direct') {
     const downloadId = await chrome.downloads.download({ url: tr.url, filename: tr.filename, conflictAction: 'uniquify' });
@@ -1340,6 +1368,7 @@ async function refreshDirectProgress() {
     if (!tr) continue;
     const [item] = await chrome.downloads.search({ id: tr.downloadId });
     if (item) job.progress = { done: item.bytesReceived, total: item.totalBytes > 0 ? item.totalBytes : 0, bytes: item.bytesReceived, isBytes: true };
+    if (item) noteProgress(job);
   }
 }
 
@@ -1571,6 +1600,49 @@ async function downloadMissing(tabId, mediaId) {
   return { queued, skipped };
 }
 
+/**
+ * "Download all": start each of these page items at the quality set in Settings, through the normal queue
+ * (so the limit, the naming rules and the history all apply). One that can't start doesn't stop the rest:
+ * the answer lists them, {started, failed: [{id, title, error}]}, for a single summary line.
+ */
+async function downloadMany(tabId, mediaIds) {
+  await loadJobs();
+  const settings = await getSettings();
+  const t = await getTab(tabId);
+  const ids = [...new Set((Array.isArray(mediaIds) ? mediaIds : []).filter((id) => typeof id === 'string'))].slice(0, 200);
+  const failed = [];
+  let started = 0;
+  let helper = null;
+  for (const id of ids) {
+    const m = t.media.find((x) => x.id === id);
+    try {
+      if (!m) throw new Error('It is no longer on the list. Reload the page.');
+      if (m.protected) throw new Error('It is protected (DRM), so it can\'t be saved.');
+      if (m.info?.live) throw new Error('It is live. Record it from its own card.');
+      if (!canBulkDownload(m)) throw new Error('It is not a single video.');
+      let optionId = 'file';
+      if (m.kind === 'hls' || m.kind === 'dash') {
+        // Reading the qualities also tells us now, not later in the queue, that a link has expired.
+        const found = await inspectCached(tabId, id);
+        if (found.protected) throw new Error('It is protected (DRM), so it can\'t be saved.');
+        if (found.live) throw new Error('It is live. Record it from its own card.');
+        const pick = pickPreferred(found.options, settings.preferredQuality);
+        if (!pick) throw new Error(found.note || 'No video was found in this stream.');
+        optionId = pick.id;
+      } else if (m.kind === 'embed') {
+        helper = helper || await helperStatus(true);
+        if (!helper.ok) throw new Error(helper.error);
+        if (!helper.tools?.ytdlp) throw new Error('yt-dlp was not found. Install it, then try again.');
+      }
+      await enqueueDownload(tabId, id, optionId);
+      started++;
+    } catch (e) {
+      failed.push({ id, title: m ? m.customName || m.title || '' : '', error: e.message || String(e) });
+    }
+  }
+  return { started, failed };
+}
+
 // ---------------------------------------------------------------- local helper
 
 let helperCache = { at: 0, value: null };
@@ -1628,6 +1700,7 @@ async function startYtdlp(tabId, { url, mediaId } = {}) {
     timeoutMs: 6 * 60 * 60 * 1000,
     onProgress: (p) => {
       if (Number.isFinite(p.percent)) job.progress = { done: p.percent, total: 100, bytes: 0, percent: true };
+      if (Number.isFinite(p.percent)) noteProgress(job);
       if (p.line) job.note = p.line.slice(0, 160);
       persistJobs();
     },
@@ -1850,6 +1923,7 @@ const handlers = {
       aiResult: t.aiResult,
       recipe,
       ai: { provider: settings.aiProvider, configured: ['subscription', 'chatgpt'].includes(settings.aiProvider) || (settings.aiProvider === 'api' && !!settings.apiKey) || (settings.aiProvider === 'openai' && !!settings.openaiKey) },
+      preferredQuality: settings.preferredQuality, // the quality the big card and "Download all" pick first
       helper: helperCache.value,
     };
   },
@@ -1858,6 +1932,7 @@ const handlers = {
   listPlaylist: ({ tabId, mediaId }) => listPlaylist(tabId, mediaId),
   downloadMissing: ({ tabId, mediaId }) => downloadMissing(tabId, mediaId),
   downloadDocs: ({ tabId }) => downloadDocs(tabId),
+  downloadMany: ({ tabId, mediaIds }) => downloadMany(tabId, mediaIds),
   toolVersions: () => helperRequest({ type: 'toolVersions' }, { timeoutMs: 60000 }),
   updateYtdlp: () => helperRequest({ type: 'updateYtdlp' }, { timeoutMs: 6 * 60 * 1000 }),
   cancelJob: ({ jobId }) => cancelJob(jobId),
@@ -2064,6 +2139,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const tr = job.tracks[msg.trackIndex];
       if (msg.type === 'trackProgress') {
         job.progress = { done: msg.done, total: msg.total, bytes: msg.bytes, live: !!msg.live };
+        noteProgress(job);
         persistJobs();
       } else if (msg.type === 'trackError') {
         failJob(job.id, msg.error, { canceled: msg.canceled, status: msg.status });

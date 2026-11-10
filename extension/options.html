@@ -120,6 +120,16 @@
         <p class="muted small">Tokens: <code>{title}</code> (the lecture/episode name found on the page) <code>{number}</code> and <code>{name}</code> (the two halves of a numbered title like "009: C. diff") <code>{course}</code> <code>{page}</code> (tab title) <code>{quality}</code> <code>{host}</code> <code>{date}</code> <code>{kind}</code>. Examples: <code>{course} - {title}</code>, <code>{number} - {name}</code></p>
         <label>Downloads at once <input type="number" id="maxParallel" min="1" max="6"></label>
         <p class="muted small">More than this wait in the queue and start as others finish (live recordings don't count).</p>
+        <label>Quality to pick first
+          <select id="preferredQuality">
+            <option value="best">Best available</option>
+            <option value="1080">Up to 1080p</option>
+            <option value="720">Up to 720p</option>
+            <option value="480">Up to 480p</option>
+            <option value="smallest">Smallest file</option>
+          </select>
+        </label>
+        <p class="muted small">The quality already chosen when a video has several, and the one "Download all" uses. You can still pick another on the video's card.</p>
       </div>
       <div class="card stack">
         <h3>Rules for specific sites</h3>

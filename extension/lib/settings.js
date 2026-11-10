@@ -24,6 +24,7 @@ export const DEFAULT_SETTINGS = {
   checkDownloads: true, // also check your Downloads folder (where most tools save)
   debugMode: false, // keep a snapshot of the last page's detections, for bug reports
   maxParallel: 2, // downloads running at once; the rest wait in the queue
+  preferredQuality: 'best', // the quality picked first: 'best' | '1080' | '720' | '480' | 'smallest'
   siteRules: {}, // per-site overrides: { "example.com": { subfolder, filenameTemplate } }
   notify: true,
   autoRecipes: true,

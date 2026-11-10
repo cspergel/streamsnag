@@ -8,6 +8,8 @@
   at the bottom shows what's downloading. Light and dark mode are now neutral grey, with orange only in the logo.
   A "Finish setup" card appears when the local helper isn't installed, and an empty page explains what
   to try next.
+* **Theme:** choose **System**, **Light** or **Dark** at the top of Settings. System follows your
+  computer, as before.
 * **Playlists:** **List videos** asks yt-dlp for every video in a playlist or Vimeo showcase, so you
   don't have to play each one. **Download missing (N)** then fetches only what isn't in your folders.
   Videos you already played show once.

@@ -461,6 +461,53 @@ try {
     await twoPage.close();
   }
 
+  // Theme: the choice in Settings wins over the system setting, and the popup follows it.
+  {
+    const op = await browser.newPage();
+    await op.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
+    await op.goto(`chrome-extension://${extId}/options.html`);
+    await op.waitForSelector('#theme .chip.on');
+    const look = (pg) => pg.evaluate(() => ({
+      bg: getComputedStyle(document.body).backgroundColor, theme: document.documentElement.dataset.theme,
+      on: document.querySelector('#theme .chip.on')?.textContent || null,
+    }));
+    const LIGHT = 'rgb(245, 245, 245)';
+    const DARK = 'rgb(21, 21, 21)';
+    const sysLight = await look(op);
+    check('theme starts on System and follows a light system', sysLight.on === 'System' && sysLight.bg === LIGHT, JSON.stringify(sysLight));
+    await op.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
+    // The page hears about the system change on its next frame.
+    await op.waitForFunction(() => document.documentElement.dataset.theme === 'dark', { timeout: 3000 }).catch(() => {});
+    const sysDark = await look(op);
+    check('on System, a dark system turns the page dark', sysDark.on === 'System' && sysDark.bg === DARK, JSON.stringify(sysDark));
+    await op.click('#theme [data-theme-choice="light"]');
+    const forcedLight = await look(op);
+    check('choosing Light keeps the page light on a dark system', forcedLight.on === 'Light' && forcedLight.bg === LIGHT, JSON.stringify(forcedLight));
+    await op.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
+    await op.click('#theme [data-theme-choice="dark"]');
+    const forcedDark = await look(op);
+    check('choosing Dark turns the page dark on a light system', forcedDark.on === 'Dark' && forcedDark.bg === DARK, JSON.stringify(forcedDark));
+    // The popup shares the choice: opened on a light system, it is dark, and it changes live with the setting.
+    const pp = await browser.newPage();
+    await pp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
+    await pp.goto(`chrome-extension://${extId}/popup.html`);
+    const popDark = await look(pp);
+    check('the popup opens dark when Dark is chosen, on a light system', popDark.bg === DARK, JSON.stringify(popDark));
+    await op.bringToFront();
+    await op.reload();
+    await op.waitForSelector('#theme .chip.on');
+    const kept = await look(op);
+    check('the theme choice is remembered after reloading Settings', kept.on === 'Dark' && kept.bg === DARK, JSON.stringify(kept));
+    await op.click('#theme [data-theme-choice="system"]');
+    await new Promise((r) => setTimeout(r, 300));
+    const popBack = await look(pp);
+    const opBack = await look(op);
+    check('back on System, Settings and the open popup both return to light',
+      opBack.on === 'System' && opBack.bg === LIGHT && popBack.bg === LIGHT, JSON.stringify({ opBack, popBack }));
+    await pp.close();
+    await op.close();
+  }
+
   // Side panel layout: details, full URL, and the history of what was saved.
   const sp = await browser.newPage();
   const spErrors = [];

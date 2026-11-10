@@ -1,5 +1,5 @@
 /* StreamSnag: shared look for the popup, the sidebar and (with options.css) the settings page.
-   Light: warm paper with StreamSnag orange. Dark ("graphite"): neutral greys, orange only in the logo. */
+   Light and dark are both neutral greys, with orange only in the logo. */
 :root {
   --bg: #f5f5f5;
   --surface: #ffffff;
@@ -30,36 +30,35 @@
   --radius: 12px;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #151515;
-    --surface: #1f1f1f;
-    --surface-2: #2a2a2a;
-    --text: #ededed;
-    --muted: #a3a3a3;
-    --line: #323232;
-    --accent: #ececec;
-    --accent-ink: #151515;
-    --accent-soft: #2a2a2a;
-    --accent-text: #f2f2f2;
-    --accent-bar: #4d4d4d;
-    --ok: #7bd492;
-    --ok-soft: #1d2b21;
-    --warn: #f0b46b;
-    --err: #ff7b72;
-    --ai: #d4d4d4;
-    --ai-soft: #2c2c2c;
-    --logo: #e8590c;
-    --tint-0: #2c2f33;
-    --tint-1: #312f2c;
-    --tint-2: #2b302c;
-    --tint-3: #2f2d33;
-    --thumb-ink: #a8a8a8;
-    --shadow: none;
-    --pop: 0 12px 32px rgba(0, 0, 0, .5);
-    --seg-on: #3a3a3a;
-    color-scheme: dark;
-  }
+/* theme.js sets data-theme from the choice in Settings (or the system setting). */
+:root[data-theme="dark"] {
+  --bg: #151515;
+  --surface: #1f1f1f;
+  --surface-2: #2a2a2a;
+  --text: #ededed;
+  --muted: #a3a3a3;
+  --line: #323232;
+  --accent: #ececec;
+  --accent-ink: #151515;
+  --accent-soft: #2a2a2a;
+  --accent-text: #f2f2f2;
+  --accent-bar: #4d4d4d;
+  --ok: #7bd492;
+  --ok-soft: #1d2b21;
+  --warn: #f0b46b;
+  --err: #ff7b72;
+  --ai: #d4d4d4;
+  --ai-soft: #2c2c2c;
+  --logo: #e8590c;
+  --tint-0: #2c2f33;
+  --tint-1: #312f2c;
+  --tint-2: #2b302c;
+  --tint-3: #2f2d33;
+  --thumb-ink: #a8a8a8;
+  --shadow: none;
+  --pop: 0 12px 32px rgba(0, 0, 0, .5);
+  --seg-on: #3a3a3a;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }

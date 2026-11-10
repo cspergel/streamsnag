@@ -481,3 +481,22 @@ $('#clearHistory').addEventListener('click', async () => {
 });
 
 loadForm();
+
+// Theme: System / Light / Dark. theme.js (loaded in <head>) keeps the choice and applies it.
+{
+  const paint = () => {
+    for (const b of document.querySelectorAll('#theme .chip')) {
+      const on = b.dataset.themeChoice === window.ssTheme.get();
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', String(on));
+    }
+  };
+  document.getElementById('theme').addEventListener('click', (e) => {
+    const b = e.target.closest('.chip');
+    if (!b) return;
+    window.ssTheme.set(b.dataset.themeChoice);
+    paint();
+  });
+  window.addEventListener('storage', paint);
+  paint();
+}

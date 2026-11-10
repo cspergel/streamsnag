@@ -14,7 +14,7 @@ import { findInLibrary, nameKey, serviceId, leadNumber, sameItem } from './lib/m
 import { applyRefererRules } from './lib/headers.js';
 import {
   buildFilename, sanitizeFilename, formatBytes, formatBitrate, formatDuration, hostOf, siteKey,
-  shortId, extFromUrl, isHttpUrl, resolveFolder, rulesFor, registrableDomain, isPrivateHost,
+  shortId, extFromUrl, isHttpUrl, resolveFolder, rulesFor, registrableDomain, isPrivateHost, pickPlaying,
 } from './lib/util.js';
 
 // ---------------------------------------------------------------- settings
@@ -596,6 +596,19 @@ async function handleResponse(tabId, r, details) {
 }
 
 /** Every frame's id in a tab (webNavigation is optional; fall back to the top frame). */
+/**
+ * Which listed video is playing in the tab right now? Every frame is asked about its player; a frame
+ * that doesn't answer quickly (or has no StreamSnag script, like a browser page) is simply left out.
+ */
+async function playingIn(tabId, media) {
+  const ask = (frameId) => Promise.race([
+    chrome.tabs.sendMessage(tabId, { type: 'playing' }, { frameId }).then((r) => (r ? { ...r, frameId } : null)).catch(() => null),
+    new Promise((resolve) => { setTimeout(() => resolve(null), 400); }),
+  ]);
+  const reports = (await Promise.all((await frameIdsOf(tabId)).map(ask))).filter(Boolean);
+  return pickPlaying(media, reports);
+}
+
 async function frameIdsOf(tabId) {
   const frames = await chrome.webNavigation?.getAllFrames({ tabId }).catch(() => null);
   return frames?.length ? frames.map((f) => f.frameId) : [0];
@@ -721,7 +734,7 @@ async function inspectMedia(tabId, mediaId) {
         live: !pl.endList,
       };
     }
-    const options = pl.variants.map((v, i) => ({ id: `v${i}`, label: hlsVariantLabel(v) }));
+    const options = pl.variants.map((v, i) => ({ id: `v${i}`, label: hlsVariantLabel(v), height: v.height || 0, bandwidth: v.bandwidth || 0 }));
     pl.audio.filter((a) => a.url).forEach((a, i) => options.push({ id: `a${i}`, label: `Audio only · ${a.name || a.language || a.groupId}`, audio: true }));
     pl.subtitles.filter((s) => s.url).forEach((s, i) => options.push({ id: `s${i}`, label: `Subtitles · ${s.name || s.language}`, subtitle: true }));
     return { options };
@@ -732,10 +745,31 @@ async function inspectMedia(tabId, mediaId) {
   const options = mpd.video.map((v, i) => ({
     id: `v${i}`,
     label: [v.height ? `${v.height}p` : v.id, formatBitrate(v.bandwidth), mpd.audio.length ? '+ audio' : ''].filter(Boolean).join(' · '),
+    height: v.height || 0,
+    bandwidth: v.bandwidth || 0,
   }));
   mpd.audio.forEach((a, i) => options.push({ id: `a${i}`, label: `Audio only · ${[a.lang, formatBitrate(a.bandwidth)].filter(Boolean).join(' · ')}`, audio: true }));
   mpd.subtitles.forEach((s, i) => options.push({ id: `s${i}`, label: `Subtitles · ${s.lang || s.label || s.id}`, subtitle: true }));
   return { options };
+}
+
+// The popup reads the newest stream's qualities each time it opens: remember the answer briefly so that
+// doesn't fetch the manifest again and again. Downloads always read a fresh manifest.
+const INSPECT_TTL = 60000;
+const inspectCache = new Map(); // "tabId:mediaId" -> {at, url, result: Promise}
+async function inspectCached(tabId, mediaId) {
+  const t = await getTab(tabId);
+  const url = t.media.find((x) => x.id === mediaId)?.url;
+  const key = `${tabId}:${mediaId}`;
+  const hit = inspectCache.get(key);
+  if (hit && hit.url === url && Date.now() - hit.at < INSPECT_TTL) return hit.result;
+  for (const [k, v] of inspectCache) if (Date.now() - v.at >= INSPECT_TTL) inspectCache.delete(k);
+  const entry = { at: Date.now(), url, result: inspectMedia(tabId, mediaId) };
+  inspectCache.set(key, entry);
+  // A failure (expired link, network) or a live stream is never kept: the next look reads it again.
+  entry.result.then((r) => { if (r.live && inspectCache.get(key) === entry) inspectCache.delete(key); },
+    () => { if (inspectCache.get(key) === entry) inspectCache.delete(key); });
+  return entry.result;
 }
 
 function hlsPlanFromMedia(pl, settings, role) {
@@ -1648,14 +1682,16 @@ const handlers = {
       ? [...(library.files || [])].sort((a, b) => (b.mtimeMs || 0) - (a.mtimeMs || 0)).slice(0, 2000)
         .map((f) => ({ path: f.path, name: f.name, size: f.size, duration: f.duration || 0, at: f.mtimeMs || 0, here: matched.has(f.path.toLowerCase()) }))
       : undefined;
+    const media = visibleMedia(t).sort((a, b) => rank(a) - rank(b) || (b.size || 0) - (a.size || 0));
     return {
+      playing: media.length > 1 ? await playingIn(tabId, media.filter((m) => !m.dismissed)).catch(() => null) : null,
       library: {
         at: library.at, count: library.files?.length || 0, dirs: library.dirs || [], scanning: !!libraryScan,
         pending: library.pending || 0, error: library.error || '', extra: settings.libraryFolders || [],
         downloads: settings.checkDownloads !== false, files,
       },
       page: { url: t.pageUrl, title: t.pageTitle, site: t.pageUrl ? siteKey(t.pageUrl) : '' },
-      media: visibleMedia(t).sort((a, b) => rank(a) - rank(b) || (b.size || 0) - (a.size || 0)),
+      media,
       removedCount: t.media.filter((m) => m.dismissed).length,
       // Playlist entries shown through the stream card you played (for the playlist's counts).
       coveredEntries: t.media.filter((m) => m.covered && !m.dismissed).map((m) => ({ id: m.id, parentId: m.parentId, covered: m.covered, title: m.title })),
@@ -1666,7 +1702,7 @@ const handlers = {
       helper: helperCache.value,
     };
   },
-  inspect: ({ tabId, mediaId }) => inspectMedia(tabId, mediaId),
+  inspect: ({ tabId, mediaId }) => inspectCached(tabId, mediaId),
   download: ({ tabId, mediaId, optionId }) => enqueueDownload(tabId, mediaId, optionId),
   listPlaylist: ({ tabId, mediaId }) => listPlaylist(tabId, mediaId),
   downloadMissing: ({ tabId, mediaId }) => downloadMissing(tabId, mediaId),

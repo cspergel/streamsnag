@@ -75,6 +75,72 @@ export function formatBitrate(bps) {
   return `${Math.round(bps / 1e3)} kbps`;
 }
 
+/**
+ * The video choices of a stream, best first: tallest picture, then highest bitrate. Options carry
+ * `height` and `bandwidth`; a label like "720p · 2.0 Mbps" is read as a fallback. Audio-only and
+ * subtitle options are left out.
+ */
+export function rankVideoOptions(options) {
+  const height = (o) => Number(o.height) || Number(/^(\d+)p/.exec(o.label || '')?.[1]) || 0;
+  const rate = (o) => {
+    if (Number(o.bandwidth) > 0) return Number(o.bandwidth);
+    const m = /([\d.]+)\s*(M|k)bps/i.exec(o.label || '');
+    return m ? Number(m[1]) * (m[2].toLowerCase() === 'm' ? 1e6 : 1e3) : 0;
+  };
+  return (options || []).filter((o) => !o.audio && !o.subtitle)
+    .map((o, i) => ({ o, i }))
+    .sort((a, b) => height(b.o) - height(a.o) || rate(b.o) - rate(a.o) || a.i - b.i)
+    .map(({ o }) => o);
+}
+
+/**
+ * Which listed video is the one playing in the page? `reports` is what each frame says about its player:
+ * { frameId, src, page, duration, playing, at }. A playing player wins over a paused one, then the one
+ * started last. A stream plays from a blob: address that says nothing, so it is recognised by its length
+ * and by the frame it was loaded in. Returns { id, playing } or null when nothing can be told.
+ */
+export function pickPlaying(media, reports) {
+  const list = (media || []).filter((m) => m && !m.playlist && m.kind !== 'subtitle');
+  const ordered = (reports || []).filter((r) => r && (r.src || r.page))
+    .sort((a, b) => Number(!!b.playing) - Number(!!a.playing) || (b.at || 0) - (a.at || 0));
+  const bare = (u) => String(u || '').split('#')[0];
+  const newest = (items) => items.reduce((a, b) => ((b.detectedAt || 0) > (a.detectedAt || 0) ? b : a));
+  const lengthOf = (m) => Number(m.info?.duration || m.duration) || 0;
+  for (const r of ordered) {
+    const frame = r.frameId || 0;
+    const found = (m) => ({ id: m.id, playing: !!r.playing });
+    // 1. The player's address is the video's own address.
+    if (/^https?:/i.test(r.src || '')) {
+      const exact = list.find((m) => bare(m.url) === bare(r.src));
+      if (exact) return found(exact);
+    }
+    // 2. Same length (within 1.5 s): in the player's own frame first, else only if it is the only one.
+    if (r.duration > 0) {
+      const same = list.filter((m) => lengthOf(m) > 0 && Math.abs(lengthOf(m) - r.duration) <= 1.5);
+      const here = same.filter((m) => (m.frameId || 0) === frame);
+      if (here.length) return found(newest(here));
+      if (same.length === 1) return found(same[0]);
+    }
+    // 3. An embedded player (YouTube, Vimeo…): the frame's own address names the video.
+    const embed = list.find((m) => {
+      if (m.kind !== 'embed') return false;
+      let token = '';
+      try {
+        const u = new URL(m.url);
+        token = u.searchParams.get('v') || u.pathname.split('/').filter(Boolean).pop() || '';
+      } catch { /* not a URL */ }
+      return token.length >= 6 && String(r.page || '').includes(token);
+    });
+    if (embed) return found(embed);
+    // 4. A stream whose length isn't known yet: the newest one loaded by the player's frame.
+    if (/^blob:/i.test(r.src || '')) {
+      const streams = list.filter((m) => (m.kind === 'hls' || m.kind === 'dash') && (m.frameId || 0) === frame && !lengthOf(m));
+      if (streams.length) return found(newest(streams));
+    }
+  }
+  return null;
+}
+
 export function formatDuration(sec) {
   if (!Number.isFinite(sec) || sec <= 0) return '';
   const s = Math.round(sec);

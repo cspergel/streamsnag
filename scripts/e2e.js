@@ -24,6 +24,7 @@ const HIDDEN = Buffer.alloc(800 * 1024, 9);
 // Distinct videos must differ in size: identical size + type is how StreamSnag spots the same file twice.
 const VARIANT = (kb, fill) => Buffer.alloc(MP4.length + kb * 1024, fill);
 const LONG_MP4 = VARIANT(7, 3);
+const LONG_MP4_B = VARIANT(11, 8);
 const LECTURES = { lec2: VARIANT(2, 4), lec3: VARIANT(3, 5), ep5: VARIANT(5, 6) }; // 1.5 MB "video" (header-based detection doesn't care)
 // With ffmpeg installed (and the helper registered) the HLS stream is a real H.264/AAC transport stream plus a
 // WebVTT subtitle rendition, and we check that StreamSnag hands back ONE finished MP4 with everything inside.
@@ -51,6 +52,8 @@ function lagClips() {
   return { 20: make(20), 33: make(33) };
 }
 const LAG = lagClips();
+// The same real clips, padded past the "too small to be a video" limit, for the now-playing check.
+const PLAY = LAG && { a: Buffer.concat([LAG[20], Buffer.alloc(700 * 1024)]), b: Buffer.concat([LAG[33], Buffer.alloc(900 * 1024)]) };
 const SEGMENTS = MUX ? realTsSegments() :Array.from({ length: 5 }, (_, i) => Buffer.alloc(100 * 1024, i + 1)); // seg i filled with byte i+1
 const SUBS_VTT = 'WEBVTT\n\n00:00:00.500 --> 00:00:02.000\nHello from the test stream\n';
 const LONG_TITLE = 'An Extremely Long Video Title That Will Never Fit In The Popup Width Part 3 Of The Series (Full Episode, Directors Cut)';
@@ -78,7 +81,24 @@ const server = http.createServer((req, res) => {
   if (url.pathname === '/watch/long') {
     return send(200, 'text/html', `<!doctype html><title>${LONG_TITLE}</title><video src="/media/long.mp4" preload="auto" muted></video>`);
   }
+  if (url.pathname === '/watch/two') {
+    // You are watching the first video; a second one loads afterwards, so it is the newest on the page.
+    return send(200, 'text/html', `<!doctype html><title>Two Players</title>
+      <video id="a" src="/media/play-a.mp4" muted loop width="320" height="180"></video>
+      <video id="b" muted width="320" height="180"></video>
+      <script>
+        document.getElementById('a').play();
+        setTimeout(() => { const b = document.getElementById('b'); b.src = '/media/play-b.mp4'; b.load(); }, 900);
+      </script>`);
+  }
+  if (PLAY && /^\/media\/play-[ab]\.mp4$/.test(url.pathname)) return send(200, 'video/mp4', PLAY[url.pathname.at(-5)]);
+  if (url.pathname === '/watch/longlist') {
+    // Two videos, so one of them is an ordinary row under the big card.
+    return send(200, 'text/html', `<!doctype html><title>${LONG_TITLE}</title>
+      <video src="/media/long.mp4" preload="auto" muted></video><video src="/media/long-b.mp4" preload="auto" muted></video>`);
+  }
   if (url.pathname === '/media/long.mp4') return send(200, 'video/mp4', LONG_MP4);
+  if (url.pathname === '/media/long-b.mp4') return send(200, 'video/mp4', LONG_MP4_B);
   if (url.pathname.startsWith('/course/')) {
     // Like an LMS: the tab title is the program; the lecture name only appears in the page, and the
     // next lecture loads without a page reload.
@@ -320,21 +340,21 @@ try {
   await popup.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
   await popup.goto(`chrome-extension://${extId}/popup.html?tabId=${tabId}`);
   await new Promise((r) => setTimeout(r, 1200));
-  const cards = await popup.$$eval('#media .card', (els) => els.length);
+  const cards = await popup.$$eval('.items .card', (els) => els.length);
   check('popup renders detected media and jobs without errors', cards === 2 && !consoleErrors.length, `${cards} cards; ${consoleErrors.join('; ')}`);
   if (process.env.SHOT) await popup.screenshot({ path: process.env.SHOT, fullPage: true });
 
   // Downloaded / not-downloaded status and filters.
-  const tags = await popup.$$eval('#media .card .st', (els) => els.map((e) => e.textContent));
+  const tags = await popup.$$eval('.items .card .st', (els) => els.map((e) => e.textContent));
   check('both items are marked as downloaded', tags.length === 2 && tags.every((t) => t.includes('Downloaded')), tags.join(', '));
   await popup.evaluate(() => [...document.querySelectorAll('#filters .chip')].find((c) => c.textContent.startsWith('Not downloaded')).click());
   await new Promise((r) => setTimeout(r, 200));
-  const notDl = await popup.$$eval('#media .card', (els) => els.length);
+  const notDl = await popup.$$eval('.items .card', (els) => els.length);
   const emptyMsg = await popup.$eval('#empty', (e) => (e.hidden ? '' : e.textContent.trim()));
   check('"Not downloaded" filter hides saved items', notDl === 0 && /Everything on this page is downloaded/.test(emptyMsg), `${notDl} cards; ${emptyMsg}`);
   await popup.evaluate(() => document.querySelector('#filters .chip').click());
 
-  // Long names scroll across on hover, and expand when clicked.
+  // A long name on the big card wraps to two lines, and a click shows the rest.
   const longPage = await browser.newPage();
   await longPage.goto(`${base}/watch/long`, { waitUntil: 'networkidle0' });
   await new Promise((r) => setTimeout(r, 1000));
@@ -343,18 +363,103 @@ try {
   await lp.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
   await lp.goto(`chrome-extension://${extId}/popup.html?tabId=${longTab}`);
   await new Promise((r) => setTimeout(r, 1000));
-  const fit = await lp.$eval('#media .card .title', (e) => ({ overflow: e.classList.contains('overflow'), tip: e.title }));
-  check('long name is detected as overflowing and has a full-name tooltip', fit.overflow && fit.tip === LONG_TITLE, JSON.stringify(fit).slice(0, 120));
-  await lp.hover('#media .card');
+  const heroName = await lp.$eval('#hero .card .title', (e) => ({
+    overflow: e.classList.contains('overflow'), tip: e.title, h: e.getBoundingClientRect().height,
+    line: parseFloat(getComputedStyle(e).lineHeight), cut: e.scrollHeight - e.clientHeight,
+  }));
+  check('long name on the big card is cut to two lines and has a full-name tooltip',
+    heroName.overflow && heroName.tip === LONG_TITLE && heroName.cut > 2 && Math.abs(heroName.h - 2 * heroName.line) < 2,
+    JSON.stringify(heroName).slice(0, 200));
+  await new Promise((r) => setTimeout(r, 2500)); // survives a background refresh
+  await lp.click('#hero .card .title');
+  const heroOpen = await lp.$eval('#hero .card .title', (e) => ({
+    x: e.classList.contains('expanded'), h: e.getBoundingClientRect().height, cut: e.scrollHeight - e.clientHeight,
+    line: parseFloat(getComputedStyle(e).lineHeight),
+  }));
+  check('clicking the long name on the big card shows it in full',
+    heroOpen.x && heroOpen.cut <= 2 && heroOpen.h >= 3 * heroOpen.line - 2, `${heroOpen.h.toFixed(0)}px tall, ${heroOpen.cut}px cut off`);
+  await lp.click('#hero .card .title');
+  const heroShut = await lp.$eval('#hero .card .title', (e) => ({ x: e.classList.contains('expanded'), h: e.getBoundingClientRect().height }));
+  check('clicking it again folds it back to two lines', !heroShut.x && Math.abs(heroShut.h - heroName.h) < 2, `${heroShut.h.toFixed(0)}px tall`);
+
+  // Long names in the list scroll across on hover, and expand when clicked.
+  const listPage = await browser.newPage();
+  await listPage.goto(`${base}/watch/longlist`, { waitUntil: 'networkidle0' });
+  await new Promise((r) => setTimeout(r, 1000));
+  const listTab = await ext.evaluate(async (u) => (await chrome.tabs.query({})).find((t) => t.url === u).id, `${base}/watch/longlist`);
+  const rp = await browser.newPage();
+  await rp.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
+  await rp.goto(`chrome-extension://${extId}/popup.html?tabId=${listTab}`);
+  await new Promise((r) => setTimeout(r, 1000));
+  const ROW = '#media .card';
+  const fit = await rp.$eval(`${ROW} .title`, (e) => ({ overflow: e.classList.contains('overflow'), tip: e.title, cut: e.firstElementChild.scrollWidth - e.clientWidth }));
+  check('long name in the list is detected as overflowing and has a full-name tooltip', fit.overflow && fit.cut > 20 && fit.tip.length > 60, JSON.stringify(fit).slice(0, 160));
+  await rp.hover(ROW);
   await new Promise((r) => setTimeout(r, 2600)); // past the 0.4s delay + 12% hold
-  const shifted = await lp.$eval('#media .card .title > span', (e) => new DOMMatrix(getComputedStyle(e).transform).m41);
+  const shifted = await rp.$eval(`${ROW} .title > span`, (e) => new DOMMatrix(getComputedStyle(e).transform).m41);
   check('long name scrolls across on hover', shifted < -20, `translateX ${shifted.toFixed(0)}px`);
-  if (process.env.SHOT) await lp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-hover.png') });
+  if (process.env.SHOT) await rp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-hover.png') });
+  await rp.$eval(`${ROW}`, (e) => { e.closest('li').dataset.mark = 'kept'; });
   await new Promise((r) => setTimeout(r, 2500)); // survives a background refresh without resetting
-  const stillSame = await lp.$eval('#media .card .title', (e) => e.parentElement.closest('li').dataset.sig !== undefined);
-  await lp.click('#media .card .title');
-  const h1 = await lp.$eval('#media .card .title', (e) => ({ h: e.getBoundingClientRect().height, x: e.classList.contains('expanded') }));
-  check('clicking a long name shows it in full', h1.x && h1.h > 30 && stillSame, `${h1.h.toFixed(0)}px tall`);
+  const stillSame = await rp.$eval(`${ROW}`, (e) => e.closest('li').dataset.mark === 'kept');
+  const stillShifted = await rp.$eval(`${ROW} .title > span`, (e) => new DOMMatrix(getComputedStyle(e).transform).m41);
+  check('a background refresh does not rebuild the row or reset the scroll', stillSame && stillShifted < -20, `kept ${stillSame}, translateX ${stillShifted.toFixed(0)}px`);
+  await rp.click(`${ROW} .title`);
+  const h1 = await rp.$eval(`${ROW} .title`, (e) => ({ h: e.getBoundingClientRect().height, x: e.classList.contains('expanded') }));
+  check('clicking a long name shows it in full', h1.x && h1.h > 30, `${h1.h.toFixed(0)}px tall`);
+  await rp.close();
+  await listPage.close();
+
+  // The big card shows the video you are watching, not just the newest one found.
+  if (PLAY) {
+    const twoPage = await browser.newPage();
+    await twoPage.goto(`${base}/watch/two`, { waitUntil: 'networkidle0' });
+    const twoTab = await ext.evaluate(async (u) => (await chrome.tabs.query({})).find((t) => t.url === u).id, `${base}/watch/two`);
+    const twoState = () => ext.evaluate((t) => chrome.runtime.sendMessage({ type: 'getTabState', tabId: t }), twoTab).then((r) => r.data);
+    const until = async (fn, ms = 8000) => {
+      for (let i = 0; i < ms / 200; i++) {
+        const v = await fn();
+        if (v) return v;
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      return null;
+    };
+    const st2 = await until(async () => { const d = await twoState(); return d.media.length === 2 && d.playing ? d : null; }, 10000) || await twoState();
+    const va = st2.media.find((m) => m.url.endsWith('play-a.mp4'));
+    const vb = st2.media.find((m) => m.url.endsWith('play-b.mp4'));
+    check('the worker knows which of two videos is playing (the older one)',
+      !!va && !!vb && vb.detectedAt > va.detectedAt && st2.playing?.id === va.id && st2.playing.playing === true,
+      JSON.stringify({ playing: st2.playing, a: va?.id, b: vb?.id, newer: vb?.detectedAt > va?.detectedAt }));
+    const tp = await browser.newPage();
+    await tp.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
+    await tp.goto(`chrome-extension://${extId}/popup.html?tabId=${twoTab}`);
+    // The real popup floats over the page; here it is a tab, and Chrome pauses videos in a hidden tab.
+    // Put the page back in front so the video keeps playing while the popup refreshes behind it.
+    await twoPage.bringToFront();
+    const heroOf = () => tp.evaluate(() => ({
+      key: document.querySelector('#hero > li')?.dataset.key, eyebrow: document.querySelector('#hero .eyebrow')?.textContent,
+      rows: [...document.querySelectorAll('#media > li')].map((li) => li.dataset.key),
+    }));
+    const playingHero = await until(async () => { const x = await heroOf(); return x.eyebrow === 'Now playing' ? x : null; }) || await heroOf();
+    check('the big card is the video that is playing, labelled "Now playing"; the newer one is a row',
+      playingHero.key === va?.id && playingHero.eyebrow === 'Now playing' && playingHero.rows.join() === vb?.id, JSON.stringify(playingHero));
+    if (process.env.SHOT) {
+      await tp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-playing.png') });
+      await twoPage.bringToFront();
+    }
+    // Pause it: it is still the one you were watching.
+    await twoPage.evaluate(() => document.getElementById('a').pause());
+    const pausedHero = await until(async () => { const x = await heroOf(); return x.eyebrow === 'Last played' ? x : null; }) || await heroOf();
+    check('after pausing, the big card stays on that video, labelled "Last played"',
+      pausedHero.key === va?.id && pausedHero.eyebrow === 'Last played', JSON.stringify(pausedHero));
+    // Start the other one: the card follows.
+    await twoPage.evaluate(() => document.getElementById('b').play());
+    const movedHero = await until(async () => { const x = await heroOf(); return x.key === vb?.id ? x : null; }) || await heroOf();
+    check('playing the other video moves the big card to it',
+      movedHero.key === vb?.id && movedHero.eyebrow === 'Now playing' && movedHero.rows.join() === va?.id, JSON.stringify(movedHero));
+    await tp.close();
+    await twoPage.close();
+  }
 
   // Side panel layout: details, full URL, and the history of what was saved.
   const sp = await browser.newPage();
@@ -367,9 +472,9 @@ try {
   await new Promise((r) => setTimeout(r, 1200));
   const panel = await sp.evaluate(() => ({
     panel: document.body.classList.contains('sidebar'),
-    details: document.querySelectorAll('#media .details').length,
-    urls: [...document.querySelectorAll('#media .details dd.url')].map((d) => d.textContent),
-    saved: [...document.querySelectorAll('#media .details dt')].filter((d) => d.textContent === 'Saved').length,
+    details: document.querySelectorAll('.items .details').length,
+    urls: [...document.querySelectorAll('.items .details dd.url')].map((d) => d.textContent),
+    saved: [...document.querySelectorAll('.items .details dt')].filter((d) => d.textContent === 'Saved').length,
     history: document.querySelectorAll('#history .card').length,
     sidebarBtnHidden: document.querySelector('#btn-sidebar').hidden,
   }));
@@ -440,7 +545,7 @@ try {
   await popCourse.setViewport({ width: 460, height: 700, deviceScaleFactor: 2 });
   await popCourse.goto(`chrome-extension://${extId}/popup.html?view=panel&tabId=${courseTab}`);
   await new Promise((r) => setTimeout(r, 1000));
-  const shownNames = await popCourse.$$eval('#media .card .title', (els) => els.map((e) => e.textContent));
+  const shownNames = await popCourse.$$eval('.items .card .title', (els) => els.map((e) => e.textContent));
   check('popup shows each lecture by its own name (and the rename)', shownNames.includes('03 - Entropy (my notes)') && !shownNames.some((n) => n.includes('Complete Program')), shownNames.join(' | '));
   if (process.env.SHOT) await popCourse.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-course.png'), fullPage: true });
 
@@ -461,15 +566,15 @@ try {
     const dp = await browser.newPage();
     await dp.goto(`chrome-extension://${extId}/popup.html?tabId=${dupTab}`);
     await new Promise((r) => setTimeout(r, 1000));
-    const dpTags = await dp.$$eval('#media .card .st', (els) => els.map((e) => e.textContent));
+    const dpTags = await dp.$$eval('.items .card .st', (els) => els.map((e) => e.textContent));
     check('a re-signed link of a downloaded video still shows as downloaded', dpTags.length === 1 && dpTags[0].includes('Downloaded'), dpTags.join(', '));
-    await dp.evaluate(() => document.querySelector('#media .card .more').click());
-    await dp.evaluate(() => [...document.querySelectorAll('#media .menu button')].find((b) => b.textContent === 'Remove from list').click());
+    await dp.evaluate(() => document.querySelector('.items .card .more').click());
+    await dp.evaluate(() => [...document.querySelectorAll('.items .menu button')].find((b) => b.textContent === 'Remove from list').click());
     await new Promise((r) => setTimeout(r, 700));
-    const afterRemove = await dp.evaluate(() => ({ cards: document.querySelectorAll('#media .card').length, note: document.querySelector('#removed').textContent }));
+    const afterRemove = await dp.evaluate(() => ({ cards: document.querySelectorAll('.items .card').length, note: document.querySelector('#removed').textContent }));
     await dp.evaluate(() => document.querySelector('#removed button').click());
     await new Promise((r) => setTimeout(r, 700));
-    const afterUndo = await dp.$$eval('#media .card', (els) => els.length);
+    const afterUndo = await dp.$$eval('.items .card', (els) => els.length);
     check('Remove from list hides an item, and Show again brings it back', afterRemove.cards === 0 && /1 removed/.test(afterRemove.note) && afterUndo === 1,
       `${afterRemove.cards} cards, "${afterRemove.note}", ${afterUndo} after undo`);
   }
@@ -515,7 +620,7 @@ try {
   const lp2 = await browser.newPage();
   await lp2.goto(`chrome-extension://${extId}/popup.html?tabId=${longTab}`);
   await new Promise((r) => setTimeout(r, 900));
-  const lpInfo = await lp2.evaluate(() => ({ tag: document.querySelector('#media .card .st')?.textContent, lib: document.querySelector('#library')?.textContent }));
+  const lpInfo = await lp2.evaluate(() => ({ tag: document.querySelector('.items .card .st')?.textContent, lib: document.querySelector('#library')?.textContent }));
   check('popup says "File not in folder" and when the folder was checked', lpInfo.tag === 'File not in folder' && /Checked \d+ video file/.test(lpInfo.lib || ''), JSON.stringify(lpInfo));
 
   // Showcases (playlists) and live events, a player inside a frame, and a deep scan without reloading.
@@ -580,22 +685,33 @@ try {
   const hpErrors = [];
   hp.on('pageerror', (e) => hpErrors.push(e.message));
   hp.on('console', (msg) => { if (msg.type() === 'error') hpErrors.push(msg.text()); });
+  await hp.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
   await hp.goto(`chrome-extension://${extId}/popup.html?tabId=${hallTab}`);
   await new Promise((r) => setTimeout(r, 900));
-  const btn = await hp.evaluate(() => [...document.querySelectorAll('#media .card')].map((c) => c.querySelector('.primary')?.textContent));
+  if (process.env.SHOT) {
+    // The README picture, in light and dark.
+    await hp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-readme.png') });
+    await hp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
+    await new Promise((r) => setTimeout(r, 300));
+    await hp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-dark.png') });
+    await hp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
+  }
+  const btn = await hp.evaluate(() => [...document.querySelectorAll('.items .card')].map((c) => c.querySelector('.primary')?.textContent));
   check('the showcase card offers "List videos" (Download all is in its menu)', btn.includes('List videos'), btn.join(', '));
   // Organising the list: subtitle files tucked away, search, sort/group.
   const org = await hp.evaluate(async () => {
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-    const cards = () => [...document.querySelectorAll('#media > li.card')].map((c) => c.querySelector('.title')?.textContent.trim());
+    const cards = () => [...document.querySelectorAll('#hero > li.card, #media > li.card')].map((c) => c.querySelector('.title')?.textContent.trim());
     const out = {
-      subInMain: [...document.querySelectorAll('#media .thumb.subtitle')].length,
+      subInMain: [...document.querySelectorAll('.items .thumb.subtitle')].length,
       subsBox: !document.querySelector('#subs-box').hidden, subsCount: document.querySelector('#subs-count').textContent,
       subsListHidden: document.querySelector('#subs').hidden, all: cards().length,
     };
     document.querySelector('#subs-toggle').click();
     await wait(50);
     out.subsOpen = document.querySelectorAll('#subs > li.card').length;
+    if (document.querySelector('#listbar').hidden) document.querySelector('#btn-search').click();
+    await wait(50);
     out.listbar = !document.querySelector('#listbar').hidden;
     const search = document.querySelector('#search');
     search.value = 'keynote';
@@ -662,7 +778,7 @@ try {
   const plp = await browser.newPage();
   await plp.goto(`chrome-extension://${extId}/popup.html?tabId=${hallTab}`);
   await new Promise((r) => setTimeout(r, 900));
-  const missingBtn = await plp.evaluate(() => [...document.querySelectorAll('#media .card .primary')].map((b) => b.textContent).find((t) => /missing/i.test(t)) || '');
+  const missingBtn = await plp.evaluate(() => [...document.querySelectorAll('.items .card .primary')].map((b) => b.textContent).find((t) => /missing/i.test(t)) || '');
   check('the playlist card offers "Download missing (2)"', missingBtn === 'Download missing (2)', missingBtn);
   const dm = await call('downloadMissing', { tabId: hallTab, mediaId: showcaseNow.id });
   const jobsNow = (await stateOf(hallTab)).jobs.filter((j) => entries.some((e) => e.id === j.mediaId));
@@ -679,7 +795,7 @@ try {
   await plp.reload();
   await new Promise((r) => setTimeout(r, 1200));
   const afterCard = await plp.evaluate(() => {
-    const c = [...document.querySelectorAll('#media .card')].find((x) => /playlist ·/.test(x.textContent));
+    const c = [...document.querySelectorAll('.items .card')].find((x) => /playlist ·/.test(x.textContent));
     return { button: c?.querySelector('.row > .st-done, .row > .primary')?.textContent || '', sub: c?.querySelector('.sub')?.textContent || '' };
   });
   check('then the playlist card says everything is downloaded (3 of 3)', /All downloaded/.test(afterCard.button) && /3 videos · 3 downloaded/.test(afterCard.sub),

@@ -162,12 +162,14 @@
     <section class="tab-panel" data-panel="helper" hidden>
       <div class="card stack">
         <h3>Local helper</h3>
-        <p class="muted">A small Node.js program Chrome starts on demand (native messaging). It unlocks: your Claude subscription for AI, ffmpeg merging/conversion, and yt-dlp downloads for sites the browser can't handle.</p>
+        <p class="muted">A small program your browser starts when it's needed. With it you can save into any folder, get one finished MP4 (video and audio merged with ffmpeg), download playlists and hard sites with yt-dlp, see which videos you already have, and use your Claude subscription for AI.</p>
         <ol class="steps">
-          <li>Install <a href="https://nodejs.org" target="_blank">Node.js</a> (18+). For AI via subscription: <code>npm i -g @anthropic-ai/claude-code</code> and run <code>claude</code> once to sign in.</li>
-          <li>Optional: install <code>ffmpeg</code> and <code>yt-dlp</code> (e.g. <code>winget install Gyan.FFmpeg yt-dlp.yt-dlp</code>).</li>
-          <li>In the project folder run <code>npm run install-helper</code>, then restart Chrome.</li>
+          <li>Open the StreamSnag folder you downloaded (the one that holds the <code>extension</code> folder).</li>
+          <li><strong>Windows:</strong> right-click <code>setup-windows.ps1</code> and choose <strong>Run with PowerShell</strong>. It checks for Node.js and offers to install ffmpeg and yt-dlp.<br>
+            <strong>macOS / Linux:</strong> run <code>sh setup.sh</code> in that folder (it needs <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a> 18 or newer).</li>
+          <li>Restart the browser, come back here and press <strong>Check helper</strong>.</li>
         </ol>
+        <p class="muted small">For AI with your Claude subscription, also run <code>npm i -g @anthropic-ai/claude-code</code>, then <code>claude</code> once to sign in.</p>
         <p class="muted small">Extension ID: <code id="extId"></code></p>
         <div class="row-actions">
           <button class="primary" id="checkHelper">Check helper</button>

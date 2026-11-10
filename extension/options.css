@@ -48,3 +48,4 @@ code { font: 12px ui-monospace, Consolas, monospace; background: var(--surface-2
 .rules th { text-align: left; color: var(--muted); font-weight: 600; padding: 4px 6px; border-bottom: 1px solid var(--line); }
 .rules td { padding: 5px 6px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
 .rules ~ .row-actions input { flex: 1; min-width: 120px; }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }

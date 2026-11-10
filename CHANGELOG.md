@@ -2,6 +2,12 @@
 
 ## 1.4.0
 
+* **New look:** the latest video on the page gets a large card with its qualities and one Download
+  button; everything else is a compact list with small download buttons, and videos you already have
+  fade back with a ✓. AI tools and yt-dlp sit behind one ✨ button, search and sort behind 🔍, and a bar
+  at the bottom shows what's downloading. Dark mode is now neutral grey, with orange only in the logo.
+  A "Finish setup" card appears when the local helper isn't installed, and an empty page explains what
+  to try next.
 * **Playlists:** **List videos** asks yt-dlp for every video in a playlist or Vimeo showcase, so you
   don't have to play each one. **Download missing (N)** then fetches only what isn't in your folders.
   Videos you already played show once.
@@ -11,7 +17,23 @@
   numbered lectures ("009: C. diff" → `009 - C. diff.mp4`).
 * **Settings:** tool versions and **Update yt-dlp**; **Backup & advanced** to export or import settings,
   recipes, rules, history and marks; opt-in diagnostic snapshots for bug reports.
+* **Now playing:** the large card shows the video you are actually watching (or the one you paused),
+  not just the newest one found on the page. It no longer swaps to another video while the popup is open
+  unless you start playing a different one.
+* **Smoother popup:** a download's progress now moves without redrawing its card, so a name you are
+  typing, a scrolling title or a click on Cancel is no longer lost on every tick. Stream qualities are
+  remembered for a minute instead of being re-read each time the popup opens, and are ranked by picture
+  height and then bitrate. The big card's name wraps to two lines (click it for the rest), live streams
+  say **Record**, and streams the browser can't save itself offer **Try with yt-dlp**.
 * **Fixes:**
+  * A row's quality list stayed open after its download started, with no way to close it.
+  * Long names in the list were not always detected, so they didn't scroll on hover.
+  * A downloaded subtitle file could not be downloaded again.
+  * "Download again" on a stream gave no sign it was working, and hid the error when the link had expired.
+  * Encrypted and live DASH streams showed a Download button that could not work.
+  * The "Finish setup" card could appear a moment after the popup opened and push the Download button down.
+  * A remembered filter, search or sort no longer shows its controls on pages with fewer than two videos.
+  * Browser pages (settings, new tab) now say that StreamSnag can't look at them, instead of "No media found".
   * Listing a playlist could hang when its listing carried an `id` field.
   * Videos fetched through a playlist marked the whole playlist as saved.
 

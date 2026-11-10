@@ -157,6 +157,34 @@
   });
   document.addEventListener('loadedmetadata', schedule, true);
   document.addEventListener('play', schedule, true);
+  // Remember the player that was started last, so the popup can show "the video you are watching".
+  let lastPlayed = null;
+  let lastPlayedAt = 0;
+  const notePlay = (e) => {
+    if (e.target?.tagName !== 'VIDEO') return;
+    lastPlayed = new WeakRef(e.target);
+    lastPlayedAt = Date.now();
+  };
+  document.addEventListener('play', notePlay, true);
+  document.addEventListener('playing', notePlay, true);
+
+  /** This frame's player: the one playing now (the biggest, if several), else the one played last. */
+  function nowPlaying() {
+    const area = (v) => { const r = v.getBoundingClientRect(); return r.width * r.height; };
+    const running = deepAll('video').filter((v) => !v.paused && !v.ended && v.readyState > 1 && area(v) > 0)
+      .sort((a, b) => Number(a.muted) - Number(b.muted) || area(b) - area(a))[0];
+    // Paused: the one started last, or (if it started before this script was loaded) the biggest one
+    // that has been played at all.
+    const started = (x) => x?.isConnected && x.currentTime > 0 && !x.ended;
+    const last = lastPlayed?.deref();
+    const v = running || (started(last) ? last : deepAll('video').filter((x) => started(x) && area(x) > 0).sort((a, b) => area(b) - area(a))[0]);
+    if (!v) return null;
+    return {
+      src: v.currentSrc || '', page: location.href, playing: v === running,
+      duration: Number.isFinite(v.duration) && v.duration > 0 ? v.duration : 0,
+      at: v === last ? lastPlayedAt : 0,
+    };
+  }
   document.addEventListener('visibilitychange', schedule);
   // On a busy page the 800 ms debounce above is reset forever, so a player mounted into a later tab is
   // never reported. Re-check on a slow timer; report() still sends nothing unless something changed.
@@ -376,6 +404,14 @@
         sendResponse(window.top === window || msg.frame ? videoName(msg.url) : null);
       } catch (e) {
         sendResponse({ error: e.message });
+      }
+      return;
+    }
+    if (msg?.type === 'playing') {
+      try {
+        sendResponse(nowPlaying());
+      } catch {
+        sendResponse(null);
       }
       return;
     }

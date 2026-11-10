@@ -1,4 +1,4 @@
-import { formatBytes, formatDuration, hostOf, ytdlpCommand, ffmpegCommand } from './lib/util.js';
+import { formatBytes, formatDuration, hostOf, ytdlpCommand, ffmpegCommand, rankVideoOptions } from './lib/util.js';
 import { sameItem } from './lib/match.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -8,20 +8,31 @@ let tabId = null;
 let windowId = null;
 let state = null;
 let history = [];
-const openMedia = new Map(); // mediaId -> {loading, options, error, menu}
+const openMedia = new Map(); // mediaId -> {loading, options, error, menu, renaming, all: the list of formats is open}
+const heroPick = new Map(); // mediaId -> the quality chosen on the big card
 const expanded = new Set(); // keys of names the user clicked to show in full
 let aiBusy = false;
 let summaryState = null; // {loading} | {result} | {error}
 let pollTimer = null;
 let filter = 'all'; // 'all' | 'new' | 'done'
+let activeFilter = 'all'; // the filter in effect (a remembered one waits while a page has under two videos)
 let sortBy = 'default'; // see SORTS
 let query = ''; // search box on the list
+let searchOpen = false; // the search + sort row
 let subsOpen = false; // the collapsed "Subtitle files" group
 let folderQuery = '';
+let setupLater = 0;
+let heroId = null; // the video on the big card
+let heroWhy = ''; // 'playing' | 'paused' | '' (it is just the newest)
+let helperKnown = null; // was the helper installed the last time we heard? (true | false | null)
+let setupShown = null; // decided once per page, so the card never appears under your pointer
 try {
   filter = localStorage.getItem('ss-filter') || 'all';
   sortBy = localStorage.getItem('ss-sort') || 'default';
   subsOpen = localStorage.getItem('ss-subs') === '1';
+  searchOpen = localStorage.getItem('ss-search') === '1';
+  setupLater = Number(localStorage.getItem('ss-setup-later')) || 0;
+  helperKnown = { 1: true, 0: false }[localStorage.getItem('ss-helper')] ?? null;
 } catch { /* storage unavailable */ }
 const remember = (k, v) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } };
 
@@ -41,6 +52,28 @@ function h(tag, attrs = {}, ...children) {
   }
   return el;
 }
+
+/** Inline stroke icons (24×24 grid), built as SVG elements. */
+function svg(...shapes) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const s = document.createElementNS(NS, 'svg');
+  s.setAttribute('viewBox', '0 0 24 24');
+  s.setAttribute('aria-hidden', 'true');
+  for (const [tag, attrs] of shapes) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    s.append(e);
+  }
+  return s;
+}
+const ICON = {
+  download: () => svg(['path', { d: 'M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14' }]),
+  check: () => svg(['path', { d: 'M5 12.5 9.5 17 19 7.5' }]),
+  play: () => svg(['path', { d: 'M9 6.5 17.5 12 9 17.5Z' }]),
+  list: () => svg(['path', { d: 'M5 7h10M5 12h10M5 17h6M18 14v6l3-3Z' }]),
+  folder: () => svg(['path', { d: 'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z' }]),
+  more: () => svg(['circle', { cx: 12, cy: 5.5, r: 1.6 }], ['circle', { cx: 12, cy: 12, r: 1.6 }], ['circle', { cx: 12, cy: 18.5, r: 1.6 }]),
+};
 
 async function send(type, payload = {}) {
   const res = await chrome.runtime.sendMessage({ type, tabId, ...payload });
@@ -72,9 +105,10 @@ async function copy(text, what = 'Copied') {
  * A one-line name that scrolls across on hover/focus when it doesn't fit, shows the full text as a
  * tooltip, and wraps onto several lines when clicked.
  */
-function nameEl(text, key, cls = 'title') {
+function nameEl(text, key, cls = 'title', wrap = false) {
+  // `wrap`: the big card has room for two lines, so its name wraps instead of scrolling.
   const el = h('div', {
-    class: `${cls} marquee${expanded.has(key) ? ' expanded' : ''}`,
+    class: `${cls} ${wrap ? 'clamp' : 'marquee'}${expanded.has(key) ? ' expanded' : ''}`,
     title: text,
     tabindex: '0',
     onclick: (e) => {
@@ -89,6 +123,11 @@ function nameEl(text, key, cls = 'title') {
 }
 
 function fitMarquee(el) {
+  if (el.classList.contains('clamp')) {
+    // Two lines; "overflow" means there is more to read, and a click shows (or folds) all of it.
+    if (!el.classList.contains('expanded')) el.classList.toggle('overflow', el.scrollHeight - el.clientHeight > 2);
+    return;
+  }
   const inner = el.firstElementChild;
   const overflow = el.classList.contains('expanded') ? 0 : inner.scrollWidth - el.clientWidth;
   el.classList.toggle('overflow', overflow > 2);
@@ -99,7 +138,7 @@ function fitMarquee(el) {
 }
 
 function fitAll(root = document) {
-  root.querySelectorAll('.marquee').forEach(fitMarquee);
+  root.querySelectorAll('.marquee, .clamp').forEach(fitMarquee);
 }
 
 /**
@@ -130,10 +169,12 @@ function patchList(ul, items, keyOf, sigOf, build) {
 
 // ------------------------------------------------------------------ downloaded / not downloaded
 
+const ACTIVE = ['running', 'recording', 'muxing'];
+
 /** What happened to this media item: 'active' | 'done' | 'missing' | 'failed' | 'new'. */
 function statusFor(m) {
   const mine = (state.jobs || []).filter((j) => sameItem(m, j));
-  if (mine.some((j) => ['running', 'recording', 'muxing'].includes(j.status))) return 'active';
+  if (mine.some((j) => ACTIVE.includes(j.status))) return 'active';
   if (mine.some((j) => j.status === 'queued')) return 'queued';
   // A listed playlist is downloaded when every video in it is.
   if (m.playlist && m.listed && m.mark !== 'new') {
@@ -151,14 +192,87 @@ function statusFor(m) {
   return 'new';
 }
 
+/** The running or waiting download of this item, if any. */
+function jobFor(m) {
+  return (state.jobs || []).find((j) => sameItem(m, j) && ACTIVE.includes(j.status))
+    || (state.jobs || []).find((j) => sameItem(m, j) && j.status === 'queued');
+}
+
+/** How far along a download is: {pct 0–100, indeterminate}. */
+function jobProgress(j) {
+  const p = j.progress || {};
+  let pct = 0;
+  if (p.percent) pct = p.done;
+  else if (p.total) pct = Math.min(100, (p.done / p.total) * 100);
+  const indeterminate = ACTIVE.includes(j.status) && (j.status === 'muxing' || j.status === 'recording' || !(p.total || p.percent));
+  return { pct: Math.max(0, Math.min(100, pct || 0)), indeterminate };
+}
+
 const STATUS_TAG = {
   active: ['Downloading…', 'st-active'],
   queued: ['Queued', 'st-active'],
-  done: ['✓ Downloaded', 'st-done'],
+  done: ['Downloaded', 'st-done'],
   failed: ['Failed', 'st-failed'],
   missing: ['File not in folder', 'st-failed'],
   new: ['Not downloaded', 'st-new'],
 };
+
+/** "Downloading 42%", "Merging…": the short status of a running download. */
+function activeText(j) {
+  if (!j) return 'Downloading…';
+  if (j.status === 'queued') return 'Queued';
+  if (j.status === 'recording') return 'Recording live';
+  if (j.status === 'muxing') return 'Merging…';
+  const { pct, indeterminate } = jobProgress(j);
+  return indeterminate ? 'Downloading…' : `Downloading ${Math.round(pct)}%`;
+}
+
+/** The same for the big card, in full sentences. */
+function heroBusyText(j) {
+  if (!j) return 'Downloading…';
+  if (j.status === 'queued') return 'Queued: starts when a download finishes';
+  if (j.status === 'recording') return 'Recording live…';
+  if (j.status === 'muxing') return 'Merging video and audio…';
+  const { pct, indeterminate } = jobProgress(j);
+  return indeterminate ? 'Downloading…' : `Downloading ${Math.round(pct)}%`;
+}
+
+function stTag(st, m) {
+  let [text, cls] = STATUS_TAG[st];
+  if ((st === 'active' || st === 'queued') && m) text = activeText(jobFor(m));
+  return h('span', { class: `st ${cls}` }, st === 'done' ? ICON.check() : null, h('span', { class: 'st-text' }, text));
+}
+
+/**
+ * Move a card's progress bar and percentage without rebuilding the card, so a rename you are typing,
+ * a name scrolling under the pointer or a click on Cancel isn't lost on every tick.
+ */
+function paintProgress(card, m) {
+  const j = jobFor(m);
+  if (!j) return;
+  const { pct, indeterminate } = jobProgress(j);
+  const moving = indeterminate && j.status !== 'queued';
+  const busy = card.querySelector('.hero-state.busy');
+  if (busy) {
+    busy.classList.toggle('indeterminate', moving);
+    busy.querySelector('.fill').style.width = moving ? '' : `${pct}%`;
+    const text = busy.querySelector('.busy-text');
+    const next = heroBusyText(j);
+    if (text.textContent !== next) text.textContent = next;
+  }
+  const bar = card.querySelector('.row .progress');
+  if (bar) {
+    bar.classList.toggle('indeterminate', moving);
+    bar.firstElementChild.style.width = moving ? '' : `${pct}%`;
+  }
+  const tag = card.querySelector('.st-active .st-text');
+  const next = activeText(j);
+  if (tag && tag.textContent !== next) tag.textContent = next;
+}
+
+function showFile(last) {
+  send('openFile', { downloadId: last.downloadId ?? null, path: last.file || null }).catch((e) => banner(e.message, true));
+}
 
 function lastDownload(m) {
   if (m.library?.how === 'manual') return { at: 0, file: '', how: 'manual' };
@@ -186,12 +300,13 @@ const baseName = (p) => String(p || '').split(/[\\/]/).pop();
 
 function renderFilters(counts, total) {
   const box = $('#filters');
-  box.hidden = !total;
+  box.hidden = total < 2;
   const chips = [['all', 'All', total], ['new', 'Not downloaded', counts.new + counts.failed + counts.missing], ['done', 'Downloaded', counts.done]];
   box.replaceChildren(...chips.map(([id, label, n]) => h('button', {
-    class: `chip${filter === id ? ' on' : ''}`, role: 'tab', 'aria-selected': String(filter === id),
+    class: `chip${activeFilter === id ? ' on' : ''}`, 'aria-pressed': String(activeFilter === id),
     onclick: () => {
       filter = id;
+      activeFilter = id;
       remember('ss-filter', id);
       render();
     },
@@ -218,11 +333,21 @@ const NAME_SOURCE = {
   embed: "from the video service's own title",
 };
 
+/** A steady tint per item, so neighbouring tiles are told apart without technical labels. */
+function tintOf(id) {
+  let n = 0;
+  for (const c of String(id)) n = (n * 31 + c.charCodeAt(0)) >>> 0;
+  return n % 4;
+}
+
 function thumbFor(m) {
-  if (m.poster) return h('div', { class: 'thumb' }, h('img', { src: m.poster, alt: '' }));
-  const label = m.kind === 'embed' ? (m.provider || 'embed').toUpperCase().slice(0, 7)
-    : m.kind === 'direct' ? (m.ext || 'file').toUpperCase().slice(0, 4) : m.kind === 'subtitle' ? 'CC' : m.kind.toUpperCase();
-  return h('div', { class: `thumb ${m.kind}` }, label);
+  if (m.kind === 'subtitle') return h('div', { class: 'thumb subtitle' }, 'CC');
+  const dur = m.playlist ? '' : formatDuration(m.info?.duration || m.duration);
+  // Without a preview image the tile shows the length in its middle (or a play mark when that is unknown).
+  return h('div', { class: `thumb t${tintOf(m.id)}${m.playlist ? ' stack' : ''}${m.poster ? '' : ' plain'}` },
+    m.playlist ? ICON.list() : m.poster || !dur ? ICON.play() : null,
+    m.poster ? h('img', { src: m.poster, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer', onerror: (e) => e.currentTarget.remove() }) : null,
+    dur ? h('span', { class: 'dur' }, dur) : null);
 }
 
 function sourceTag(m) {
@@ -231,20 +356,39 @@ function sourceTag(m) {
   return null;
 }
 
-async function toggleOptions(m) {
-  const cur = openMedia.get(m.id);
-  if (cur?.options || cur?.loading) {
-    openMedia.delete(m.id);
+/** The small grey line under a name: status, quality/size and where it comes from. */
+function subLine(m, st) {
+  const where = m.playlist ? playlistSummary(m) : m.parentId ? `#${m.playlistIndex} in the playlist` : m.kind === 'embed' ? 'downloads with yt-dlp' : hostOf(m.url);
+  const parts = [m.label, m.section, where].filter(Boolean).join(' · ');
+  const showSt = st !== 'new';
+  return h('div', { class: 'sub', title: m.url },
+    showSt ? h('span', { class: 'stw' }, stTag(st, m), parts ? ' · ' : '') : null, parts,
+    m.info?.hasSubtitles ? h('span', { class: 'tag', title: 'Has subtitles: they are saved with the video' }, 'CC') : null,
+    m.mark ? h('span', { class: 'tag', title: 'You set this yourself (⋯ menu to undo)' }, 'marked') : null,
+    sourceTag(m));
+}
+
+/** Open or close a row's list of qualities. */
+function toggleOptions(m) {
+  const cur = openMedia.get(m.id) || {};
+  if (cur.all) {
+    openMedia.set(m.id, { ...cur, all: false, error: null });
     render();
     return;
   }
-  openMedia.set(m.id, { loading: true });
+  openMedia.set(m.id, { ...cur, all: true, error: null });
+  if (!cur.options && !cur.loading) loadOptions(m); // shows "Reading stream…" first, then the list
   render();
+}
+
+/** Read a stream's qualities. Whether the list of them is open (`all`) is left as it is. */
+async function loadOptions(m) {
+  openMedia.set(m.id, { ...(openMedia.get(m.id) || {}), loading: true, error: null });
   try {
     const res = await send('inspect', { mediaId: m.id });
-    openMedia.set(m.id, { ...res });
+    openMedia.set(m.id, { ...(openMedia.get(m.id) || {}), loading: false, ...res });
   } catch (e) {
-    openMedia.set(m.id, { error: e.message });
+    openMedia.set(m.id, { ...(openMedia.get(m.id) || {}), loading: false, error: e.message });
   }
   render();
 }
@@ -252,7 +396,10 @@ async function toggleOptions(m) {
 async function download(m, optionId) {
   try {
     await send('download', { mediaId: m.id, optionId });
-    openMedia.delete(m.id);
+    const open = openMedia.get(m.id);
+    // Keep the qualities already read (the big card shows them again later); close everything else.
+    if (open?.options) openMedia.set(m.id, { options: open.options, live: open.live, note: open.note, protected: open.protected });
+    else openMedia.delete(m.id);
     banner('Download started');
     refresh();
   } catch (e) {
@@ -283,12 +430,12 @@ function playlistSummary(m) {
 
 function playlistButton(m) {
   if (!m.listed) {
-    return h('button', { class: 'primary', title: 'Ask yt-dlp for every video in this playlist (nothing is downloaded yet)', onclick: (e) => listPlaylist(m, e.currentTarget) }, 'List videos');
+    return h('button', { class: 'primary txt', title: 'Ask yt-dlp for every video in this playlist (nothing is downloaded yet)', onclick: (e) => listPlaylist(m, e.currentTarget) }, 'List videos');
   }
   const { missing } = playlistEntries(m);
   return missing
-    ? h('button', { class: 'primary', title: 'Download every video in this playlist that you don\'t have yet', onclick: (e) => downloadMissing(m, e.currentTarget) }, `Download missing (${missing})`)
-    : h('span', { class: 'st st-done' }, '✓ All downloaded');
+    ? h('button', { class: 'primary txt', title: 'Download every video in this playlist that you don\'t have yet', onclick: (e) => downloadMissing(m, e.currentTarget) }, `Download missing (${missing})`)
+    : h('span', { class: 'st st-done' }, ICON.check(), 'All downloaded');
 }
 
 async function listPlaylist(m, btn) {
@@ -325,43 +472,145 @@ async function mark(m, as, msg) {
   }
 }
 
+function moreButton(m, open) {
+  return h('button', {
+    class: 'icon more', title: 'More actions', 'aria-label': `More actions for ${displayName(m)}`, 'aria-expanded': String(!!open.menu),
+    onclick: () => { openMedia.set(m.id, { ...open, menu: !open.menu }); render(); },
+  }, ICON.more());
+}
+
+/** The row's own button: download, choose a quality, or the playlist's next step. */
+function rowAction(m, st, open) {
+  const isStream = m.kind === 'hls' || m.kind === 'dash';
+  if (m.protected) return h('span', { class: 'tag drm', title: 'Protected by DRM: it cannot be saved' }, 'DRM');
+  if (m.playlist) return playlistButton(m);
+  if (st === 'active' || st === 'queued') return null;
+  // "Download again" is in the ⋯ menu. A subtitle file has no such entry, so it keeps its button.
+  if (st === 'done' && m.kind !== 'subtitle') return null;
+  const label = isStream ? (open.all ? 'Close the quality list' : 'Choose a quality and download') : m.kind === 'embed' ? 'Download (with yt-dlp, through the local helper)' : 'Download';
+  return h('button', {
+    class: 'primary dl', title: label, 'aria-label': `${label}: ${displayName(m)}`, 'aria-expanded': isStream ? String(!!open.all) : null,
+    onclick: () => (isStream ? toggleOptions(m) : download(m, 'file')),
+  }, ICON.download());
+}
+
 function mediaCard(m) {
   const open = openMedia.get(m.id) || {};
-  const isStream = m.kind === 'hls' || m.kind === 'dash';
-  const title = displayName(m);
-
-  const primary = m.protected
-    ? h('span', { class: 'tag drm' }, 'DRM')
-    : isStream
-      ? h('button', { class: 'primary', onclick: () => toggleOptions(m) }, open.options ? 'Close' : 'Download ▾')
-      : m.playlist
-        ? playlistButton(m)
-        : m.kind === 'embed'
-          ? h('button', { class: 'primary', title: 'Downloads with yt-dlp through the local helper', onclick: () => download(m, 'file') }, 'Download')
-          : h('button', { class: 'primary', onclick: () => download(m, 'file') }, 'Download');
-
-  const moreBtn = h('button', {
-    class: 'icon more', title: 'More actions', 'aria-label': 'More actions',
-    onclick: () => { openMedia.set(m.id, { ...open, menu: !open.menu }); render(); },
-  }, '⋯');
-
   const st = statusFor(m);
-  const [stText, stCls] = STATUS_TAG[st];
+  const title = displayName(m);
   const card = h('li', { class: `card is-${st}` },
     h('div', { class: 'row' },
       thumbFor(m),
       h('div', { class: 'meta' },
         nameEl(title, `m:${m.id}`),
-        h('div', { class: 'sub', title: m.url }, m.kind === 'subtitle' && st === 'new' ? null : [h('span', { class: `st ${stCls}` }, stText), ' '], m.label, m.section ? ` · ${m.section}` : '', ' · ', m.playlist ? playlistSummary(m) : m.parentId ? `#${m.playlistIndex} in the playlist` : m.kind === 'embed' ? 'downloads with yt-dlp' : hostOf(m.url),
-          m.info?.hasSubtitles ? h('span', { class: 'tag', title: 'Has subtitles: they are saved with the video' }, 'CC') : null,
-          m.mark ? h('span', { class: 'tag', title: 'You set this yourself (⋯ menu to undo)' }, 'marked') : null,
-          sourceTag(m)),
+        subLine(m, st),
+        st === 'active' ? h('div', { class: 'progress' }, h('div', {})) : null,
       ),
-      primary,
-      moreBtn,
+      rowAction(m, st, open),
+      moreButton(m, open),
+    ),
+  );
+  cardExtras(card, m, open, st, title);
+  paintProgress(card, m);
+  return card;
+}
+
+/** "1080p · 4.2 Mbps" → {q: "1080p", s: "4.2 Mbps"} */
+function splitLabel(label) {
+  const [q, ...rest] = String(label).split(' · ');
+  return { q, s: rest.filter((x) => x !== '+ audio').join(' · ') };
+}
+
+/** The video you are most likely watching, big: thumbnail, quality choice and one Download button. */
+function heroCard(m) {
+  const open = openMedia.get(m.id) || {};
+  const st = statusFor(m);
+  const title = displayName(m);
+  const isStream = m.kind === 'hls' || m.kind === 'dash';
+  const eyebrow = heroWhy === 'playing' ? 'Now playing' : heroWhy === 'paused' ? 'Last played'
+    : activeFilter === 'new' ? 'Newest not downloaded' : activeFilter === 'done' ? 'Newest downloaded' : 'Latest video';
+  const drm = m.protected || open.protected;
+
+  const card = h('li', { class: `card hero is-${st}` },
+    h('div', { class: 'row' },
+      thumbFor(m),
+      h('div', { class: 'meta' },
+        h('div', { class: `eyebrow${heroWhy === 'playing' ? ' live' : ''}` }, eyebrow),
+        nameEl(title, `m:${m.id}`, 'title', true),
+        subLine(m, st),
+      ),
+      moreButton(m, open),
     ),
   );
 
+  // While it can be downloaded, the card itself shows reading / error / qualities.
+  const own = ['new', 'failed', 'missing'].includes(st) || !!drm;
+  const vids = rankVideoOptions(open.options);
+  const chosen = vids.find((o) => o.id === heroPick.get(m.id)) || vids[0] || (open.options || [])[0];
+  const chips = own && !drm && vids.length > 1 ? vids.slice(0, 4) : [];
+  if (chips.length) {
+    card.append(h('div', { class: 'qualities', role: 'group', 'aria-label': 'Quality' }, chips.map((o) => {
+      const { q, s } = splitLabel(o.label);
+      return h('button', {
+        class: 'quality', 'aria-pressed': String(o === chosen),
+        onclick: () => { heroPick.set(m.id, o.id); render(); },
+      }, h('span', { class: 'q' }, q), s ? h('span', { class: 's' }, s) : null);
+    })));
+  }
+  // What the chips and the big button already offer; "Other formats" lists the rest.
+  const covered = !own ? [] : chips.length ? chips.map((o) => o.id) : chosen ? [chosen.id] : [];
+
+  if (drm) {
+    card.append(h('div', { class: 'status err' }, 'This video is protected (DRM), so it can\'t be saved.'));
+  } else if (st === 'active' || st === 'queued') {
+    const j = jobFor(m);
+    card.append(h('div', { class: 'hero-state busy' },
+      h('div', { class: 'fill' }),
+      h('span', { class: 'busy-text' }, heroBusyText(j)),
+      j?.status === 'recording' ? h('button', { onclick: () => send('stopLive', { jobId: j.id }).then(refresh) }, 'Stop & save') : null,
+      j ? h('button', { onclick: () => send('cancelJob', { jobId: j.id }).then(refresh) }, 'Cancel') : null));
+  } else if (st === 'done') {
+    const last = lastDownload(m);
+    card.append(h('div', { class: 'hero-state done' }, ICON.check(),
+      h('span', {}, last?.how === 'manual' ? 'You marked this as downloaded' : last?.at ? `Downloaded ${ago(last.at)}` : 'Already in your folders'),
+      last?.file ? h('button', { onclick: () => showFile(last) }, 'Show file') : null));
+  } else if (isStream && (open.loading || (!open.options && !open.error))) {
+    card.append(h('button', { class: 'primary big', disabled: true }, h('span', { class: 'spinner' }), 'Reading qualities…'));
+  } else if (isStream && open.error) {
+    card.append(h('div', { class: 'status err' }, open.error),
+      h('button', { class: 'primary big', onclick: () => loadOptions(m) }, 'Try again'));
+  } else if (isStream && !open.options.length) {
+    // Nothing the browser can download itself (live DASH, or a stream without tracks): offer yt-dlp.
+    card.append(h('div', { class: 'status' }, open.note || 'StreamSnag found no video it can download in this stream.'),
+      h('button', { class: 'primary big', title: 'Downloads this page with yt-dlp through the local helper', onclick: runYtdlp }, ICON.download(), 'Try with yt-dlp'));
+  } else {
+    const live = !!(open.live || m.info?.live);
+    const verb = st === 'failed' ? 'Try again' : live ? 'Record' : 'Download';
+    let label = verb;
+    if (isStream && chosen) {
+      if (chosen.id !== 'media') label = `${verb} ${splitLabel(chosen.label).q}`;
+      else if (live && st !== 'failed') label = 'Record live stream';
+    } else if (m.kind === 'direct' && m.size) label = `${verb} · ${formatBytes(m.size)}`;
+    card.append(h('button', {
+      class: 'primary big', title: m.kind === 'embed' ? 'Downloads with yt-dlp through the local helper' : null,
+      onclick: () => download(m, isStream ? chosen?.id || 'media' : 'file'),
+    }, ICON.download(), label));
+  }
+  if (isStream && own && !drm && !open.all) {
+    const others = (open.options || []).filter((o) => !covered.includes(o.id));
+    const kinds = [others.some((o) => !o.audio && !o.subtitle) ? 'more qualities' : '', others.some((o) => o.audio) ? 'audio only' : '', others.some((o) => o.subtitle) ? 'subtitles' : ''].filter(Boolean);
+    if (others.length) {
+      card.append(h('button', { class: 'link all-formats', 'aria-expanded': 'false', onclick: () => { openMedia.set(m.id, { ...open, all: true }); render(); } }, `Other formats (${kinds.join(', ')})…`));
+    }
+  }
+  cardExtras(card, m, open, st, title, { hero: true, own, covered });
+  paintProgress(card, m);
+  return card;
+}
+
+/** Everything that opens under a card: qualities, rename, the ⋯ menu, and sidebar details. */
+function cardExtras(card, m, open, st, title, { hero = false, own = false, covered = [] } = {}) {
+  const isStream = m.kind === 'hls' || m.kind === 'dash';
   if (PANEL) {
     const last = st === 'done' ? lastDownload(m) : null;
     const dur = formatDuration(m.info?.duration);
@@ -382,23 +631,32 @@ function mediaCard(m) {
       h('dt', {}, 'URL'),
       h('dd', { class: 'url', title: 'Click to copy', onclick: () => copy(m.url, 'URL copied') }, m.url),
     ));
-    if (last?.file) {
+    if (last?.file && !hero) {
       card.append(h('div', { class: 'job-actions' },
-        h('button', { class: 'secondary', onclick: () => send('openFile', { downloadId: last.downloadId ?? null, path: last.file }) }, 'Show file'),
+        h('button', { class: 'secondary', onclick: () => showFile(last) }, 'Show file'),
       ));
     }
   }
 
-  if (open.loading) card.append(h('div', { class: 'options loading' }, h('div', { class: 'spinner' }), 'Reading stream…'));
-  if (open.error) card.append(h('div', { class: 'status err' }, open.error));
-  if (open.protected) card.append(h('div', { class: 'status err' }, 'This stream is DRM/encrypted — it cannot be downloaded.'));
-  if (open.note) card.append(h('div', { class: 'status' }, open.note));
-  if (open.options) {
-    card.append(h('div', { class: 'options' }, open.options.map((o) =>
-      h('button', { class: 'opt', onclick: () => download(m, o.id) },
-        h('span', {}, o.label),
-        h('span', { class: 'hint' }, o.audio ? 'audio' : o.subtitle ? 'subs' : open.live ? 'live' : 'video'),
-      ))));
+  // The list of formats. A big card that can still be downloaded shows its own reading / error / DRM lines.
+  if (open.all && !own) {
+    if (open.loading) card.append(h('div', { class: 'options loading' }, h('div', { class: 'spinner' }), 'Reading stream…'));
+    if (open.error) card.append(h('div', { class: 'status err' }, open.error));
+    if (open.protected) card.append(h('div', { class: 'status err' }, 'This stream is DRM/encrypted — it cannot be downloaded.'));
+    if (open.note) card.append(h('div', { class: 'status' }, open.note));
+  }
+  if (open.all && open.options) {
+    const list = open.options.filter((o) => !covered.includes(o.id));
+    if (list.length) {
+      card.append(h('div', { class: 'options' }, list.map((o) =>
+        h('button', { class: 'opt', onclick: () => download(m, o.id) },
+          h('span', {}, o.label),
+          h('span', { class: 'hint' }, o.audio ? 'audio' : o.subtitle ? 'subs' : open.live ? 'live' : 'video'),
+        ))));
+    }
+  }
+  if (hero && open.all && !open.loading) {
+    card.append(h('button', { class: 'link all-formats', 'aria-expanded': 'true', onclick: () => { openMedia.set(m.id, { ...open, all: false, error: null }); render(); } }, 'Hide formats'));
   }
   if (open.renaming) {
     const input = h('input', {
@@ -427,7 +685,15 @@ function mediaCard(m) {
   }
   if (open.menu) {
     const referer = m.pageUrl || state.page.url;
+    const downloadAgain = () => {
+      if (!isStream) return download(m, 'file');
+      // Open the list of formats; reading them shows a spinner, and an error if the link has expired.
+      openMedia.set(m.id, { ...open, menu: false, all: true, error: null });
+      if (!open.options && !open.loading) loadOptions(m);
+      return render();
+    };
     card.append(h('div', { class: 'menu' },
+      m.kind !== 'subtitle' && !m.playlist && st === 'done' && !m.protected ? h('button', { class: 'secondary', onclick: downloadAgain }, '↓ Download again') : null,
       m.kind !== 'subtitle' ? h('button', { class: 'secondary', onclick: () => { openMedia.set(m.id, { ...open, menu: false, renaming: true }); render(); } }, '✎ Rename') : null,
       m.kind !== 'subtitle' && !m.mark && st !== 'done' ? h('button', { class: 'secondary', title: 'You already have this video (the folder check missed it)', onclick: () => mark(m, 'done', 'Marked as downloaded') }, '✓ Mark as downloaded') : null,
       m.kind !== 'subtitle' && !m.mark && st === 'done' ? h('button', { class: 'secondary', title: 'The folder check matched the wrong file', onclick: () => mark(m, 'new', 'Marked as not downloaded') }, 'Mark as not downloaded') : null,
@@ -445,7 +711,6 @@ function mediaCard(m) {
       }, 'Remove from list'),
     ));
   }
-  return card;
 }
 
 // ------------------------------------------------------------------ jobs
@@ -456,12 +721,9 @@ const STATUS_TEXT = {
 };
 
 function jobCard(j) {
-  const active = ['running', 'recording', 'muxing'].includes(j.status);
+  const active = ACTIVE.includes(j.status);
   const p = j.progress || {};
-  let pct = 0;
-  if (p.percent) pct = p.done;
-  else if (p.total) pct = Math.min(100, (p.done / p.total) * 100);
-  const indeterminate = active && (j.status === 'muxing' || j.status === 'recording' || !p.total);
+  const { pct, indeterminate } = jobProgress(j);
   const detail = [];
   if (j.trackCount > 1 && j.trackIndex >= 0) detail.push(`file ${j.trackIndex + 1}/${j.trackCount}`);
   if (p.isBytes) detail.push(`${formatBytes(p.done)}${p.total ? ` / ${formatBytes(p.total)}` : ''}`);
@@ -498,7 +760,7 @@ function jobCard(j) {
     const main = j.outputs?.[0];
     actions.append(h('button', {
       class: 'secondary',
-      onclick: () => send('openFile', { downloadId: main?.downloadId ?? null, path: main?.path || null }),
+      onclick: () => showFile({ downloadId: main?.downloadId, file: main?.path }),
     }, 'Show file'));
   }
   if (j.status === 'error' && !j.diagnosis) {
@@ -513,6 +775,23 @@ function jobCard(j) {
     ));
   }
   return card;
+}
+
+/** The bar pinned to the bottom while something is downloading. */
+function renderTray(jobs) {
+  const running = jobs.filter((j) => ACTIVE.includes(j.status));
+  const waiting = jobs.filter((j) => j.status === 'queued');
+  const tray = $('#tray');
+  tray.hidden = !running.length && !waiting.length;
+  if (tray.hidden) return;
+  const first = running[0] || waiting[0];
+  const { pct, indeterminate } = jobProgress(first);
+  $('#tray-title').textContent = first.title || baseName(first.filename);
+  $('#tray-pct').textContent = first.status === 'queued' ? 'Waiting' : first.status === 'recording' ? 'Live' : indeterminate ? '' : `${Math.round(pct)}%`;
+  const bar = $('#tray-bar');
+  bar.parentElement.classList.toggle('indeterminate', indeterminate && first.status !== 'queued');
+  bar.style.width = indeterminate ? '' : `${pct}%`;
+  $('#tray-summary').textContent = [running.length ? `${running.length} downloading` : '', waiting.length ? `${waiting.length} queued` : ''].filter(Boolean).join(' · ');
 }
 
 async function diagnose(j, btn) {
@@ -682,7 +961,7 @@ function historyCard(x) {
   return h('li', { class: 'card' },
     h('div', { class: 'meta' },
       nameEl(x.title || baseName(files[0]), `h:${x.at}`),
-      h('div', { class: 'sub' }, h('span', { class: 'st st-done' }, '✓'), ` ${ago(x.at)}`, x.bytes ? ` · ${formatBytes(x.bytes)}` : '', ` · ${hostOf(x.pageUrl || x.mediaUrl)}`),
+      h('div', { class: 'sub' }, h('span', { class: 'st st-done' }, ICON.check()), ` ${ago(x.at)}`, x.bytes ? ` · ${formatBytes(x.bytes)}` : '', ` · ${hostOf(x.pageUrl || x.mediaUrl)}`),
       files.length ? nameEl(files.map(baseName).join(' + '), `hf:${x.at}`, 'sub') : null,
       x.note ? h('div', { class: 'sub muted' }, x.note) : null,
     ),
@@ -721,6 +1000,30 @@ function matchesQuery(m, q) {
   return q.split(/\s+/).every((w) => hay.includes(w));
 }
 
+/**
+ * The item for the big card: the newest single video (what you most likely just pressed play on).
+ * Only in the default order, so a sort you chose is never broken up.
+ */
+function pickHero(list, arranged) {
+  heroWhy = '';
+  if (arranged) return null;
+  const candidates = list.filter((m) => !m.playlist && !m.parentId && m.kind !== 'subtitle');
+  if (!candidates.length) return null;
+  // The video playing in the page (or the one you paused) comes first.
+  const watching = state.playing && candidates.find((m) => m.id === state.playing.id);
+  if (watching) {
+    heroWhy = state.playing.playing ? 'playing' : 'paused';
+    heroId = watching.id;
+    return watching;
+  }
+  // Otherwise the newest; and once shown it stays, so a video found a second later doesn't swap the
+  // card under your pointer. Opening the popup again starts fresh.
+  const kept = candidates.find((m) => m.id === heroId);
+  const hero = kept || candidates.reduce((a, b) => ((b.detectedAt || 0) > (a.detectedAt || 0) ? b : a));
+  heroId = hero.id;
+  return hero;
+}
+
 function groupHeading(g) {
   return h('li', { class: 'group-h' }, h('span', { class: 'gname', title: g.group }, g.group), h('span', { class: 'muted' }, `${g.done}/${g.n} saved`));
 }
@@ -742,6 +1045,7 @@ function renderLibrary() {
   libSig = sig;
   box.title = dirs.length ? `Folders checked:\n${dirs.join('\n')}` : '';
   box.replaceChildren(
+    ICON.folder(),
     h('span', {}, text), ' · ',
     h('button', { class: 'link small', title: 'Look through your folders again now', onclick: checkNow }, 'Check now'), ' · ',
     h('button', { class: 'link small', title: 'Also look in another folder for videos you already have', onclick: addFolder }, 'Add folder…'),
@@ -787,11 +1091,11 @@ function folderCard(f) {
   const ext = (/\.([a-z0-9]+)$/i.exec(f.name)?.[1] || 'file').toUpperCase().slice(0, 4);
   return h('li', { class: `card${f.here ? ' is-done' : ''}` },
     h('div', { class: 'row' },
-      h('div', { class: 'thumb' }, ext),
+      h('div', { class: 'thumb subtitle' }, ext),
       h('div', { class: 'meta' },
         nameEl(f.name, `f:${f.path}`),
         h('div', { class: 'sub', title: f.path },
-          f.here ? h('span', { class: 'st st-done' }, 'On this page') : null, f.here ? ' ' : '',
+          f.here ? h('span', { class: 'st st-done' }, 'On this page') : null, f.here ? ' · ' : '',
           [formatBytes(f.size), formatDuration(f.duration), ago(f.at), baseName(f.path.replace(/[\\/][^\\/]*$/, ''))].filter(Boolean).join(' · ')),
       ),
       h('button', { class: 'secondary', title: 'Show in its folder', onclick: () => send('openFile', { path: f.path }) }, 'Show'),
@@ -813,21 +1117,45 @@ function renderFolder() {
   more.textContent = hits.length ? `Showing the newest ${show.length} of ${hits.length}. Search to narrow it down.` : 'No file names match.';
 }
 
+function renderSetup() {
+  // The helper answered "not installed": offer setup, unless you said "Later" in the last week.
+  // The answer can arrive a moment after the popup opens (the worker has to start the helper), so the
+  // card goes by what was true last time and never pops in above the button you are reaching for.
+  if (state.helper) {
+    helperKnown = state.helper.ok !== false;
+    remember('ss-helper', helperKnown ? '1' : '0');
+  }
+  if (setupShown === null) setupShown = helperKnown === false;
+  if (helperKnown) setupShown = false;
+  $('#setup').hidden = !setupShown || Date.now() - setupLater <= 7 * 86400e3;
+}
+
 function render() {
   if (!state) return;
   $('#site').textContent = state.page.site || 'No web page';
+  renderSetup();
   // Subtitle files are kept apart (collapsed): stream downloads already include their subtitles.
   const videos = state.media.filter((m) => m.kind !== 'subtitle');
   const subs = state.media.filter((m) => m.kind === 'subtitle');
   const counts = { new: 0, done: 0, failed: 0, active: 0, queued: 0, missing: 0 };
   const withStatus = videos.map((m) => ({ m, st: statusFor(m) }));
   withStatus.forEach(({ st }) => { counts[st]++; });
-  const q = query.trim().toLowerCase();
-  const shown = withStatus.filter(({ st }) => filter === 'all'
-    || (filter === 'done' ? st === 'done' : st === 'new' || st === 'failed' || st === 'missing')).map(({ m }) => m)
+  // With fewer than two videos there is nothing to filter, search or sort: a remembered choice waits.
+  const few = videos.length < 2;
+  activeFilter = few ? 'all' : filter;
+  const q = few ? '' : query.trim().toLowerCase();
+  const sorted = !few && sortBy !== 'default';
+  const shown = withStatus.filter(({ st }) => activeFilter === 'all'
+    || (activeFilter === 'done' ? st === 'done' : st === 'new' || st === 'failed' || st === 'missing')).map(({ m }) => m)
     .filter((m) => matchesQuery(m, q));
   renderFilters(counts, videos.length);
-  $('#listbar').hidden = videos.length < 4 && !q && sortBy === 'default';
+  $('#list-head').hidden = few;
+  const barOpen = !few && (searchOpen || !!q);
+  $('#listbar').hidden = !barOpen;
+  const searchBtn = $('#btn-search');
+  searchBtn.setAttribute('aria-expanded', String(barOpen));
+  searchBtn.classList.toggle('on', sorted && !barOpen); // a dot: the list is in an order you chose
+  searchBtn.title = sorted && !barOpen ? `Search and sort (sorted: ${$('#sort').selectedOptions[0]?.textContent || sortBy})` : 'Search and sort';
   if ($('#sort').value !== sortBy) $('#sort').value = sortBy;
   renderLibrary();
   renderFolder();
@@ -837,32 +1165,64 @@ function render() {
     removed.replaceChildren(`${state.removedCount} removed from the list · `,
       h('button', { class: 'link small', onclick: () => send('restoreMedia').then(refresh) }, 'Show again'));
   }
+
+  const hero = pickHero(shown, sorted || !!q);
+  if (hero && (hero.kind === 'hls' || hero.kind === 'dash') && !hero.protected && ['new', 'failed', 'missing'].includes(statusFor(hero))) {
+    const open = openMedia.get(hero.id);
+    if (!open?.options && !open?.loading && !open?.error) loadOptions(hero);
+  }
+  // The percentage is painted onto the card afterwards (paintProgress): a tick must not rebuild the card.
+  const progressSig = (m) => { const j = jobFor(m); return j ? j.status : null; };
   const sig = (m) => m.group ? JSON.stringify(m) : JSON.stringify([
-    m.listed, m.playlist ? JSON.stringify(playlistEntries(m)) : '', m.playlistIndex, m.label, m.size, m.seen, m.library, m.fingerprint, m.poster, m.hint, m.title, m.customName, m.course, m.nameSource, m.source, m.alsoAi, m.info, m.protected, m.mark, m.section, statusFor(m), state.page.title,
+    m.listed, m.playlist ? JSON.stringify(playlistEntries(m)) : '', m.playlistIndex, m.label, m.size, m.seen, m.library, m.fingerprint, m.poster, m.hint, m.title, m.customName, m.course, m.nameSource, m.source, m.alsoAi, m.info, m.duration, m.protected, m.mark, m.section, statusFor(m), progressSig(m), state.page.title,
     PANEL && statusFor(m) === 'done' ? ago(lastDownload(m)?.at) : '', PANEL ? ago(m.detectedAt) : '',
-    openMedia.get(m.id) || null, expanded.has(`m:${m.id}`),
+    openMedia.get(m.id) || null, expanded.has(`m:${m.id}`), m === hero ? [activeFilter, heroWhy, heroPick.get(m.id) || ''] : '',
   ]);
+  const rest = arrange(shown.filter((m) => m !== hero));
+  // Show the boxes before filling them: a name is measured as it is added, and a hidden one measures 0.
+  $('#box').hidden = !rest.length && !subs.length;
+  $('#media').hidden = !rest.length;
+  $('#subs-box').hidden = !subs.length;
+  $('#subs').hidden = !subsOpen;
+  patchList($('#hero'), hero ? [hero] : [], (m) => m.id, sig, heroCard);
   const keyOf = (m) => (m.group ? `g:${m.group}` : m.id);
   const build = (m) => (m.group ? groupHeading(m) : mediaCard(m));
-  patchList($('#media'), arrange(shown), keyOf, sig, build);
-  $('#media-count').textContent = videos.length
-    ? (counts.done ? `${counts.done}/${videos.length} saved` : videos.length) : '';
-  $('#empty').hidden = shown.length > 0 || (!videos.length && subs.length > 0);
-  $('#empty').querySelector('p strong').textContent = q && videos.length
+  patchList($('#media'), rest, keyOf, sig, build);
+  $('#media-count').textContent = videos.length ? String(videos.length) : '';
+
+  const empty = $('#empty');
+  const nothing = !videos.length && !subs.length;
+  // Browser pages (settings, new tab, the extension store) can't be looked at by any extension.
+  const webPage = /^(https?|file):/i.test(state.page.url || '');
+  empty.hidden = shown.length > 0 || (!videos.length && subs.length > 0);
+  empty.classList.toggle('slim', !nothing);
+  empty.querySelector('p strong').textContent = q && videos.length
     ? `No names match “${query.trim()}”.`
     : videos.length
-      ? (filter === 'done' ? 'Nothing downloaded from this page yet.' : 'Everything on this page is downloaded.')
-      : 'No media found yet.';
-  $('#empty').querySelector('p.muted').hidden = videos.length > 0;
-  $('#subs-box').hidden = !subs.length;
+      ? (activeFilter === 'done' ? 'Nothing downloaded from this page yet.' : 'Everything on this page is downloaded.')
+      : webPage ? 'No media found yet.' : 'StreamSnag can\'t look at this page.';
+  const hint = empty.querySelector('p.muted');
+  hint.hidden = videos.length > 0;
+  hint.textContent = webPage
+    ? 'Press play on the video, then open StreamSnag again. Many players only load their video once it starts.'
+    : 'Browser pages like this one are off limits to extensions. Open a website with a video, press play, then click StreamSnag.';
+  $('#empty-actions').hidden = !nothing || !webPage;
+  $('#empty-tip').hidden = !nothing;
+
   $('#subs-count').textContent = String(subs.length);
   $('#subs-toggle').setAttribute('aria-expanded', String(subsOpen));
-  $('#subs').hidden = !subsOpen;
   patchList($('#subs'), subsOpen ? subs : [], (m) => m.id, sig, mediaCard);
+  // Move the bars of running downloads on the cards that were kept as they are.
+  for (const m of state.media) {
+    if (!jobFor(m)) continue;
+    const card = [...document.querySelectorAll('.items > li')].find((el) => el.dataset.key === m.id);
+    if (card) paintProgress(card, m);
+  }
 
   const jobs = state.jobs || [];
   $('#jobs-section').hidden = !jobs.length;
   patchList($('#jobs'), jobs, (j) => j.id, (j) => JSON.stringify([j, expanded.has(`j:${j.id}`), expanded.has(`jf:${j.id}`)]), jobCard);
+  renderTray(jobs);
 
   // The sidebar has room for a log of what was saved before (across all sites).
   const recent = PANEL ? history.slice(0, 25) : [];
@@ -894,8 +1254,32 @@ async function refresh() {
     banner(e.message, true);
   }
   clearTimeout(pollTimer);
-  const busy = state?.jobs?.some((j) => ['running', 'recording', 'muxing'].includes(j.status));
+  const busy = state?.jobs?.some((j) => ACTIVE.includes(j.status));
   pollTimer = setTimeout(refresh, busy ? 700 : 2000);
+}
+
+function setupToolsMenu() {
+  const btn = $('#btn-tools');
+  const menu = $('#tools-menu');
+  const close = () => { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    btn.setAttribute('aria-expanded', String(!menu.hidden));
+    if (!menu.hidden) menu.querySelector('button')?.focus();
+  });
+  document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target)) close(); });
+  menu.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { close(); btn.focus(); }
+    const items = [...menu.querySelectorAll('button')];
+    const i = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+  });
+  const item = (id, fn) => $(id).addEventListener('click', () => { close(); fn(); });
+  item('#btn-ai', runAi);
+  item('#btn-summarize', () => summarize(null));
+  item('#btn-ytdlp', runYtdlp);
 }
 
 async function init() {
@@ -929,6 +1313,8 @@ async function init() {
   $('#btn-history-all').addEventListener('click', () => chrome.tabs.create({ url: chrome.runtime.getURL('options.html#history') }));
   window.addEventListener('resize', () => fitAll());
   $('#btn-settings').addEventListener('click', () => chrome.runtime.openOptionsPage());
+  $('#btn-setup').addEventListener('click', () => chrome.tabs.create({ url: chrome.runtime.getURL('options.html#helper') }));
+  $('#btn-setup-later').addEventListener('click', () => { setupLater = Date.now(); remember('ss-setup-later', String(setupLater)); render(); });
   const deepScan = async () => {
     const btns = [$('#btn-rescan'), $('#btn-scan')];
     btns.forEach((b) => { b.disabled = true; });
@@ -946,10 +1332,20 @@ async function init() {
   };
   $('#btn-rescan').addEventListener('click', deepScan);
   $('#btn-scan').addEventListener('click', deepScan);
-  $('#btn-ai').addEventListener('click', runAi);
-  $('#btn-summarize').addEventListener('click', () => summarize(null));
-  $('#btn-ytdlp').addEventListener('click', runYtdlp);
+  $('#btn-ai-empty').addEventListener('click', runAi);
+  setupToolsMenu();
   $('#btn-clear').addEventListener('click', () => send('clearJobs').then(refresh));
+  $('#btn-tray').addEventListener('click', () => $('#jobs-section').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  $('#btn-search').addEventListener('click', () => {
+    searchOpen = $('#listbar').hidden;
+    remember('ss-search', searchOpen ? '1' : '0');
+    if (!searchOpen) {
+      query = '';
+      $('#search').value = '';
+    }
+    render();
+    if (searchOpen) $('#search').focus();
+  });
   $('#search').addEventListener('input', (e) => { query = e.target.value; render(); });
   $('#sort').addEventListener('change', (e) => { sortBy = e.target.value; remember('ss-sort', sortBy); render(); });
   $('#subs-toggle').addEventListener('click', () => { subsOpen = !subsOpen; remember('ss-subs', subsOpen ? '1' : '0'); render(); });

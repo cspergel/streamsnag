@@ -5,7 +5,7 @@
 * **New look:** the latest video on the page gets a large card with its qualities and one Download
   button; everything else is a compact list with small download buttons, and videos you already have
   fade back with a ✓. AI tools and yt-dlp sit behind one ✨ button, search and sort behind 🔍, and a bar
-  at the bottom shows what's downloading. Dark mode is now neutral grey, with orange only in the logo.
+  at the bottom shows what's downloading. Light and dark mode are now neutral grey, with orange only in the logo.
   A "Finish setup" card appears when the local helper isn't installed, and an empty page explains what
   to try next.
 * **Playlists:** **List videos** asks yt-dlp for every video in a playlist or Vimeo showcase, so you

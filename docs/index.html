@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- This page loads nothing from other hosts: no CDN, web fonts, analytics or scripts. The policy below enforces it. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<title>StreamSnag: a free video download helper that understands courses</title>
+<meta name="description" content="StreamSnag is a free, open-source video download helper for Chrome, Edge and Brave. It finds the lecture you're watching, knows which ones you already have, and saves whole courses with subtitles, slides and transcripts. No accounts, no tracking.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151515" media="(prefers-color-scheme: dark)">
+<meta name="referrer" content="no-referrer">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="StreamSnag">
+<meta property="og:title" content="StreamSnag: a video download helper that understands courses">
+<meta property="og:description" content="Free and open source for Chrome, Edge and Brave. Finds the lecture you're watching, knows which ones you already have, and saves the whole course. No accounts, no tracking.">
+<meta property="og:url" content="https://cspergel.github.io/streamsnag/">
+<meta property="og:image" content="https://cspergel.github.io/streamsnag/popup.png">
+<meta property="og:image:width" content="800">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="The StreamSnag popup listing the videos on a course page, each marked downloaded or not downloaded">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="site.css">
+</head>
+<body id="top">
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
+  <symbol id="i-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m0 0l-5-5m5 5l-5 5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.5h4l2 2.5h8a1.5 1.5 0 011.5 1.5V17a1.5 1.5 0 01-1.5 1.5H5A1.5 1.5 0 013.5 17z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V19a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 016 19V4.5a1 1 0 011-1z"/><path d="M14 3.5V8h4"/></symbol>
+  <symbol id="i-stream" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/></symbol>
+  <symbol id="i-embed" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 9h17M10 12.25l-2 2 2 2M14 12.25l2 2-2 2"/></symbol>
+  <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M10.6 10.5a2.1 2.1 0 100 3M16.6 10.5a2.1 2.1 0 100 3"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V19a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 016 19V4.5a1 1 0 011-1z"/><path d="M14 3.5V8h4M9 12.5h6M9 16h4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 6.5h11M4 12h8M4 17.5h6"/><path d="M15.5 13.5v6l5-3z"/></symbol>
+  <symbol id="i-tray" viewBox="0 0 24 24"><path d="M12 4v9m0 0l-3.5-3.5M12 13l3.5-3.5"/><path d="M4.5 15.5v2A2.5 2.5 0 007 20h10a2.5 2.5 0 002.5-2.5v-2"/></symbol>
+  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 11-2.2-5.3"/><path d="M19.5 4.5v4.2h-4.2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M9 17.5V6.5l10-2v11"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M14.5 5v14"/></symbol>
+  <symbol id="i-theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 3.75a8.25 8.25 0 010 16.5z" fill="currentColor"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5l7 2.5v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z"/><path d="M9 12l2.2 2.2L15 10.4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.5 5.4 3.5 8.5s-1.100 5.900-3.500 8.500c-2.400-2.600-3.500-5.400-3.500-8.500s1.100-5.900 3.500-8.500z"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.500 8.500h13l-1 11h-11z"/><path d="M9 8.500V7a3 3 0 016 0v1.500"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><path d="M12 6v.01M12 12v.01M12 18v.01"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="#top">
+      <img src="icon.png" width="32" height="32" alt="">
+      <span>StreamSnag</span>
+    </a>
+    <nav class="site-nav" aria-label="On this page">
+      <a href="#what">What it does</a>
+      <a href="#install">Install</a>
+      <a href="#safe">Is it safe?</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-sm btn-secondary" href="https://github.com/cspergel/streamsnag" rel="noopener">
+      <svg class="ic ic-fill" aria-hidden="true"><use href="#i-github"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Hero -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="kicker rise">Free, open source. Chrome, Edge, Brave.</p>
+        <h1 id="hero-title" class="rise rise-2">The video download helper that understands <em>courses</em>.</h1>
+        <p class="lede rise rise-3">StreamSnag finds the lecture you're watching, knows which ones you already have, and saves the rest with their subtitles, slides and transcripts.</p>
+        <div class="btn-row rise rise-4">
+          <a class="btn btn-primary" href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">
+            <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+            Get StreamSnag
+          </a>
+          <a class="btn btn-secondary" href="https://github.com/cspergel/streamsnag" rel="noopener">
+            <svg class="ic ic-fill" aria-hidden="true"><use href="#i-github"/></svg>
+            View on GitHub
+          </a>
+        </div>
+        <ul class="hero-facts rise rise-5">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No download limits</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No account</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No ads</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No tracking</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>MIT license</li>
+        </ul>
+        <p class="fineprint rise rise-5">For videos you have the right to keep. StreamSnag refuses DRM-protected and encrypted streams. It installs from GitHub in <a href="#install">three steps</a>.</p>
+      </div>
+
+      <figure class="stage rise rise-3">
+        <div class="stage-art">
+          <div class="browser" aria-hidden="true">
+            <div class="browser-bar">
+              <span class="address">Lecture 9 of 24</span>
+              <span class="tool tool-on"><img src="icon.png" width="18" height="18" alt=""></span>
+              <span class="tool"><svg class="ic"><use href="#i-dots"/></svg></span>
+            </div>
+            <div class="browser-page">
+              <div class="player"></div>
+              <div class="sk-list">
+                <span class="sk-head"></span>
+                <span class="sk-row done"><span class="w1"></span></span>
+                <span class="sk-row done"><span class="w2"></span></span>
+                <span class="sk-row done"><span class="w3"></span></span>
+                <span class="sk-row now"><span class="w4"></span></span>
+                <span class="sk-row"><span class="w2"></span></span>
+                <span class="sk-row"><span class="w1"></span></span>
+                <span class="sk-row"><span class="w4"></span></span>
+                <span class="sk-row"><span class="w3"></span></span>
+                <span class="sk-row"><span class="w2"></span></span>
+                <span class="sk-row"><span class="w1"></span></span>
+                <span class="sk-row"><span class="w3"></span></span>
+                <span class="sk-row"><span class="w4"></span></span>
+              </div>
+            </div>
+          </div>
+          <picture class="popup rise">
+            <source srcset="popup-dark.png" media="(prefers-color-scheme: dark)">
+            <img src="popup.png" width="400" height="600" decoding="async" fetchpriority="high"
+                 alt="The StreamSnag popup open on a course page. The video that is playing sits in a large card with one Download button. The page's other videos are listed below it, each marked Downloaded or Not downloaded, with a playlist that has a List videos button.">
+          </picture>
+        </div>
+        <figcaption>The popup on a page with several videos. The one that's playing is on top, and the rest are marked Downloaded or Not downloaded.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Main benefits -->
+  <section class="section" id="what" aria-labelledby="what-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">What it does</p>
+        <h2 id="what-title">Built for a lecture series, not a single clip.</h2>
+        <p class="lede">A list of links isn't much help halfway through a course. StreamSnag keeps track of which lecture is which, what you've saved, and what's still missing.</p>
+      </div>
+
+      <div class="lessons">
+        <article class="lesson">
+          <div class="lesson-num" aria-hidden="true">01</div>
+          <div class="lesson-body">
+            <h3>Finds the video you're watching</h3>
+            <p>Press play, then click the StreamSnag icon. It picks up MP4 and WebM files, HLS and DASH streams, subtitles, and embedded players such as Vimeo, Wistia and Loom. <strong>The video that's playing is shown first</strong>, with one Download button.</p>
+          </div>
+          <div class="viz" aria-hidden="true">
+            <p class="viz-label"><span>Playing now</span><span>Shown first</span></p>
+            <div class="playing">
+              <div class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></div>
+              <div>
+                <div class="playing-title">009 - Hypothesis tests</div>
+                <div class="playing-meta">Stream, with subtitles</div>
+              </div>
+            </div>
+            <div class="fake-btn"><svg class="ic"><use href="#i-download"/></svg>Download</div>
+            <ul class="chips">
+              <li>MP4</li><li>WebM</li><li>HLS</li><li>DASH</li><li>Subtitles</li><li>Vimeo</li><li>Wistia</li><li>Loom</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="lesson">
+          <div class="lesson-num" aria-hidden="true">02</div>
+          <div class="lesson-body">
+            <h3>Knows what you already have</h3>
+            <p>StreamSnag checks your folders and marks each lecture Downloaded or Not downloaded, even after you rename the files. <strong>Download missing</strong> fetches only what's new in a playlist.</p>
+          </div>
+          <div class="viz" aria-hidden="true">
+            <p class="viz-label"><span>Example playlist</span><span>Folder check</span></p>
+            <ul class="rows">
+              <li class="have"><span class="row-n">007</span><span class="row-t">Sampling</span><span class="status status-ok"><svg class="ic"><use href="#i-check"/></svg>Downloaded</span></li>
+              <li class="have"><span class="row-n">008</span><span class="row-t">Confidence intervals</span><span class="status status-ok"><svg class="ic"><use href="#i-check"/></svg>Downloaded</span></li>
+              <li><span class="row-n">009</span><span class="row-t">Hypothesis tests</span><span class="status">Not downloaded</span></li>
+              <li><span class="row-n">010</span><span class="row-t">Regression</span><span class="status">Not downloaded</span></li>
+            </ul>
+            <div class="fake-btn">Download missing (2)</div>
+          </div>
+        </article>
+
+        <article class="lesson">
+          <div class="lesson-num" aria-hidden="true">03</div>
+          <div class="lesson-body">
+            <h3>Saves the whole lesson</h3>
+            <p>A lesson is more than its video. StreamSnag puts the video, its audio and soft subtitles into <strong>one MP4</strong>, saves the PDFs and slides linked on the page, and writes a readable transcript from the captions. No captions? It can transcribe the lecture on your own computer.</p>
+          </div>
+          <div class="viz" aria-hidden="true">
+            <p class="viz-label"><span>One lesson</span><span>Three things saved</span></p>
+            <ul class="bundle">
+              <li><span class="tile">MP4</span><span><b>Video, audio and subtitles</b><span>Merged into one file</span></span></li>
+              <li><span class="tile">PDF</span><span><b>PDFs and slides</b><span>The ones linked on the page</span></span></li>
+              <li><span class="tile">Aa</span><span><b>Transcript</b><span>Readable text from the captions</span></span></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="lesson">
+          <div class="lesson-num" aria-hidden="true">04</div>
+          <div class="lesson-body">
+            <h3>Takes whole courses at once</h3>
+            <p>List every video in a playlist or showcase, or use <strong>Download all</strong> on a page. A queue works through them and retries the ones that fail. Files are named after the lecture number and title and sorted into a folder per course.</p>
+          </div>
+          <div class="viz" aria-hidden="true">
+            <p class="viz-label"><span>Example folder</span><span>Named for you</span></p>
+            <ul class="tree">
+              <li class="dir"><svg class="ic"><use href="#i-folder"/></svg>Courses</li>
+              <li class="dir d1"><svg class="ic"><use href="#i-folder"/></svg>Intro to Statistics</li>
+              <li class="d2"><svg class="ic"><use href="#i-file"/></svg><span class="fn">007 - Sampling.mp4</span></li>
+              <li class="d2"><svg class="ic"><use href="#i-file"/></svg><span class="fn">008 - Confidence intervals.mp4</span></li>
+              <li class="d2 new"><svg class="ic"><use href="#i-file"/></svg><span class="fn">009 - Hypothesis tests.mp4</span><span class="tag">Queued</span></li>
+              <li class="d2 new"><svg class="ic"><use href="#i-file"/></svg><span class="fn">010 - Regression.mp4</span><span class="tag">Queued</span></li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section class="section band" id="install" aria-labelledby="install-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">How to install</p>
+        <h2 id="install-title">Three steps, from GitHub.</h2>
+        <p class="lede">StreamSnag isn't in the Chrome Web Store, so you add it by hand. It takes a few clicks and you only do it once.</p>
+      </div>
+
+      <ol class="steps" role="list">
+        <li>
+          <span class="step-n" aria-hidden="true">1</span>
+          <h3>Download and unzip</h3>
+          <p>Get the ZIP from the <a href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">latest release</a> and unzip it somewhere you'll keep it. The browser runs the extension from that folder.</p>
+        </li>
+        <li>
+          <span class="step-n" aria-hidden="true">2</span>
+          <h3>Turn on Developer mode</h3>
+          <p>Open <code>chrome://extensions</code> in Chrome or Brave, or <code>edge://extensions</code> in Edge. Switch on <strong>Developer mode</strong>.</p>
+        </li>
+        <li>
+          <span class="step-n" aria-hidden="true">3</span>
+          <h3>Load the extension</h3>
+          <p>Click <strong>Load unpacked</strong> and choose the <code>extension</code> folder inside the one you unzipped. That's it.</p>
+        </li>
+      </ol>
+
+      <div class="after-steps">
+        <p><strong>Then:</strong> open a page with a video, press play, and click the StreamSnag icon. Many players only load the video once it starts.</p>
+        <p><strong>Good to know:</strong> the browser shows a "Developer mode" notice for extensions added this way. That is expected.</p>
+      </div>
+
+      <div class="helper">
+        <div class="helper-copy">
+          <p class="kicker">Optional, and recommended</p>
+          <h3>The local helper</h3>
+          <p>A small program that runs on your computer and only talks to StreamSnag. The extension works without it. With it, you also get:</p>
+          <ul class="adds">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Video, audio and subtitles merged into one MP4 with ffmpeg</span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Playlists and harder sites through <span class="nb">yt-dlp</span></span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Saving to any folder on your computer</span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>The folder check that shows what you already have</span></li>
+          </ul>
+        </div>
+        <div class="os">
+          <div>
+            <h4>Windows</h4>
+            <p>Double-click <span class="path">Set up StreamSnag helper.cmd</span> in the folder you unzipped.</p>
+          </div>
+          <div>
+            <h4>macOS and Linux</h4>
+            <p>Open a terminal in that folder and run <code>sh setup.sh</code></p>
+          </div>
+          <div>
+            <p class="note">The helper needs Node.js 18 or newer. Restart the browser when setup finishes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature grid -->
+  <section class="section" id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">Everything included</p>
+        <h2 id="features-title">Everything it does.</h2>
+      </div>
+
+      <ul class="grid">
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-stream"/></svg>
+          <h3>Files and streams</h3>
+          <p>MP4 and WebM files, plus HLS and DASH streams.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-embed"/></svg>
+          <h3>Embedded players</h3>
+          <p>Vimeo, Wistia, Loom and others built into a page.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-cc"/></svg>
+          <h3>Subtitles and transcripts</h3>
+          <p>Soft subtitles inside the MP4, and a transcript you can read. Optional speech-to-text on your PC for videos without captions.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg>
+          <h3>PDFs and slides</h3>
+          <p>The documents linked on a lesson page, saved with the video.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>
+          <h3>Playlists and showcases</h3>
+          <p>List every video, not only the ones you played.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-tray"/></svg>
+          <h3>Download missing</h3>
+          <p>Fetch only the lectures that aren't in your folders yet.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-retry"/></svg>
+          <h3>Queue with retries</h3>
+          <p>Line up a whole course. Failed downloads can be retried.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>
+          <h3>Speed and time left</h3>
+          <p>See how fast each download is going and when it will finish.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg>
+          <h3>Names and folders</h3>
+          <p>Lecture number and title in the file name, one folder per course.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-note"/></svg>
+          <h3>Convert a download</h3>
+          <p>Make an MP3 of the audio, or a smaller 720p copy.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-panel"/></svg>
+          <h3>Side panel</h3>
+          <p>Keep StreamSnag open beside the page while you watch.</p>
+        </li>
+        <li>
+          <svg class="ic" aria-hidden="true"><use href="#i-theme"/></svg>
+          <h3>Light and dark</h3>
+          <p>Both themes are included, in quiet neutral greys.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Optional AI -->
+  <section class="section" id="ai" aria-labelledby="ai-title">
+    <div class="wrap">
+      <div class="ai">
+        <div class="ai-copy">
+          <p class="kicker">Optional AI</p>
+          <h2 id="ai-title">Off by default. Yours if you want it.</h2>
+          <p class="muted">StreamSnag works without AI. If you turn it on, it uses the AI you already have: your own Claude or ChatGPT subscription, or your own API key.</p>
+          <div class="switch-demo" aria-hidden="true">
+            <span class="switch"></span>
+            <span>AI features</span>
+            <span class="switch-state">Off</span>
+          </div>
+        </div>
+        <ul class="ai-list">
+          <li>
+            <h3>Finds links the usual check misses</h3>
+            <p>On a page where nothing turns up, AI reads the page to find the video link, then remembers how, so that site works next time.</p>
+          </li>
+          <li>
+            <h3>Explains a failed download</h3>
+            <p>Ask why a download failed and get an answer in plain words.</p>
+          </li>
+          <li>
+            <h3>Study notes from the captions</h3>
+            <p>Summaries, study notes and Anki flashcards made from a lecture's captions or transcript. It can do this after every download, if you ask it to.</p>
+          </li>
+          <li class="ai-note">When you use an AI feature, the details needed for that task are sent to the provider you chose (Anthropic or OpenAI). The <a href="https://github.com/cspergel/streamsnag/blob/main/PRIVACY.md" rel="noopener">privacy page</a> lists exactly what.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Is it safe -->
+  <section class="section" id="safe" aria-labelledby="safe-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker">Is it safe?</p>
+        <h2 id="safe-title">You don't have to take our word for it.</h2>
+        <p class="lede">An extension that can see every page deserves hard questions. Here are the plain answers.</p>
+      </div>
+
+      <div class="safe-grid">
+        <div>
+          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-code"/></svg></span>
+          <div>
+            <h3>You can read all of it</h3>
+            <p>StreamSnag is open source under the MIT license. The extension is plain JavaScript with no build step, so the code on GitHub is the code that runs.</p>
+          </div>
+        </div>
+        <div>
+          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-shield"/></svg></span>
+          <div>
+            <h3>Nothing phones home</h3>
+            <p>No servers, accounts, analytics or ads. Everything stays on your computer except the downloads themselves and the AI requests you choose to make.</p>
+          </div>
+        </div>
+        <div>
+          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-globe"/></svg></span>
+          <div>
+            <h3>Why it needs access to all sites</h3>
+            <p>A video can be on any site, and seeing which media files a page loads is how StreamSnag finds them. The privacy page lists each permission and what it is used for.</p>
+          </div>
+        </div>
+        <div>
+          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-bag"/></svg></span>
+          <div>
+            <h3>Why it isn't in the Chrome Web Store</h3>
+            <p>The store doesn't allow extensions that can download from YouTube, and the optional <span class="nb">yt-dlp</span> helper can. So StreamSnag is shared through GitHub instead.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="safe-links">
+        <a class="link-arrow" href="https://github.com/cspergel/streamsnag/blob/main/PRIVACY.md" rel="noopener">Read the privacy details <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="link-arrow" href="https://github.com/cspergel/streamsnag/blob/main/SECURITY.md" rel="noopener">Security policy <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <span class="muted">This page keeps the same promise: no scripts, web fonts, cookies or analytics.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq">
+      <div class="faq-head">
+        <p class="kicker">Questions</p>
+        <h2 id="faq-title">Short answers.</h2>
+        <p class="muted">Something else? <a href="https://github.com/cspergel/streamsnag/issues" rel="noopener">Open an issue on GitHub</a>.</p>
+      </div>
+
+      <div class="faq-list">
+        <details open>
+          <summary>Is it free? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <p>Yes. There are no accounts, no limits and no ads. The code is open source under the MIT license.</p>
+        </details>
+        <details>
+          <summary>Does it work on the site my course is on? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <p>It works on pages that play ordinary video files or HLS and DASH streams, and with common embedded players such as Vimeo, Wistia and Loom. Press play first, because many players only load the video once it starts. With the optional helper, <span class="nb">yt-dlp</span> handles more sites. It will not work where the video is DRM-protected or encrypted. The quickest way to find out is to try it.</p>
+        </details>
+        <details>
+          <summary>Why won't it save DRM-protected video? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <p>StreamSnag detects DRM-protected and encrypted streams and refuses them. It is made for videos you have the right to keep, and it does not try to get around protection.</p>
+        </details>
+        <details>
+          <summary>Do I need the helper? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <p>No. The extension finds and saves videos on its own. The helper adds merging into one MP4, playlists and harder sites through <span class="nb">yt-dlp</span>, saving to any folder, and the check for lectures you already have. Most people saving a course will want it.</p>
+        </details>
+        <details>
+          <summary>Does it work in Firefox? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <p>Not yet. StreamSnag runs in Chrome, Edge and Brave.</p>
+        </details>
+        <details>
+          <summary>Do the AI features cost anything? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <p>StreamSnag charges nothing. The AI features are off by default, and if you turn them on they use your own Claude or ChatGPT subscription, or your own API key.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing -->
+  <section class="section" aria-labelledby="get-title">
+    <div class="wrap">
+      <div class="closing">
+        <div>
+          <h2 id="get-title">Start with your next lecture.</h2>
+          <p>Free, open source, and private. Get the latest release from GitHub and follow the three steps above.</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">
+            <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+            Get StreamSnag
+          </a>
+          <a class="btn btn-secondary" href="https://github.com/cspergel/streamsnag" rel="noopener">
+            <svg class="ic ic-fill" aria-hidden="true"><use href="#i-github"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="brand" href="#top">
+        <img src="icon.png" width="32" height="32" alt="">
+        <span>StreamSnag</span>
+      </a>
+      <ul class="foot-links">
+        <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">Latest release</a></li>
+        <li><a href="https://github.com/cspergel/streamsnag/blob/main/PRIVACY.md" rel="noopener">Privacy</a></li>
+        <li><a href="https://github.com/cspergel/streamsnag/blob/main/SECURITY.md" rel="noopener">Security</a></li>
+        <li><a href="https://github.com/cspergel/streamsnag/blob/main/LICENSE" rel="noopener">MIT license</a></li>
+      </ul>
+    </div>
+    <div class="foot-notes">
+      <p>StreamSnag is free software under the MIT license. It refuses DRM-protected and encrypted streams and is meant for videos you have the right to keep.</p>
+      <p>Not affiliated with any video platform, any other download helper, Anthropic or OpenAI. Product names mentioned here belong to their owners.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

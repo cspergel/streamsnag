@@ -10,11 +10,11 @@ import {
 } from './lib/ai.js';
 import { callAI, helperRequest } from './lib/ai-transport.js';
 import { getSettings } from './lib/settings.js';
-import { findInLibrary, nameKey, serviceId } from './lib/match.js';
+import { findInLibrary, nameKey, serviceId, leadNumber, sameItem } from './lib/match.js';
 import { applyRefererRules } from './lib/headers.js';
 import {
   buildFilename, sanitizeFilename, formatBytes, formatBitrate, formatDuration, hostOf, siteKey,
-  shortId, extFromUrl, isHttpUrl, resolveFolder,
+  shortId, extFromUrl, isHttpUrl, resolveFolder, rulesFor,
 } from './lib/util.js';
 
 // ---------------------------------------------------------------- settings
@@ -53,7 +53,7 @@ function persistTab(tabId) {
 }
 
 function visibleMedia(t) {
-  return t.media.filter((m) => !m.hidden);
+  return t.media.filter((m) => !m.hidden && !m.covered);
 }
 
 function updateBadge(tabId) {
@@ -858,7 +858,7 @@ function persistJobs(immediate = false) {
 
 function publicJob(j) {
   return {
-    id: j.id, tabId: j.tabId, title: j.title, filename: j.filename, status: j.status, error: j.error,
+    id: j.id, tabId: j.tabId, title: j.title, filename: j.filename, status: j.status, error: j.error, optionId: j.optionId || 'file',
     progress: j.progress, startedAt: j.startedAt, finishedAt: j.finishedAt, live: j.live, kind: j.kind,
     outputs: j.outputs || [], note: j.note || '', mediaUrl: j.mediaUrl, diagnosis: j.diagnosis || null,
     mediaId: j.mediaId || '', mediaKeys: j.mediaKeys || [], mediaSize: j.mediaSize || null, fingerprint: j.fingerprint || '',
@@ -936,11 +936,12 @@ async function startDownload(tabId, mediaId, optionId = 'file') {
     || rawTitle;
   const course = sanitizeFilename(m.course || '', 80);
   const date = new Date().toISOString().slice(0, 10);
-  const base = buildFilename(settings.filenameTemplate, {
+  const rules = rulesFor(settings, pageUrl || m.url); // a site rule beats the general settings
+  const base = buildFilename(rules.filenameTemplate, {
     title, quality, course, page: t.pageTitle || '', host: siteKey(pageUrl || m.url), date, kind: m.kind,
   }, '');
   const multiAV = tracks.filter((x) => x.role === 'video' || x.role === 'audio').length > 1;
-  const folder = resolveFolder(settings.subfolder, { site: siteKey(pageUrl || m.url), course, date, kind: m.kind });
+  const folder = resolveFolder(rules.subfolder, { site: siteKey(pageUrl || m.url), course, date, kind: m.kind });
   tracks.forEach((tr) => {
     tr.filename = trackFilename(base, tr, multiAV, folder);
     tr.status = 'pending';
@@ -950,6 +951,7 @@ async function startDownload(tabId, mediaId, optionId = 'file') {
     id: crypto.randomUUID(),
     tabId,
     mediaId,
+    optionId,
     mediaUrl: m.url,
     mediaKeys: keysOf(m),
     mediaSize: m.kind === 'direct' ? m.size || null : null,
@@ -1004,6 +1006,7 @@ function failJob(jobId, error, extra = {}) {
   job.finishedAt = Date.now();
   persistJobs(true);
   toOffscreen({ type: 'jobFinished', jobId }).catch(() => {});
+  pumpQueue();
 }
 
 async function finalizeJob(jobId) {
@@ -1058,6 +1061,7 @@ async function finalizeJob(jobId) {
   job.progress = { ...job.progress, done: job.progress.total || job.progress.done };
   persistJobs(true);
   toOffscreen({ type: 'jobFinished', jobId }).catch(() => {});
+  pumpQueue();
   await addHistory(job);
   if (settings.notify) {
     chrome.notifications.create(`done:${jobId}`, {
@@ -1271,12 +1275,137 @@ async function cancelJob(jobId) {
   await loadJobs();
   const job = jobs.get(jobId);
   if (!job) return;
+  if (job.status === 'queued') {
+    Object.assign(job, { status: 'canceled', error: 'Canceled', finishedAt: Date.now() });
+    persistJobs(true);
+    return;
+  }
   for (const tr of job.tracks || []) {
     if (tr.downloadId != null && tr.status === 'saving') chrome.downloads.cancel(tr.downloadId).catch(() => {});
   }
   await toOffscreen({ type: 'cancel', jobId }).catch(() => {});
   job.helperPort?.disconnect?.();
   failJob(jobId, 'Canceled', { canceled: true });
+}
+
+// ---------------------------------------------------------------- download queue
+// At most `maxParallel` downloads run at once (live recordings don't count); the rest wait as "queued"
+// jobs and start, oldest first, as running ones finish.
+
+const ACTIVE = ['running', 'muxing'];
+const activeDownloads = () => [...jobs.values()].filter((j) => ACTIVE.includes(j.status) && !j.live).length;
+
+async function enqueueDownload(tabId, mediaId, optionId = 'file') {
+  await loadJobs();
+  const settings = await getSettings();
+  const already = [...jobs.values()].find((j) => j.mediaId === mediaId && j.tabId === tabId && (j.status === 'queued' || ACTIVE.includes(j.status)));
+  if (already) return publicJob(already); // one click too many
+  if (activeDownloads() < Math.max(1, Number(settings.maxParallel) || 2)) return startDownload(tabId, mediaId, optionId);
+  const t = await getTab(tabId);
+  const m = t.media.find((x) => x.id === mediaId);
+  if (!m) throw new Error('That media item is gone — reload the page.');
+  const job = {
+    id: crypto.randomUUID(), tabId, mediaId, optionId, kind: m.kind, mediaUrl: m.url, mediaKeys: keysOf(m),
+    mediaSize: m.kind === 'direct' ? m.size || null : null, fingerprint: m.fingerprint || '', pageUrl: m.pageUrl || t.pageUrl,
+    title: m.customName || m.title || t.pageTitle || hostOf(m.url), filename: '', status: 'queued',
+    progress: { done: 0, total: 0, bytes: 0 }, tracks: [], outputs: [], startedAt: Date.now(), queuedAt: Date.now(),
+  };
+  jobs.set(job.id, job);
+  persistJobs(true);
+  return publicJob(job);
+}
+
+let pumping = false;
+async function pumpQueue() {
+  if (pumping) return;
+  pumping = true;
+  try {
+    await loadJobs();
+    const max = Math.max(1, Number((await getSettings()).maxParallel) || 2);
+    for (;;) {
+      const next = [...jobs.values()].filter((j) => j.status === 'queued').sort((a, b) => a.queuedAt - b.queuedAt)[0];
+      if (!next || activeDownloads() >= max) break;
+      jobs.delete(next.id); // the real job takes its place
+      persistJobs(true);
+      try {
+        await startDownload(next.tabId, next.mediaId, next.optionId);
+      } catch (e) {
+        jobs.set(next.id, { ...next, status: 'error', error: e.message, finishedAt: Date.now() });
+        persistJobs(true);
+      }
+    }
+  } finally {
+    pumping = false;
+  }
+}
+
+// ---------------------------------------------------------------- playlists (showcases): every video, not just the played ones
+
+/** Ask yt-dlp for the playlist's videos and list each one; already-downloaded ones show as such. */
+async function listPlaylist(tabId, mediaId) {
+  const t = await getTab(tabId);
+  const p = t.media.find((x) => x.id === mediaId);
+  if (!p?.playlist) throw new Error('That item is not a playlist.');
+  const helper = await helperStatus(true);
+  if (!helper.ok) throw new Error(helper.error);
+  if (!helper.tools?.ytdlp) throw new Error('Listing a playlist needs yt-dlp (winget install yt-dlp.yt-dlp).');
+  const res = await helperRequest({ type: 'ytdlpList', url: p.url, referer: t.pageUrl }, { timeoutMs: 4 * 60 * 1000 });
+  const entries = res.entries || [];
+  for (const e of entries) {
+    const m = await addMedia(tabId, { url: e.url, kind: 'embed', mediaType: 'video', ext: '', size: null, contentType: '', source: 'playlist', duration: e.duration });
+    if (!m) continue;
+    if (!m.title) Object.assign(m, { title: e.title || `Video ${e.index}`, nameSource: 'embed' });
+    Object.assign(m, {
+      provider: /vimeo/i.test(e.url) ? 'vimeo' : /youtu/i.test(e.url) ? 'youtube' : m.provider || '',
+      parentId: p.id, playlistUrl: p.url, playlistIndex: e.index, section: m.section || p.section || '',
+      course: m.course || p.course || res.title || p.title || '',
+    });
+    m.label = describe(m);
+  }
+  p.listed = { at: Date.now(), count: entries.length, title: res.title || '' };
+  coverEntries(t);
+  persistTab(tabId);
+  return { count: entries.length, title: res.title || '' };
+}
+
+/**
+ * A playlist entry you already played is the same video as its stream card: hide the entry (the stream card
+ * has the real stream and its status). Same length (±2 s), and the names don't say otherwise.
+ */
+function coverEntries(t) {
+  const streams = t.media.filter((m) => (m.kind === 'hls' || m.kind === 'dash') && !m.hidden && !m.dismissed && m.info?.duration > 20);
+  for (const e of t.media.filter((m) => m.parentId)) {
+    const d = e.info?.duration;
+    const lead = leadNumber(e.title);
+    const cover = d > 20 && streams.find((s) => Math.abs(s.info.duration - d) <= 2
+      && (lead == null || leadNumber(s.title) == null || leadNumber(s.title) === lead));
+    e.covered = cover ? cover.id : '';
+  }
+}
+
+/** "Download missing": every video of the playlist that isn't downloaded, queued, or running. */
+async function downloadMissing(tabId, mediaId) {
+  await loadJobs();
+  const t = await getTab(tabId);
+  const p = t.media.find((x) => x.id === mediaId);
+  if (!p?.listed) throw new Error('List the playlist\'s videos first.');
+  const { history = [], marks = {} } = await chrome.storage.local.get(['history', 'marks']);
+  attachLibrary(t, history, marks);
+  const isDone = (m) => m.mark === 'done' || (m.mark !== 'new' && ((m.library?.path && !m.library.missing) || history.some((h) => sameItem(m, h))));
+  const busy = (m) => [...jobs.values()].some((j) => j.mediaId === m.id && (j.status === 'queued' || ACTIVE.includes(j.status)));
+  const entries = t.media.filter((m) => m.parentId === p.id && !m.dismissed).sort((a, b) => a.playlistIndex - b.playlistIndex);
+  let queued = 0;
+  let skipped = 0;
+  for (const e of entries) {
+    const target = e.covered ? t.media.find((x) => x.id === e.covered) || e : e; // a played lecture downloads from its stream
+    if (isDone(target) || isDone(e) || busy(target)) {
+      skipped++;
+      continue;
+    }
+    await enqueueDownload(tabId, target.id, target === e ? 'file' : 'best');
+    queued++;
+  }
+  return { queued, skipped };
 }
 
 // ---------------------------------------------------------------- local helper
@@ -1298,26 +1427,38 @@ async function startYtdlp(tabId, { url, mediaId } = {}) {
   const t = await getTab(tabId);
   await refreshTabInfo(tabId, t);
   const item = mediaId ? t.media.find((x) => x.id === mediaId) : null;
-  const target = item?.url || (isHttpUrl(url || '') ? url : t.pageUrl);
+  // A video listed from a playlist downloads through that playlist (domain-restricted showcases need it).
+  const viaPlaylist = item?.parentId && item.playlistUrl && item.playlistIndex;
+  const target = viaPlaylist ? item.playlistUrl : item?.url || (isHttpUrl(url || '') ? url : t.pageUrl);
   const helper = await helperStatus(true);
   if (!helper.ok) throw new Error(helper.error);
   if (!helper.tools?.ytdlp) throw new Error('yt-dlp was not found on your PATH. Install it (winget install yt-dlp) and try again.');
   const settings = await getSettings();
   const [dl] = await chrome.downloads.search({ limit: 1, orderBy: ['-startTime'] });
   const job = {
-    id: crypto.randomUUID(), tabId, kind: 'ytdlp', mediaUrl: target, pageUrl: t.pageUrl,
-    mediaId: item?.id || '', mediaKeys: item ? keysOf(item) : [],
+    // Recorded under the video itself, not the playlist it was fetched through (or the playlist would count as saved).
+    id: crypto.randomUUID(), tabId, kind: 'ytdlp', mediaUrl: item?.url || target, pageUrl: t.pageUrl,
+    mediaId: item?.id || '', mediaKeys: item ? keysOf(item) : [], optionId: 'file',
     title: item?.customName || item?.title || t.pageTitle || t.pageUrl, filename: 'yt-dlp', status: 'running', tracks: [], outputs: [],
     progress: { done: 0, total: 100, bytes: 0, percent: true }, startedAt: Date.now(),
   };
   jobs.set(job.id, job);
   persistJobs(true);
+  const rules = rulesFor(settings, t.pageUrl);
+  const date = new Date().toISOString().slice(0, 10);
+  const course = sanitizeFilename(item?.course || '', 80);
+  // One video with a known name: name it like every other download (template, {number}, {name}).
+  const name = item && !item.playlist && (item.customName || item.title)
+    ? buildFilename(rules.filenameTemplate, { title: item.customName || item.title, quality: '', course, page: t.pageTitle || '', host: siteKey(t.pageUrl || target), date, kind: 'ytdlp' }, '')
+    : '';
   helperRequest({
     type: 'ytdlp',
     url: target,
-    playlist: !!item?.playlist, // a showcase: download every video in it
+    playlist: !!item?.playlist && !viaPlaylist, // a showcase: download every video in it
+    items: viaPlaylist ? String(item.playlistIndex) : undefined,
+    name: name || undefined,
     referer: t.pageUrl,
-    subfolder: resolveFolder(settings.subfolder, { site: siteKey(t.pageUrl), date: new Date().toISOString().slice(0, 10), kind: 'ytdlp' }),
+    subfolder: resolveFolder(rules.subfolder, { site: siteKey(t.pageUrl), course, date, kind: 'ytdlp' }),
     dir: settings.saveFolder || '',
     downloadsHint: dl?.filename || '',
   }, {
@@ -1335,6 +1476,7 @@ async function startYtdlp(tabId, { url, mediaId } = {}) {
       : res.files?.length ? `Saved to ${res.files[0]}` : 'yt-dlp finished';
     if (res.warning) job.note += ` · some videos failed: ${res.warning.slice(0, 160)}`;
     persistJobs(true);
+    pumpQueue();
     await addHistory(job);
   }).catch((e) => failJob(job.id, e.message));
   return publicJob(job);
@@ -1476,7 +1618,9 @@ const handlers = {
     await loadLibrary();
     if (Date.now() - library.at > 60000) scanLibrary().catch(() => {});
     const { history = [], marks = {} } = await chrome.storage.local.get(['history', 'marks']);
+    coverEntries(t);
     attachLibrary(t, history, marks);
+    pumpQueue(); // in case the worker restarted with downloads waiting
     // The sidebar lists what is in your folders (newest first), marking the files this page's videos matched.
     const matched = new Set(t.media.map((m) => m.library?.path?.toLowerCase()).filter(Boolean));
     const files = panel
@@ -1492,7 +1636,9 @@ const handlers = {
       page: { url: t.pageUrl, title: t.pageTitle, site: t.pageUrl ? siteKey(t.pageUrl) : '' },
       media: visibleMedia(t).sort((a, b) => rank(a) - rank(b) || (b.size || 0) - (a.size || 0)),
       removedCount: t.media.filter((m) => m.dismissed).length,
-      jobs: allJobs.filter((j) => j.tabId === tabId || ['running', 'recording', 'muxing'].includes(j.status)).slice(0, 20).map(publicJob),
+      // Playlist entries shown through the stream card you played (for the playlist's counts).
+      coveredEntries: t.media.filter((m) => m.covered && !m.dismissed).map((m) => ({ id: m.id, parentId: m.parentId, covered: m.covered, title: m.title })),
+      jobs: allJobs.filter((j) => j.tabId === tabId || ['running', 'recording', 'muxing', 'queued'].includes(j.status)).slice(0, 40).map(publicJob),
       aiResult: t.aiResult,
       recipe,
       ai: { provider: settings.aiProvider, configured: settings.aiProvider === 'subscription' || (settings.aiProvider === 'api' && !!settings.apiKey) },
@@ -1500,7 +1646,11 @@ const handlers = {
     };
   },
   inspect: ({ tabId, mediaId }) => inspectMedia(tabId, mediaId),
-  download: ({ tabId, mediaId, optionId }) => startDownload(tabId, mediaId, optionId),
+  download: ({ tabId, mediaId, optionId }) => enqueueDownload(tabId, mediaId, optionId),
+  listPlaylist: ({ tabId, mediaId }) => listPlaylist(tabId, mediaId),
+  downloadMissing: ({ tabId, mediaId }) => downloadMissing(tabId, mediaId),
+  toolVersions: () => helperRequest({ type: 'toolVersions' }, { timeoutMs: 60000 }),
+  updateYtdlp: () => helperRequest({ type: 'updateYtdlp' }, { timeoutMs: 6 * 60 * 1000 }),
   cancelJob: ({ jobId }) => cancelJob(jobId),
   async stopLive({ jobId }) {
     await toOffscreen({ type: 'stopLive', jobId });

@@ -32,11 +32,22 @@ export function resolveFolder(template, vars = {}) {
 }
 
 /**
- * Fill a filename template. Supported tokens: {title} {quality} {host} {date} {kind}.
- * Empty tokens collapse together with the separators around them.
+ * A lecture/episode number at the start of a title, and the rest: "009: Updates in C. diff" →
+ * { number: '009', name: 'Updates in C. diff' }. Dates and times ("2026-11-02 …", "10:30 …") are not numbers.
+ */
+export function splitLecture(title) {
+  const t = String(title || '').trim();
+  const m = /^(?:(?:lecture|lec|episode|ep|part|session|video|no|#)\.?\s*)?(\d{1,3})(?![\d:.,/-]\d)(?!\d)\s*(?:[-–—:.)_|]+\s*|\s+)(.*)$/i.exec(t);
+  return m && m[2] ? { number: m[1], name: m[2].trim() } : { number: '', name: t };
+}
+
+/**
+ * Fill a filename template. Tokens: {title} {number} {name} {course} {page} {quality} {host} {date} {kind}
+ * ({number} and {name} are the two halves of a numbered title). Empty tokens collapse with their separators.
  */
 export function buildFilename(template, vars, ext) {
   const tpl = template || '{title} - {quality}';
+  vars = { ...splitLecture(vars.title), ...vars };
   const filled = tpl.replace(/\{(\w+)\}/g, (_, k) => (vars[k] == null ? '' : String(vars[k])));
   const cleaned = filled
     .replace(/(\s*[-_·|]\s*){2,}/g, ' - ')
@@ -94,6 +105,22 @@ export function hostOf(url) {
 export function siteKey(urlOrHost) {
   const host = urlOrHost.includes('://') ? hostOf(urlOrHost) : urlOrHost;
   return host.replace(/^www\./i, '').toLowerCase();
+}
+
+/**
+ * The folder and file-name template for a page: a rule for its site (or a parent domain: a rule for
+ * "example.com" also covers "learn.example.com") overrides the general settings.
+ */
+export function rulesFor(settings, url) {
+  const site = url ? siteKey(url) : '';
+  const rules = settings?.siteRules || {};
+  const key = Object.keys(rules).filter((k) => site === k || site.endsWith(`.${k}`)).sort((a, b) => b.length - a.length)[0];
+  const r = key ? rules[key] : {};
+  return {
+    site: key || '',
+    subfolder: r.subfolder != null && r.subfolder !== '' ? r.subfolder : settings?.subfolder,
+    filenameTemplate: r.filenameTemplate ? r.filenameTemplate : settings?.filenameTemplate,
+  };
 }
 
 /** Lower-cased extension from a URL path (ignores query/hash), or ''. */

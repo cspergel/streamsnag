@@ -134,6 +134,12 @@ function patchList(ul, items, keyOf, sigOf, build) {
 function statusFor(m) {
   const mine = (state.jobs || []).filter((j) => sameItem(m, j));
   if (mine.some((j) => ['running', 'recording', 'muxing'].includes(j.status))) return 'active';
+  if (mine.some((j) => j.status === 'queued')) return 'queued';
+  // A listed playlist is downloaded when every video in it is.
+  if (m.playlist && m.listed && m.mark !== 'new') {
+    const { total, missing } = playlistEntries(m);
+    if (total && !missing) return 'done';
+  }
   // You marked it yourself: that beats any guess below.
   if (m.mark === 'done') return 'done';
   if (m.mark === 'new') return 'new';
@@ -147,6 +153,7 @@ function statusFor(m) {
 
 const STATUS_TAG = {
   active: ['Downloading…', 'st-active'],
+  queued: ['Queued', 'st-active'],
   done: ['✓ Downloaded', 'st-done'],
   failed: ['Failed', 'st-failed'],
   missing: ['File not in folder', 'st-failed'],
@@ -258,6 +265,55 @@ function displayName(m) {
   return m.customName || m.title || m.hint || (m.kind === 'subtitle' ? (m.lang ? `Subtitles (${m.lang})` : 'Subtitles') : state.page.title) || hostOf(m.url);
 }
 
+/** The videos listed from a playlist card, and how many of them still need downloading. */
+function playlistEntries(m) {
+  const entries = state.media.filter((x) => x.parentId === m.id);
+  // An entry you played shows as its stream card ("covered"); count that card's status instead.
+  const all = [...entries, ...(state.coveredEntries || []).filter((x) => x.parentId === m.id)];
+  const statusOf = (e) => (e.covered ? statusFor(state.media.find((x) => x.id === e.covered) || e) : statusFor(e));
+  const missing = all.filter((e) => !['done', 'active', 'queued'].includes(statusOf(e))).length;
+  return { total: m.listed?.count || all.length, missing, done: all.filter((e) => statusOf(e) === 'done').length };
+}
+
+function playlistSummary(m) {
+  if (!m.listed) return 'playlist · list its videos to see which you have';
+  const { total, done } = playlistEntries(m);
+  return `playlist · ${total} video${total === 1 ? '' : 's'} · ${done} downloaded`;
+}
+
+function playlistButton(m) {
+  if (!m.listed) {
+    return h('button', { class: 'primary', title: 'Ask yt-dlp for every video in this playlist (nothing is downloaded yet)', onclick: (e) => listPlaylist(m, e.currentTarget) }, 'List videos');
+  }
+  const { missing } = playlistEntries(m);
+  return missing
+    ? h('button', { class: 'primary', title: 'Download every video in this playlist that you don\'t have yet', onclick: (e) => downloadMissing(m, e.currentTarget) }, `Download missing (${missing})`)
+    : h('span', { class: 'st st-done' }, '✓ All downloaded');
+}
+
+async function listPlaylist(m, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Listing…';
+  try {
+    const r = await send('listPlaylist', { mediaId: m.id });
+    banner(`Found ${r.count} video${r.count === 1 ? '' : 's'}${r.title ? ` in "${r.title}"` : ''}.`);
+  } catch (e) {
+    banner(e.message, true);
+  }
+  refresh();
+}
+
+async function downloadMissing(m, btn) {
+  btn.disabled = true;
+  try {
+    const r = await send('downloadMissing', { mediaId: m.id });
+    banner(r.queued ? `Downloading ${r.queued} video${r.queued === 1 ? '' : 's'} (${r.skipped} already downloaded or in progress).` : 'Nothing left to download.');
+  } catch (e) {
+    banner(e.message, true);
+  }
+  refresh();
+}
+
 async function mark(m, as, msg) {
   try {
     await send('markMedia', { mediaId: m.id, as });
@@ -278,9 +334,11 @@ function mediaCard(m) {
     ? h('span', { class: 'tag drm' }, 'DRM')
     : isStream
       ? h('button', { class: 'primary', onclick: () => toggleOptions(m) }, open.options ? 'Close' : 'Download ▾')
-      : m.kind === 'embed'
-        ? h('button', { class: 'primary', title: 'Downloads with yt-dlp through the local helper', onclick: () => download(m, 'file') }, m.playlist ? 'Download all' : 'Download')
-        : h('button', { class: 'primary', onclick: () => download(m, 'file') }, 'Download');
+      : m.playlist
+        ? playlistButton(m)
+        : m.kind === 'embed'
+          ? h('button', { class: 'primary', title: 'Downloads with yt-dlp through the local helper', onclick: () => download(m, 'file') }, 'Download')
+          : h('button', { class: 'primary', onclick: () => download(m, 'file') }, 'Download');
 
   const moreBtn = h('button', {
     class: 'icon more', title: 'More actions', 'aria-label': 'More actions',
@@ -294,7 +352,7 @@ function mediaCard(m) {
       thumbFor(m),
       h('div', { class: 'meta' },
         nameEl(title, `m:${m.id}`),
-        h('div', { class: 'sub', title: m.url }, m.kind === 'subtitle' && st === 'new' ? null : [h('span', { class: `st ${stCls}` }, stText), ' '], m.label, m.section ? ` · ${m.section}` : '', ' · ', m.kind === 'embed' ? (m.playlist ? 'playlist · every video, with yt-dlp' : 'downloads with yt-dlp') : hostOf(m.url),
+        h('div', { class: 'sub', title: m.url }, m.kind === 'subtitle' && st === 'new' ? null : [h('span', { class: `st ${stCls}` }, stText), ' '], m.label, m.section ? ` · ${m.section}` : '', ' · ', m.playlist ? playlistSummary(m) : m.parentId ? `#${m.playlistIndex} in the playlist` : m.kind === 'embed' ? 'downloads with yt-dlp' : hostOf(m.url),
           m.info?.hasSubtitles ? h('span', { class: 'tag', title: 'Has subtitles: they are saved with the video' }, 'CC') : null,
           m.mark ? h('span', { class: 'tag', title: 'You set this yourself (⋯ menu to undo)' }, 'marked') : null,
           sourceTag(m)),
@@ -374,6 +432,8 @@ function mediaCard(m) {
       m.kind !== 'subtitle' && !m.mark && st !== 'done' ? h('button', { class: 'secondary', title: 'You already have this video (the folder check missed it)', onclick: () => mark(m, 'done', 'Marked as downloaded') }, '✓ Mark as downloaded') : null,
       m.kind !== 'subtitle' && !m.mark && st === 'done' ? h('button', { class: 'secondary', title: 'The folder check matched the wrong file', onclick: () => mark(m, 'new', 'Marked as not downloaded') }, 'Mark as not downloaded') : null,
       m.mark ? h('button', { class: 'secondary', onclick: () => mark(m, null, 'Back to checking your folder') }, 'Undo my mark') : null,
+      m.playlist ? h('button', { class: 'secondary', title: 'Every video in the playlist, into its own folder', onclick: () => download(m, 'file') }, 'Download all') : null,
+      m.playlist && m.listed ? h('button', { class: 'secondary', onclick: (e) => listPlaylist(m, e.currentTarget) }, 'List again') : null,
       h('button', { class: 'secondary', onclick: () => copy(m.url, 'URL copied') }, 'Copy URL'),
       h('button', { class: 'secondary', onclick: () => copy(ytdlpCommand(m.url, { referer }), 'yt-dlp command copied') }, 'Copy yt-dlp cmd'),
       isStream ? h('button', { class: 'secondary', onclick: () => copy(ffmpegCommand(m.url, { referer }), 'ffmpeg command copied') }, 'Copy ffmpeg cmd') : null,
@@ -391,7 +451,7 @@ function mediaCard(m) {
 // ------------------------------------------------------------------ jobs
 
 const STATUS_TEXT = {
-  running: 'Downloading', recording: 'Recording live', muxing: 'Merging with ffmpeg', done: 'Done',
+  queued: 'Waiting for a free slot', running: 'Downloading', recording: 'Recording live', muxing: 'Merging with ffmpeg', done: 'Done',
   error: 'Failed', canceled: 'Canceled',
 };
 
@@ -425,7 +485,14 @@ function jobCard(j) {
 
   const actions = h('div', { class: 'job-actions' });
   if (j.status === 'recording') actions.append(h('button', { class: 'primary', onclick: () => send('stopLive', { jobId: j.id }).then(refresh) }, '■ Stop & save'));
-  if (active) actions.append(h('button', { class: 'secondary danger', onclick: () => send('cancelJob', { jobId: j.id }).then(refresh) }, 'Cancel'));
+  if (active || j.status === 'queued') actions.append(h('button', { class: 'secondary danger', onclick: () => send('cancelJob', { jobId: j.id }).then(refresh) }, 'Cancel'));
+  if ((j.status === 'error' || j.status === 'canceled') && j.mediaId) {
+    actions.append(h('button', {
+      class: 'secondary',
+      title: 'Try this download again (fresh links are fetched)',
+      onclick: () => send('download', { mediaId: j.mediaId, optionId: j.optionId || 'file' }).then(() => { banner('Trying again'); refresh(); }).catch((e) => banner(e.message, true)),
+    }, '↻ Retry'));
+  }
   if (j.status === 'done') {
     // After an ffmpeg merge the main output has a path but no Chrome download id.
     const main = j.outputs?.[0];
@@ -626,7 +693,7 @@ function historyCard(x) {
   );
 }
 
-const STATUS_ORDER = { failed: 0, missing: 0, new: 1, active: 2, done: 3 };
+const STATUS_ORDER = { failed: 0, missing: 0, new: 1, queued: 2, active: 2, done: 3 };
 const byName = (a, b) => displayName(a).localeCompare(displayName(b), undefined, { numeric: true, sensitivity: 'base' });
 
 /** Sort (and for "section", group) the cards. Returns cards and {group} headings. */
@@ -752,7 +819,7 @@ function render() {
   // Subtitle files are kept apart (collapsed): stream downloads already include their subtitles.
   const videos = state.media.filter((m) => m.kind !== 'subtitle');
   const subs = state.media.filter((m) => m.kind === 'subtitle');
-  const counts = { new: 0, done: 0, failed: 0, active: 0, missing: 0 };
+  const counts = { new: 0, done: 0, failed: 0, active: 0, queued: 0, missing: 0 };
   const withStatus = videos.map((m) => ({ m, st: statusFor(m) }));
   withStatus.forEach(({ st }) => { counts[st]++; });
   const q = query.trim().toLowerCase();
@@ -771,7 +838,7 @@ function render() {
       h('button', { class: 'link small', onclick: () => send('restoreMedia').then(refresh) }, 'Show again'));
   }
   const sig = (m) => m.group ? JSON.stringify(m) : JSON.stringify([
-    m.label, m.size, m.seen, m.library, m.fingerprint, m.poster, m.hint, m.title, m.customName, m.course, m.nameSource, m.source, m.alsoAi, m.info, m.protected, m.mark, m.section, statusFor(m), state.page.title,
+    m.listed, m.playlist ? JSON.stringify(playlistEntries(m)) : '', m.playlistIndex, m.label, m.size, m.seen, m.library, m.fingerprint, m.poster, m.hint, m.title, m.customName, m.course, m.nameSource, m.source, m.alsoAi, m.info, m.protected, m.mark, m.section, statusFor(m), state.page.title,
     PANEL && statusFor(m) === 'done' ? ago(lastDownload(m)?.at) : '', PANEL ? ago(m.detectedAt) : '',
     openMedia.get(m.id) || null, expanded.has(`m:${m.id}`),
   ]);

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { sanitizeFilename, buildFilename, formatBytes, extFromUrl, siteKey, ytdlpCommand } from '../extension/lib/util.js';
 import { mergeVttSegments, srtToVtt, captionsToText } from '../extension/lib/vtt.js';
 import { encodeMessage, createDecoder } from '../native-host/protocol.js';
-import { safeOutputName, parseYtdlpProgress, cmdShimCommandLine } from '../native-host/host.js';
+import { safeOutputName, parseYtdlpProgress, cmdShimCommandLine, VERSION } from '../native-host/host.js';
 import { extensionIdFromKey } from '../native-host/install.js';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -103,7 +103,7 @@ test('helper process answers a framed ping with its tool list', async () => {
   child.stdin.end();
   assert.equal(reply.id, 'abc');
   assert.equal(reply.type, 'result');
-  assert.equal(reply.version, '1.0.0');
+  assert.equal(reply.version, VERSION);
   assert.ok('claude' in reply.tools && 'ffmpeg' in reply.tools && 'ytdlp' in reply.tools);
 });
 

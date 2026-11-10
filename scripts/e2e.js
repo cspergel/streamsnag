@@ -218,7 +218,20 @@ fs.writeFileSync(path.join(work, 'profile', 'Default', 'Preferences'), JSON.stri
   download: { default_directory: downloadDir, prompt_for_download: false, directory_upgrade: true },
 }));
 
+// The helper (started by Chrome) inherits these: a saved playlist listing and a fake yt-dlp, so the playlist
+// checks never touch a real site.
+const playlistFile = path.join(work, 'playlist.json');
+fs.writeFileSync(playlistFile, JSON.stringify({
+  _type: 'playlist', id: '12471493', title: 'Day 1 sessions', extractor: 'vimeo:album',
+  entries: [
+    { _type: 'url', ie_key: 'Vimeo', id: '5550001', url: 'https://vimeo.com/5550001', title: '001: Opening Session', duration: 600 },
+    { _type: 'url', ie_key: 'Vimeo', id: '5550002', url: 'https://vimeo.com/5550002', title: '002: Valve Disease Update' },
+    { _type: 'url', ie_key: 'Vimeo', id: '5550003', url: 'https://vimeo.com/5550003', title: '003: Closing Remarks', duration: 1200 },
+  ],
+}));
+
 const browser = await puppeteer.launch({
+  env: { ...process.env, STREAMSNAG_TEST_PLAYLIST: playlistFile, STREAMSNAG_FAKE_YTDLP: '1' },
   executablePath: chromePath,
   headless: true,
   pipe: true,
@@ -570,7 +583,7 @@ try {
   await hp.goto(`chrome-extension://${extId}/popup.html?tabId=${hallTab}`);
   await new Promise((r) => setTimeout(r, 900));
   const btn = await hp.evaluate(() => [...document.querySelectorAll('#media .card')].map((c) => c.querySelector('.primary')?.textContent));
-  check('the showcase card offers "Download all"', btn.includes('Download all'), btn.join(', '));
+  check('the showcase card offers "List videos" (Download all is in its menu)', btn.includes('List videos'), btn.join(', '));
   // Organising the list: subtitle files tucked away, search, sort/group.
   const org = await hp.evaluate(async () => {
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -630,6 +643,55 @@ try {
     await hp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-organize.png'), fullPage: true });
     await fp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-folders.png'), fullPage: true });
   }
+
+  // A whole playlist: list every video (not only the ones played), then download just the missing ones,
+  // two at most at once, named by a site rule. (yt-dlp is faked by the helper in this test: no network.)
+  fs.writeFileSync(path.join(shelf, 'Conference', '002 - Valve Disease Update - 720p.mp4'), Buffer.alloc(5000, 3));
+  await ext.evaluate(async () => {
+    const { settings = {} } = await chrome.storage.local.get('settings');
+    await chrome.storage.local.set({ settings: { ...settings, maxParallel: 1, siteRules: { '127.0.0.1': { subfolder: 'Rules/{site}', filenameTemplate: '{number} - {name}' } } } });
+  });
+  await call('checkLibrary');
+  const showcaseNow = (await stateOf(hallTab)).media.find((m) => m.provider === 'vimeo-showcase');
+  const listed = await call('listPlaylist', { tabId: hallTab, mediaId: showcaseNow.id });
+  const entries = (await stateOf(hallTab)).media.filter((m) => m.parentId === showcaseNow.id).sort((a, b) => a.playlistIndex - b.playlistIndex);
+  check('List videos shows every video of a playlist, numbered, with "002" recognised as already downloaded',
+    listed.ok && listed.data.count === 3 && entries.map((e) => e.title).join('|') === '001: Opening Session|002: Valve Disease Update|003: Closing Remarks'
+    && entries[1]?.library?.how === 'name' && !entries[0].library && !entries[2].library,
+  JSON.stringify(listed.ok ? entries.map((e) => [e.title, e.library?.how || '-']) : listed.error));
+  const plp = await browser.newPage();
+  await plp.goto(`chrome-extension://${extId}/popup.html?tabId=${hallTab}`);
+  await new Promise((r) => setTimeout(r, 900));
+  const missingBtn = await plp.evaluate(() => [...document.querySelectorAll('#media .card .primary')].map((b) => b.textContent).find((t) => /missing/i.test(t)) || '');
+  check('the playlist card offers "Download missing (2)"', missingBtn === 'Download missing (2)', missingBtn);
+  const dm = await call('downloadMissing', { tabId: hallTab, mediaId: showcaseNow.id });
+  const jobsNow = (await stateOf(hallTab)).jobs.filter((j) => entries.some((e) => e.id === j.mediaId));
+  check('Download missing queues only the 2 missing videos, one at a time (the queue)', dm.ok && dm.data.queued === 2 && dm.data.skipped === 1
+    && jobsNow.filter((j) => j.status === 'running').length === 1 && jobsNow.filter((j) => j.status === 'queued').length === 1,
+  JSON.stringify({ dm: dm.data || dm.error, jobs: jobsNow.map((j) => j.status) }));
+  const allDone = await waitFor(async () => {
+    const js = (await stateOf(hallTab)).jobs.filter((j) => entries.some((e) => e.id === j.mediaId));
+    return js.length === 2 && js.every((j) => j.status === 'done') ? js : null;
+  }, 15000);
+  const ruled = fs.existsSync(path.join(custom, 'Rules', '127.0.0.1')) ? fs.readdirSync(path.join(custom, 'Rules', '127.0.0.1')).sort() : [];
+  check('both finish, saved where the site rule says, named "{number} - {name}"', !!allDone && ruled.join('|') === '001 - Opening Session.mp4|003 - Closing Remarks.mp4',
+    `${ruled.join(', ')}; ${allDone ? 'done' : 'not done'}`);
+  await plp.reload();
+  await new Promise((r) => setTimeout(r, 1200));
+  const afterCard = await plp.evaluate(() => {
+    const c = [...document.querySelectorAll('#media .card')].find((x) => /playlist ·/.test(x.textContent));
+    return { button: c?.querySelector('.row > .st-done, .row > .primary')?.textContent || '', sub: c?.querySelector('.sub')?.textContent || '' };
+  });
+  check('then the playlist card says everything is downloaded (3 of 3)', /All downloaded/.test(afterCard.button) && /3 videos · 3 downloaded/.test(afterCard.sub),
+    JSON.stringify(afterCard));
+  // Downloading some videos of a playlist must not mark the playlist itself as saved before all of them are.
+  const partial = await call('getTabState', { tabId: hallTab });
+  const wholeSaved = partial.data.media.find((m) => m.provider === 'vimeo-showcase')?.library;
+  check('a playlist is never recorded as one download just because its videos were fetched through it', !wholeSaved || wholeSaved.missing, JSON.stringify(wholeSaved));
+  await ext.evaluate(async () => {
+    const { settings = {} } = await chrome.storage.local.get('settings');
+    await chrome.storage.local.set({ settings: { ...settings, maxParallel: 2, siteRules: {} } });
+  });
 
   // A player whose title lags behind the video it just started (009 shown under 008's name).
   if (LAG) {

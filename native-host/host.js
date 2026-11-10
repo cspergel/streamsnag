@@ -13,7 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodeMessage, createDecoder } from './protocol.js';
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.4.0';
 const IS_WIN = process.platform === 'win32';
 const LOG = path.join(os.tmpdir(), 'streamsnag-helper.log');
 
@@ -304,15 +304,32 @@ async function handleYtdlp(msg) {
   const baseDir = msg.dir ? safeFolder(msg.dir) : path.join(os.homedir(), 'Downloads');
   const outDir = joinInside(baseDir, msg.subfolder);
   fs.mkdirSync(outDir, { recursive: true });
-  // A playlist (e.g. a Vimeo showcase) gets its own folder, files numbered in playlist order.
-  const template = msg.playlist === true
-    ? path.join(outDir, '%(playlist_title,playlist_id|Playlist).80B', '%(playlist_index)03d - %(title).140B [%(id)s].%(ext)s')
-    : path.join(outDir, '%(title).150B [%(id)s].%(ext)s');
+  // Some items of a playlist (e.g. the lectures of a showcase you don't have yet), named by the extension.
+  const items = msg.items == null ? '' : String(msg.items);
+  if (items && !/^\d{1,4}(,\d{1,4}){0,499}$/.test(items)) throw new Error('Invalid playlist items');
+  const name = msg.name ? ytdlpSafeName(msg.name) : '';
+  // A whole playlist gets its own folder, files numbered in playlist order.
+  const template = name
+    ? path.join(outDir, `${name}.%(ext)s`)
+    : msg.playlist === true
+      ? path.join(outDir, '%(playlist_title,playlist_id|Playlist).80B', '%(playlist_index)03d - %(title).140B [%(id)s].%(ext)s')
+      : path.join(outDir, '%(title).150B [%(id)s].%(ext)s');
   const args = [
-    msg.url, msg.playlist === true ? '--yes-playlist' : '--no-playlist', '--newline', '--progress', '--print', 'after_move:filepath',
+    msg.url, msg.playlist === true || items ? '--yes-playlist' : '--no-playlist', '--newline', '--progress', '--print', 'after_move:filepath',
     '-o', template,
   ];
-  if (msg.playlist === true) args.push('--ignore-errors'); // one private/removed video shouldn't stop the rest
+  if (items) args.push('--playlist-items', items);
+  // Tests: pretend to download (no network), writing a small file under the requested name.
+  if (process.env.STREAMSNAG_FAKE_YTDLP === '1') {
+    for (const percent of [30, 80]) {
+      reply({ id: msg.id, type: 'progress', percent, line: `fake yt-dlp ${percent}%` });
+      await new Promise((r) => setTimeout(r, 600));
+    }
+    const out = uniquePath(path.join(outDir, `${(name || 'video').replace(/%%/g, '%')}.mp4`));
+    fs.writeFileSync(out, Buffer.alloc(300 * 1024 + out.length, 9));
+    return { files: [out], warning: '' };
+  }
+  if (msg.playlist === true && !items) args.push('--ignore-errors'); // one private/removed video shouldn't stop the rest
   if (/^https?:\/\//i.test(msg.referer || '')) args.push('--referer', msg.referer);
   const ffmpeg = findTool('ffmpeg');
   // Pass ffmpeg explicitly: yt-dlp only searches PATH, which may predate the install.
@@ -341,6 +358,79 @@ async function handleYtdlp(msg) {
   // With --ignore-errors a playlist can partly succeed: keep what was saved and say what failed.
   if (res.code !== 0 && !(msg.playlist === true && files.length)) throw new Error(`yt-dlp failed: ${tail}`);
   return { files, warning: res.code !== 0 ? tail : '' };
+}
+
+/** A file name for a yt-dlp output template: no folders, no characters Windows refuses, "%" escaped. */
+export function ytdlpSafeName(name) {
+  const cleaned = String(name || '').replace(/[<>:"/\\|?*\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim()
+    .replace(/^[.\s]+|[.\s]+$/g, '').slice(0, 150);
+  if (!cleaned) throw new Error('Empty file name');
+  return cleaned.replace(/%/g, '%%');
+}
+
+/** yt-dlp's --flat-playlist -J output → the playlist's title and its videos, in order. */
+export function parseFlatPlaylist(json) {
+  const data = typeof json === 'string' ? JSON.parse(json) : json;
+  const raw = Array.isArray(data?.entries) ? data.entries : [];
+  const entries = raw.filter((e) => e && (e.url || e.webpage_url || e.id)).slice(0, 1000).map((e, i) => {
+    let url = e.url || e.webpage_url || '';
+    if (!/^https?:\/\//i.test(url) && /vimeo/i.test(e.ie_key || data.extractor || '') && /^\d+$/.test(String(e.id))) url = `https://vimeo.com/${e.id}`;
+    if (!/^https?:\/\//i.test(url) && /youtube/i.test(e.ie_key || data.extractor || '') && e.id) url = `https://www.youtube.com/watch?v=${e.id}`;
+    return {
+      index: Number(e.playlist_index) || i + 1,
+      id: String(e.id || ''),
+      title: String(e.title || '').slice(0, 300),
+      url,
+      duration: Number(e.duration) > 0 ? Number(e.duration) : 0,
+    };
+  }).filter((e) => /^https?:\/\//i.test(e.url));
+  return { title: String(data?.title || '').slice(0, 300), playlistId: String(data?.id || ''), entries }; // not "id": that is the reply's request id
+}
+
+/** List a playlist's videos without downloading anything. */
+async function handleYtdlpList(msg) {
+  if (!/^https?:\/\//i.test(msg.url || '')) throw new Error('Invalid URL');
+  // Tests point this at a saved listing instead of the network.
+  if (process.env.STREAMSNAG_TEST_PLAYLIST) return parseFlatPlaylist(fs.readFileSync(process.env.STREAMSNAG_TEST_PLAYLIST, 'utf8'));
+  const ytdlp = findTool('yt-dlp');
+  if (!ytdlp) throw new Error('yt-dlp not found on PATH');
+  const args = [msg.url, '--flat-playlist', '-J', '--no-warnings', '--yes-playlist'];
+  if (/^https?:\/\//i.test(msg.referer || '')) args.push('--referer', msg.referer);
+  const res = await run(ytdlp, args, { timeoutMs: 3 * 60 * 1000 });
+  if (res.code !== 0) throw new Error(`yt-dlp could not list it: ${res.stderr.trim().split(/\r?\n/).slice(-2).join(' ').slice(0, 400)}`);
+  return parseFlatPlaylist(res.stdout);
+}
+
+/** Versions of the tools the helper uses (Settings → Local helper). */
+async function handleToolVersions() {
+  const first = async (tool, args) => {
+    const p = findTool(tool);
+    if (!p) return '';
+    try {
+      const r = await run(p, args, { timeoutMs: 15000 });
+      return (r.stdout || r.stderr).trim().split(/\r?\n/)[0].slice(0, 120);
+    } catch {
+      return '?';
+    }
+  };
+  const [ytdlp, ffmpeg, claude] = await Promise.all([first('yt-dlp', ['--version']), first('ffmpeg', ['-version']), first('claude', ['--version'])]);
+  return { helper: VERSION, node: process.version, ytdlp, ffmpeg: ffmpeg.replace(/^ffmpeg version\s+/i, '').split(' ')[0], claude };
+}
+
+/** Sites change often and an old yt-dlp stops working: update it in place. */
+async function handleUpdateYtdlp() {
+  const ytdlp = findTool('yt-dlp');
+  if (!ytdlp) throw new Error('yt-dlp not found on PATH');
+  const res = await run(ytdlp, ['-U'], { timeoutMs: 5 * 60 * 1000 });
+  const out = `${res.stdout}\n${res.stderr}`.trim();
+  const last = out.split(/\r?\n/).filter(Boolean).slice(-3).join(' ').slice(0, 400);
+  if (res.code !== 0) {
+    const hint = /pip/i.test(out) ? 'It was installed with pip: run "pip install -U yt-dlp".'
+      : /winget|package manager|not supported/i.test(out) ? 'Update it with your package manager, e.g. "winget upgrade yt-dlp.yt-dlp".' : '';
+    throw new Error(`${last}${hint ? ` ${hint}` : ''}`);
+  }
+  toolCache.delete('yt-dlp');
+  return { output: last, upToDate: /up to date/i.test(out) };
 }
 
 // ------------------------------------------------------------------ custom save folder
@@ -532,6 +622,9 @@ const HANDLERS = {
   claude: handleClaude,
   mux: handleMux,
   ytdlp: handleYtdlp,
+  ytdlpList: handleYtdlpList,
+  toolVersions: handleToolVersions,
+  updateYtdlp: handleUpdateYtdlp,
 };
 
 async function dispatch(msg) {
@@ -543,7 +636,7 @@ async function dispatch(msg) {
   }
   try {
     const result = await handler(msg);
-    reply({ id, type: 'result', ...result });
+    reply({ ...result, id, type: 'result' }); // a handler's own "id" field must never replace the request id
   } catch (e) {
     log('error', msg.type, e.message);
     reply({ id, type: 'error', error: e.message });
@@ -554,7 +647,7 @@ async function dispatch(msg) {
 const norm = (p) => (IS_WIN ? path.resolve(p).toLowerCase() : path.resolve(p));
 const isMain = !!process.argv[1] && norm(process.argv[1]) === norm(fileURLToPath(import.meta.url));
 if (isMain) {
-  log('started', process.argv.slice(2).join(' '));
+  log('started', process.argv.slice(2).join(' '), process.env.STREAMSNAG_FAKE_YTDLP === '1' ? '(test mode: fake yt-dlp)' : '');
   process.stdin.on('data', createDecoder((m) => { dispatch(m); }, (e) => log('decode error', e.message)));
   process.stdin.on('end', () => process.exit(0));
 }

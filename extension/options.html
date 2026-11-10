@@ -23,6 +23,7 @@
       <button role="tab" data-tab="helper">Local helper</button>
       <button role="tab" data-tab="recipes">Site recipes</button>
       <button role="tab" data-tab="history">History</button>
+      <button role="tab" data-tab="backup">Backup &amp; advanced</button>
     </nav>
 
     <!-- AI -->
@@ -88,7 +89,24 @@
         <label>Subfolder <input type="text" id="subfolder" placeholder="StreamSnag (empty = no subfolder)" spellcheck="false"></label>
         <p class="muted small">Use <code>/</code> for nested folders. Tokens: <code>{site}</code> <code>{course}</code> <code>{date}</code> <code>{kind}</code>. Example: <code>StreamSnag/{site}</code> makes one folder per website, and <code>StreamSnag/{course}</code> one per course.</p>
         <label>File name template <input type="text" id="filenameTemplate" placeholder="{title} - {quality}"></label>
-        <p class="muted small">Tokens: <code>{title}</code> (the lecture/episode name found on the page) <code>{course}</code> <code>{page}</code> (tab title) <code>{quality}</code> <code>{host}</code> <code>{date}</code> <code>{kind}</code>. Example: <code>{course} - {title}</code></p>
+        <p class="muted small">Tokens: <code>{title}</code> (the lecture/episode name found on the page) <code>{number}</code> and <code>{name}</code> (the two halves of a numbered title like "009: C. diff") <code>{course}</code> <code>{page}</code> (tab title) <code>{quality}</code> <code>{host}</code> <code>{date}</code> <code>{kind}</code>. Examples: <code>{course} - {title}</code>, <code>{number} - {name}</code></p>
+        <label>Downloads at once <input type="number" id="maxParallel" min="1" max="6"></label>
+        <p class="muted small">More than this wait in the queue and start as others finish (live recordings don't count).</p>
+      </div>
+      <div class="card stack">
+        <h3>Rules for specific sites</h3>
+        <p class="muted small">Use a different folder or file name on one site, e.g. a course site: folder <code>Courses/{course}</code>, name <code>{number} - {name}</code>. A rule for <code>example.com</code> also covers <code>learn.example.com</code>. Leave a field empty to use the general setting (a folder of <code>.</code> means no subfolder).</p>
+        <table class="rules">
+          <thead><tr><th>Site</th><th>Subfolder</th><th>File name</th><th></th></tr></thead>
+          <tbody id="siteRules"></tbody>
+        </table>
+        <div class="row-actions">
+          <input type="text" id="ruleSite" placeholder="example.com" spellcheck="false" aria-label="Site">
+          <input type="text" id="ruleFolder" placeholder="Courses/{course}" spellcheck="false" aria-label="Subfolder">
+          <input type="text" id="ruleTemplate" placeholder="{number} - {name}" spellcheck="false" aria-label="File name template">
+          <button type="button" id="addRule" class="secondary">Add rule</button>
+        </div>
+        <span id="ruleStatus" class="muted small"></span>
       </div>
       <div class="card stack">
         <h3>Videos you already have</h3>
@@ -117,6 +135,29 @@
       <p class="muted small">StreamSnag never downloads DRM-protected (Widevine/PlayReady/FairPlay) or encrypted streams. Only save content you have the right to keep.</p>
     </section>
 
+    <!-- Backup & advanced -->
+    <section class="tab-panel" data-panel="backup" hidden>
+      <div class="card stack">
+        <h3>Backup</h3>
+        <p class="muted small">Your settings, site recipes, site rules, download history and "downloaded" marks in one file, e.g. for a new PC.</p>
+        <label class="check"><input type="checkbox" id="exportKey"> Include my Anthropic API key (keep the file private)</label>
+        <div class="row-actions">
+          <button type="button" class="secondary" id="exportAll">Export everything</button>
+          <label class="secondary file-btn">Import… <input type="file" id="importAll" accept="application/json" hidden></label>
+          <span id="backupStatus" class="muted small"></span>
+        </div>
+      </div>
+      <div class="card stack">
+        <h3>Diagnostics</h3>
+        <label class="check"><input type="checkbox" id="debugMode"> Keep a diagnostic snapshot of the last page (what was detected, merged and why)</label>
+        <p class="muted small">Turn this on if a video is missing or listed wrong, reproduce it, then copy the report into a bug report. It stays on your PC; it includes the page's media URLs, so check it before sharing.</p>
+        <div class="row-actions">
+          <button type="button" class="secondary" id="copyDebug">Copy diagnostic report</button>
+          <span id="debugStatus" class="muted small"></span>
+        </div>
+      </div>
+    </section>
+
     <!-- Helper -->
     <section class="tab-panel" data-panel="helper" hidden>
       <div class="card stack">
@@ -130,8 +171,10 @@
         <p class="muted small">Extension ID: <code id="extId"></code></p>
         <div class="row-actions">
           <button class="primary" id="checkHelper">Check helper</button>
+          <button class="secondary" id="updateYtdlp" title="Sites change often; an old yt-dlp stops working on them">Update yt-dlp</button>
         </div>
         <div id="helperResult"></div>
+        <div id="toolVersions" class="muted small"></div>
       </div>
     </section>
 

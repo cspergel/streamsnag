@@ -43,7 +43,7 @@ if (initialTab) document.querySelector(`.tabs button[data-tab="${initialTab}"]`)
 
 // ---------------------------------------------------------------- settings form
 const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'minSizeKB', 'concurrency', 'includeSubtitles', 'useFfmpeg',
-  'embedSubtitles', 'keepSubtitleFiles', 'aiFilenames', 'filenameTemplate', 'subfolder', 'saveFolder', 'notify', 'autoRecipes', 'checkDownloads'];
+  'embedSubtitles', 'keepSubtitleFiles', 'aiFilenames', 'filenameTemplate', 'subfolder', 'saveFolder', 'notify', 'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode'];
 
 function syncProviderSections(provider) {
   $$('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== provider; });
@@ -73,13 +73,15 @@ async function saveForm() {
   }
   if (s.subscriptionModel && !/^[a-z0-9.\-[\]]+$/i.test(s.subscriptionModel)) s.subscriptionModel = '';
   s.concurrency = Math.min(16, s.concurrency);
+  s.maxParallel = Math.min(6, Math.max(1, s.maxParallel || 2));
   await chrome.storage.local.set({ settings: s });
   syncProviderSections(s.aiProvider);
   flashSaved();
 }
 
 document.addEventListener('change', (e) => {
-  if (e.target.closest('[data-panel="ai"], [data-panel="downloads"]')) saveForm();
+  if (e.target.closest('#siteRules, .rules ~ .row-actions')) return; // the rule editor saves itself
+  if (e.target.closest('[data-panel="ai"], [data-panel="downloads"]') || e.target.id === 'debugMode') saveForm();
 });
 
 $('#testAI').addEventListener('click', async () => {
@@ -189,8 +191,144 @@ $('#btn-check-library').addEventListener('click', async () => {
 });
 renderLibraryFolders();
 
+// ---------------------------------------------------------------- site rules
+const siteOf = (v) => String(v || '').trim().toLowerCase().replace(/^[a-z]+:\/\//, '').replace(/[/?#].*$/, '').replace(/^www\./, '');
+
+async function saveRules(rules) {
+  const s = await getSettings();
+  await chrome.storage.local.set({ settings: { ...s, siteRules: rules } });
+  flashSaved();
+}
+
+async function renderRules() {
+  const rules = (await getSettings()).siteRules || {};
+  const sites = Object.keys(rules).sort();
+  $('#siteRules').replaceChildren(...(sites.length ? sites.map((site) => h('tr', {},
+    h('td', {}, h('code', {}, site)),
+    h('td', {}, rules[site].subfolder || h('span', { class: 'muted' }, 'general')),
+    h('td', {}, rules[site].filenameTemplate || h('span', { class: 'muted' }, 'general')),
+    h('td', {}, h('button', {
+      type: 'button', class: 'link', onclick: async () => {
+        const next = { ...rules };
+        delete next[site];
+        await saveRules(next);
+        renderRules();
+      },
+    }, 'Remove')),
+  )) : [h('tr', {}, h('td', { colspan: '4', class: 'muted small' }, 'No site rules yet.'))]));
+}
+
+$('#addRule').addEventListener('click', async () => {
+  const site = siteOf($('#ruleSite').value);
+  const subfolder = $('#ruleFolder').value.trim();
+  const filenameTemplate = $('#ruleTemplate').value.trim();
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$|^localhost$|^\d+\.\d+\.\d+\.\d+$/.test(site)) {
+    $('#ruleStatus').textContent = 'Enter a site like example.com.';
+    return;
+  }
+  if (!subfolder && !filenameTemplate) {
+    $('#ruleStatus').textContent = 'Fill in a subfolder, a file name, or both.';
+    return;
+  }
+  const rules = { ...((await getSettings()).siteRules || {}), [site]: { subfolder, filenameTemplate } };
+  await saveRules(rules);
+  ['#ruleSite', '#ruleFolder', '#ruleTemplate'].forEach((id) => { $(id).value = ''; });
+  $('#ruleStatus').textContent = `Saved a rule for ${site}.`;
+  renderRules();
+});
+renderRules();
+
+// ---------------------------------------------------------------- backup & diagnostics
+const BACKUP_KEYS = ['settings', 'recipes', 'history', 'marks'];
+
+$('#exportAll').addEventListener('click', async () => {
+  const data = await chrome.storage.local.get(BACKUP_KEYS);
+  if (data.settings && !$('#exportKey').checked) data.settings = { ...data.settings, apiKey: '' };
+  const file = { app: 'StreamSnag', version: chrome.runtime.getManifest().version, exportedAt: new Date().toISOString(), ...data };
+  const blob = new Blob([JSON.stringify(file, null, 1)], { type: 'application/json' });
+  h('a', { href: URL.createObjectURL(blob), download: `streamsnag-backup-${new Date().toISOString().slice(0, 10)}.json` }).click();
+  $('#backupStatus').textContent = 'Saved to your Downloads folder.';
+});
+
+$('#importAll').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  const status = $('#backupStatus');
+  try {
+    const data = JSON.parse(await file.text());
+    if (data?.app !== 'StreamSnag') throw new Error('That is not a StreamSnag backup file.');
+    const cur = await chrome.storage.local.get(BACKUP_KEYS);
+    const next = {};
+    // Settings: the backup's values, but an empty API key in the file never wipes the one you have.
+    if (data.settings && typeof data.settings === 'object') {
+      next.settings = { ...(cur.settings || {}), ...data.settings };
+      if (!data.settings.apiKey) next.settings.apiKey = cur.settings?.apiKey || '';
+    }
+    if (data.recipes && typeof data.recipes === 'object') {
+      next.recipes = { ...(cur.recipes || {}) };
+      for (const r of Object.values(data.recipes)) {
+        try { const n = normalizeRecipe(r); next.recipes[n.site] = { ...n, savedAt: r.savedAt || Date.now() }; } catch { /* skip bad recipe */ }
+      }
+    }
+    if (Array.isArray(data.history)) {
+      const seen = new Set((cur.history || []).map((x) => `${x.at}|${x.title}`));
+      next.history = [...(cur.history || []), ...data.history.filter((x) => x && !seen.has(`${x.at}|${x.title}`))]
+        .sort((a, b) => b.at - a.at).slice(0, 300);
+    }
+    if (data.marks && typeof data.marks === 'object') next.marks = { ...(cur.marks || {}), ...data.marks };
+    await chrome.storage.local.set(next);
+    await loadForm();
+    renderRules();
+    status.className = 'ok small';
+    status.textContent = `Imported ${Object.keys(next).join(', ')}.`;
+  } catch (err) {
+    status.className = 'bad small';
+    status.textContent = err.message;
+  }
+});
+
+$('#copyDebug').addEventListener('click', async () => {
+  const { debugTab } = await chrome.storage.local.get('debugTab');
+  const status = $('#debugStatus');
+  if (!debugTab) {
+    status.textContent = 'No snapshot yet: turn diagnostics on, then open or reload the page with the problem.';
+    return;
+  }
+  const report = { app: 'StreamSnag', version: chrome.runtime.getManifest().version, browser: navigator.userAgent, ...debugTab };
+  await navigator.clipboard.writeText(JSON.stringify(report, null, 1));
+  status.textContent = `Copied (${new Date(debugTab.at).toLocaleTimeString()}, ${debugTab.media.length} items).`;
+});
+
 // ---------------------------------------------------------------- helper
 $('#extId').textContent = chrome.runtime.id;
+
+async function showVersions() {
+  const box = $('#toolVersions');
+  try {
+    const v = await send('toolVersions');
+    box.textContent = [`helper ${v.helper}`, `Node ${v.node}`, v.ytdlp && `yt-dlp ${v.ytdlp}`, v.ffmpeg && `ffmpeg ${v.ffmpeg}`, v.claude && `Claude CLI ${v.claude}`]
+      .filter(Boolean).join(' · ');
+  } catch {
+    box.textContent = '';
+  }
+}
+
+$('#updateYtdlp').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  const box = $('#toolVersions');
+  btn.disabled = true;
+  box.textContent = 'Updating yt-dlp…';
+  try {
+    const r = await send('updateYtdlp');
+    box.textContent = r.upToDate ? 'yt-dlp is already up to date.' : `Updated: ${r.output}`;
+    setTimeout(showVersions, 1500);
+  } catch (err) {
+    box.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+  }
+});
 $('#checkHelper').addEventListener('click', async () => {
   const box = $('#helperResult');
   box.replaceChildren(h('p', { class: 'muted' }, 'Checking…'));
@@ -207,8 +345,9 @@ $('#checkHelper').addEventListener('click', async () => {
       h('ul', { class: 'tool-list' },
         tool('claude', r.tools.claude, 'AI through your Claude subscription'),
         tool('ffmpeg', r.tools.ffmpeg, 'merge video + audio, convert .ts → .mp4'),
-        tool('yt-dlp', r.tools.ytdlp, 'fallback downloader for 1000+ sites')),
+        tool('yt-dlp', r.tools.ytdlp, 'fallback downloader for 1000+ sites, playlists')),
     );
+    showVersions();
   } catch (e) {
     box.replaceChildren(h('p', { class: 'bad' }, e.message));
   }

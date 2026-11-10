@@ -12,7 +12,7 @@ export { DEFAULT_MODEL };
 const FALLBACK_MODELS = new Set(['claude-opus-5-5', 'claude-opus-5', 'claude-fable-5-1', 'claude-sonnet-5-5']);
 
 /** One request/response round-trip with the native helper over a dedicated port. */
-export function helperRequest(message, { onProgress, timeoutMs = 300000 } = {}) {
+export function helperRequest(message, { onProgress, onPort, timeoutMs = 300000 } = {}) {
   return new Promise((resolve, reject) => {
     let port;
     try {
@@ -21,6 +21,7 @@ export function helperRequest(message, { onProgress, timeoutMs = 300000 } = {}) 
       reject(new Error(`Local helper not available: ${e.message}`));
       return;
     }
+    onPort?.(port); // lets the caller cancel: disconnecting makes the helper stop what it started
     const id = crypto.randomUUID();
     const timer = setTimeout(() => {
       port.disconnect();

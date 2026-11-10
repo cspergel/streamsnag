@@ -122,6 +122,9 @@ export function cmdShimCommandLine(cmd, args) {
   return `"${[cmd, ...args].map((a) => `"${a}"`).join(' ')}"`;
 }
 
+/** Programs this helper started that are still running. */
+const children = new Set();
+
 function run(cmd, args, { input, onLine, timeoutMs = 10 * 60 * 1000, cwd, env } = {}) {
   return new Promise((resolve, reject) => {
     const isShim = IS_WIN && /\.(cmd|bat)$/i.test(cmd);
@@ -136,6 +139,9 @@ function run(cmd, args, { input, onLine, timeoutMs = 10 * 60 * 1000, cwd, env } 
       reject(e);
       return;
     }
+    children.add(child);
+    child.on('close', () => children.delete(child));
+    child.on('error', () => children.delete(child));
     let stdout = '';
     let stderr = '';
     let lineBuf = '';
@@ -291,6 +297,72 @@ async function handleMux(msg) {
     for (const p of del) { try { fs.unlinkSync(p); } catch { /* ignore */ } }
   }
   return { output, subsEmbedded };
+}
+
+// ------------------------------------------------------------------ converted copies
+
+const CONVERSIONS = {
+  audio: { ext: 'mp3', suffix: '' }, // the sound track on its own, playable anywhere
+  small: { ext: 'mp4', suffix: ' (720p)' }, // a smaller H.264 copy for a phone or tablet
+};
+
+/** Where a converted copy goes: next to the original, named after it. */
+export function convertOutputName(input, mode) {
+  const spec = Object.hasOwn(CONVERSIONS, mode) ? CONVERSIONS[mode] : null;
+  if (!spec) throw new Error('Unknown conversion');
+  const { dir, name } = path.parse(input);
+  return path.join(dir, `${name}${spec.suffix}.${spec.ext}`);
+}
+
+export function buildConvertArgs({ input, output, mode, subtitles = true }) {
+  // -progress pipe:1 prints "out_time_us=..." lines we turn into a percentage.
+  const head = ['-hide_banner', '-nostdin', '-y', '-loglevel', 'error', '-nostats', '-progress', 'pipe:1', '-i', input];
+  if (mode === 'audio') return [...head, '-vn', '-sn', '-dn', '-map', '0:a:0', '-c:a', 'libmp3lame', '-q:a', '2', output];
+  if (mode === 'small') {
+    return [...head, '-map', '0:v:0', '-map', '0:a:0?', ...(subtitles ? ['-map', '0:s?', '-c:s', 'mov_text'] : []),
+      // Never upscale; keep the width even (H.264 needs it).
+      '-vf', "scale=-2:'min(720,ih)'", '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26', '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', output];
+  }
+  throw new Error('Unknown conversion');
+}
+
+/** Seconds of output written so far, from one line of ffmpeg's -progress output (or null). */
+export function parseFfmpegProgress(line) {
+  const m = /^out_time_(?:us|ms)=(\d+)\s*$/.exec(String(line || '').trim()); // both are microseconds
+  return m ? Number(m[1]) / 1e6 : null;
+}
+
+async function handleConvert(msg) {
+  const ffmpeg = findTool('ffmpeg');
+  if (!ffmpeg) throw new Error('ffmpeg not found');
+  checkInput(msg.input);
+  if (!MEDIA_EXT.test(msg.input)) throw new Error('That is not a video or audio file');
+  const output = uniquePath(convertOutputName(msg.input, msg.mode));
+  const ffprobe = findTool('ffprobe') || path.join(path.dirname(ffmpeg), path.basename(ffmpeg).replace(/ffmpeg/i, 'ffprobe'));
+  const total = fs.existsSync(ffprobe) ? await ffprobeDuration(ffprobe, msg.input).catch(() => 0) : 0;
+  let last = -1;
+  const onLine = (line, isErr) => {
+    const t = isErr ? null : parseFfmpegProgress(line);
+    if (t == null || !(total > 0)) return;
+    const percent = Math.max(0, Math.min(99, Math.floor((t / total) * 100)));
+    if (percent !== last) reply({ id: msg.id, type: 'progress', percent });
+    last = percent;
+  };
+  const attempt = (subtitles) => run(ffmpeg, buildConvertArgs({ input: msg.input, output, mode: msg.mode, subtitles }), { onLine, timeoutMs: 6 * 60 * 60 * 1000 });
+  let res = await attempt(true);
+  if (res.code !== 0 && msg.mode === 'small') {
+    // Picture-based subtitles can't go into an MP4: the copy matters more than its subtitles.
+    try { fs.unlinkSync(output); } catch { /* ignore */ }
+    res = await attempt(false);
+  }
+  if (res.code !== 0) {
+    try { fs.unlinkSync(output); } catch { /* ignore */ }
+    throw new Error(/Unknown encoder|Encoder .* not found/i.test(res.stderr)
+      ? 'This ffmpeg build cannot make that kind of file. Install a full ffmpeg build (winget install Gyan.FFmpeg).'
+      : `ffmpeg failed: ${res.stderr.trim().slice(-400)}`);
+  }
+  return { output };
 }
 
 export function parseYtdlpProgress(line) {
@@ -656,6 +728,7 @@ const HANDLERS = {
   pickFolder: handlePickFolder,
   claude: handleClaude,
   mux: handleMux,
+  convert: handleConvert,
   ytdlp: handleYtdlp,
   ytdlpList: handleYtdlpList,
   toolVersions: handleToolVersions,
@@ -684,5 +757,9 @@ const isMain = !!process.argv[1] && norm(process.argv[1]) === norm(fileURLToPath
 if (isMain) {
   log('started', process.argv.slice(2).join(' '), process.env.STREAMSNAG_FAKE_YTDLP === '1' ? '(test mode: fake yt-dlp)' : '');
   process.stdin.on('data', createDecoder((m) => { dispatch(m); }, (e) => log('decode error', e.message)));
-  process.stdin.on('end', () => process.exit(0));
+  process.stdin.on('end', () => {
+    // Chrome closed the connection (the request was cancelled, or the browser quit): stop what we started.
+    for (const c of children) { try { c.kill(); } catch { /* already gone */ } }
+    process.exit(0);
+  });
 }

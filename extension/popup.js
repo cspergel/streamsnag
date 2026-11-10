@@ -695,6 +695,7 @@ function cardExtras(card, m, open, st, title, { hero = false, own = false, cover
     card.append(h('div', { class: 'menu' },
       m.kind !== 'subtitle' && !m.playlist && st === 'done' && !m.protected ? h('button', { class: 'secondary', onclick: downloadAgain }, '↓ Download again') : null,
       m.kind !== 'subtitle' ? h('button', { class: 'secondary', onclick: () => { openMedia.set(m.id, { ...open, menu: false, renaming: true }); render(); } }, '✎ Rename') : null,
+      ...convertButtons(m, st, open),
       m.kind !== 'subtitle' && !m.mark && st !== 'done' ? h('button', { class: 'secondary', title: 'You already have this video (the folder check missed it)', onclick: () => mark(m, 'done', 'Marked as downloaded') }, '✓ Mark as downloaded') : null,
       m.kind !== 'subtitle' && !m.mark && st === 'done' ? h('button', { class: 'secondary', title: 'The folder check matched the wrong file', onclick: () => mark(m, 'new', 'Marked as not downloaded') }, 'Mark as not downloaded') : null,
       m.mark ? h('button', { class: 'secondary', onclick: () => mark(m, null, 'Back to checking your folder') }, 'Undo my mark') : null,
@@ -711,6 +712,23 @@ function cardExtras(card, m, open, st, title, { hero = false, own = false, cover
       }, 'Remove from list'),
     ));
   }
+}
+
+/** For a video that is on this computer (and with the helper's ffmpeg): make an MP3 or a smaller copy. */
+function convertButtons(m, st, open) {
+  const file = st === 'done' && !m.playlist && m.kind !== 'subtitle' && m.library?.path && !m.library.missing ? m.library.path : '';
+  if (!file || !state.helper?.ok || !state.helper.tools?.ffmpeg) return [];
+  const go = (mode, started) => () => {
+    openMedia.set(m.id, { ...open, menu: false });
+    send('convert', { path: file, mode, title: displayName(m) })
+      .then(() => { banner(started); refresh(); })
+      .catch((e) => banner(e.message, true));
+  };
+  return [
+    h('button', { class: 'secondary', title: 'Saves the sound as an MP3 next to the video', onclick: go('audio', 'Making an MP3. It appears next to the video.') }, 'Save audio as MP3'),
+    /\.(mp3|m4a|aac|flac|wav|ogg|opus)$/i.test(file) ? null
+      : h('button', { class: 'secondary', title: 'A smaller 720p copy for a phone or tablet, next to the original', onclick: go('small', 'Making a smaller copy. It appears next to the original.') }, 'Make a smaller copy (720p)'),
+  ];
 }
 
 // ------------------------------------------------------------------ jobs
@@ -741,7 +759,7 @@ function jobCard(j) {
       nameEl(baseName(j.outputs?.[0]?.path || j.filename), `jf:${j.id}`, 'sub'),
     ),
     active ? h('div', { class: `progress${indeterminate ? ' indeterminate' : ''}` }, h('div', { style: indeterminate ? null : `width:${pct}%` })) : null,
-    h('div', { class: `status ${cls}` }, h('span', {}, j.status === 'error' ? j.error : STATUS_TEXT[j.status] || j.status), h('span', {}, detail.join(' · '))),
+    h('div', { class: `status ${cls}` }, h('span', {}, j.status === 'error' ? j.error : j.kind === 'convert' && j.status === 'running' ? 'Converting with ffmpeg' : STATUS_TEXT[j.status] || j.status), h('span', {}, detail.join(' · '))),
     j.note ? h('div', { class: 'status' }, j.note) : null,
   );
 

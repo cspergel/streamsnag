@@ -1549,6 +1549,46 @@ async function startYtdlp(tabId, { url, mediaId } = {}) {
   return publicJob(job);
 }
 
+// ---------------------------------------------------------------- converted copies (helper + ffmpeg)
+
+const CONVERT_TITLES = { audio: 'Audio (MP3) of', small: 'Smaller copy (720p) of' };
+
+/** Make an MP3 or a smaller 720p copy of a file you already downloaded, next to it. Shown as a job. */
+async function startConvert(tabId, { path: file, mode, title } = {}) {
+  await loadJobs();
+  if (!Object.hasOwn(CONVERT_TITLES, mode)) throw new Error('Unknown conversion');
+  if (typeof file !== 'string' || !file) throw new Error('That file is not on this computer any more.');
+  const helper = await helperStatus(true);
+  if (!helper.ok) throw new Error(helper.error);
+  if (!helper.tools?.ffmpeg) throw new Error('ffmpeg was not found. Install it (winget install Gyan.FFmpeg) and try again.');
+  const name = String(title || '').trim() || file.split(/[\\/]/).pop();
+  const job = {
+    id: crypto.randomUUID(), tabId, kind: 'convert', mediaUrl: '', pageUrl: '', mediaId: '', mediaKeys: [], optionId: 'file',
+    title: `${CONVERT_TITLES[mode]} ${name}`.slice(0, 200), filename: file.split(/[\\/]/).pop(), status: 'running', tracks: [], outputs: [],
+    progress: { done: 0, total: 100, bytes: 0, percent: true }, startedAt: Date.now(),
+  };
+  jobs.set(job.id, job);
+  persistJobs(true);
+  helperRequest({ type: 'convert', input: file, mode }, {
+    timeoutMs: 6 * 60 * 60 * 1000,
+    onPort: (port) => { job.helperPort = port; },
+    onProgress: (p) => {
+      if (Number.isFinite(p.percent)) job.progress = { done: p.percent, total: 100, bytes: 0, percent: true };
+      persistJobs();
+    },
+  }).then((res) => {
+    if (job.status !== 'running') return; // cancelled meanwhile
+    job.status = 'done';
+    job.finishedAt = Date.now();
+    job.outputs = [{ role: 'file', path: res.output, filename: res.output }];
+    job.note = `Saved to ${res.output}`;
+    persistJobs(true);
+    pumpQueue();
+    setTimeout(() => scanLibrary({ force: true }).catch(() => {}), 500);
+  }).catch((e) => failJob(job.id, e.message));
+  return publicJob(job);
+}
+
 // ---------------------------------------------------------------- AI features
 
 async function aiFind(tabId) {
@@ -1721,6 +1761,7 @@ const handlers = {
   toolVersions: () => helperRequest({ type: 'toolVersions' }, { timeoutMs: 60000 }),
   updateYtdlp: () => helperRequest({ type: 'updateYtdlp' }, { timeoutMs: 6 * 60 * 1000 }),
   cancelJob: ({ jobId }) => cancelJob(jobId),
+  convert: ({ tabId, path, mode, title }) => startConvert(tabId, { path, mode, title }),
   async stopLive({ jobId }) {
     await toOffscreen({ type: 'stopLive', jobId });
     return { ok: true };

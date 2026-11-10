@@ -205,6 +205,51 @@ export function isHttpUrl(url) {
   return /^https?:\/\//i.test(String(url || ''));
 }
 
+/** A network share ("\\\\server\\share" or "//server/share"). Opening one sends your Windows sign-in to that server. */
+export function isNetworkPath(p) {
+  return /^[\\/]{2}/.test(String(p || '').trim());
+}
+
+/**
+ * A folder path that may be taken from a backup file: a plain local path. Network shares are refused
+ * (a backup someone else made could point StreamSnag at their server); add those by hand in Settings.
+ */
+export function importableFolder(p) {
+  return typeof p === 'string' && !!p.trim() && p.length < 400 && !isNetworkPath(p) && !/["'`$;&|<>\r\n\u2018-\u201f]/.test(p);
+}
+
+/**
+ * One download-history entry from a backup file, reduced to what StreamSnag itself writes, or null.
+ * Links must be web addresses, and file paths plain local ones: the history's folders are scanned by the
+ * helper and its links are opened in tabs.
+ */
+export function cleanHistoryEntry(x) {
+  if (!x || typeof x !== 'object' || !Number.isFinite(x.at)) return null;
+  const text = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
+  const localFile = (p) => typeof p === 'string' && !!p && p.length < 600 && !isNetworkPath(p) && !/[\r\n\u0000]/.test(p);
+  const out = { at: x.at, title: text(x.title, 300) };
+  if (isHttpUrl(x.pageUrl)) out.pageUrl = x.pageUrl.slice(0, 2000);
+  if (isHttpUrl(x.mediaUrl)) out.mediaUrl = x.mediaUrl.slice(0, 2000);
+  if (Number.isFinite(x.bytes) && x.bytes > 0) out.bytes = x.bytes;
+  if (text(x.note, 300)) out.note = text(x.note, 300);
+  if (Array.isArray(x.files)) out.files = x.files.filter(localFile).slice(0, 20);
+  if (Array.isArray(x.outputs)) {
+    // Each saved file: its path, plus the plain facts recorded about it (size, length, role).
+    out.outputs = x.outputs.filter((o) => o && typeof o === 'object' && localFile(o.path)).slice(0, 20).map((o) => {
+      const kept = { path: o.path };
+      for (const [k, v] of Object.entries(o)) {
+        if (k !== 'path' && k.length < 30 && (Number.isFinite(v) || (typeof v === 'string' && v.length < 100 && !isNetworkPath(v)))) kept[k] = v;
+      }
+      return kept;
+    });
+  }
+  // What "already downloaded" matching uses.
+  if (Array.isArray(x.mediaKeys)) out.mediaKeys = x.mediaKeys.filter((k) => typeof k === 'string' && k.length < 2000).slice(0, 50);
+  if (Number.isFinite(x.mediaSize) && x.mediaSize > 0) out.mediaSize = x.mediaSize;
+  if (text(x.fingerprint, 300)) out.fingerprint = text(x.fingerprint, 300);
+  return out;
+}
+
 /**
  * A URL for a command line that is safe to paste into bash, zsh, PowerShell or cmd: double-quoted, with every
  * character any of them would expand or end the quotes on ($ ` " \\ ! ') percent-encoded (same URL to a server).

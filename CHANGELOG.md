@@ -10,6 +10,13 @@
   to try next.
 * **Theme:** choose **System**, **Light** or **Dark** at the top of Settings. System follows your
   computer, as before.
+* **Safer by default** (from a security review before the public release):
+  * Chrome now blocks StreamSnag's own requests to local-network addresses (router, NAS, `localhost`),
+    including through redirects and preview images, unless the page is itself local or you clicked
+    Download on that item.
+  * "Download this media with StreamSnag" in the right-click menu only ever saves audio/video file types.
+  * Imported backups can't add network-share folders or non-web links, and history entries are checked.
+  * Settings and history can't be read by scripts running in web pages.
 * **Playlists:** **List videos** asks yt-dlp for every video in a playlist or Vimeo showcase, so you
   don't have to play each one. **Download missing (N)** then fetches only what isn't in your folders.
   Videos you already played show once.

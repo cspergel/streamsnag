@@ -1,4 +1,4 @@
-import { formatBytes, formatDuration, hostOf, ytdlpCommand, ffmpegCommand, rankVideoOptions } from './lib/util.js';
+import { formatBytes, formatDuration, hostOf, ytdlpCommand, ffmpegCommand, rankVideoOptions, isHttpUrl } from './lib/util.js';
 import { sameItem } from './lib/match.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -967,7 +967,7 @@ function historyCard(x) {
     ),
     files.length ? h('div', { class: 'job-actions' },
       h('button', { class: 'secondary', onclick: () => send('openFile', { path: files[0] }) }, 'Show file'),
-      h('button', { class: 'link', onclick: () => chrome.tabs.create({ url: x.pageUrl || x.mediaUrl }) }, 'Open page'),
+      isHttpUrl(x.pageUrl || x.mediaUrl) ? h('button', { class: 'link', onclick: () => chrome.tabs.create({ url: x.pageUrl || x.mediaUrl }) }, 'Open page') : null,
     ) : null,
   );
 }

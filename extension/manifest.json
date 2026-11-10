@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "StreamSnag — Video Download Helper",
+  "name": "StreamSnag: video and stream downloader",
   "short_name": "StreamSnag",
   "version": "1.4.0",
   "description": "Detect and download videos, audio, HLS/DASH streams and subtitles. Optional Claude AI finds hidden links and writes site recipes.",

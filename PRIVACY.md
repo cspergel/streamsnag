@@ -24,15 +24,17 @@ StreamSnag has no servers, no accounts, no analytics and no tracking. It works o
   its query string) as the `Referer`, as the player itself would.
 * **Details of what it found.** To show a file's size or a stream's qualities and length, StreamSnag reads
   the first bytes of a detected file or the stream's playlist as soon as it is found, without a click. It
-  never does this to local-network addresses (your router, a NAS, `localhost`) from a public web page.
+  never does this to local-network addresses (your router, a NAS, `localhost`) from a public web page:
+  Chrome blocks StreamSnag's own requests to them, redirects included, unless the page is itself local or
+  you clicked Download on that item.
 * **Embedded players.** To find the real video behind a Vimeo or Wistia player on a page, StreamSnag reads
   that player's public configuration from Vimeo or Wistia.
 * **yt-dlp** (if you use it) contacts the site you point it at, and its update check contacts GitHub when
   you click **Update yt-dlp**.
 * **AI features are off by default.** If you turn them on and click **Find with AI**, **Ask AI why**,
   **Summarize**, or enable AI file names, StreamSnag sends Anthropic a summary of the page needed for that
-  task: its address and title, the media links it loaded, parts of its HTML/scripts around video players,
-  an error message, or a video's captions. With **your Claude subscription** this goes through the Claude
+  task: its address and title, the addresses of the requests it made (up to 300, including any tokens in
+  them), parts of its HTML/scripts around video players, an error message, or a video's captions. With **your Claude subscription** this goes through the Claude
   Code CLI on your PC; with **an API key** it goes straight to the Anthropic API. Anthropic's privacy
   policy applies to that data. Your API key is stored in extension storage and is only sent to Anthropic.
 

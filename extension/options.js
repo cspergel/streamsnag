@@ -1,6 +1,6 @@
 import { DEFAULT_SETTINGS, getSettings } from './lib/settings.js';
 import { normalizeRecipe } from './lib/recipes.js';
-import { formatBytes } from './lib/util.js';
+import { formatBytes, isHttpUrl, importableFolder, cleanHistoryEntry } from './lib/util.js';
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -262,8 +262,8 @@ $('#importAll').addEventListener('change', async (e) => {
     const next = {};
     // Settings: the backup's values, but an empty API key in the file never wipes the one you have.
     if (data.settings && typeof data.settings === 'object') {
-      // Only known settings, with their usual types; folder paths must look like plain folders.
-      const plainFolder = (p) => typeof p === 'string' && p.length < 400 && !/["'`$;&|<>\r\n\u2018-\u201f]/.test(p);
+      // Only known settings, with their usual types; folder paths must be plain local folders.
+      const plainFolder = importableFolder;
       const clean = {};
       for (const [k, v] of Object.entries(data.settings)) {
         if (!(k in DEFAULT_SETTINGS)) continue;
@@ -284,7 +284,7 @@ $('#importAll').addEventListener('change', async (e) => {
     }
     if (Array.isArray(data.history)) {
       const seen = new Set((cur.history || []).map((x) => `${x.at}|${x.title}`));
-      next.history = [...(cur.history || []), ...data.history.filter((x) => x && !seen.has(`${x.at}|${x.title}`))]
+      next.history = [...(cur.history || []), ...data.history.slice(0, 2000).map(cleanHistoryEntry).filter((x) => x && !seen.has(`${x.at}|${x.title}`))]
         .sort((a, b) => b.at - a.at).slice(0, 300);
     }
     if (data.marks && typeof data.marks === 'object') next.marks = { ...(cur.marks || {}), ...data.marks };
@@ -471,7 +471,7 @@ async function renderHistory() {
     h('strong', {}, it.title || '(untitled)'),
     h('span', { class: 'muted small' }, `${new Date(it.at).toLocaleString()}${it.bytes ? ` · ${formatBytes(it.bytes)}` : ''}${it.note ? ` · ${it.note}` : ''}`),
     h('span', { class: 'files' }, (it.files || []).filter(Boolean).join('  ·  ')),
-    it.pageUrl ? h('a', { href: it.pageUrl, target: '_blank', class: 'small' }, it.pageUrl) : null,
+    isHttpUrl(it.pageUrl) ? h('a', { href: it.pageUrl, target: '_blank', rel: 'noreferrer', class: 'small' }, it.pageUrl) : null,
   )));
 }
 

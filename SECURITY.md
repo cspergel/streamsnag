@@ -21,7 +21,12 @@ do with it. You'll get a reply as soon as possible, and credit in the release no
 
 * Web pages (through content scripts) can only *report* what they found. The worker ignores every other
   message unless it comes from StreamSnag's own pages, and it takes the frame from Chrome, not from the page.
-* Nothing is fetched automatically from local-network addresses on behalf of a public page.
+* Nothing is fetched automatically from local-network addresses on behalf of a public page. A
+  declarativeNetRequest rule blocks the extension's own requests to them (redirects and preview images
+  included); hosts are let through only for a page that is itself local or an item you clicked. This goes
+  by the address, so a public name that resolves to a local IP is not caught.
+* Backups are treated as untrusted: imported folders and history paths must be plain local paths (no
+  network shares), history links must be http(s), and recipes are re-validated.
 * Copied `yt-dlp`/`ffmpeg` commands percent-encode anything a shell could expand, so pasting them into
   PowerShell, bash or cmd can't run code hidden in a URL.
 * The helper only accepts connections from StreamSnag's extension ID (`allowed_origins` in its manifest).

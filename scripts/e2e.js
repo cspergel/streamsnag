@@ -59,6 +59,7 @@ const SUBS_VTT = 'WEBVTT\n\n00:00:00.500 --> 00:00:02.000\nHello from the test s
 const LONG_TITLE = 'An Extremely Long Video Title That Will Never Fit In The Popup Width Part 3 Of The Series (Full Episode, Directors Cut)';
 let refererRejections = 0;
 let base = '';
+const guardHits = []; // requests that reached the "local device" in the local-network guard check
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');
@@ -81,6 +82,8 @@ const server = http.createServer((req, res) => {
   if (url.pathname === '/watch/long') {
     return send(200, 'text/html', `<!doctype html><title>${LONG_TITLE}</title><video src="/media/long.mp4" preload="auto" muted></video>`);
   }
+  if (url.pathname === '/guard/hit') { guardHits.push(req.headers.host); return send(200, 'text/plain', 'local'); }
+  if (url.pathname === '/guard/redirect') { res.writeHead(302, { location: `http://localhost:${server.address().port}/guard/hit` }); return res.end(); }
   if (url.pathname === '/watch/two') {
     // You are watching the first video; a second one loads afterwards, so it is the newest on the page.
     return send(200, 'text/html', `<!doctype html><title>Two Players</title>
@@ -459,6 +462,29 @@ try {
       movedHero.key === vb?.id && movedHero.eyebrow === 'Now playing' && movedHero.rows.join() === va?.id, JSON.stringify(movedHero));
     await tp.close();
     await twoPage.close();
+  }
+
+  // Local-network guard: StreamSnag's own requests can't reach a local address that no local page or click
+  // has let through. The test site is 127.0.0.1 (let through, since its pages are local); "localhost" is
+  // a different host that nothing has allowed, standing in for a router.
+  {
+    const port = new URL(base).port;
+    const tryFetch = (u) => ext.evaluate(async (x) => {
+      try { const r = await fetch(x, { cache: 'no-store' }); return `ok ${r.status} ${await r.text()}`; } catch (e) { return `blocked ${e.message}`; }
+    }, u);
+    const control = await tryFetch(`${base}/guard/hit`);
+    check('guard control: the test site itself (a local page\'s host) is reachable', control === 'ok 200 local' && guardHits.length === 1, `${control} hits=${guardHits.length}`);
+    const direct = await tryFetch(`http://localhost:${port}/guard/hit`);
+    check('a local address nothing has allowed is blocked for the extension', direct.startsWith('blocked') && guardHits.length === 1, `${direct} hits=${guardHits.join()}`);
+    const viaRedirect = await tryFetch(`${base}/guard/redirect`);
+    check('a redirect into a local address is blocked before it gets there', viaRedirect.startsWith('blocked') && guardHits.length === 1, `${viaRedirect} hits=${guardHits.join()}`);
+    const img = await ext.evaluate((x) => new Promise((done) => {
+      const i = new Image();
+      i.onload = () => done('loaded');
+      i.onerror = () => done('blocked');
+      i.src = x;
+    }), `http://localhost:${port}/guard/hit?img`);
+    check('a preview image from a local address is blocked in extension pages', img === 'blocked' && guardHits.length === 1, `${img} hits=${guardHits.join()}`);
   }
 
   // Theme: the choice in Settings wins over the system setting, and the popup follows it.

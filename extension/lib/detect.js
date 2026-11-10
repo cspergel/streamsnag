@@ -8,6 +8,15 @@ export const DIRECT_EXT = {
   wav: 'audio', flac: 'audio', weba: 'audio',
 };
 export const SUBTITLE_EXT = new Set(['vtt', 'srt']);
+
+/**
+ * The extension to save a file under when all we have is its address: only a known audio/video one.
+ * A page chooses its own addresses, so "clip.scr" or "movie.exe" must never become the saved file's type.
+ */
+export function mediaExtFromUrl(url, fallback = 'mp4') {
+  const e = extFromUrl(url);
+  return Object.hasOwn(DIRECT_EXT, e) ? e : fallback;
+}
 const SEGMENT_EXT = new Set(['ts', 'm4s', 'm4f', 'cmfv', 'cmfa', 'm4v_seg']);
 const HLS_TYPES = new Set([
   'application/vnd.apple.mpegurl', 'application/x-mpegurl', 'audio/mpegurl', 'audio/x-mpegurl',

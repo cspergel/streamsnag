@@ -11,7 +11,7 @@ download helpers, with optional AI (Claude) for sites that hide their videos.
 > StreamSnag refuses DRM-protected and encrypted streams, and is meant for videos you have the right to keep.
 
 <p align="center">
-  <img src="docs/popup.png" width="340" alt="The StreamSnag popup in light mode: the latest video in a large card with one Download button, then the page's other videos as compact rows marked downloaded or not, a playlist with List videos, and subtitle files tucked into a group">
+  <img src="docs/popup.png" width="340" alt="The StreamSnag popup in light mode: the video you're watching in a large card with one Download button, then the page's other videos as compact rows marked downloaded or not, a playlist with List videos, and subtitle files tucked into a group">
   <img src="docs/popup-dark.png" width="340" alt="The same popup in dark mode: neutral greys, with orange only in the logo">
 </p>
 
@@ -22,7 +22,7 @@ download helpers, with optional AI (Claude) for sites that hide their videos.
    click **Load unpacked**, and choose the `extension` folder.
 3. **Optional but recommended: the local helper.** It merges video and audio into one MP4 (ffmpeg),
    downloads playlists and hard sites (yt-dlp), checks your folders for videos you already have, and lets
-   you save anywhere on your PC.
+   you save anywhere on your PC. It needs [Node.js](https://nodejs.org) 18 or newer.
    * Windows: right-click `setup-windows.ps1` → **Run with PowerShell** (or
      `powershell -ExecutionPolicy Bypass -File .\setup-windows.ps1`). It checks for Node.js and offers to
      install ffmpeg and yt-dlp with winget.
@@ -30,6 +30,30 @@ download helpers, with optional AI (Claude) for sites that hide their videos.
    * Then restart the browser and open StreamSnag **Settings → Local helper → Check helper**.
 
 Open a page, press play (many players only load the video once it plays), and click the StreamSnag icon.
+
+### Updating and removing
+
+* **Update:** download the new ZIP and unzip it over the old folder (or `git pull`), then click the reload
+  arrow on StreamSnag's card in `chrome://extensions`. Your settings, history and recipes are kept.
+* **Remove the helper:** run `node native-host/install.js --uninstall` in the StreamSnag folder. It
+  unregisters the helper from your browsers; ffmpeg, yt-dlp and Node.js are left alone.
+* **Remove the extension:** click **Remove** on its card in `chrome://extensions`, then delete the folder.
+
+## Is it safe?
+
+* **You can read all of it.** The extension is plain JavaScript with no build step, so the code in this
+  repository is the code that runs. The only bundled library is Anthropic's official SDK, used when you
+  turn the AI features on.
+* **Nothing phones home.** No servers, accounts, analytics or ads. See [PRIVACY.md](PRIVACY.md) for
+  everything that goes over the network and when.
+* **Why it asks to "read and change all your data on all websites":** a video can be on any site, and
+  seeing which media files a page loads is how StreamSnag finds them. Every download helper needs this.
+  [PRIVACY.md](PRIVACY.md) lists each permission and what it is used for.
+* **Why it isn't in the Chrome Web Store:** the store doesn't allow extensions that download from YouTube,
+  which the yt-dlp helper can do. Loading it from GitHub means Chrome shows a "Developer mode" notice;
+  that is expected.
+* **The local helper is optional** and only talks to StreamSnag. How it is locked down, and how to report
+  a problem privately: [SECURITY.md](SECURITY.md).
 
 ## What it does
 
@@ -40,6 +64,8 @@ Open a page, press play (many players only load the video once it plays), and cl
   opened. Vimeo and Wistia are resolved to their real stream and title.
 * **Playlists and Vimeo showcases**: **List videos** shows every video in the playlist with its number
   and title, not just the ones you played.
+* **Now playing**: on a page with several videos, the one you're watching gets the large card, so you
+  don't have to guess which link is which.
 * **Scan again** re-checks every frame and web component without reloading the page, and the page is
   re-checked on its own every few seconds.
 * **Find with AI** (optional) reads the page's network log and player code to find links plain sniffing
@@ -71,6 +97,7 @@ Open a page, press play (many players only load the video once it plays), and cl
 * Duplicate links to the same video (re-signed CDN links, redirects, mirrors) are shown once.
 * The **sidebar** stays open, follows your tab, and shows details and your download history.
 * **Backup & restore** your settings, recipes, rules, history and marks.
+* **Light and dark**: follows your computer, or pick one in Settings.
 
 ### AI features (optional, off by default)
 * **Find with AI** and **site recipes** (above), **Ask AI why** for a failed download, **Summarize** a video
@@ -84,7 +111,7 @@ Open a page, press play (many players only load the video once it plays), and cl
 * Very long 4K streams are better downloaded with yt-dlp; live DASH needs yt-dlp.
 * Some sites restrict their players to their own pages; playlist listing and yt-dlp downloads pass the page as
   Referer, which works for many but not all.
-* It's distributed through GitHub, not the Chrome Web Store (whose policies don't allow some of what it does).
+* It's distributed through GitHub, not the Chrome Web Store (which doesn't allow downloading from YouTube).
 
 ## Privacy
 
@@ -96,7 +123,7 @@ AI requests you choose to make. Details and the reason for each permission: [PRI
 ```sh
 npm install        # dev tools: tests, SDK bundler
 npm test           # unit tests (parsers, detection, matching, recipes, helper protocol, real ffmpeg merge)
-node scripts/e2e.js   # loads the extension in headless Chrome against a local test site (60+ checks)
+node scripts/e2e.js   # loads the extension in headless Chrome against a local test site (75+ checks)
 ```
 
 ```

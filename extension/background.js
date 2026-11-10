@@ -1,5 +1,5 @@
 // StreamSnag service worker: sniffs media, runs download jobs, talks to the AI and the local helper.
-import { classifyResponse, classifyUrl, dedupeKey, sameMedia, streamFingerprint } from './lib/detect.js';
+import { classifyResponse, classifyUrl, dedupeKey, sameMedia, streamFingerprint, mediaExtFromUrl } from './lib/detect.js';
 import { parseM3U8, outputExtForMedia } from './lib/hls.js';
 import { parseMPD, dashExt } from './lib/dash.js';
 import { mergeVttSegments, captionsToText, srtToVtt } from './lib/vtt.js';
@@ -11,7 +11,12 @@ import {
 import { callAI, helperRequest } from './lib/ai-transport.js';
 import { getSettings } from './lib/settings.js';
 import { findInLibrary, nameKey, serviceId, leadNumber, sameItem } from './lib/match.js';
-import { applyRefererRules } from './lib/headers.js';
+import { applyRefererRules, installLocalGuard, allowLocal } from './lib/headers.js';
+
+// Settings (with the API key) and history are for StreamSnag's own pages, not for scripts running in web pages.
+chrome.storage.local.setAccessLevel?.({ accessLevel: 'TRUSTED_CONTEXTS' }).catch(() => {});
+// Block the extension's own requests to local-network addresses unless a host is let through (headers.js).
+const guardReady = installLocalGuard().catch(() => {});
 import {
   buildFilename, sanitizeFilename, formatBytes, formatBitrate, formatDuration, hostOf, siteKey,
   shortId, extFromUrl, isHttpUrl, resolveFolder, rulesFor, registrableDomain, isPrivateHost, pickPlaying,
@@ -106,6 +111,11 @@ function autoFetchAllowed(url, pageUrl) {
   const target = hostOf(url);
   if (!isPrivateHost(target)) return true;
   return !!pageUrl && isPrivateHost(hostOf(pageUrl)); // a page that is itself local (a dev server, a NAS UI)
+}
+
+/** A preview image the popup may load: a web address, and not a local-network one unless the page is local. */
+function safePoster(url, pageUrl) {
+  return isHttpUrl(url) && autoFetchAllowed(url, pageUrl) ? url : '';
 }
 
 async function probeStream(tabId, m) {
@@ -382,6 +392,8 @@ async function addMedia(tabId, item) {
   if (tabId < 0 || !isHttpUrl(item.url)) return null;
   const t = await getTab(tabId);
   if (!t.pageUrl) await refreshTabInfo(tabId, t);
+  item = { ...item, poster: safePoster(item.poster, t.pageUrl) };
+  if (item.poster) { await guardReady; await allowLocal([item.poster], t.pageUrl).catch(() => {}); }
   const key = dedupeKey(item.url);
   const canon = canonicalKey(t, key);
   let m = t.media.find((x) => keysOf(x).some((k) => k === key || canonicalKey(t, k) === canon));
@@ -720,7 +732,7 @@ async function inspectMedia(tabId, mediaId) {
   const t = await getTab(tabId);
   const m = t.media.find((x) => x.id === mediaId);
   if (!m) throw new Error('That media item is gone — reload the page.');
-  await applyRefererRules([m.url], m.pageUrl || t.pageUrl);
+  await applyRefererRules([m.url], m.pageUrl || t.pageUrl, true); // you opened this item's qualities
   if (m.kind === 'direct') return { options: [{ id: 'file', label: `${(m.ext || 'file').toUpperCase()}${m.size ? ` · ${formatBytes(m.size)}` : ''}` }] };
   if (m.kind === 'subtitle') return { options: [{ id: 'file', label: `Subtitles (${m.ext})` }] };
 
@@ -960,7 +972,7 @@ async function startDownload(tabId, mediaId, optionId = 'file') {
   if (m.kind === 'embed') return startYtdlp(tabId, { mediaId });
   if (m.protected) throw new Error('This media is DRM/encrypted and cannot be downloaded.');
   const pageUrl = m.pageUrl || t.pageUrl;
-  await applyRefererRules([m.url], pageUrl);
+  await applyRefererRules([m.url], pageUrl, true); // you clicked Download
 
   const tracks = await planTracks(m, optionId, settings);
   const allUrls = new Set();
@@ -1953,7 +1965,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         chrome.action.openPopup?.().catch(() => {});
         return;
       }
-      const kind = (await probeUnknown(info.srcUrl, info.pageUrl || tab.url)) || { kind: 'direct', mediaType: info.mediaType || 'video', ext: extFromUrl(info.srcUrl) || 'mp4', size: null };
+      const kind = (await probeUnknown(info.srcUrl, info.pageUrl || tab.url)) || { kind: 'direct', mediaType: info.mediaType || 'video', ext: mediaExtFromUrl(info.srcUrl), size: null };
       const m = await addMedia(tab.id, { url: info.srcUrl, ...kind, source: 'page' });
       if (m.kind === 'direct') {
         await startDownload(tab.id, m.id, 'file');

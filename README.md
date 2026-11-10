@@ -10,6 +10,8 @@ download helpers, with optional AI (Claude) for sites that hide their videos.
 
 > StreamSnag refuses DRM-protected and encrypted streams, and is meant for videos you have the right to keep.
 
+<p align="center"><img src="docs/popup.png" width="360" alt="The StreamSnag popup: videos on a page marked downloaded or not, a playlist with List videos, and subtitle files tucked into a group"></p>
+
 ## Quick start
 
 1. **Get the code:** download the ZIP from the green **Code** button on GitHub (or `git clone`) and unzip it.

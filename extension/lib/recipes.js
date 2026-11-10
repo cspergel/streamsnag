@@ -14,7 +14,7 @@
 // }
 // Sources for regex rules: "html" (page HTML), "scripts" (inline script text), "url" (page URL),
 // "network" (URLs of requests the page made, one per line).
-import { isHttpUrl, resolveUrl, hostOf, siteKey } from './util.js';
+import { isHttpUrl, resolveUrl, hostOf, siteKey, registrableDomain } from './util.js';
 
 const RULE_TYPES = new Set(['selector', 'regex', 'fetch']);
 const SOURCES = new Set(['html', 'scripts', 'url', 'network']);
@@ -31,6 +31,8 @@ export function unescapeJsString(s) {
 
 function safeRegex(pattern, flags) {
   if (typeof pattern !== 'string' || !pattern || pattern.length > 500) return null;
+  // Nested quantifiers like (a+)+ or (\w*)* can freeze the browser on a long page: refuse them.
+  if (/\((?:[^()\\]|\\.)*[+*}](?:[^()\\]|\\.)*\)\s*[+*{]/.test(pattern)) return null;
   const f = String(flags || 'g').replace(/[^gimsu]/g, '');
   try {
     return new RegExp(pattern, f.includes('g') ? f : `${f}g`);
@@ -91,8 +93,8 @@ export function fetchAllowed(targetUrl, pageUrl) {
   const a = siteKey(hostOf(targetUrl));
   const b = siteKey(hostOf(pageUrl));
   if (!a || !b) return false;
-  const root = (h) => h.split('.').slice(-2).join('.');
-  return a === b || root(a) === root(b);
+  // Same owner only: "learn.example.com" may fetch "api.example.com", but "a.github.io" may not fetch "b.github.io".
+  return a === b || registrableDomain(a) === registrableDomain(b);
 }
 
 /**
@@ -129,7 +131,8 @@ export async function runRecipe(recipe, snapshot, fetchText) {
       } else if (rule.type === 'fetch') {
         let caps = [];
         if (rule.from) {
-          const m = new RegExp(rule.from).exec(snapshot.url || '');
+          const re = safeRegex(rule.from, '');
+          const m = re ? (re.lastIndex = 0, re.exec(snapshot.url || '')) : null;
           if (!m) {
             log.push(`rule ${i + 1} (fetch): "from" did not match the page URL`);
             continue;

@@ -14,7 +14,7 @@ import { findInLibrary, nameKey, serviceId, leadNumber, sameItem } from './lib/m
 import { applyRefererRules } from './lib/headers.js';
 import {
   buildFilename, sanitizeFilename, formatBytes, formatBitrate, formatDuration, hostOf, siteKey,
-  shortId, extFromUrl, isHttpUrl, resolveFolder, rulesFor,
+  shortId, extFromUrl, isHttpUrl, resolveFolder, rulesFor, registrableDomain, isPrivateHost,
 } from './lib/util.js';
 
 // ---------------------------------------------------------------- settings
@@ -98,8 +98,19 @@ async function fetchText(url, { maxBytes = 5_000_000 } = {}) {
 }
 
 /** Fetch an HLS/DASH manifest once to learn what it is (master vs. variant, live, DRM, qualities). */
+/**
+ * May StreamSnag fetch this URL on its own (to read a size or a stream), without a click? Not into a private
+ * network (router, NAS, localhost) from a public page: that would let any page make your browser poke them.
+ */
+function autoFetchAllowed(url, pageUrl) {
+  const target = hostOf(url);
+  if (!isPrivateHost(target)) return true;
+  return !!pageUrl && isPrivateHost(hostOf(pageUrl)); // a page that is itself local (a dev server, a NAS UI)
+}
+
 async function probeStream(tabId, m) {
   const t = await getTab(tabId);
+  if (!autoFetchAllowed(m.url, m.pageUrl || t.pageUrl)) return;
   try {
     await applyRefererRules([m.url], m.pageUrl || t.pageUrl);
     const text = await fetchText(m.url);
@@ -345,6 +356,7 @@ function rememberRedirect(t, from, to) {
 /** Direct files found in the page (not the network) have no size yet: ask the server, following redirects. */
 async function probeDirect(tabId, m) {
   const t = await getTab(tabId);
+  if (!autoFetchAllowed(m.url, m.pageUrl || t.pageUrl)) return;
   try {
     await applyRefererRules([m.url], m.pageUrl || t.pageUrl);
     const ctrl = new AbortController();
@@ -505,9 +517,10 @@ function playerLength(m, info) {
 }
 
 /** Work out what an unknown URL is (AI candidates, recipe results). */
-async function probeUnknown(url) {
+async function probeUnknown(url, pageUrl = '') {
   const byUrl = classifyUrl(url);
   if (byUrl) return byUrl;
+  if (!autoFetchAllowed(url, pageUrl)) return null;
   try {
     const res = await fetch(url, { headers: { Range: 'bytes=0-2047' }, credentials: 'include' });
     const ct = (res.headers.get('content-type') || '').toLowerCase();
@@ -644,7 +657,7 @@ async function getRecipes() {
 async function recipeForUrl(url) {
   const recipes = await getRecipes();
   const key = siteKey(url);
-  return recipes[key] || recipes[key.split('.').slice(-2).join('.')] || null;
+  return recipes[key] || recipes[registrableDomain(key)] || null;
 }
 
 async function pageSnapshot(tabId, selectors = []) {
@@ -660,7 +673,7 @@ async function pageSnapshot(tabId, selectors = []) {
 async function addFoundUrls(tabId, urls, source) {
   const added = [];
   for (const url of urls.slice(0, 30)) {
-    const info = await probeUnknown(url);
+    const info = await probeUnknown(url, (await getTab(tabId)).pageUrl);
     if (!info) continue;
     const m = await addMedia(tabId, { url, ...info, source });
     if (m) added.push(m.id);
@@ -1207,7 +1220,15 @@ async function scanLibrary({ force = false } = {}) {
       // Nothing saved yet: fall back to the usual Downloads folder.
       type: 'scanFolder', dirs: [...dirs].filter(Boolean).slice(0, 60), includeDownloads: settings.checkDownloads !== false || !dirs.size, durations: true, maxProbe: 150,
     }, { timeoutMs: 180000 });
-    library = { at: startedAt, files: res.files || [], dirs: res.dirs || [], pending: res.pending || 0, error: '' };
+    // Big libraries arrive in pages (the helper may send at most 1 MB at a time).
+    let files = res.files || [];
+    while (res.scanId && files.length < res.total) {
+      const page = await helperRequest({ type: 'scanPage', scanId: res.scanId, offset: files.length }, { timeoutMs: 60000 });
+      if (!page.files?.length) break;
+      files = files.concat(page.files);
+    }
+    for (const f of files) if (!f.name) f.name = String(f.path).replace(/^.*[\\/]/, '');
+    library = { at: startedAt, files, dirs: res.dirs || [], pending: res.pending || 0, error: '' };
     await chrome.storage.local.set({ library });
     // Measuring lengths happens in batches; keep going in the background until every file is known.
     if (res.pending > 0) setTimeout(() => scanLibrary({ force: true }).catch(() => {}), 1500);
@@ -1805,13 +1826,17 @@ function rank(m) {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (!msg || msg.target === 'offscreen') return false;
+  // Web pages (through content scripts) may only report what they found. Everything else — downloads, the
+  // helper, folders, settings — is for StreamSnag's own pages (popup, sidebar, settings, offscreen).
+  const fromExtension = sender.id === chrome.runtime.id && String(sender.url || '').startsWith(chrome.runtime.getURL(''));
 
   // Content script reports.
   if (msg.type === 'contentMedia' && sender.tab) {
     const tabId = sender.tab.id;
     (async () => {
       const t = await getTab(tabId);
-      if (msg.isTop && msg.pageTitle) t.pageTitle = msg.pageTitle;
+      const isTop = sender.frameId === 0; // from Chrome, not from what the page claims
+      if (isTop && msg.pageTitle) t.pageTitle = msg.pageTitle;
       for (const it of msg.items || []) {
         if (it.embed) {
           resolveEmbed(tabId, it).catch(() => {});
@@ -1824,7 +1849,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         // One unreadable item must not stop the rest of the report: the last item is often the one that
         // matters, and it used to be dropped whenever an earlier addMedia threw.
         try {
-          await addMedia(tabId, { ...info, url: it.url, source: 'page', poster: it.poster, duration: it.duration, lang: it.lang, label: it.label, frameUrl: msg.isTop ? '' : msg.frameUrl });
+          await addMedia(tabId, { ...info, url: it.url, source: 'page', poster: it.poster, duration: it.duration, lang: it.lang, label: it.label, frameUrl: isTop ? '' : msg.frameUrl });
         } catch { /* skip this item, keep the rest */ }
       }
     })().catch(() => {});
@@ -1832,7 +1857,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   // Offscreen progress/results.
-  if (msg.type === 'trackProgress' || msg.type === 'trackDone' || msg.type === 'trackError') {
+  if ((msg.type === 'trackProgress' || msg.type === 'trackDone' || msg.type === 'trackError') && fromExtension) {
     (async () => {
       await loadJobs();
       const job = jobs.get(msg.jobId);
@@ -1858,6 +1883,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return false;
   }
 
+  if (!fromExtension) return false;
   const handler = handlers[msg.type];
   if (!handler) return false;
   Promise.resolve()
@@ -1891,7 +1917,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         chrome.action.openPopup?.().catch(() => {});
         return;
       }
-      const kind = (await probeUnknown(info.srcUrl)) || { kind: 'direct', mediaType: info.mediaType || 'video', ext: extFromUrl(info.srcUrl) || 'mp4', size: null };
+      const kind = (await probeUnknown(info.srcUrl, info.pageUrl || tab.url)) || { kind: 'direct', mediaType: info.mediaType || 'video', ext: extFromUrl(info.srcUrl) || 'mp4', size: null };
       const m = await addMedia(tab.id, { url: info.srcUrl, ...kind, source: 'page' });
       if (m.kind === 'direct') {
         await startDownload(tab.id, m.id, 'file');

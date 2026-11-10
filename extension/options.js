@@ -71,7 +71,7 @@ async function saveForm() {
     else if (el.type === 'number') s[f] = Math.max(Number(el.min) || 0, Number(el.value) || DEFAULT_SETTINGS[f]);
     else s[f] = el.value.trim();
   }
-  if (s.subscriptionModel && !/^[a-z0-9.\-[\]]+$/i.test(s.subscriptionModel)) s.subscriptionModel = '';
+  if (s.subscriptionModel && !/^[a-z0-9][a-z0-9.\-[\]]*$/i.test(s.subscriptionModel)) s.subscriptionModel = '';
   s.concurrency = Math.min(16, s.concurrency);
   s.maxParallel = Math.min(6, Math.max(1, s.maxParallel || 2));
   await chrome.storage.local.set({ settings: s });
@@ -262,8 +262,19 @@ $('#importAll').addEventListener('change', async (e) => {
     const next = {};
     // Settings: the backup's values, but an empty API key in the file never wipes the one you have.
     if (data.settings && typeof data.settings === 'object') {
-      next.settings = { ...(cur.settings || {}), ...data.settings };
-      if (!data.settings.apiKey) next.settings.apiKey = cur.settings?.apiKey || '';
+      // Only known settings, with their usual types; folder paths must look like plain folders.
+      const plainFolder = (p) => typeof p === 'string' && p.length < 400 && !/["'`$;&|<>\r\n\u2018-\u201f]/.test(p);
+      const clean = {};
+      for (const [k, v] of Object.entries(data.settings)) {
+        if (!(k in DEFAULT_SETTINGS)) continue;
+        const want = DEFAULT_SETTINGS[k];
+        if (Array.isArray(want) ? Array.isArray(v) : typeof v === typeof want) clean[k] = v;
+      }
+      if (clean.saveFolder && !plainFolder(clean.saveFolder)) delete clean.saveFolder;
+      if (clean.libraryFolders) clean.libraryFolders = clean.libraryFolders.filter(plainFolder).slice(0, 30);
+      if (clean.subscriptionModel && !/^[a-z0-9][a-z0-9.\-[\]]*$/i.test(clean.subscriptionModel)) delete clean.subscriptionModel;
+      next.settings = { ...(cur.settings || {}), ...clean };
+      if (!clean.apiKey) next.settings.apiKey = cur.settings?.apiKey || '';
     }
     if (data.recipes && typeof data.recipes === 'object') {
       next.recipes = { ...(cur.recipes || {}) };

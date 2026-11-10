@@ -139,24 +139,71 @@ export function isHttpUrl(url) {
   return /^https?:\/\//i.test(String(url || ''));
 }
 
-/** Quote a value for a POSIX-ish or PowerShell command line (double quotes, escaped). */
-function q(s) {
-  return `"${String(s).replace(/(["\\$`])/g, '\\$1')}"`;
+/**
+ * A URL for a command line that is safe to paste into bash, zsh, PowerShell or cmd: double-quoted, with every
+ * character any of them would expand or end the quotes on ($ ` " \\ ! ') percent-encoded (same URL to a server).
+ */
+function qUrl(s) {
+  return `"${String(s).replace(/[$`"\\!'\s]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0')}`)}"`;
+}
+
+/** A file name for a command line: the same dangerous characters are simply dropped. */
+function qName(s) {
+  return `"${String(s).replace(/[$`"\\!'%]/g, '').trim() || 'video.mp4'}"`;
 }
 
 export function ytdlpCommand(url, { referer, output } = {}) {
   const parts = ['yt-dlp'];
-  if (referer) parts.push('--referer', q(referer));
-  if (output) parts.push('-o', q(output));
-  parts.push(q(url));
+  if (referer) parts.push('--referer', qUrl(referer));
+  if (output) parts.push('-o', qName(output));
+  parts.push(qUrl(url));
   return parts.join(' ');
 }
 
 export function ffmpegCommand(url, { referer, output = 'video.mp4' } = {}) {
   const parts = ['ffmpeg'];
-  if (referer) parts.push('-referer', q(referer));
-  parts.push('-i', q(url), '-c', 'copy', q(output));
+  if (referer) parts.push('-referer', qUrl(referer));
+  parts.push('-i', qUrl(url), '-c', 'copy', qName(output));
   return parts.join(' ');
+}
+
+// Shared hosting where neighbours are different owners: "a.github.io" and "b.github.io" are not one site.
+const SHARED_SUFFIXES = new Set(['github.io', 'gitlab.io', 'netlify.app', 'vercel.app', 'pages.dev', 'workers.dev', 'web.app',
+  'firebaseapp.com', 'herokuapp.com', 'appspot.com', 'blogspot.com', 'wordpress.com', 'wixsite.com', 'squarespace.com',
+  'azurewebsites.net', 'cloudfront.net', 'amazonaws.com', 'r2.dev', 'onrender.com', 'fly.dev', 'glitch.me', 'neocities.org',
+  'surge.sh', 'replit.app', 'ngrok.io', 'ngrok-free.app', 'myshopify.com', 'substack.com', 'tumblr.com', 'notion.site']);
+
+/**
+ * The part of a host name one owner controls ("www.learn.example.com" → "example.com", "bbc.co.uk" →
+ * "bbc.co.uk", "me.github.io" → "me.github.io"). A small built-in list instead of the full Public Suffix List.
+ */
+export function registrableDomain(host) {
+  const h = String(host || '').toLowerCase().replace(/\.$/, '');
+  if (!h || /^[\d.]+$/.test(h) || h.includes(':')) return h; // IP addresses stand alone
+  const parts = h.split('.');
+  if (parts.length <= 2) return h;
+  const last2 = parts.slice(-2).join('.');
+  // Every bucket/distribution is a different owner: the whole host name is the site.
+  if (/(^|\.)(amazonaws\.com|cloudfront\.net|r2\.dev|storage\.googleapis\.com)$/.test(h)) return h;
+  // Country second levels like co.uk, com.au, ac.jp; and shared hosting: keep one more label.
+  const ccSecond = parts.at(-1).length === 2 && /^(co|com|net|org|gov|edu|ac|or|ne|go|gob|nic|mil|ltd|plc|sch|nhs|police|me|info|biz)$/.test(parts.at(-2));
+  if (ccSecond || SHARED_SUFFIXES.has(last2) || SHARED_SUFFIXES.has(parts.slice(-3).join('.'))) {
+    const keep = SHARED_SUFFIXES.has(parts.slice(-3).join('.')) ? 4 : 3;
+    return parts.slice(-keep).join('.');
+  }
+  return last2;
+}
+
+/** Loopback, private-network and link-local hosts (a router, a NAS, a dev server…). */
+export function isPrivateHost(host) {
+  const h = String(host || '').toLowerCase().replace(/^\[|\]$/g, '');
+  if (!h) return false;
+  if (h === 'localhost' || h.endsWith('.localhost') || /\.(local|lan|internal|home|corp|intranet)$/.test(h)) return true;
+  if (h === '::1' || /^f[cd][0-9a-f]{2}:/.test(h) || /^fe80:/.test(h)) return true;
+  const m = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(h);
+  if (!m) return false;
+  const [a, b] = [Number(m[1]), Number(m[2])];
+  return a === 127 || a === 10 || a === 0 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254) || (a === 100 && b >= 64 && b <= 127);
 }
 
 /** Stable short hash (FNV-1a) — used for ids and DNR rule ids. */

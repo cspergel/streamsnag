@@ -38,7 +38,8 @@ test('extFromUrl and siteKey', () => {
 });
 
 test('ytdlpCommand quotes URLs safely', () => {
-  assert.equal(ytdlpCommand('https://a.com/v?a=1&b=$x', { referer: 'https://a.com/' }), 'yt-dlp --referer "https://a.com/" "https://a.com/v?a=1&b=\\$x"');
+  // "$" is percent-encoded (same URL to a server), so no shell can expand it.
+  assert.equal(ytdlpCommand('https://a.com/v?a=1&b=$x', { referer: 'https://a.com/' }), 'yt-dlp --referer "https://a.com/" "https://a.com/v?a=1&b=%24x"');
 });
 
 test('mergeVttSegments keeps one header and drops duplicate cues across segments', () => {

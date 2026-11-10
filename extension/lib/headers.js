@@ -25,7 +25,8 @@ export async function applyRefererRules(urls, pageUrl) {
     action: {
       type: 'modifyHeaders',
       requestHeaders: [
-        { header: 'referer', operation: 'set', value: pageUrl },
+        // The page's address without its query (tokens, search terms): what CDNs check is the site and path.
+        { header: 'referer', operation: 'set', value: pageUrl.split(/[?#]/)[0] },
         { header: 'origin', operation: 'set', value: origin },
       ],
     },

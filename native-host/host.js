@@ -7,6 +7,7 @@
 //   ytdlp  -> download a page with yt-dlp, streaming progress back
 // stdout is reserved for protocol frames; diagnostics go to a log file in the temp directory.
 import { spawn, execFileSync } from 'node:child_process';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -121,16 +122,16 @@ export function cmdShimCommandLine(cmd, args) {
   return `"${[cmd, ...args].map((a) => `"${a}"`).join(' ')}"`;
 }
 
-function run(cmd, args, { input, onLine, timeoutMs = 10 * 60 * 1000, cwd } = {}) {
+function run(cmd, args, { input, onLine, timeoutMs = 10 * 60 * 1000, cwd, env } = {}) {
   return new Promise((resolve, reject) => {
     const isShim = IS_WIN && /\.(cmd|bat)$/i.test(cmd);
     let child;
     try {
       child = isShim
         ? spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', cmdShimCommandLine(cmd, args)], {
-          cwd, windowsHide: true, windowsVerbatimArguments: true, stdio: ['pipe', 'pipe', 'pipe'], env: childEnv(),
+          cwd, windowsHide: true, windowsVerbatimArguments: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...childEnv(), ...env },
         })
-        : spawn(cmd, args, { cwd, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env: childEnv() });
+        : spawn(cmd, args, { cwd, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...childEnv(), ...env } });
     } catch (e) {
       reject(e);
       return;
@@ -187,7 +188,7 @@ async function handleClaude(msg) {
     '--tools', '', '--system-prompt-file', systemFile,
   ];
   if (msg.model) {
-    if (!/^[a-z0-9.\-[\]]+$/i.test(msg.model)) throw new Error('Invalid model name');
+    if (!/^[a-z0-9][a-z0-9.\-[\]]*$/i.test(msg.model)) throw new Error('Invalid model name');
     args.push('--model', msg.model);
   }
   let res;
@@ -309,11 +310,12 @@ async function handleYtdlp(msg) {
   if (items && !/^\d{1,4}(,\d{1,4}){0,499}$/.test(items)) throw new Error('Invalid playlist items');
   const name = msg.name ? ytdlpSafeName(msg.name) : '';
   // A whole playlist gets its own folder, files numbered in playlist order.
+  const dirT = outDir.replace(/%/g, '%%');
   const template = name
-    ? path.join(outDir, `${name}.%(ext)s`)
+    ? path.join(dirT, `${name}.%(ext)s`)
     : msg.playlist === true
-      ? path.join(outDir, '%(playlist_title,playlist_id|Playlist).80B', '%(playlist_index)03d - %(title).140B [%(id)s].%(ext)s')
-      : path.join(outDir, '%(title).150B [%(id)s].%(ext)s');
+      ? path.join(dirT, '%(playlist_title,playlist_id|Playlist).80B', '%(playlist_index)03d - %(title).140B [%(id)s].%(ext)s')
+      : path.join(dirT, '%(title).150B [%(id)s].%(ext)s');
   const args = [
     msg.url, msg.playlist === true || items ? '--yes-playlist' : '--no-playlist', '--newline', '--progress', '--print', 'after_move:filepath',
     '-o', template,
@@ -490,17 +492,18 @@ async function handleCheckFolder(msg) {
 /** Native "choose folder" dialog (Windows), kept on top of Chrome. */
 async function handlePickFolder(msg) {
   if (!IS_WIN) throw new Error('Folder picker is only available on Windows; type the path instead.');
-  const start = msg.start && !/['\r\n]/.test(msg.start) ? String(msg.start) : '';
+  let start = '';
+  try { start = msg.start ? safeFolder(msg.start) : ''; } catch { start = ''; }
   const script = [
     'Add-Type -AssemblyName System.Windows.Forms',
     '$owner = New-Object System.Windows.Forms.Form -Property @{TopMost=$true; ShowInTaskbar=$false}',
     '$d = New-Object System.Windows.Forms.FolderBrowserDialog',
     "$d.Description = 'Choose where StreamSnag saves videos'",
     '$d.ShowNewFolderButton = $true',
-    start ? `$d.SelectedPath = '${start}'` : '',
+    'if ($env:SS_START) { $d.SelectedPath = $env:SS_START }',
     "if ($d.ShowDialog($owner) -eq 'OK') { [Console]::OutputEncoding = [Text.Encoding]::UTF8; Write-Output $d.SelectedPath }",
   ].filter(Boolean).join('; ');
-  const res = await run('powershell.exe', ['-NoProfile', '-STA', '-NonInteractive', '-Command', script], { timeoutMs: 10 * 60 * 1000 });
+  const res = await run('powershell.exe', ['-NoProfile', '-STA', '-NonInteractive', '-Command', script], { timeoutMs: 10 * 60 * 1000, env: { SS_START: start } });
   const picked = res.stdout.trim().split(/\r?\n/).pop() || '';
   return { path: picked ? safeFolder(picked) : '' };
 }
@@ -578,11 +581,42 @@ async function handleScanFolder(msg) {
       fs.writeFileSync(DURATION_CACHE, JSON.stringify(cache));
     }
   }
-  for (const f of files) {
+  const compact = files.map((f) => {
     const d = cache[`${f.size}:${f.mtimeMs}`];
-    if (d) f.duration = d;
+    return d ? { path: f.path, size: f.size, mtimeMs: f.mtimeMs, duration: d } : { path: f.path, size: f.size, mtimeMs: f.mtimeMs };
+  });
+  // Chrome takes at most 1 MB per message from a helper: a big library is handed over in pages.
+  const first = scanPage(compact, 0);
+  let scanId = '';
+  if (first.length < compact.length) {
+    scanId = crypto.randomBytes(8).toString('hex');
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    for (const old of fs.readdirSync(DATA_DIR).filter((n) => /^scan-[a-f0-9]{16}\.json$/.test(n))) {
+      try { if (Date.now() - fs.statSync(path.join(DATA_DIR, old)).mtimeMs > 3600e3) fs.unlinkSync(path.join(DATA_DIR, old)); } catch { /* in use */ }
+    }
+    fs.writeFileSync(path.join(DATA_DIR, `scan-${scanId}.json`), JSON.stringify(compact));
   }
-  return { dirs, files, pending };
+  return { dirs, files: first, total: compact.length, scanId, pending };
+}
+
+/** The next slice of a scan that fits in one message (well under Chrome's 1 MB limit). */
+export function scanPage(all, offset, maxBytes = 900 * 1024) {
+  let n = 4000;
+  for (;;) {
+    const slice = all.slice(offset, offset + n);
+    if (n <= 25 || Buffer.byteLength(JSON.stringify(slice)) < maxBytes) return slice;
+    n = Math.floor(n / 2);
+  }
+}
+
+async function handleScanPageRequest(msg) {
+  if (!/^[a-f0-9]{16}$/.test(String(msg.scanId || ''))) throw new Error('Invalid scan id');
+  const file = path.join(DATA_DIR, `scan-${msg.scanId}.json`);
+  const all = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const offset = Math.max(0, Math.floor(Number(msg.offset) || 0));
+  const files = scanPage(all, offset);
+  if (offset + files.length >= all.length) fs.rmSync(file, { force: true });
+  return { files, total: all.length };
 }
 
 async function handleStat(msg) {
@@ -616,6 +650,7 @@ const HANDLERS = {
   reveal: handleReveal,
   move: handleMove,
   scanFolder: handleScanFolder,
+  scanPage: handleScanPageRequest,
   stat: handleStat,
   checkFolder: handleCheckFolder,
   pickFolder: handlePickFolder,

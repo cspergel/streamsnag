@@ -19,9 +19,12 @@ StreamSnag has no servers, no accounts, no analytics and no tracking. It works o
 
 ## What is sent over the network, and only when you ask
 
-* **Downloads.** StreamSnag requests the video files and stream segments from the site you are on, like
-  your browser does when you play them. For sites that need it, it sends the page's address as the
-  `Referer`, as the player itself would.
+* **Downloads.** StreamSnag requests the video files and stream segments from wherever the page loads them,
+  like your browser does when you play them. For sites that need it, it sends the page's address (without
+  its query string) as the `Referer`, as the player itself would.
+* **Details of what it found.** To show a file's size or a stream's qualities and length, StreamSnag reads
+  the first bytes of a detected file or the stream's playlist as soon as it is found, without a click. It
+  never does this to local-network addresses (your router, a NAS, `localhost`) from a public web page.
 * **Embedded players.** To find the real video behind a Vimeo or Wistia player on a page, StreamSnag reads
   that player's public configuration from Vimeo or Wistia.
 * **yt-dlp** (if you use it) contacts the site you point it at, and its update check contacts GitHub when

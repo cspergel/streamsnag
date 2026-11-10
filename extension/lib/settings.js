@@ -1,0 +1,32 @@
+// Default settings shared by the service worker and the options page.
+export const DEFAULT_MODEL = 'claude-opus-5-5';
+
+export const DEFAULT_SETTINGS = {
+  aiProvider: 'off', // 'off' | 'api' | 'subscription'
+  apiKey: '',
+  model: DEFAULT_MODEL,
+  effort: 'medium',
+  subscriptionModel: '',
+  minSizeKB: 300,
+  concurrency: 6,
+  includeSubtitles: true,
+  useFfmpeg: true,
+  embedSubtitles: true, // put downloaded subtitles inside the merged MP4/MKV
+  keepSubtitleFiles: false, // also keep the .vtt files next to it
+  aiFilenames: false,
+  filenameTemplate: '{title} - {quality}',
+  subfolder: 'StreamSnag', // relative, may be nested and use {site} {date} {kind}
+  saveFolder: '', // absolute folder anywhere on the PC; empty = Chrome's Downloads folder (needs the helper)
+  libraryFolders: [], // more folders to check for videos you already have
+  checkDownloads: true, // also check your Downloads folder (where most tools save)
+  debugMode: false, // keep a snapshot of the last page's detections, for bug reports
+  maxParallel: 2, // downloads running at once; the rest wait in the queue
+  siteRules: {}, // per-site overrides: { "example.com": { subfolder, filenameTemplate } }
+  notify: true,
+  autoRecipes: true,
+};
+
+export async function getSettings() {
+  const { settings } = await chrome.storage.local.get('settings');
+  return { ...DEFAULT_SETTINGS, ...(settings || {}) };
+}

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StreamSnag Settings</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body class="options-page">
+  <main>
+    <header class="page-head">
+      <img src="icons/icon48.png" alt="" width="36" height="36">
+      <div>
+        <h1>StreamSnag</h1>
+        <p class="muted">Video download helper with optional Claude-powered link finding.</p>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="ai" aria-selected="true">AI</button>
+      <button role="tab" data-tab="downloads">Downloads</button>
+      <button role="tab" data-tab="helper">Local helper</button>
+      <button role="tab" data-tab="recipes">Site recipes</button>
+      <button role="tab" data-tab="history">History</button>
+    </nav>
+
+    <!-- AI -->
+    <section class="tab-panel" data-panel="ai">
+      <div class="card stack">
+        <h3>AI provider</h3>
+        <p class="muted">AI powers “Find with AI”, “Ask AI why” on failed downloads, caption summaries, smart filenames, and it writes reusable site recipes.</p>
+        <label class="choice"><input type="radio" name="aiProvider" value="off"> <span><strong>Off</strong><br><span class="muted">No AI features.</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="subscription"> <span><strong>My Claude subscription</strong> (Pro / Max)<br><span class="muted">Runs through the Claude Code CLI on this computer via the local helper. No API billing — uses your plan's usage. Requires the helper (see “Local helper” tab) and that you've signed in to <code>claude</code> once.</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="api"> <span><strong>Anthropic API key</strong><br><span class="muted">Pay-per-use via the official SDK. The key is stored only in this browser profile.</span></span></label>
+      </div>
+
+      <div class="card stack" data-when="api">
+        <h3>API settings</h3>
+        <label>API key <input type="password" id="apiKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false"></label>
+        <div class="grid2">
+          <label>Model
+            <select id="model">
+              <option value="claude-opus-5-5">Claude Opus 5.5 (default, best)</option>
+              <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (faster, cheaper)</option>
+              <option value="claude-haiku-5-5">Claude Haiku 5.5 (cheapest)</option>
+              <option value="claude-fable-5-1">Claude Fable 5.1 (most capable)</option>
+            </select>
+          </label>
+          <label>Effort
+            <select id="effort">
+              <option value="low">Low — quickest</option>
+              <option value="medium">Medium</option>
+              <option value="high">High — tricky sites</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="card stack" data-when="subscription">
+        <h3>Subscription settings</h3>
+        <label>Model override (optional)
+          <input type="text" id="subscriptionModel" placeholder="leave empty for your Claude Code default (e.g. opus, sonnet)" spellcheck="false">
+        </label>
+      </div>
+
+      <div class="card stack">
+        <label class="check"><input type="checkbox" id="aiFilenames"> Use AI to clean up file names (one small extra request per download)</label>
+        <div class="row-actions">
+          <button class="primary" id="testAI">Test AI connection</button>
+          <span id="testAIResult" class="muted"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Downloads -->
+    <section class="tab-panel" data-panel="downloads" hidden>
+      <div class="card stack">
+        <h3>Files</h3>
+        <label>Save to
+          <span class="inline">
+            <input type="text" id="saveFolder" placeholder="Chrome's Downloads folder (default)" spellcheck="false">
+            <button type="button" id="btn-browse" class="secondary">Browse…</button>
+            <button type="button" id="btn-folder-default" class="secondary">Use Downloads</button>
+          </span>
+        </label>
+        <p id="folder-status" class="muted small">Any folder on your PC, e.g. <code>D:\Videos</code>. Chrome can only save inside Downloads, so the local helper moves each finished file here right after it is merged.</p>
+        <label>Subfolder <input type="text" id="subfolder" placeholder="StreamSnag (empty = no subfolder)" spellcheck="false"></label>
+        <p class="muted small">Use <code>/</code> for nested folders. Tokens: <code>{site}</code> <code>{course}</code> <code>{date}</code> <code>{kind}</code>. Example: <code>StreamSnag/{site}</code> makes one folder per website, and <code>StreamSnag/{course}</code> one per course.</p>
+        <label>File name template <input type="text" id="filenameTemplate" placeholder="{title} - {quality}"></label>
+        <p class="muted small">Tokens: <code>{title}</code> (the lecture/episode name found on the page) <code>{course}</code> <code>{page}</code> (tab title) <code>{quality}</code> <code>{host}</code> <code>{date}</code> <code>{kind}</code>. Example: <code>{course} - {title}</code></p>
+      </div>
+      <div class="card stack">
+        <h3>Videos you already have</h3>
+        <p class="muted small">StreamSnag looks through these folders (and their subfolders) to mark videos as downloaded. It matches by file size, length, the video's id in the name, or the video's own name, so renamed files and files saved by other tools count too. Your save folder and wherever StreamSnag saved before are always checked.</p>
+        <label class="check"><input type="checkbox" id="checkDownloads"> Also check my Downloads folder</label>
+        <ul id="libraryFolders" class="folder-list"></ul>
+        <div class="row-actions">
+          <button type="button" id="btn-add-library" class="secondary">Add folder…</button>
+          <button type="button" id="btn-check-library" class="secondary">Check now</button>
+          <span id="library-status" class="muted small"></span>
+        </div>
+      </div>
+      <div class="card stack">
+        <h3>Detection & streams</h3>
+        <div class="grid2">
+          <label>Ignore files smaller than (KB) <input type="number" id="minSizeKB" min="0" step="50"></label>
+          <label>Parallel segment downloads <input type="number" id="concurrency" min="1" max="16"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="includeSubtitles"> Also save subtitles with stream downloads</label>
+        <label class="check"><input type="checkbox" id="useFfmpeg"> Merge separate video + audio and convert .ts to .mp4 with ffmpeg (needs local helper)</label>
+        <label class="check"><input type="checkbox" id="embedSubtitles"> Embed subtitles inside the merged video</label>
+        <label class="check"><input type="checkbox" id="keepSubtitleFiles"> Also keep the separate subtitle files</label>
+        <label class="check"><input type="checkbox" id="autoRecipes"> Run saved site recipes automatically when a page loads</label>
+        <label class="check"><input type="checkbox" id="notify"> Notify me when downloads finish</label>
+      </div>
+      <p class="muted small">StreamSnag never downloads DRM-protected (Widevine/PlayReady/FairPlay) or encrypted streams. Only save content you have the right to keep.</p>
+    </section>
+
+    <!-- Helper -->
+    <section class="tab-panel" data-panel="helper" hidden>
+      <div class="card stack">
+        <h3>Local helper</h3>
+        <p class="muted">A small Node.js program Chrome starts on demand (native messaging). It unlocks: your Claude subscription for AI, ffmpeg merging/conversion, and yt-dlp downloads for sites the browser can't handle.</p>
+        <ol class="steps">
+          <li>Install <a href="https://nodejs.org" target="_blank">Node.js</a> (18+). For AI via subscription: <code>npm i -g @anthropic-ai/claude-code</code> and run <code>claude</code> once to sign in.</li>
+          <li>Optional: install <code>ffmpeg</code> and <code>yt-dlp</code> (e.g. <code>winget install Gyan.FFmpeg yt-dlp.yt-dlp</code>).</li>
+          <li>In the project folder run <code>npm run install-helper</code>, then restart Chrome.</li>
+        </ol>
+        <p class="muted small">Extension ID: <code id="extId"></code></p>
+        <div class="row-actions">
+          <button class="primary" id="checkHelper">Check helper</button>
+        </div>
+        <div id="helperResult"></div>
+      </div>
+    </section>
+
+    <!-- Recipes -->
+    <section class="tab-panel" data-panel="recipes" hidden>
+      <div class="card stack">
+        <h3>Site recipes</h3>
+        <p class="muted">Recipes are small JSON rule sets (CSS selectors, regexes, same-site fetches) that find media on a specific site. “Find with AI” writes them for you; you can edit them here. They are data only — never code.</p>
+        <div class="row-actions">
+          <button class="secondary" id="newRecipe">New recipe</button>
+          <button class="secondary" id="exportRecipes">Export all</button>
+          <label class="secondary file-btn">Import <input type="file" id="importRecipes" accept="application/json" hidden></label>
+        </div>
+      </div>
+      <div id="recipeList" class="stack"></div>
+    </section>
+
+    <!-- History -->
+    <section class="tab-panel" data-panel="history" hidden>
+      <div class="card stack">
+        <div class="row-actions spread">
+          <h3>Download history</h3>
+          <button class="secondary" id="clearHistory">Clear history</button>
+        </div>
+        <ul id="history" class="history"></ul>
+      </div>
+    </section>
+
+    <p id="saved" class="saved" hidden>Saved</p>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

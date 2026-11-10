@@ -1,0 +1,19 @@
+{
+  "name": "streamsnag",
+  "version": "1.0.0",
+  "private": true,
+  "description": "StreamSnag — a personal video download helper Chrome extension with AI link finding",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
+    "build": "node scripts/build-sdk.js && node scripts/make-icons.js",
+    "install-helper": "node native-host/install.js",
+    "uninstall-helper": "node native-host/install.js --uninstall",
+    "e2e": "node scripts/e2e.js"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
+    "esbuild": "^0.28.2",
+    "puppeteer-core": "^25.16.0"
+  }
+}

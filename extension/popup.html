@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>StreamSnag</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <img src="icons/icon32.png" alt="" width="20" height="20">
+      <div>
+        <strong>StreamSnag</strong>
+        <span id="site" class="muted"></span>
+      </div>
+    </div>
+    <div class="bar-actions">
+      <button id="btn-sidebar" class="icon" title="Open in sidebar (more room, stays open)" aria-label="Open in sidebar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>
+      </button>
+      <button id="btn-rescan" class="icon" title="Scan again: page, frames and embedded players (no page reload)" aria-label="Scan again">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" /></svg>
+      </button>
+      <button id="btn-settings" class="icon" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="tools">
+    <button id="btn-ai" class="ghost">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8Z"/></svg>
+      Find with AI
+    </button>
+    <button id="btn-summarize" class="ghost" title="Summarize the video from its captions">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/></svg>
+      Summarize
+    </button>
+    <button id="btn-scan" class="ghost" title="Look again for hidden or embedded videos without reloading the page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.2-4.2"/></svg>
+      Scan again
+    </button>
+    <button id="btn-ytdlp" class="ghost" title="Download this page with yt-dlp via the local helper">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17v3h16v-3M12 4v11m0 0-4-4m4 4 4-4"/></svg>
+      yt-dlp
+    </button>
+  </div>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <section>
+    <h2>On this page <span id="media-count" class="count"></span></h2>
+    <div id="filters" class="filters" role="tablist" aria-label="Filter media" hidden></div>
+    <div id="listbar" class="listbar" hidden>
+      <input id="search" type="search" placeholder="Search names…" aria-label="Search this page's videos" spellcheck="false">
+      <select id="sort" aria-label="Sort the list">
+        <option value="default">Streams first</option>
+        <option value="page">Order found</option>
+        <option value="name">Name A–Z</option>
+        <option value="status">Not downloaded first</option>
+        <option value="length">Longest first</option>
+        <option value="section">Group by tab / section</option>
+      </select>
+    </div>
+    <p id="removed" class="muted small removed" hidden></p>
+    <div id="library" class="muted small removed libline" hidden></div>
+    <ul id="media" class="list"></ul>
+    <div id="empty" class="empty" hidden>
+      <p><strong>No media found yet.</strong></p>
+      <p class="muted">Start playing the video, then reopen this popup. Streaming sites often load the video only once you press play.</p>
+    </div>
+    <div id="subs-box" class="subs" hidden>
+      <button id="subs-toggle" class="subs-toggle" aria-expanded="false" aria-controls="subs">
+        <span class="chev" aria-hidden="true">▸</span> Subtitle files <span id="subs-count" class="count"></span>
+        <span class="muted small">already saved with stream downloads</span>
+      </button>
+      <ul id="subs" class="list compact" hidden></ul>
+    </div>
+  </section>
+
+  <section id="folder-section" hidden>
+    <h2>In your folders <span id="folder-count" class="count"></span></h2>
+    <input id="folder-search" class="folder-search" type="search" placeholder="Search your downloaded files…" aria-label="Search your downloaded files" spellcheck="false">
+    <ul id="folder-files" class="list compact"></ul>
+    <p id="folder-more" class="muted small" hidden></p>
+  </section>
+
+  <section id="ai-section" hidden>
+    <h2>AI analysis <span id="ai-via" class="muted small"></span></h2>
+    <div id="ai-panel" class="panel"></div>
+  </section>
+
+  <section id="summary-section" hidden>
+    <h2>Summary</h2>
+    <div id="summary-panel" class="panel"></div>
+  </section>
+
+  <section id="jobs-section" hidden>
+    <h2>Downloads <button id="btn-clear" class="link small">Clear finished</button></h2>
+    <ul id="jobs" class="list"></ul>
+  </section>
+
+  <section id="history-section" hidden>
+    <h2>Downloaded before <button id="btn-history-all" class="link small">All history</button></h2>
+    <ul id="history" class="list compact"></ul>
+  </section>
+
+  <footer id="recipe-bar" class="foot" hidden></footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

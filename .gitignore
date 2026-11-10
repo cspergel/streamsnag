@@ -1,0 +1,10 @@
+node_modules/
+# Generated per machine by `npm run install-helper` (contain local paths)
+native-host/host.bat
+native-host/host.sh
+native-host/com.streamsnag.helper.json
+# Build / OS leftovers
+dist/
+*.log
+.DS_Store
+Thumbs.db

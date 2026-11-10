@@ -1,0 +1,22 @@
+/* The first-run page. Colours and cards come from popup.css / options.css. */
+.welcome-page main { max-width: 640px; padding-top: 48px; }
+.hello { text-align: center; margin-bottom: 28px; }
+.hello img { border-radius: 14px; }
+.hello h1 { margin: 14px 0 4px; font-size: 26px; letter-spacing: -.02em; }
+.hello p { margin: 0; font-size: 15px; }
+.guide { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.guide > li { display: flex; gap: 14px; align-items: flex-start; }
+.guide h2, .facts h2 { margin: 0 0 4px; font-size: 15px; color: var(--text); text-transform: none; letter-spacing: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.guide p { margin: 0; }
+.num {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 13px; margin-top: 1px;
+}
+.tag { font-size: 11px; font-weight: 500; color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 2px 8px; }
+.how { margin: 8px 0 12px; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.facts ul { margin: 6px 0 14px; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.facts strong, .how strong, .guide p strong { color: var(--text); }
+#helper.ok { color: var(--ok); }
+#helper.bad { color: var(--warn); }
+.welcome-page code { white-space: nowrap; }
+.how { list-style: disc; }

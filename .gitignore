@@ -1,4 +1,5 @@
 node_modules/
+.claude/
 # Generated per machine by `npm run install-helper` (contain local paths)
 native-host/host.bat
 native-host/host.sh

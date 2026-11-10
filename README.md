@@ -23,9 +23,9 @@ download helpers, with optional AI (Claude) for sites that hide their videos.
 3. **Optional but recommended: the local helper.** It merges video and audio into one MP4 (ffmpeg),
    downloads playlists and hard sites (yt-dlp), checks your folders for videos you already have, and lets
    you save anywhere on your PC. It needs [Node.js](https://nodejs.org) 18 or newer.
-   * Windows: right-click `setup-windows.ps1` → **Run with PowerShell** (or
+   * Windows: double-click **`Set up StreamSnag helper.cmd`** (or run
      `powershell -ExecutionPolicy Bypass -File .\setup-windows.ps1`). It checks for Node.js and offers to
-     install ffmpeg and yt-dlp with winget.
+     install it, ffmpeg and yt-dlp with winget.
    * macOS / Linux: `sh setup.sh`.
    * Then restart the browser and open StreamSnag **Settings → Local helper → Check helper**.
 

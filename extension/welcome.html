@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to StreamSnag</title>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body class="options-page welcome-page">
+  <main>
+    <header class="hello">
+      <img src="icons/icon128.png" alt="" width="56" height="56">
+      <h1>StreamSnag is installed</h1>
+      <p class="muted">Three short steps and you're saving videos.</p>
+    </header>
+
+    <ol class="guide">
+      <li class="card">
+        <span class="num" aria-hidden="true">1</span>
+        <div>
+          <h2>Pin it to your toolbar</h2>
+          <p class="muted">Click the puzzle-piece icon at the top right of the browser, then the pin next to <strong>StreamSnag</strong>. The icon shows a number when a page has videos.</p>
+        </div>
+      </li>
+      <li class="card">
+        <span class="num" aria-hidden="true">2</span>
+        <div>
+          <h2>Open a page and press play</h2>
+          <p class="muted">Many players only load the video once it starts. Then click the StreamSnag icon: the video you're watching is at the top with one <strong>Download</strong> button, and everything else on the page is listed below it.</p>
+        </div>
+      </li>
+      <li class="card">
+        <span class="num" aria-hidden="true">3</span>
+        <div>
+          <h2>Add the helper <span class="tag">optional, recommended</span></h2>
+          <p class="muted">A small program on your computer that gives you one finished MP4 (video and audio merged), whole playlists, saving into any folder, and a check of which videos you already have.</p>
+          <ul class="how muted">
+            <li><strong>Windows:</strong> in the StreamSnag folder you downloaded, double-click <code>Set up StreamSnag helper.cmd</code>.</li>
+            <li><strong>macOS / Linux:</strong> run <code>sh setup.sh</code> in that folder.</li>
+            <li>Restart the browser, then press <strong>Check helper</strong>.</li>
+          </ul>
+          <div class="row-actions">
+            <button class="secondary" id="check">Check helper</button>
+            <span id="helper" class="small" role="status"></span>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <section class="card facts">
+      <h2>Good to know</h2>
+      <ul class="muted">
+        <li><strong>Nothing leaves your computer</strong> except the downloads themselves. No accounts, no tracking. <a href="https://github.com/cspergel/streamsnag/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacy details</a></li>
+        <li><strong>AI features are off</strong> until you turn them on in Settings.</li>
+        <li><strong>Protected (DRM) videos can't be downloaded.</strong> StreamSnag tells you when a video is protected.</li>
+      </ul>
+      <div class="row-actions">
+        <button class="primary" id="settings">Open Settings</button>
+        <a class="small" href="https://github.com/cspergel/streamsnag#readme" target="_blank" rel="noopener">Read the guide</a>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="welcome.js"></script>
+</body>
+</html>

@@ -1990,7 +1990,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     chrome.contextMenus.create({ id: 'ss-ai', title: 'Find videos on this page with AI', contexts: ['page', 'video', 'frame'] });
     chrome.contextMenus.create({ id: 'ss-ytdlp', title: 'Download this page with yt-dlp (local helper)', contexts: ['page', 'video'] });
   });
-  if (details.reason === 'install') chrome.runtime.openOptionsPage();
+  if (details.reason === 'install') chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') }).catch(() => {});
 });
 
 function notify(title, message) {

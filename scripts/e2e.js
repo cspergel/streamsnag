@@ -270,8 +270,26 @@ try {
   const swTarget = await browser.waitForTarget((t) => t.type() === 'service_worker' && t.url().includes(extId), { timeout: 15000 });
   check('service worker starts', !!swTarget);
 
-  // Close the options tab that opens on install.
-  await new Promise((r) => setTimeout(r, 800));
+  // Installing opens the welcome page: three steps and a live check of the helper.
+  const welcomeTarget = await browser.waitForTarget((t) => t.url() === `chrome-extension://${extId}/welcome.html`, { timeout: 8000 }).catch(() => null);
+  const welcome = welcomeTarget ? await welcomeTarget.page() : null;
+  check('installing opens the welcome page', !!welcome);
+  if (welcome) {
+    await welcome.waitForFunction(() => /Helper found|Not set up yet/.test(document.getElementById('helper').textContent), { timeout: 15000 }).catch(() => {});
+    const w = await welcome.evaluate(() => ({
+      steps: document.querySelectorAll('.guide > li').length,
+      helper: document.getElementById('helper').textContent,
+      cls: document.getElementById('helper').className,
+    }));
+    // Whichever way the check goes on this machine, it must end in a clear answer (not stay on "Checking…").
+    check('the welcome page shows three steps and a clear helper answer',
+      w.steps === 3 && ((/^Helper found/.test(w.helper) && /\bok\b/.test(w.cls)) || (/^Not set up yet/.test(w.helper) && /\bbad\b/.test(w.cls))), JSON.stringify(w));
+    const opened = browser.waitForTarget((t) => t.url() === `chrome-extension://${extId}/options.html`, { timeout: 8000 }).catch(() => null);
+    await welcome.click('#settings');
+    check('"Open Settings" on the welcome page opens Settings', !!(await opened));
+    if (process.env.SHOT) await welcome.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-welcome.png'), fullPage: true });
+    await welcome.close();
+  }
   for (const p of await browser.pages()) if (p.url().includes('options.html')) await p.close();
 
   const page = await browser.newPage();

@@ -1,9 +1,19 @@
 {
   "name": "streamsnag",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "private": true,
-  "description": "StreamSnag — a personal video download helper Chrome extension with AI link finding",
+  "description": "StreamSnag: a free, open-source video download helper for Chromium browsers, with optional Claude AI link finding",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cspergel/streamsnag.git"
+  },
+  "homepage": "https://github.com/cspergel/streamsnag",
+  "bugs": "https://github.com/cspergel/streamsnag/issues",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "node --test \"tests/*.test.js\"",
     "build": "node scripts/build-sdk.js && node scripts/make-icons.js",

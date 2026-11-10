@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install ffmpeg (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: npm ci
+      - name: Syntax check
+        shell: bash
+        run: for f in extension/*.js extension/lib/*.js native-host/*.js scripts/*.js tests/*.js; do node --check "$f" || exit 1; done
+      - name: Manifest is valid JSON with a version
+        shell: bash
+        run: node -e "const m=require('./extension/manifest.json'); if(!m.version||m.manifest_version!==3) process.exit(1); console.log('manifest', m.version)"
+      - name: Unit tests
+        run: npm test

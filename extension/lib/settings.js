@@ -2,11 +2,14 @@
 export const DEFAULT_MODEL = 'claude-opus-5-5';
 
 export const DEFAULT_SETTINGS = {
-  aiProvider: 'off', // 'off' | 'api' | 'subscription'
+  aiProvider: 'off', // 'off' | 'subscription' (Claude plan) | 'api' (Anthropic key) | 'chatgpt' (ChatGPT plan) | 'openai' (OpenAI key)
   apiKey: '',
   model: DEFAULT_MODEL,
   effort: 'medium',
   subscriptionModel: '',
+  openaiKey: '', // OpenAI API key (provider 'openai')
+  openaiModel: 'gpt-6-astra',
+  chatgptModel: '', // model override for the ChatGPT subscription route (Codex CLI); empty = its default
   minSizeKB: 300,
   concurrency: 6,
   includeSubtitles: true,

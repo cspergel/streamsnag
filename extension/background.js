@@ -1750,7 +1750,7 @@ const handlers = {
       jobs: allJobs.filter((j) => j.tabId === tabId || ['running', 'recording', 'muxing', 'queued'].includes(j.status)).slice(0, 40).map(publicJob),
       aiResult: t.aiResult,
       recipe,
-      ai: { provider: settings.aiProvider, configured: settings.aiProvider === 'subscription' || (settings.aiProvider === 'api' && !!settings.apiKey) },
+      ai: { provider: settings.aiProvider, configured: ['subscription', 'chatgpt'].includes(settings.aiProvider) || (settings.aiProvider === 'api' && !!settings.apiKey) || (settings.aiProvider === 'openai' && !!settings.openaiKey) },
       helper: helperCache.value,
     };
   },

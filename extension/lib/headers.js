@@ -89,7 +89,7 @@ export async function applyRefererRules(urls, pageUrl, clicked = false) {
       requestDomains: [host],
       tabIds: [chrome.tabs.TAB_ID_NONE],
       // Never touch our own AI calls.
-      excludedRequestDomains: ['anthropic.com'],
+      excludedRequestDomains: ['anthropic.com', 'openai.com'],
     },
   }));
   await chrome.declarativeNetRequest.updateSessionRules({

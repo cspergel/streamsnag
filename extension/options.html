@@ -36,10 +36,32 @@
     <section class="tab-panel" data-panel="ai">
       <div class="card stack">
         <h3>AI provider</h3>
-        <p class="muted">AI powers “Find with AI”, “Ask AI why” on failed downloads, caption summaries, smart filenames, and it writes reusable site recipes.</p>
+        <p class="muted">AI powers “Find with AI”, “Ask AI why” on failed downloads, summaries and study notes, smart filenames, and it writes reusable site recipes. It is off until you choose one of these, and nothing is sent until you use an AI action.</p>
         <label class="choice"><input type="radio" name="aiProvider" value="off"> <span><strong>Off</strong><br><span class="muted">No AI features.</span></span></label>
         <label class="choice"><input type="radio" name="aiProvider" value="subscription"> <span><strong>My Claude subscription</strong> (Pro / Max)<br><span class="muted">Runs through the Claude Code CLI on this computer via the local helper. No API billing — uses your plan's usage. Requires the helper (see “Local helper” tab) and that you've signed in to <code>claude</code> once.</span></span></label>
-        <label class="choice"><input type="radio" name="aiProvider" value="api"> <span><strong>Anthropic API key</strong><br><span class="muted">Pay-per-use via the official SDK. The key is stored only in this browser profile.</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="chatgpt"> <span><strong>My ChatGPT subscription</strong> (Plus / Pro)<br><span class="muted">Runs through OpenAI's Codex CLI on this computer via the local helper. No API billing — uses your plan's usage. Requires the helper, <code>npm i -g @openai/codex</code>, and <code>codex login</code> once (choose “Sign in with ChatGPT”).</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="api"> <span><strong>Anthropic API key</strong> (Claude)<br><span class="muted">Pay-per-use via the official SDK. The key is stored only in this browser profile.</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="openai"> <span><strong>OpenAI API key</strong> (ChatGPT's models)<br><span class="muted">Pay-per-use, sent straight to OpenAI. The key is stored only in this browser profile.</span></span></label>
+      </div>
+
+      <div class="card stack" data-when="openai">
+        <h3>OpenAI API settings</h3>
+        <label>API key <input type="password" id="openaiKey" placeholder="sk-…" autocomplete="off" spellcheck="false"></label>
+        <label>Model
+          <select id="openaiModel">
+            <option value="gpt-6-astra">GPT-6 Astra (default, best)</option>
+            <option value="gpt-6.1-sol">GPT-6.1 Sol</option>
+            <option value="gpt-6.1-terra">GPT-6.1 Terra (fast)</option>
+            <option value="gpt-6-luna">GPT-6 Luna (cheapest)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card stack" data-when="chatgpt">
+        <h3>ChatGPT subscription settings</h3>
+        <label>Model override (optional)
+          <input type="text" id="chatgptModel" placeholder="leave empty for the Codex default" spellcheck="false">
+        </label>
       </div>
 
       <div class="card stack" data-when="api">
@@ -147,7 +169,7 @@
         <h3>Backup</h3>
         <p class="muted small">Your settings, site recipes, site rules, download history and "downloaded" marks in one file, e.g. for a new PC.</p>
         <p class="muted small">The file lists the pages and video links in your history and where the files are on your PC, so share it only with people you trust. Only import backups from people you trust, too.</p>
-        <label class="check"><input type="checkbox" id="exportKey"> Include my Anthropic API key (keep the file private)</label>
+        <label class="check"><input type="checkbox" id="exportKey"> Include my AI API keys (keep the file private)</label>
         <div class="row-actions">
           <button type="button" class="secondary" id="exportAll">Export everything</button>
           <label class="secondary file-btn">Import… <input type="file" id="importAll" accept="application/json" hidden></label>

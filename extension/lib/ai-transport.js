@@ -3,6 +3,7 @@
 // Claude subscription.
 import { Anthropic } from '../vendor/anthropic-sdk.js';
 import { extractJson } from './ai.js';
+import { buildOpenAiRequest, readOpenAiResponse, jsonOnlySystem } from './openai.js';
 
 export const HELPER_NAME = 'com.streamsnag.helper';
 import { DEFAULT_MODEL } from './settings.js';
@@ -95,12 +96,31 @@ async function viaSubscription(settings, { system, user, schema }) {
   return { data: extractJson(res.text), usage: res.usage || null, via: 'Claude subscription (local)' };
 }
 
+async function viaOpenAi(settings, prompt) {
+  const { url, init } = buildOpenAiRequest(settings, prompt);
+  const res = await fetch(url, init);
+  const body = await res.json().catch(() => null);
+  const text = readOpenAiResponse(res.status, body);
+  return { data: extractJson(text), usage: body?.usage || null, via: `OpenAI API · ${body?.model || settings.openaiModel}` };
+}
+
+/** Your ChatGPT plan, through the Codex CLI on this computer (the helper runs it with its tools switched off). */
+async function viaChatGpt(settings, { system, user, schema }) {
+  const res = await helperRequest(
+    { type: 'codex', prompt: `${jsonOnlySystem(system, schema)}\n\n${user}`, model: settings.chatgptModel || '' },
+    { timeoutMs: 240000 },
+  );
+  return { data: extractJson(res.text), usage: null, via: 'ChatGPT subscription (local)' };
+}
+
 /**
- * @param settings {aiProvider:'api'|'subscription'|'off', apiKey, model, effort, subscriptionModel}
+ * @param settings {aiProvider:'api'|'subscription'|'openai'|'chatgpt'|'off', apiKey, model, effort, subscriptionModel, openaiKey, openaiModel, chatgptModel}
  * @param prompt   {system, user, schema, maxTokens?}
  */
 export async function callAI(settings, prompt) {
   if (settings.aiProvider === 'api') return viaApi(settings, prompt);
   if (settings.aiProvider === 'subscription') return viaSubscription(settings, prompt);
+  if (settings.aiProvider === 'openai') return viaOpenAi(settings, prompt);
+  if (settings.aiProvider === 'chatgpt') return viaChatGpt(settings, prompt);
   throw new Error('AI is turned off. Choose a provider in StreamSnag settings.');
 }

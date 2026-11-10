@@ -99,7 +99,7 @@ export function findTool(name) {
 }
 
 function tools() {
-  return { claude: findTool('claude'), ffmpeg: findTool('ffmpeg'), ytdlp: findTool('yt-dlp') };
+  return { claude: findTool('claude'), codex: findTool('codex'), ffmpeg: findTool('ffmpeg'), ytdlp: findTool('yt-dlp') };
 }
 
 // ------------------------------------------------------------------ process helper
@@ -211,6 +211,53 @@ async function handleClaude(msg) {
   }
   if (parsed.is_error) throw new Error(`Claude CLI error: ${String(parsed.result || parsed.error || 'unknown').slice(0, 400)}`);
   return { text: parsed.result, usage: parsed.usage || null, costUsd: parsed.total_cost_usd ?? null };
+}
+
+/** Arguments for one locked-down, non-interactive Codex CLI run (the ChatGPT subscription route). */
+export function buildCodexArgs({ model, outFile }) {
+  const args = [
+    'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-user-config', '--ignore-rules', '--color', 'never',
+    // The prompt contains text from a web page. Codex gets no shell, no browser, no apps: it can only answer.
+    '-s', 'read-only',
+    ...['shell_tool', 'apps', 'plugins', 'browser_use', 'computer_use', 'multi_agent', 'image_generation', 'hooks'].flatMap((f) => ['--disable', f]),
+    '-o', outFile,
+  ];
+  if (model) {
+    if (!/^[a-z0-9][a-z0-9.\-_]*$/i.test(model)) throw new Error('Invalid model name');
+    args.push('-m', model);
+  }
+  args.push('-'); // the prompt comes on stdin
+  return args;
+}
+
+/** A short, human reason from the Codex CLI's error output. */
+export function codexError(output) {
+  const text = String(output || '');
+  const api = /"message"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(text)?.[1]?.replace(/\\(.)/g, '$1');
+  if (/requires a newer version of Codex|not supported when using Codex/i.test(text)) {
+    return `${api || 'This model needs a newer Codex CLI.'} Update it with "npm i -g @openai/codex@latest", or set a model your plan includes in StreamSnag settings.`;
+  }
+  if (/not logged in|login required|unauthorized|401/i.test(text)) return 'The Codex CLI is not signed in. Run "codex login" once and choose "Sign in with ChatGPT".';
+  return `Codex CLI error: ${(api || text.trim().split(/\r?\n/).filter(Boolean).pop() || 'unknown').slice(0, 300)}`;
+}
+
+async function handleCodex(msg) {
+  const codex = findTool('codex');
+  if (!codex) throw new Error('Codex CLI not found. Install it with "npm i -g @openai/codex" and run "codex login" once to sign in with ChatGPT.');
+  if (typeof msg.prompt !== 'string' || !msg.prompt) throw new Error('Missing prompt');
+  const cwd = path.join(os.tmpdir(), 'streamsnag-codex');
+  fs.mkdirSync(cwd, { recursive: true });
+  const outFile = path.join(cwd, `answer-${process.pid}-${Date.now()}.txt`);
+  let res;
+  let text = '';
+  try {
+    res = await run(codex, buildCodexArgs({ model: msg.model || '', outFile }), { input: msg.prompt, timeoutMs: 230000, cwd });
+    text = fs.existsSync(outFile) ? fs.readFileSync(outFile, 'utf8') : '';
+  } finally {
+    fs.rmSync(outFile, { force: true });
+  }
+  if (res.code !== 0 || !text.trim()) throw new Error(codexError(`${res.stderr}\n${res.stdout}`));
+  return { text };
 }
 
 function uniquePath(p) {
@@ -727,6 +774,7 @@ const HANDLERS = {
   checkFolder: handleCheckFolder,
   pickFolder: handlePickFolder,
   claude: handleClaude,
+  codex: handleCodex,
   mux: handleMux,
   convert: handleConvert,
   ytdlp: handleYtdlp,

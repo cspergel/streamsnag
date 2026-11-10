@@ -42,7 +42,7 @@ const initialTab = location.hash.slice(1);
 if (initialTab) document.querySelector(`.tabs button[data-tab="${initialTab}"]`)?.click();
 
 // ---------------------------------------------------------------- settings form
-const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'minSizeKB', 'concurrency', 'includeSubtitles', 'useFfmpeg',
+const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'openaiKey', 'openaiModel', 'chatgptModel', 'minSizeKB', 'concurrency', 'includeSubtitles', 'useFfmpeg',
   'embedSubtitles', 'keepSubtitleFiles', 'aiFilenames', 'filenameTemplate', 'subfolder', 'saveFolder', 'notify', 'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode'];
 
 function syncProviderSections(provider) {
@@ -72,6 +72,7 @@ async function saveForm() {
     else s[f] = el.value.trim();
   }
   if (s.subscriptionModel && !/^[a-z0-9][a-z0-9.\-[\]]*$/i.test(s.subscriptionModel)) s.subscriptionModel = '';
+  if (s.chatgptModel && !/^[a-z0-9][a-z0-9.\-_]*$/i.test(s.chatgptModel)) s.chatgptModel = '';
   s.concurrency = Math.min(16, s.concurrency);
   s.maxParallel = Math.min(6, Math.max(1, s.maxParallel || 2));
   await chrome.storage.local.set({ settings: s });
@@ -243,7 +244,7 @@ const BACKUP_KEYS = ['settings', 'recipes', 'history', 'marks'];
 
 $('#exportAll').addEventListener('click', async () => {
   const data = await chrome.storage.local.get(BACKUP_KEYS);
-  if (data.settings && !$('#exportKey').checked) data.settings = { ...data.settings, apiKey: '' };
+  if (data.settings && !$('#exportKey').checked) data.settings = { ...data.settings, apiKey: '', openaiKey: '' };
   const file = { app: 'StreamSnag', version: chrome.runtime.getManifest().version, exportedAt: new Date().toISOString(), ...data };
   const blob = new Blob([JSON.stringify(file, null, 1)], { type: 'application/json' });
   h('a', { href: URL.createObjectURL(blob), download: `streamsnag-backup-${new Date().toISOString().slice(0, 10)}.json` }).click();
@@ -275,6 +276,8 @@ $('#importAll').addEventListener('change', async (e) => {
       if (clean.subscriptionModel && !/^[a-z0-9][a-z0-9.\-[\]]*$/i.test(clean.subscriptionModel)) delete clean.subscriptionModel;
       next.settings = { ...(cur.settings || {}), ...clean };
       if (!clean.apiKey) next.settings.apiKey = cur.settings?.apiKey || '';
+      if (!clean.openaiKey) next.settings.openaiKey = cur.settings?.openaiKey || '';
+      if (clean.chatgptModel && !/^[a-z0-9][a-z0-9.\-_]*$/i.test(clean.chatgptModel)) delete next.settings.chatgptModel;
     }
     if (data.recipes && typeof data.recipes === 'object') {
       next.recipes = { ...(cur.recipes || {}) };

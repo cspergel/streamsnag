@@ -127,19 +127,64 @@
     return out;
   }
 
+  // ---------------------------------------------------------------- documents linked on the page
+  // Course pages link their slides and handouts next to the video. Which file types count is the worker's
+  // list (lib/files.js, which this script can't import): until it has answered, nothing is collected.
+  let docExts = null;
+  function askDocTypes() {
+    chrome.runtime.sendMessage({ type: 'docTypes' }).then((r) => {
+      if (!Array.isArray(r?.exts)) return;
+      docExts = new Set(r.exts);
+      schedule();
+    }).catch(() => {});
+  }
+
+  const DOC_HINT = /\.[a-z0-9]{1,8}\s*(?:[?#]|$)/i; // cheap first look, before each link is parsed
+  /** Links and embeds whose address ends in a document type: [{url, text, alt}], or null (types not known yet). */
+  function collectDocs() {
+    if (!docExts) return null;
+    const out = [];
+    const seen = new Set();
+    const short = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+    for (const el of deepAll('a[href], embed[src], object[data], iframe[src]')) {
+      if (out.length >= 200) break;
+      const tag = el.localName;
+      const raw = el.getAttribute(tag === 'a' ? 'href' : tag === 'object' ? 'data' : 'src') || '';
+      if (!DOC_HINT.test(raw)) continue;
+      let u;
+      try {
+        u = new URL(raw, location.href);
+      } catch {
+        continue;
+      }
+      if (!isHttp(u.href) || !docExts.has(/\.([a-z0-9]{1,8})$/i.exec(u.pathname)?.[1].toLowerCase())) continue;
+      u.hash = '';
+      // The visible text names the file; the worker decides whether it says anything ("Download" doesn't).
+      const text = tag === 'a' ? short(el.innerText || el.textContent) : '';
+      const id = `${u.href}\u0000${text}`;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      out.push({ url: u.href, text, alt: short(el.getAttribute('title') || el.getAttribute('aria-label')) });
+    }
+    return out;
+  }
+  const docsSig = (docs) => (docs?.length ? `\u0001${docs.map((d) => `${d.url}\u0000${d.text}\u0000${d.alt}`).join('|')}` : '');
+
   let lastSent = '';
   function report() {
     const items = collectItems();
+    const docs = collectDocs();
     // Everything that changes what the list should show counts — not just the URL list. A player that is
     // re-mounted with the same src, or a tab that becomes visible, must still be reported to the worker.
     const sig = items
       .map((i) => `${i.url}\u0000${i.section || ''}\u0000${i.label || ''}\u0000${i.visible ? 1 : 0}`)
-      .join('|');
+      .join('|') + docsSig(docs);
     if (sig === lastSent) return;
     lastSent = sig;
     chrome.runtime.sendMessage({
       type: 'contentMedia',
       items,
+      docs: docs || undefined,
       pageTitle: window.top === window ? document.title : '',
       frameUrl: location.href,
       isTop: window.top === window,
@@ -195,6 +240,7 @@
     schedule();
   });
   schedule();
+  askDocTypes();
 
   function snippetsAround(text, max = 40) {
     const out = [];
@@ -423,6 +469,7 @@
         sendResponse({ error: e.message });
       }
     } else if (msg?.type === 'rescan') {
+      if (!docExts) askDocTypes(); // the worker was not there to answer the first time
       lastSent = '';
       report();
       sendResponse({ ok: true, frame: location.href });

@@ -42,8 +42,9 @@ const initialTab = location.hash.slice(1);
 if (initialTab) document.querySelector(`.tabs button[data-tab="${initialTab}"]`)?.click();
 
 // ---------------------------------------------------------------- settings form
-const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'openaiKey', 'openaiModel', 'chatgptModel', 'minSizeKB', 'concurrency', 'includeSubtitles', 'useFfmpeg',
-  'embedSubtitles', 'keepSubtitleFiles', 'aiFilenames', 'filenameTemplate', 'subfolder', 'saveFolder', 'notify', 'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode'];
+const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'openaiKey', 'openaiModel', 'chatgptModel', 'minSizeKB', 'concurrency',
+  'includeSubtitles', 'useFfmpeg', 'embedSubtitles', 'keepSubtitleFiles', 'aiFilenames', 'filenameTemplate', 'subfolder', 'saveFolder', 'notify',
+  'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode', 'showDocuments'];
 
 function syncProviderSections(provider) {
   $$('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== provider; });

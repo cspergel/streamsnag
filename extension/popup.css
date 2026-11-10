@@ -262,6 +262,14 @@ h2 .link { margin-left: auto; }
 .subs-toggle[aria-expanded="true"] .chev { transform: rotate(90deg); }
 .subs > .rows { border-top: 1px solid var(--line); }
 
+/* "Files on this page": documents linked on the page, a group like the subtitle files in a box of its own. */
+.docs-head { display: flex; align-items: center; }
+.docs-head .subs-toggle { flex: 1; min-width: 0; }
+.docs-head .secondary { flex: none; margin-right: 10px; font-size: 12px; }
+.docs .subs-text .muted { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.docs > .rows { border-top: 1px solid var(--line); }
+.thumb.doc svg { fill: none; stroke: currentColor; stroke-width: 1.8; width: 18px; height: 18px; }
+
 /* Panels opened under a card */
 .options { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
 .hero .options { margin-top: -4px; }

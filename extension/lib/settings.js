@@ -27,6 +27,7 @@ export const DEFAULT_SETTINGS = {
   siteRules: {}, // per-site overrides: { "example.com": { subfolder, filenameTemplate } }
   notify: true,
   autoRecipes: true,
+  showDocuments: true, // list the documents a page links to (PDF, slides…) under "Files on this page"
 };
 
 export async function getSettings() {

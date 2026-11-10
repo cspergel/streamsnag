@@ -57,6 +57,18 @@ const PLAY = LAG && { a: Buffer.concat([LAG[20], Buffer.alloc(700 * 1024)]), b: 
 const SEGMENTS = MUX ? realTsSegments() :Array.from({ length: 5 }, (_, i) => Buffer.alloc(100 * 1024, i + 1)); // seg i filled with byte i+1
 const SUBS_VTT = 'WEBVTT\n\n00:00:00.500 --> 00:00:02.000\nHello from the test stream\n';
 const LONG_TITLE = 'An Extremely Long Video Title That Will Never Fit In The Popup Width Part 3 Of The Series (Full Episode, Directors Cut)';
+// Course materials for the "Files on this page" checks: small fake documents, each with its own bytes, and
+// two programs that must never be offered or fetched.
+const DOCS = {
+  '/files/week3-slides.pptx': Buffer.from('PK fake slides for week 3'),
+  '/files/Reading list (week 3).pdf': Buffer.from('%PDF-1.4 fake reading list'),
+  '/files/syllabus.pdf': Buffer.from('%PDF-1.4 fake syllabus'),
+  '/files/worksheet.xlsx': Buffer.from('PK fake worksheet'),
+  '/files/problem-set.docx': Buffer.from('PK fake problem set 3'),
+  '/files/setup.exe': Buffer.from('MZ not a document'),
+  '/files/notes.pdf.exe': Buffer.from('MZ not a document either'),
+};
+const docHits = []; // [path, who asked]: 'page' for the page's own <object>, 'extension' for a download
 let refererRejections = 0;
 let base = '';
 const guardHits = []; // requests that reached the "local device" in the local-network guard check
@@ -81,6 +93,40 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname === '/watch/long') {
     return send(200, 'text/html', `<!doctype html><title>${LONG_TITLE}</title><video src="/media/long.mp4" preload="auto" muted></video>`);
+  }
+  if (url.pathname === '/handouts') {
+    // A lesson page with no video: slides, a "Download" link, the same PDF twice, two programs, a script link,
+    // an embedded spreadsheet, and one more document inside a frame.
+    return send(200, 'text/html', `<!doctype html><title>Week 3 handouts | Physics 101</title><h1>Week 3 handouts</h1>
+      <ul>
+        <li><a href="/files/week3-slides.pptx">  Week 3
+            slides </a></li>
+        <li><a href="/files/Reading%20list%20(week%203).pdf">Download</a></li>
+        <li><a href="/files/syllabus.pdf">Course syllabus</a></li>
+        <li><a href="/files/syllabus.pdf#page=2">Syllabus, page 2</a></li>
+        <li><a href="/files/setup.exe">Lecture viewer</a></li>
+        <li><a href="/files/notes.pdf.exe">Lecture notes</a></li>
+        <li><a href="javascript:void('/files/secret.pdf')">Secret notes</a></li>
+      </ul>
+      <object data="/files/worksheet.xlsx" type="application/vnd.ms-excel" title="Worksheet" width="20" height="20"></object>
+      <iframe src="/frame/handouts" width="400" height="120"></iframe>`);
+  }
+  if (url.pathname === '/frame/handouts') {
+    return send(200, 'text/html', '<!doctype html><title>Homework</title><a href="/files/problem-set.docx">Problem set 3</a>');
+  }
+  if (url.pathname === '/watch/with-files') {
+    // A lecture with its materials next to it: the video must look exactly as it would without them.
+    return send(200, 'text/html', `<!doctype html><title>Lecture 4</title><h1>Lecture 4</h1>
+      <video src="/media/long-b.mp4" preload="auto" muted></video>
+      <p><a href="/files/syllabus.pdf">Course syllabus</a> · <a href="/files/problem-set.docx">Problem set 3</a></p>`);
+  }
+  const docFile = url.pathname.startsWith('/files/') ? DOCS[decodeURIComponent(url.pathname)] : null;
+  if (docFile) {
+    docHits.push([url.pathname, req.headers['sec-fetch-dest'] === 'object' ? 'page' : 'extension']);
+    const type = url.pathname.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream';
+    // The slides are slow to arrive, so the downloads queued behind them can be seen waiting.
+    if (url.pathname.endsWith('.pptx')) return setTimeout(() => send(200, type, docFile), 2500);
+    return send(200, type, docFile);
   }
   if (url.pathname === '/guard/hit') { guardHits.push(req.headers.host); return send(200, 'text/plain', 'local'); }
   if (url.pathname === '/guard/redirect') { res.writeHead(302, { location: `http://localhost:${server.address().port}/guard/hit` }); return res.end(); }
@@ -668,6 +714,162 @@ try {
     const afterUndo = await dp.$$eval('.items .card', (els) => els.length);
     check('Remove from list hides an item, and Show again brings it back', afterRemove.cards === 0 && /1 removed/.test(afterRemove.note) && afterUndo === 1,
       `${afterRemove.cards} cards, "${afterRemove.note}", ${afterUndo} after undo`);
+  }
+
+  // Files on this page: the documents a course page links to (slides, handouts), kept apart from its videos.
+  {
+    const SYLLABUS = `${base}/files/syllabus.pdf`;
+    const hw = await browser.newPage();
+    await hw.goto(`${base}/handouts`, { waitUntil: 'networkidle0' });
+    const hwTab = await tabOf(`${base}/handouts`);
+    const hwState = await waitFor(async () => { const s = await stateOf(hwTab); return s.docs?.length >= 5 ? s : null; }, 8000) || await stateOf(hwTab);
+    const docs = hwState.docs || [];
+    check('documents linked on a page (and in its frames) are listed once each, named from the link text or the file name',
+      docs.map((d) => `${d.label} ${d.name}`).join(' | ') === 'PPT Week 3 slides | PDF Reading list (week 3) | PDF Course syllabus | XLS Worksheet | DOC Problem set 3',
+      docs.map((d) => `${d.label} ${d.name}`).join(' | '));
+    check('an .exe link and a javascript: link are never offered', docs.length > 0 && docs.every((d) => d.url.startsWith(`${base}/files/`) && /\.(pptx|pdf|xlsx|docx)$/.test(d.url)),
+      docs.map((d) => d.url.replace(base, '')).join(', '));
+    const hwBadge = await ext.evaluate((t) => chrome.action.getBadgeText({ tabId: t }), hwTab);
+    check('documents are not videos: nothing in the media list, nothing on the toolbar badge', hwState.media.length === 0 && hwBadge === '' && hwState.playing === null,
+      `${hwState.media.length} media, badge "${hwBadge}"`);
+
+    const dp = await browser.newPage();
+    const dpErrors = [];
+    dp.on('pageerror', (e) => dpErrors.push(e.message));
+    dp.on('console', (m) => { if (m.type() === 'error') dpErrors.push(m.text()); });
+    await dp.setViewport({ width: 400, height: 600, deviceScaleFactor: 2 });
+    await dp.goto(`chrome-extension://${extId}/popup.html?tabId=${hwTab}`);
+    await dp.waitForFunction(() => !document.querySelector('#docs-box').hidden, { timeout: 5000 }).catch(() => {});
+    const group = () => dp.evaluate(() => {
+      const $ = (s) => document.querySelector(s);
+      return {
+        shown: !$('#docs-box').hidden, heading: $('#docs-toggle strong').textContent.replace(/\s+/g, ' ').trim(), note: $('#docs-note').textContent,
+        open: $('#docs-toggle').getAttribute('aria-expanded'), listHidden: $('#docs').hidden,
+        all: $('#docs-all').hidden ? '' : $('#docs-all').textContent,
+        rows: [...document.querySelectorAll('#docs > li.card')].map((li) => ({
+          tile: li.querySelector('.thumb').textContent, name: li.querySelector('.title').textContent, sub: li.querySelector('.sub').textContent,
+          st: li.querySelector('.st')?.textContent || '', btn: li.querySelector('button.dl')?.title || '',
+        })),
+        empty: $('#empty').hidden ? '' : $('#empty').textContent.replace(/\s+/g, ' ').trim(),
+        bigEmpty: !$('#empty').hidden && (getComputedStyle($('#empty .empty-icon')).display !== 'none' || !$('#empty-actions').hidden),
+        videoCards: document.querySelectorAll('#hero > li, #media > li').length, filters: !$('#filters').hidden,
+      };
+    });
+    const shut = await group();
+    check('a page with only documents shows the collapsed "Files on this page" group, with "Download all"',
+      shut.shown && shut.heading === 'Files on this page 5' && shut.open === 'false' && shut.listHidden && shut.rows.length === 0 && shut.all === 'Download all'
+      && shut.videoCards === 0 && !dpErrors.length, JSON.stringify({ ...shut, errors: dpErrors }));
+    check('…and not the "nothing found" screen', !/No media found/.test(shut.empty) && !shut.bigEmpty && /^No videos found yet\./.test(shut.empty), shut.empty);
+    await dp.click('#docs-toggle');
+    const opened = await group();
+    check('opening the group lists each file with its type, name, site and a download button',
+      opened.open === 'true' && !opened.listHidden && opened.rows.map((r) => `${r.tile} ${r.name}`).join(' | ') === 'PPT Week 3 slides | PDF Reading list (week 3) | PDF Course syllabus | XLS Worksheet | DOC Problem set 3'
+      && opened.rows.every((r) => r.sub === '127.0.0.1' && r.btn === 'Download' && !r.st), JSON.stringify(opened.rows));
+
+    // One file: saved as "<name>.<type>" where this site's videos go (the custom folder, under Vids/<site>/).
+    const clickRow = (name) => dp.evaluate((n) => [...document.querySelectorAll('#docs > li.card')].find((li) => li.querySelector('.title').textContent === n).querySelector('button.dl').click(), name);
+    await clickRow('Course syllabus');
+    const docJobs = async () => (await stateOf(hwTab)).jobs.filter((j) => j.kind === 'doc');
+    const sylJob = await waitFor(async () => (await docJobs()).find((j) => j.mediaUrl === SYLLABUS && j.status === 'done'), 10000);
+    const docDir = path.join(custom, 'Vids', '127.0.0.1');
+    const sylPath = sylJob?.outputs?.[0]?.path || '';
+    check('downloading one saves it as "<name>.pdf" in the same folder as this site\'s videos',
+      sylPath === path.join(docDir, 'Course syllabus.pdf') && fs.existsSync(sylPath) && fs.readFileSync(sylPath).equals(DOCS['/files/syllabus.pdf']),
+      sylPath || JSON.stringify((await docJobs()).map((j) => [j.status, j.error, j.filename])));
+    const ticked = await waitFor(async () => { const g = await group(); return g.rows.some((r) => r.st === 'Downloaded') ? g : null; }, 5000) || await group();
+    check('that file is ticked as downloaded, and only that one',
+      ticked.rows.filter((r) => r.st === 'Downloaded').map((r) => r.name).join() === 'Course syllabus' && ticked.rows.filter((r) => r.st).length === 1
+      && ticked.note === '1 of 5 downloaded' && ticked.all === 'Download all' && ticked.rows.find((r) => r.name === 'Course syllabus').btn === 'Download again',
+      JSON.stringify({ note: ticked.note, all: ticked.all, rows: ticked.rows.map((r) => [r.name, r.st, r.btn]) }));
+    if (process.env.SHOT) {
+      await dp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-files.png'), fullPage: true });
+      await dp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
+      await new Promise((r) => setTimeout(r, 300));
+      await dp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-files-dark.png'), fullPage: true });
+      await dp.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
+    }
+
+    // The rest in one click, through the queue: one at a time here, and the slides are slow to arrive.
+    const before = await ext.evaluate(async () => {
+      const { settings = {} } = await chrome.storage.local.get('settings');
+      await chrome.storage.local.set({ settings: { ...settings, maxParallel: 1 } });
+      return settings;
+    });
+    await dp.click('#docs-all');
+    const rest = await waitFor(async () => { const js = (await docJobs()).filter((j) => j.mediaUrl !== SYLLABUS); return js.length === 4 ? js : null; }, 2000) || [];
+    check('"Download all" queues the files not yet downloaded (one running, three waiting)',
+      rest.length === 4 && rest.filter((j) => j.status === 'running').map((j) => j.title).join() === 'Week 3 slides' && rest.filter((j) => j.status === 'queued').length === 3
+      && (await docJobs()).filter((j) => j.mediaUrl === SYLLABUS).length === 1, JSON.stringify(rest.map((j) => [j.title, j.status])));
+    const allDocs = await waitFor(async () => { const js = await docJobs(); return js.length === 5 && js.every((j) => j.status === 'done') ? js : null; }, 20000);
+    await ext.evaluate((s) => chrome.storage.local.set({ settings: s }), before);
+    const savedDocs = fs.existsSync(docDir) ? fs.readdirSync(docDir).filter((f) => !/\.(mp4|crdownload)$/.test(f)).sort() : [];
+    const want = {
+      'Course syllabus.pdf': '/files/syllabus.pdf', 'Problem set 3.docx': '/files/problem-set.docx', 'Reading list (week 3).pdf': '/files/Reading list (week 3).pdf',
+      'Week 3 slides.pptx': '/files/week3-slides.pptx', 'Worksheet.xlsx': '/files/worksheet.xlsx',
+    };
+    check('every file is saved once, under its own name and type, with the right contents',
+      !!allDocs && savedDocs.join('|') === Object.keys(want).sort().join('|') && savedDocs.every((f) => fs.readFileSync(path.join(docDir, f)).equals(DOCS[want[f]])),
+      `${savedDocs.join(' | ')}; ${allDocs ? 'done' : JSON.stringify((await docJobs()).map((j) => [j.title, j.status, j.error]))}`);
+    const fetched = docHits.filter(([, who]) => who === 'extension').map(([p]) => decodeURIComponent(p)).sort();
+    check('each document was fetched exactly once, and the programs never', fetched.join('|') === Object.values(want).sort().join('|') && !docHits.some(([p]) => /exe/.test(p)),
+      docHits.map(([p, who]) => `${who}:${p}`).join(', '));
+    const finished = await waitFor(async () => { const g = await group(); return g.rows.length === 5 && g.rows.every((r) => r.st === 'Downloaded') ? g : null; }, 6000) || await group();
+    check('afterwards every row is ticked and "Download all" is gone', finished.rows.length === 5 && finished.rows.every((r) => r.st === 'Downloaded')
+      && finished.all === '' && finished.note === '5 of 5 downloaded' && !dpErrors.length, JSON.stringify({ note: finished.note, all: finished.all, rows: finished.rows.map((r) => r.st), errors: dpErrors }));
+
+    // The list follows the page: a link added later shows up without a reload, and a frame that is closed takes its file along.
+    await hw.evaluate(() => {
+      document.querySelector('iframe').remove();
+      document.body.insertAdjacentHTML('beforeend', '<p><a href="/files/late-notes.rtf" title="Late notes">here</a> <a href="/files/tool.msi">Tool</a></p>');
+    });
+    const follows = await waitFor(async () => {
+      const names = (await stateOf(hwTab)).docs.map((d) => `${d.label} ${d.name}`);
+      return names.includes('RTF Late notes') && !names.includes('DOC Problem set 3') ? names : null;
+    }, 10000);
+    check('a document linked later appears without reloading, and a closed frame\'s document goes', follows?.length === 5 && !follows.some((n) => /tool/i.test(n)),
+      (follows || (await stateOf(hwTab)).docs.map((d) => `${d.label} ${d.name}`)).join(' | '));
+
+    // Next to a video, the documents change nothing about it; ones saved from another page are already ticked.
+    const wf = await browser.newPage();
+    await wf.goto(`${base}/watch/with-files`, { waitUntil: 'networkidle0' });
+    const wfTab = await tabOf(`${base}/watch/with-files`);
+    const wfState = await waitFor(async () => { const s = await stateOf(wfTab); return s.media.length && s.docs?.length === 2 ? s : null; }, 8000) || await stateOf(wfTab);
+    const wfBadge = await ext.evaluate((t) => chrome.action.getBadgeText({ tabId: t }), wfTab);
+    await dp.goto(`chrome-extension://${extId}/popup.html?tabId=${wfTab}`);
+    await dp.waitForFunction(() => !document.querySelector('#docs-box').hidden && document.querySelector('#hero > li'), { timeout: 5000 }).catch(() => {});
+    const beside = await group();
+    const besideHero = await dp.evaluate(() => ({ eyebrow: document.querySelector('#hero .eyebrow')?.textContent, count: document.querySelector('#media-count').textContent }));
+    if (process.env.SHOT) await dp.screenshot({ path: process.env.SHOT.replace(/\.png$/, '-files-video.png'), fullPage: true });
+    check('a video with documents next to it looks as it does without them (badge 1, one big card, no filters)',
+      wfState.media.length === 1 && wfState.media[0].kind === 'direct' && wfBadge === '1' && beside.videoCards === 1 && !beside.filters
+      && besideHero.eyebrow === 'Latest video' && besideHero.count === '1' && beside.empty === '',
+      JSON.stringify({ media: wfState.media.map((m) => m.kind), badge: wfBadge, cards: beside.videoCards, filters: beside.filters, ...besideHero, empty: beside.empty }));
+    check('the same documents linked from another page are already ticked as downloaded', beside.shown && beside.heading === 'Files on this page 2'
+      && beside.note === '2 of 2 downloaded' && beside.all === '' && beside.rows.map((r) => `${r.name}: ${r.st}`).join(', ') === 'Course syllabus: Downloaded, Problem set 3: Downloaded',
+    JSON.stringify({ heading: beside.heading, note: beside.note, all: beside.all, rows: beside.rows.map((r) => [r.name, r.st]) }));
+
+    // The setting (Settings → Downloads) turns the whole group off, and back on.
+    const so = await browser.newPage();
+    await so.goto(`chrome-extension://${extId}/options.html#downloads`);
+    await so.waitForFunction(() => document.getElementById('subfolder').value === 'Vids/{site}', { timeout: 5000 }).catch(() => {});
+    const box = await so.evaluate(() => { const el = document.getElementById('showDocuments'); return { on: el.checked, label: el.closest('label').textContent.trim(), visible: el.getBoundingClientRect().height > 0 }; });
+    await so.click('#showDocuments');
+    const stored = () => ext.evaluate(async () => (await chrome.storage.local.get('settings')).settings || {});
+    const off = await waitFor(async () => { const s = await stored(); return s.showDocuments === false ? s : null; }, 3000);
+    const offState = await stateOf(wfTab);
+    await dp.waitForFunction(() => document.querySelector('#docs-box').hidden, { timeout: 5000 }).catch(() => {});
+    const offGroup = await group();
+    check('Settings has "Show documents linked on the page", on by default; turning it off hides the group',
+      box.on && box.visible && box.label === 'Show documents linked on the page (PDF, slides, …)' && !!off && off.saveFolder === custom
+      && offState.docs.length === 0 && offState.media.length === 1 && !offGroup.shown && offGroup.videoCards === 1,
+      JSON.stringify({ box, saved: off?.showDocuments, docs: offState.docs.length, shown: offGroup.shown }));
+    await so.click('#showDocuments');
+    const on = await waitFor(async () => { const s = await stored(); return s.showDocuments === true ? s : null; }, 3000);
+    check('…and turning it back on brings the files back', !!on && (await stateOf(wfTab)).docs.length === 2, `saved ${on?.showDocuments}`);
+    await so.close();
+    await dp.close();
+    await wf.close();
+    await hw.close();
   }
 
   // Players inside tabs that were never opened (lazy iframes, no network traffic at all).

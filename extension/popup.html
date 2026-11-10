@@ -121,6 +121,23 @@
       <p id="empty-tip" class="muted small">Tip: Alt+Shift+D opens StreamSnag. Protected (DRM) videos can't be saved.</p>
     </div>
 
+    <div id="docs-box" class="box docs" hidden>
+      <div class="docs-head">
+        <button id="docs-toggle" class="subs-toggle" aria-expanded="false" aria-controls="docs">
+          <span class="thumb cc doc" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4M10 12h5M10 16h5"/></svg>
+          </span>
+          <span class="subs-text">
+            <strong>Files on this page <span id="docs-count" class="count"></span></strong>
+            <span id="docs-note" class="muted small"></span>
+          </span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <button id="docs-all" class="secondary" title="Download every file here that you don't have yet" hidden>Download all</button>
+      </div>
+      <ul id="docs" class="list items rows" hidden></ul>
+    </div>
+
     <div id="library" class="muted small libline" hidden></div>
   </section>
 

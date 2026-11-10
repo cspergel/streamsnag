@@ -12,6 +12,7 @@ import { callAI, helperRequest } from './lib/ai-transport.js';
 import { getSettings } from './lib/settings.js';
 import { findInLibrary, nameKey, serviceId, leadNumber, sameItem } from './lib/match.js';
 import { applyRefererRules, installLocalGuard, allowLocal } from './lib/headers.js';
+import { DOC_EXTS, frameDocs, mergeDocs, docLabel, docFilename, docStatus } from './lib/files.js';
 
 // Settings (with the API key) and history are for StreamSnag's own pages, not for scripts running in web pages.
 chrome.storage.local.setAccessLevel?.({ accessLevel: 'TRUSTED_CONTEXTS' }).catch(() => {});
@@ -647,6 +648,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, change, tab) => {
       t.childKeys = new Set();
       t.redirects = {};
       t.embeds = {};
+      t.docs = {}; // the frames report their documents again (askFramesToReport below)
       t.aiResult = null;
       persistTab(tabId);
       // Tabs and SPA routes change the URL without touching the DOM: without this the items that are
@@ -968,6 +970,7 @@ async function startDownload(tabId, mediaId, optionId = 'file') {
   const t = await getTab(tabId);
   await refreshTabInfo(tabId, t);
   const m = t.media.find((x) => x.id === mediaId);
+  if (!m && docById(tabId, t, mediaId)) return startDocDownload(tabId, mediaId); // a document linked on the page
   if (!m) throw new Error('That media item is gone — reload the page.');
   if (m.kind === 'embed') return startYtdlp(tabId, { mediaId });
   if (m.protected) throw new Error('This media is DRM/encrypted and cannot be downloaded.');
@@ -1122,7 +1125,9 @@ async function finalizeJob(jobId) {
   toOffscreen({ type: 'jobFinished', jobId }).catch(() => {});
   pumpQueue();
   await addHistory(job);
-  if (settings.notify) {
+  // "Download all" on a page's documents: one notification when the last of them is saved, not one per file.
+  const moreDocs = job.kind === 'doc' && [...jobs.values()].some((j) => j.kind === 'doc' && j.id !== jobId && (j.status === 'queued' || ACTIVE.includes(j.status)));
+  if (settings.notify && !moreDocs) {
     chrome.notifications.create(`done:${jobId}`, {
       type: 'basic',
       iconUrl: 'icons/icon128.png',
@@ -1369,7 +1374,7 @@ async function enqueueDownload(tabId, mediaId, optionId = 'file') {
   if (already) return publicJob(already); // one click too many
   if (activeDownloads() < Math.max(1, Number(settings.maxParallel) || 2)) return startDownload(tabId, mediaId, optionId);
   const t = await getTab(tabId);
-  const m = t.media.find((x) => x.id === mediaId);
+  const m = t.media.find((x) => x.id === mediaId) || docById(tabId, t, mediaId);
   if (!m) throw new Error('That media item is gone — reload the page.');
   const job = {
     id: crypto.randomUUID(), tabId, mediaId, optionId, kind: m.kind, mediaUrl: m.url, mediaKeys: keysOf(m),
@@ -1404,6 +1409,97 @@ async function pumpQueue() {
   } finally {
     pumping = false;
   }
+}
+
+// ---------------------------------------------------------------- files on this page (slides, handouts…)
+// Documents a page links to are kept apart from its videos (t.docs, not t.media), so the badge, the big
+// card, "now playing" and duplicate-merging never see them. Downloading one is an ordinary job: the same
+// queue, folders, save-folder move and history as a video. lib/files.js decides what counts as a document.
+
+/** Remember what one frame reported (untrusted: cleaned and capped in lib/files.js). */
+function noteDocs(tabId, t, frameId, reported) {
+  const next = frameDocs(t.docs, frameId, reported);
+  if (JSON.stringify(next) === JSON.stringify(t.docs || {})) return;
+  t.docs = next;
+  persistTab(tabId);
+}
+
+/** The tab's documents as the popup lists them, shaped like media items where a job needs it (id, key, url, title). */
+function docsOf(tabId, t) {
+  return mergeDocs(t.docs).map((d) => ({
+    ...d, id: `d${shortId(`${tabId}:${d.key}`)}`, kind: 'doc', title: d.name, host: hostOf(d.url), label: docLabel(d.ext),
+  }));
+}
+
+/** Frames that are gone (a reloaded page gets new ones, a closed viewer takes its links along) no longer count. */
+async function pruneDocFrames(tabId, t) {
+  if (!Object.keys(t.docs || {}).length) return;
+  const frames = await chrome.webNavigation?.getAllFrames({ tabId }).catch(() => null);
+  if (!frames?.length) return;
+  const live = new Set(frames.map((f) => String(f.frameId)));
+  const kept = Object.entries(t.docs || {}).filter(([id]) => live.has(id));
+  if (kept.length === Object.keys(t.docs || {}).length) return;
+  t.docs = Object.fromEntries(kept);
+  persistTab(tabId);
+}
+
+function docById(tabId, t, id) {
+  return String(id || '').startsWith('d') ? docsOf(tabId, t).find((d) => d.id === id) || null : null;
+}
+
+/** The {course} folder for a page's documents: the one its videos are filed under, else what the page says. */
+async function courseForDocs(tabId, t) {
+  const fromVideo = visibleMedia(t).filter((m) => m.course).sort((a, b) => b.detectedAt - a.detectedAt)[0]?.course;
+  return fromVideo || (await readVideoName(tabId, 0))?.course || '';
+}
+
+/** Save one document. The file is "<name>.<type>": the name sanitised, the type from the whitelist. */
+async function startDocDownload(tabId, docId) {
+  await loadJobs();
+  const settings = await getSettings();
+  const t = await getTab(tabId);
+  const d = docById(tabId, t, docId);
+  if (!d) throw new Error('That file is no longer on the page. Reload the page.');
+  const file = docFilename(d.name, d.ext);
+  if (!isHttpUrl(d.url) || !file) throw new Error('StreamSnag does not save this type of file.');
+  const pageUrl = t.pageUrl;
+  await applyRefererRules([d.url], pageUrl, true); // you clicked Download
+  const rules = rulesFor(settings, pageUrl || d.url); // same folders as this site's videos
+  const course = sanitizeFilename(/\{course\}/.test(rules.subfolder || '') ? await courseForDocs(tabId, t) : '', 80);
+  const date = new Date().toISOString().slice(0, 10);
+  const folder = resolveFolder(rules.subfolder, { site: siteKey(pageUrl || d.url), course, date, kind: 'doc' });
+  const filename = folder ? `${folder}/${file}` : file; // folder is already resolveFolder()-safe
+  const job = {
+    id: crypto.randomUUID(), tabId, mediaId: d.id, optionId: 'file', mediaUrl: d.url, mediaKeys: [d.key], mediaSize: null, fingerprint: '',
+    pageUrl, kind: 'doc', title: d.name, base: file.slice(0, -(d.ext.length + 1)), folder, filename, status: 'running', live: false,
+    progress: { done: 0, total: 0, bytes: 0 },
+    tracks: [{ role: 'file', kind: 'direct', url: d.url, ext: d.ext, quality: '', filename, status: 'pending' }],
+    outputs: [], startedAt: Date.now(),
+  };
+  jobs.set(job.id, job);
+  persistJobs(true);
+  runNextTrack(job.id).catch((e) => failJob(job.id, e.message));
+  return publicJob(job);
+}
+
+/** "Download all": every document on the page that isn't downloaded, queued or running. */
+async function downloadDocs(tabId) {
+  await loadJobs();
+  const t = await getTab(tabId);
+  const { history = [] } = await chrome.storage.local.get('history');
+  let queued = 0;
+  let skipped = 0;
+  for (const d of docsOf(tabId, t)) {
+    const st = docStatus(d, [...jobs.values()], history);
+    // One click for many links the page chose: none of them may reach into your own network from a public page.
+    if ((st !== 'new' && st !== 'failed') || !autoFetchAllowed(d.url, t.pageUrl)) {
+      skipped++;
+      continue;
+    }
+    await enqueueDownload(tabId, d.id);
+    queued++;
+  }
+  return { queued, skipped };
 }
 
 // ---------------------------------------------------------------- playlists (showcases): every video, not just the played ones
@@ -1728,6 +1824,7 @@ const handlers = {
     coverEntries(t);
     attachLibrary(t, history, marks);
     pumpQueue(); // in case the worker restarted with downloads waiting
+    if (settings.showDocuments !== false) await pruneDocFrames(tabId, t);
     // The sidebar lists what is in your folders (newest first), marking the files this page's videos matched.
     const matched = new Set(t.media.map((m) => m.library?.path?.toLowerCase()).filter(Boolean));
     const files = panel
@@ -1744,6 +1841,8 @@ const handlers = {
       },
       page: { url: t.pageUrl, title: t.pageTitle, site: t.pageUrl ? siteKey(t.pageUrl) : '' },
       media,
+      // Documents linked on the page ("Files on this page"); never part of `media`.
+      docs: settings.showDocuments !== false ? docsOf(tabId, t) : [],
       removedCount: t.media.filter((m) => m.dismissed).length,
       // Playlist entries shown through the stream card you played (for the playlist's counts).
       coveredEntries: t.media.filter((m) => m.covered && !m.dismissed).map((m) => ({ id: m.id, parentId: m.parentId, covered: m.covered, title: m.title })),
@@ -1758,6 +1857,7 @@ const handlers = {
   download: ({ tabId, mediaId, optionId }) => enqueueDownload(tabId, mediaId, optionId),
   listPlaylist: ({ tabId, mediaId }) => listPlaylist(tabId, mediaId),
   downloadMissing: ({ tabId, mediaId }) => downloadMissing(tabId, mediaId),
+  downloadDocs: ({ tabId }) => downloadDocs(tabId),
   toolVersions: () => helperRequest({ type: 'toolVersions' }, { timeoutMs: 60000 }),
   updateYtdlp: () => helperRequest({ type: 'updateYtdlp' }, { timeoutMs: 6 * 60 * 1000 }),
   cancelJob: ({ jobId }) => cancelJob(jobId),
@@ -1919,6 +2019,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // helper, folders, settings — is for StreamSnag's own pages (popup, sidebar, settings, offscreen).
   const fromExtension = sender.id === chrome.runtime.id && String(sender.url || '').startsWith(chrome.runtime.getURL(''));
 
+  // A content script asking which file types count as documents (it can't import lib/files.js itself).
+  if (msg.type === 'docTypes') {
+    sendResponse({ exts: DOC_EXTS });
+    return false;
+  }
+
   // Content script reports.
   if (msg.type === 'contentMedia' && sender.tab) {
     const tabId = sender.tab.id;
@@ -1926,6 +2032,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       const t = await getTab(tabId);
       const isTop = sender.frameId === 0; // from Chrome, not from what the page claims
       if (isTop && msg.pageTitle) t.pageTitle = msg.pageTitle;
+      if (Array.isArray(msg.docs)) noteDocs(tabId, t, sender.frameId || 0, msg.docs);
       for (const it of msg.items || []) {
         if (it.embed) {
           resolveEmbed(tabId, it).catch(() => {});

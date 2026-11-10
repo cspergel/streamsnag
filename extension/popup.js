@@ -1,5 +1,6 @@
 import { formatBytes, formatDuration, hostOf, ytdlpCommand, ffmpegCommand, rankVideoOptions, isHttpUrl } from './lib/util.js';
 import { sameItem } from './lib/match.js';
+import { docStatus } from './lib/files.js';
 
 const $ = (sel) => document.querySelector(sel);
 // The same page runs as the toolbar popup and (with ?view=panel) as Chrome's side panel.
@@ -20,6 +21,7 @@ let sortBy = 'default'; // see SORTS
 let query = ''; // search box on the list
 let searchOpen = false; // the search + sort row
 let subsOpen = false; // the collapsed "Subtitle files" group
+let docsOpen = false; // the collapsed "Files on this page" group
 let folderQuery = '';
 let setupLater = 0;
 let heroId = null; // the video on the big card
@@ -30,6 +32,7 @@ try {
   filter = localStorage.getItem('ss-filter') || 'all';
   sortBy = localStorage.getItem('ss-sort') || 'default';
   subsOpen = localStorage.getItem('ss-subs') === '1';
+  docsOpen = localStorage.getItem('ss-docs') === '1';
   searchOpen = localStorage.getItem('ss-search') === '1';
   setupLater = Number(localStorage.getItem('ss-setup-later')) || 0;
   helperKnown = { 1: true, 0: false }[localStorage.getItem('ss-helper')] ?? null;
@@ -1135,6 +1138,62 @@ function renderFolder() {
   more.textContent = hits.length ? `Showing the newest ${show.length} of ${hits.length}. Search to narrow it down.` : 'No file names match.';
 }
 
+// ------------------------------------------------------------------ files on this page (slides, handouts…)
+
+async function downloadDoc(d) {
+  try {
+    await send('download', { mediaId: d.id });
+    banner('Download started');
+  } catch (e) {
+    banner(e.message, true);
+  }
+  refresh();
+}
+
+async function downloadAllDocs(btn) {
+  btn.disabled = true;
+  try {
+    const r = await send('downloadDocs');
+    banner(r.queued ? `Downloading ${r.queued} file${r.queued === 1 ? '' : 's'}.` : 'Nothing left to download.');
+  } catch (e) {
+    banner(e.message, true);
+  }
+  btn.disabled = false;
+  refresh();
+}
+
+function docCard(d, st) {
+  const busy = st === 'active' || st === 'queued';
+  const label = st === 'done' ? 'Download again' : st === 'failed' ? 'Try again' : 'Download';
+  return h('li', { class: `card is-${st}` },
+    h('div', { class: 'row' },
+      h('div', { class: 'thumb subtitle' }, d.label),
+      h('div', { class: 'meta' },
+        nameEl(d.name, `d:${d.id}`),
+        h('div', { class: 'sub', title: d.url }, st !== 'new' ? h('span', { class: 'stw' }, stTag(st), ' · ') : null, d.host),
+      ),
+      busy ? null : h('button', { class: 'primary dl', title: label, 'aria-label': `${label}: ${d.name}`, onclick: () => downloadDoc(d) }, ICON.download()),
+    ));
+}
+
+/** The documents the page links to, in their own collapsed group: never mixed into the videos or their counts. */
+function renderDocs() {
+  const docs = state.docs || [];
+  const box = $('#docs-box');
+  box.hidden = !docs.length;
+  const st = new Map(docs.map((d) => [d.id, docStatus(d, state.jobs, history)]));
+  const done = docs.filter((d) => st.get(d.id) === 'done').length;
+  const left = docs.filter((d) => ['new', 'failed'].includes(st.get(d.id))).length;
+  $('#docs-count').textContent = String(docs.length);
+  $('#docs-note').textContent = done ? `${done} of ${docs.length} downloaded` : 'PDFs, slides, handouts';
+  $('#docs-toggle').setAttribute('aria-expanded', String(docsOpen));
+  $('#docs-all').hidden = left < 2;
+  // Shown before it is filled: a name is measured as it is added, and a hidden one measures 0.
+  $('#docs').hidden = !docsOpen;
+  patchList($('#docs'), docsOpen ? docs : [], (d) => d.id,
+    (d) => JSON.stringify([d.name, d.url, d.label, st.get(d.id), expanded.has(`d:${d.id}`)]), (d) => docCard(d, st.get(d.id)));
+}
+
 function renderSetup() {
   // The helper answered "not installed": offer setup, unless you said "Later" in the last week.
   // The answer can arrive a moment after the popup opens (the worker has to start the helper), so the
@@ -1208,8 +1267,11 @@ function render() {
   patchList($('#media'), rest, keyOf, sig, build);
   $('#media-count').textContent = videos.length ? String(videos.length) : '';
 
+  renderDocs();
+  const docCount = state.docs?.length || 0; // with files to show, the page is not "nothing found": only its videos are missing
+
   const empty = $('#empty');
-  const nothing = !videos.length && !subs.length;
+  const nothing = !videos.length && !subs.length && !docCount;
   // Browser pages (settings, new tab, the extension store) can't be looked at by any extension.
   const webPage = /^(https?|file):/i.test(state.page.url || '');
   empty.hidden = shown.length > 0 || (!videos.length && subs.length > 0);
@@ -1218,7 +1280,7 @@ function render() {
     ? `No names match “${query.trim()}”.`
     : videos.length
       ? (activeFilter === 'done' ? 'Nothing downloaded from this page yet.' : 'Everything on this page is downloaded.')
-      : webPage ? 'No media found yet.' : 'StreamSnag can\'t look at this page.';
+      : webPage ? (docCount ? 'No videos found yet.' : 'No media found yet.') : 'StreamSnag can\'t look at this page.';
   const hint = empty.querySelector('p.muted');
   hint.hidden = videos.length > 0;
   hint.textContent = webPage
@@ -1367,6 +1429,8 @@ async function init() {
   $('#search').addEventListener('input', (e) => { query = e.target.value; render(); });
   $('#sort').addEventListener('change', (e) => { sortBy = e.target.value; remember('ss-sort', sortBy); render(); });
   $('#subs-toggle').addEventListener('click', () => { subsOpen = !subsOpen; remember('ss-subs', subsOpen ? '1' : '0'); render(); });
+  $('#docs-toggle').addEventListener('click', () => { docsOpen = !docsOpen; remember('ss-docs', docsOpen ? '1' : '0'); render(); });
+  $('#docs-all').addEventListener('click', (e) => downloadAllDocs(e.currentTarget));
   $('#folder-search').addEventListener('input', (e) => { folderQuery = e.target.value; render(); });
   chrome.runtime.sendMessage({ type: 'helperStatus' }).catch(() => {});
   await refresh();

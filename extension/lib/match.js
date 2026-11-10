@@ -1,6 +1,7 @@
 // Is a detected video already downloaded? Shared by the service worker and the popup.
 // Works from content first (size, length), so renamed files are still recognised; then from the video's
 // id or its own name in the file name, for files saved by other tools or before StreamSnag kept a record.
+import { docExtOf } from './files.js';
 
 const MIN_SIZE = 256 * 1024;
 
@@ -34,6 +35,7 @@ export function contentIds(urls) {
     let s = String(u);
     try { s = decodeURIComponent(s); } catch { /* keep as is */ }
     if (/\.(vtt|srt|ttml)(\?|$)/i.test(s)) continue; // a subtitle file is not the video
+    if (docExtOf(String(u))) continue; // nor are the slides or handout saved from the same folder
     for (const id of s.match(UUID) || []) out.add(id.toLowerCase());
   }
   return [...out];

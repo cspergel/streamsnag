@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the home page, demo.js (the demonstration at the top). Neither sends anything anywhere. -->
+<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
 <title>A free lecture video downloader, with no limits | StreamSnag</title>
 <meta name="description" content="The free part of StreamSnag saves video files, HLS and DASH streams, whole course pages, slides and captions. Open source, with no limits, ads or account.">
@@ -47,6 +47,7 @@
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
   <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.500h7l4 4V19a1.500 1.500 0 01-1.500 1.500h-9A1.500 1.500 0 016 19V4.500a1 1 0 011-1z"/><path d="M14 3.500V8h4M9 12.500h6M9 16h4"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M6.500 6h11M9 3.500h6"/></symbol>
   <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.500h14M5 11h14M5 15.500h9"/></symbol>
   <!-- The sample lecture's graphs: stroke volume against end-diastolic volume, and the wall of a ventricle. -->
   <symbol id="g-starling" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 44 108 28 190 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
@@ -68,7 +69,6 @@
     <nav class="site-nav" aria-label="Site">
       <a href="../how-it-works/">How it works</a>
       <a href="../#gallery">Samples</a>
-      <a href="../downloader/" aria-current="page">Downloader</a>
       <a href="../#pricing">Pricing</a>
       <a href="../guides/">Guides</a>
       <a href="../questions/">Questions</a>
@@ -97,7 +97,7 @@
 </header>
 
 <main id="main">
-<p class="prelaunch" role="note"><b>Launching soon.</b> This site describes StreamSnag 1.6, which is not released yet. Pro is not on sale yet. Questions: <a href="mailto:support@streamsnag.app">support@streamsnag.app</a>.</p>
+<p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
   <!-- This page holds, word for word, two sections that stood on the home page until the pass of 2026-11-11:
        "Only here for the downloader?" (with "More than lectures") and "Free and Pro, side by side". The three
        steps after installing come from the home page's closing block. -->
@@ -198,7 +198,7 @@
             <tr><th scope="row"><b>Review cards</b>: your due flashcards from every lecture <span class="tag tag-plain">No AI account</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
             <tr><th scope="row"><b>Automation</b> after a download <span class="tag tag-ai">Your AI for the AI steps</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
             <tr class="group"><th scope="rowgroup" colspan="3">What you pay</th></tr>
-            <tr><th scope="row">To StreamSnag</th><td class="txt">US$0</td><td class="txt">US$39.97 a year, US$4.99 a month, or US$99 once</td></tr>
+            <tr><th scope="row">To StreamSnag</th><td class="txt">US$0</td><td class="txt">US$39.97 a year, US$4.99 a month, or US$99.95 once</td></tr>
             <tr><th scope="row">To your AI provider, for the steps tagged “your AI”</th><td class="txt">Nothing needed</td><td class="txt">Nothing extra on a Claude or ChatGPT subscription you already have. A few cents to about US$1.50 a lecture with a pay-as-you-go key. Never to StreamSnag</td></tr>
           </tbody>
         </table>

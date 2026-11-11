@@ -2089,3 +2089,273 @@ a[aria-disabled="true"] { cursor: default; opacity: .85; }
 @media (max-width: 899px) { .terms-four { grid-template-columns: minmax(0, 1fr); } }
 .ai-more { padding: clamp(36px, 5vw, 64px) 0 clamp(48px, 6vw, 84px); }
 .ai-more .prose { max-width: 72ch; }
+
+/* ==== Pass 4 (2026-11-11): the calm home page. Kept in pass4.css beside the site tooling. ==== */
+/* The rules of this page: a few large things, one idea to a screen. Nothing boxed that does not have to be;
+   two sizes of running text (--t and --t-s); wide gaps between sections; sections that are not all built the
+   same way. The orange is used three times, each on purpose: the button that gets the product, the band for
+   the feature the page makes the most of (the lecture as a document), and, as everywhere on this site, a
+   minute in the lecture. The pictures are the product's own pages. */
+:root {
+  --t: clamp(1.0625rem, .98rem + .35vw, 1.1875rem);
+  --t-s: .9375rem;
+  --paper: #fffdf8;
+  --go: #e8590c;
+  --go-over: #f26a1f;
+  --on-go: #0e1116;
+  --field: #e8590c;
+  --on-field: #0e1116;
+  --night: #0e1116;
+  --night-ink: #c5cad3;
+  --night-line: #3a414c;
+  --night-accent: #ff8f55;
+  --slide: #f3f4f6;
+  --slide-ink: #0e1116;
+  --sheet: #f7f5ef;
+  --pop-shade: rgba(0, 0, 0, .5);
+  --shadow-sheet: 0 1px 2px rgba(14, 17, 22, .1), 0 28px 60px -20px rgba(14, 17, 22, .42);
+  --shadow-lift: 0 2px 3px rgba(14, 17, 22, .1), 0 34px 70px -26px rgba(14, 17, 22, .5);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --paper: #1b1f25; --go: #ff6a1f; --go-over: #ff7f3d; --night: #07090c; --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .3), 0 28px 60px -20px rgba(0, 0, 0, .7); --shadow-lift: 0 2px 3px rgba(0, 0, 0, .3), 0 34px 70px -26px rgba(0, 0, 0, .8); }
+}
+:root[data-theme="dark"] { --paper: #1b1f25; --go: #ff6a1f; --go-over: #ff7f3d; --night: #07090c; --shadow-sheet: 0 1px 2px rgba(0, 0, 0, .3), 0 28px 60px -20px rgba(0, 0, 0, .7); --shadow-lift: 0 2px 3px rgba(0, 0, 0, .3), 0 34px 70px -26px rgba(0, 0, 0, .8); }
+
+html, body { overflow-x: clip; }
+
+/* ---------- Every page: a quieter header and a slim launching-soon line ---------- */
+.theme-btn { border-color: transparent; }
+main > .prelaunch { padding: 7px 16px; font-size: .8125rem; line-height: 1.4; border-bottom: 0; }
+.pl-narrow { display: none; }
+@media (max-width: 599px) {
+  .pl-wide { display: none; }
+  .pl-narrow { display: inline; }
+}
+
+/* ---------- First screen ---------- */
+.top { padding: clamp(44px, 7.5vw, 104px) 0 clamp(40px, 6vw, 76px); text-align: center; }
+.top h1 {
+  max-width: 13em;
+  min-width: 0;
+  margin-inline: auto;
+  font: 700 clamp(2.35rem, 6.1vw, 4.6rem)/1.04 var(--font-display);
+  letter-spacing: -.035em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+@media (min-width: 760px) {
+  .top h1 { max-width: none; }
+  .h1-line { display: block; }
+}
+.top-say {
+  max-width: 33em;
+  margin: clamp(18px, 2.2vw, 28px) auto 0;
+  font-size: var(--t);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: balance;
+}
+.top-act { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 30px; margin-top: clamp(26px, 3vw, 38px); }
+.btn-lg { min-height: 56px; padding: 0 1.6em; border-radius: 14px; font-size: 1.0625rem; }
+.btn-go { background: var(--go); color: var(--on-go); font-weight: 650; }
+.btn-go:hover { background: var(--go-over); }
+.btn-go:hover .ic-down { transform: translateY(2px); }
+.btn-go:active { transform: translateY(1px); }
+.plain-link { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--t); font-weight: 600; text-decoration: underline; text-decoration-color: var(--line-strong); }
+.plain-link:hover { text-decoration-color: currentColor; }
+.top-price { margin-top: 16px; font-size: var(--t-s); font-variant-numeric: tabular-nums; color: var(--ink-3); }
+
+/* The picture of the first screen: a recording becomes a document. */
+.pic { max-width: 1120px; margin: clamp(44px, 6vw, 84px) auto 0; }
+.pic-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 7fr);
+  align-items: center;
+  padding: clamp(18px, 5vw, 64px);
+  border-radius: clamp(18px, 2.6vw, 34px);
+  background: var(--bg-2);
+  text-align: left;
+}
+.pic-video { padding: clamp(10px, 1.2vw, 16px); border-radius: 16px; background: var(--night); box-shadow: var(--shadow-sheet); }
+.pic-slide {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  aspect-ratio: 16 / 10;
+  padding: 7% 7% 6%;
+  border-radius: 8px;
+  background: var(--slide);
+  color: var(--slide-ink);
+}
+.pic-slide-h { max-width: 11em; font: 700 clamp(1.05rem, 1.75vw, 1.4rem)/1.2 var(--font-display); letter-spacing: -.015em; text-wrap: balance; }
+.pic-graph { justify-self: end; align-self: end; width: 64%; aspect-ratio: 200 / 120; height: auto; }
+.pic-bar { display: flex; align-items: center; gap: 12px; margin-top: clamp(10px, 1.2vw, 16px); padding: 0 26px 2px 4px; color: var(--night-ink); }
+.pic-rail { flex: 1; height: 4px; border-radius: 2px; background: var(--night-line); }
+.pic-rail i { display: block; width: 32.5%; height: 100%; border-radius: inherit; background: var(--go); }
+.pic-time { font: 500 .8rem/1 var(--font-min); font-variant-numeric: tabular-nums; color: var(--night-accent); }
+.pic-doc {
+  position: relative;
+  z-index: 1;
+  max-height: clamp(380px, 35vw, 450px);
+  margin-left: -14px;
+  overflow: hidden;
+  padding: clamp(22px, 3.4vw, 46px) clamp(20px, 3.4vw, 46px) 0;
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: var(--shadow-sheet);
+}
+.pic-doc::after { content: ""; position: absolute; inset: auto 0 0; height: 96px; background: linear-gradient(to bottom, transparent, var(--paper)); pointer-events: none; }
+.pic-kind { font-size: .8125rem; font-weight: 650; color: var(--ink-3); }
+.pic-title { margin-top: 6px; font: 700 clamp(1.35rem, 2.2vw, 1.8rem)/1.18 var(--font-said); letter-spacing: -.012em; text-wrap: balance; }
+.pic-meta { display: flex; gap: 18px; margin-top: 8px; font-size: .875rem; color: var(--ink-3); }
+.pic-para { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; margin-top: clamp(16px, 1.8vw, 22px); }
+.pic-para .cite { margin-top: .32em; }
+.pic-para p { font: 400 clamp(1rem, 1.25vw, 1.0938rem)/1.6 var(--font-said); }
+.pic figcaption { margin-top: 16px; font-size: var(--t-s); color: var(--ink-3); text-align: center; }
+.pic figcaption a { display: inline-block; padding: 10px 0; margin-left: .35em; color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); }
+.pic figcaption a:hover { text-decoration-color: currentColor; }
+@media (max-width: 759px) {
+  .pic-stage { grid-template-columns: minmax(0, 1fr); }
+  .pic-video { padding-bottom: 36px; }
+  .pic-doc { max-height: 330px; margin: -24px 10px 0; }
+  .pic-bar { padding-right: 4px; }
+  .pic-para { gap: 10px; }
+}
+
+/* ---------- The three moments ---------- */
+.moment { padding: clamp(40px, 6vw, 76px) 0; }
+.moment h2 { font: 700 clamp(2rem, 4.5vw, 3.5rem)/1.05 var(--font-display); letter-spacing: -.035em; text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+.moment-row { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; gap: 44px clamp(32px, 7vw, 110px); max-width: 1120px; }
+.moment-words p { max-width: 29em; margin-top: 18px; font-size: var(--t); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.moment-words .moment-link, .moment-words .moment-link#downloader { margin-top: 14px; padding: 0; }
+.moment-link a { display: inline-block; padding: 10px 0; color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); }
+.moment-link a:hover { text-decoration-color: currentColor; }
+.moment-row-flip { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
+.moment-row-flip .moment-words { order: 2; }
+.sheet { display: block; height: auto; border-radius: 10px; background: var(--sheet); box-shadow: var(--shadow-sheet); }
+
+/* One: the popup, set on the dark of a recording. */
+.moment-save .moment-pic { display: grid; place-items: center; padding: clamp(36px, 6vw, 72px) 24px; border-radius: clamp(18px, 2.6vw, 34px); background: var(--night); }
+.shot-popup { display: block; width: min(100%, 380px); height: auto; filter: drop-shadow(0 30px 40px var(--pop-shade)); }
+
+/* Two: the lecture as a document. The one band of colour on the page, edge to edge, and the largest picture. */
+.moment-read { margin: clamp(40px, 6vw, 76px) 0; padding: clamp(64px, 9vw, 124px) 0 0; overflow: clip; background: var(--field); color: var(--on-field); }
+.moment-read ::selection { background: var(--on-field); color: var(--field); }
+.moment-read :focus-visible { outline-color: var(--on-field); }
+.read-words { max-width: 50rem; margin-inline: auto; text-align: center; }
+.moment-read h2 { font-size: clamp(2.2rem, 5.6vw, 4.3rem); }
+.read-words p { max-width: 33em; margin: clamp(16px, 2vw, 24px) auto 0; font-size: var(--t); line-height: 1.5; text-wrap: balance; }
+.read-words .read-quiet { max-width: none; margin-top: 10px; font-size: var(--t-s); }
+.read-words .read-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 30px; margin-top: 12px; }
+.read-links a { display: inline-block; padding: 10px 0; font-weight: 650; }
+.read-sheets { position: relative; display: block; max-width: 1000px; height: clamp(380px, 47vw, 620px); margin: clamp(36px, 5vw, 64px) auto 0; }
+.sheet-section { position: absolute; top: 0; right: 0; width: 64%; box-shadow: var(--shadow-lift); }
+.sheet-cover { position: absolute; top: 9%; left: 0; width: 44%; transform: rotate(-3deg); }
+@media (max-width: 699px) {
+  .sheet-cover { display: none; }
+  .sheet-section { right: auto; left: 0; width: 150%; max-width: none; }
+}
+
+/* Three: the study material, three pages fanned. */
+.fan { display: flex; align-items: center; padding: 5% 0; }
+.fan a { flex: 0 0 44%; border-radius: 10px; transition: transform .5s var(--ease); }
+.fan a:nth-child(1) { transform: rotate(-5deg) translateY(3%); }
+.fan a:nth-child(2) { z-index: 1; flex-basis: 50%; margin-left: -19%; }
+.fan a:nth-child(3) { margin-left: -19%; transform: rotate(5deg) translateY(3%); }
+.fan a:hover, .fan a:focus-visible { z-index: 2; transform: translateY(-2%); }
+.fan img { width: 100%; }
+
+@media (max-width: 759px) {
+  .moment-row { grid-template-columns: minmax(0, 1fr); }
+  .moment-row-flip .moment-words { order: 0; }
+}
+
+/* ---------- The plainer sections: prices, questions, the button again ---------- */
+.calm { padding: clamp(40px, 6vw, 76px) 0; }
+.calm h2 { font: 700 clamp(1.9rem, 3.8vw, 3rem)/1.08 var(--font-display); letter-spacing: -.03em; text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+.calm-narrow { max-width: 1120px; }
+.calm-head p { max-width: 33em; margin-top: 14px; font-size: var(--t); line-height: 1.5; color: var(--ink-2); }
+.calm-head p a { display: inline-block; padding: 10px 0; color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); }
+.calm-head p a:hover { text-decoration-color: currentColor; }
+
+/* Two prices. */
+.pcs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: clamp(30px, 4vw, 52px); }
+.pc { display: flex; flex-direction: column; gap: 18px; padding: clamp(26px, 3.6vw, 48px); border-radius: 24px; }
+.pc-free { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.pc h3 { font: 650 1.125rem/1.2 var(--font-display); }
+.pc-price { font-size: var(--t); line-height: 1; }
+.pc-amount { font: 700 clamp(2.6rem, 4.6vw, 3.6rem)/1 var(--font-display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.pc-per { margin-left: .2em; color: var(--ink-2); }
+.pc-alt { margin-top: -8px; font-size: var(--t-s); color: var(--ink-2); }
+.pc-line { font-size: var(--t); line-height: 1.45; color: var(--ink-2); text-wrap: pretty; }
+.pc-ticks { display: grid; gap: 10px; font-size: var(--t); line-height: 1.4; }
+.pc-ticks li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; }
+.pc-ticks .ic { margin-top: .12em; color: var(--ink-3); }
+.pc-ai { font-size: var(--t-s); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.pc-ai .link-arrow { display: inline; color: var(--ink); white-space: nowrap; }
+.pc-ai .link-arrow .ic { display: inline-block; vertical-align: -.18em; }
+.pc > .btn { margin-top: auto; }
+.pc-foot { font-size: var(--t-s); line-height: 1.5; color: var(--ink-3); text-wrap: pretty; }
+.pc-foot a { color: var(--ink-2); }
+@media (max-width: 759px) { .pcs { grid-template-columns: minmax(0, 1fr); } }
+
+/* Four questions: plain rows that open. */
+.qa-row { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 24px clamp(32px, 6vw, 96px); align-items: start; }
+.qa { border-top: 1px solid var(--line); }
+.qa details { border-bottom: 1px solid var(--line); }
+.qa summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 66px;
+  padding: 10px 2px;
+  font-size: var(--t);
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+  list-style: none;
+}
+.qa summary::-webkit-details-marker { display: none; }
+.qa summary .ic { color: var(--ink-3); transition: transform .35s var(--ease); }
+.qa details[open] summary .ic { transform: rotate(45deg); }
+.qa details > div { display: grid; gap: 10px; max-width: 40em; padding: 0 2px 24px; font-size: var(--t); line-height: 1.55; color: var(--ink-2); }
+.qa details ul { display: grid; gap: 6px; padding-left: 1.15em; list-style: disc; }
+@media (max-width: 899px) { .qa-row { grid-template-columns: minmax(0, 1fr); } }
+
+/* The closing line and the button. */
+.last { padding-top: clamp(56px, 8vw, 110px); padding-bottom: clamp(84px, 11vw, 150px); text-align: center; }
+.last h2 { font-size: clamp(2.3rem, 5.6vw, 4.3rem); letter-spacing: -.035em; }
+.last-say { margin-top: 14px; font-size: var(--t); color: var(--ink-2); }
+.last .btn { margin-top: clamp(24px, 3vw, 34px); }
+.last-note { max-width: 30em; margin: 18px auto 0; font-size: var(--t-s); color: var(--ink-3); text-wrap: balance; }
+
+/* Motion: the first screen arrives once, and the two pages of the reading edition rise into place as the
+   band scrolls into view. Everything is in its place without either, and nothing moves for a reader who
+   asked for no motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  .top h1, .top-say, .top-act, .top-price, .pic { animation: rise .8s var(--ease) both; }
+  .top-say { animation-delay: .07s; }
+  .top-act, .top-price { animation-delay: .14s; }
+  .pic { animation-delay: .24s; }
+  @supports (animation-timeline: view()) {
+    @keyframes sheet-up { from { transform: translateY(90px); } }
+    @keyframes cover-up { from { transform: translateY(150px) rotate(-8deg); } }
+    .sheet-section { animation: sheet-up linear both; animation-timeline: view(); animation-range: entry 0% cover 38%; }
+    .sheet-cover { animation: cover-up linear both; animation-timeline: view(); animation-range: entry 0% cover 44%; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fan a, .qa summary .ic { transition: none; }
+}
+
+@media print {
+  .pic-doc { max-height: none; }
+  .pic-doc::after { display: none; }
+}
+
+/* ---------- How it works: the working demo at its top, then the evening ---------- */
+.demo-sec { padding: clamp(28px, 4vw, 52px) 0 clamp(40px, 5vw, 72px); }
+.demo-sec .section-head h2 { font: 700 clamp(1.85rem, 3.7vw, 3.05rem)/1.06 var(--font-display); letter-spacing: -.028em; text-wrap: balance; }
+.evening-when { max-width: 54ch; margin-bottom: clamp(20px, 2.6vw, 32px); font-size: 1.08rem; line-height: 1.5; color: var(--ink-2); }
+/* ==== end of pass 4 ==== */

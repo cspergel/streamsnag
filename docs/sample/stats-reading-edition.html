@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-TXc6EWMAe2sHYiE3OW1aipkYADOuY+iSlXBD9fD8GZY=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../icon.png">
+<meta name="generator" content="StreamSnag reading edition">
+<title>Sample reading edition: From a sample to a claim: standard error, confidence intervals and p-values | StreamSnag</title>
+<style>
+:root {
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Sitka Text", Georgia, serif;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --size: 19px; --gutter: 4.4rem;
+  color-scheme: light;
+}
+:root[data-size="0"] { --size: 16px; }
+:root[data-size="1"] { --size: 17.5px; }
+:root[data-size="2"] { --size: 19px; }
+:root[data-size="3"] { --size: 21px; }
+:root[data-size="4"] { --size: 23.5px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
+  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
+  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { font-size: var(--size); scroll-behavior: smooth; scroll-padding-top: 2.2rem; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--serif); line-height: 1.72; text-rendering: optimizeLegibility; font-kerning: normal; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--paper); color: var(--accent-ink); padding: .5rem 1rem; z-index: 7; }
+.skip:focus { left: 1rem; top: 1rem; }
+a { color: var(--accent-ink); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3, .toc, .eyebrow, .meta, .how, .notice, .t, button, summary, .label, .span, .slide, .asis, .foot, .fixes { font-family: var(--sans); }
+
+/* how far through the lecture the reader is */
+.bar { position: fixed; left: 0; right: 0; top: 0; height: 3px; z-index: 6; pointer-events: none; }
+#progress { height: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+html:not(.js) .bar, html:not(.js) .needs-js { display: none; }
+
+/* The title comes first in the page (and on a phone); on a wide window the contents sit beside it. */
+.page { display: grid; grid-template-columns: 232px minmax(0, 36.4rem); grid-template-rows: auto 1fr; grid-template-areas: "toc cover" "toc main"; column-gap: 3.6rem; justify-content: center; max-width: 68rem; margin: 0 auto; padding: 3.6rem 1.5rem 7rem; }
+.cover { grid-area: cover; }
+.toc { grid-area: toc; }
+main { grid-area: main; min-width: 0; }
+
+/* contents and the reader's own settings */
+.toc { position: sticky; top: 2.2rem; align-self: start; font-size: 14px; line-height: 1.4; max-height: calc(100vh - 4.4rem); overflow: auto; padding-right: 6px; }
+.toc .label { display: block; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin: 0 0 10px; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc ol a { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; padding: 6px 12px; margin-left: -12px; color: var(--soft); text-decoration: none; border-left: 2px solid transparent; border-radius: 0 6px 6px 0; }
+.toc ol a:hover { color: var(--ink); background: var(--accent-tint); }
+.toc ol a.on { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 600; }
+.toc .tm { flex: none; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--faint); font-weight: 400; }
+.tools { display: flex; gap: 8px; margin: 0 0 26px; flex-wrap: wrap; }
+.tools .size { display: flex; }
+.tools .size button:first-child { border-radius: 8px 0 0 8px; }
+.tools .size button:last-child { border-radius: 0 8px 8px 0; margin-left: -1px; }
+button { font-size: 13.5px; font-weight: 600; color: var(--soft); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 12px; cursor: pointer; line-height: 1.2; }
+button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-ink); position: relative; }
+button:disabled { opacity: .45; cursor: default; }
+.left { margin: 18px 0 0; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.more { list-style: none; margin: 18px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); font-size: 13px; }
+.more li { margin: 0 0 6px; }
+
+/* cover */
+.cover { margin: 0 0 3.2rem; }
+.eyebrow { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 650; }
+h1 { font-size: 2.05rem; line-height: 1.16; letter-spacing: -.02em; font-weight: 650; margin: .35rem 0 .95rem; text-wrap: balance; overflow-wrap: break-word; }
+.meta { display: flex; flex-wrap: wrap; gap: .35rem .45rem; margin: 0 0 .9rem; padding: 0; list-style: none; font-size: .72rem; color: var(--soft); }
+.meta li { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: .16rem .68rem; }
+.how { font-size: .74rem; line-height: 1.5; color: var(--muted); margin: 0; }
+.notice { margin: 1.3rem 0 0; padding: .85rem 1.05rem .9rem; border: 1px solid var(--note-line); border-left-width: 3px; background: var(--note); border-radius: 8px; font-size: .76rem; line-height: 1.58; color: var(--soft); }
+.notice strong { color: var(--note-ink); }
+.notice p { margin: 0 0 .45rem; }
+.notice p:last-of-type { margin-bottom: 0; }
+.notice button { margin-top: .7rem; }
+
+/* sections */
+.sec { margin: 0 0 3.2rem; }
+.sec-head { display: flex; flex-wrap: wrap; gap: .2rem 1rem; align-items: baseline; justify-content: space-between; margin: 0 0 1.25rem; padding-top: 1.3rem; border-top: 1px solid var(--line-strong); }
+h2 { flex: 1 1 14rem; font-size: 1.32rem; line-height: 1.26; letter-spacing: -.01em; font-weight: 650; margin: 0; text-wrap: balance; overflow-wrap: break-word; }
+.span { flex: none; font-size: .68rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.swap { flex: none; font-size: .68rem; font-weight: 600; padding: .2rem .55rem; border-radius: 999px; background: none; }
+.asis { display: inline-block; margin: -.4rem 0 1.1rem var(--gutter); padding: .22rem .7rem; font-size: .68rem; line-height: 1.5; color: var(--note-ink); background: var(--note); border: 1px dashed var(--note-line); border-radius: 999px; }
+h3 { margin: 1.9rem 0 .7rem var(--gutter); font-size: 1rem; line-height: 1.35; font-weight: 650; text-wrap: balance; }
+
+/* the text: real paragraphs, with the minute they were said in the margin */
+.para { display: grid; grid-template-columns: var(--gutter) minmax(0, 1fr); align-items: baseline; position: relative; }
+.para p { margin: 0 0 1.08em; overflow-wrap: break-word; }
+.flow { min-width: 0; }
+
+/* points the lecturer counts off ("First… Second…"), set out as a list: every word is still there */
+ol.said { margin: 0 0 1.08em; padding: 0 0 0 1.5em; }
+ol.said li { margin: 0 0 .42em; padding-left: .3em; overflow-wrap: break-word; }
+ol.said li::marker { font-family: var(--sans); font-size: .76em; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--accent-ink); }
+
+/* where the lecturer says that something matters: a quiet tint under the sentence, and a note under the paragraph's time */
+.key { color: inherit; background: var(--accent-tint); border-bottom: 1px solid var(--accent-line); border-radius: 3px; padding: .05em .16em; margin: 0 -.16em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.para.stress::before { content: "Lecturer’s emphasis"; position: absolute; left: 0; top: 1.5rem; width: calc(var(--gutter) - 1.1rem); font-family: var(--sans); font-size: .54rem; font-weight: 650; line-height: 1.22; letter-spacing: .02em; color: var(--accent-ink); }
+.t { font-size: .66rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .01em; color: var(--faint); text-decoration: none; line-height: 1; white-space: nowrap; justify-self: start; padding: .15rem 0; }
+a.t:hover, .para:target .t { color: var(--accent-ink); text-decoration: underline; }
+.who { font-family: var(--sans); font-size: .82em; font-weight: 650; letter-spacing: .01em; }
+.unsure { color: var(--note-ink); }
+
+/* where the slide changes */
+.slide { margin: 1.7rem 0 1.15rem var(--gutter); padding-top: .65rem; border-top: 1px solid var(--line); font-size: .7rem; line-height: 1.45; color: var(--soft); }
+.slide .row, .slide summary { display: flex; gap: .65rem; align-items: baseline; }
+.slide summary { cursor: pointer; list-style: none; }
+.slide summary::-webkit-details-marker { display: none; }
+.sl-n { flex: none; font-weight: 700; font-size: .62rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-ink); }
+.sl-t { min-width: 0; overflow-wrap: break-word; }
+.sl-see { flex: none; margin-left: auto; color: var(--accent-ink); font-weight: 600; text-decoration: underline; text-underline-offset: .18em; }
+.sl-see::after { content: "Show slide"; }
+details[open] > summary .sl-see::after { content: "Hide slide"; }
+.slide img { display: block; width: 100%; height: auto; margin: .75rem 0 .2rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.sec .body > .slide:first-child { margin-top: 0; }
+
+.fixes { font-size: .78rem; line-height: 1.55; color: var(--soft); }
+.fixes h2 { font-size: 1rem; }
+.fixes p { margin: 0 0 .6rem; }
+.fixes ul { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 2rem; }
+.fixes li { margin: 0 0 .3rem; break-inside: avoid; }
+.fixes .was { font-style: italic; color: var(--muted); }
+.foot { font-size: .7rem; color: var(--muted); border-top: 1px solid var(--line-strong); padding-top: 1.1rem; line-height: 1.55; }
+
+@media (max-width: 60rem) {
+  :root { --gutter: 0rem; }
+  .page { display: block; padding: 1.4rem 1.15rem 4.5rem; max-width: 37rem; }
+  .toc { position: static; max-height: none; margin: 0 0 2.4rem; padding: 14px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+  .tools { margin-bottom: 16px; }
+  .cover { margin-bottom: 1.6rem; }
+  h1 { font-size: 1.62rem; }
+  h2 { font-size: 1.18rem; }
+  /* No margin to put the minute in: it sits at the start of the paragraph's first line. */
+  .para { display: block; }
+  .t { float: left; margin: .52em .6em 0 0; padding: 0; }
+  .para.lf .t { float: none; display: block; margin: 0 0 .35em; }
+  /* ...and none for the note: it stands in small capitals over its paragraph. */
+  .para.stress::before { position: static; display: block; width: auto; margin: 0 0 .1rem; font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; }
+  .fixes ul { columns: 1; }
+}
+
+@page { margin: 22mm 27mm; }
+@media print {
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
+    --bg: #fff; --paper: #fff; --gutter: 3.6rem; color-scheme: light; }
+  html, :root[data-size] { font-size: 11.5pt; }
+  body { background: #fff; }
+  .page { display: block; max-width: none; padding: 0; }
+  .bar, .toc, .needs-js, .skip, .swap, .sl-see { display: none !important; }
+  .cover { margin-bottom: 1.6rem; }
+  .sec { margin-bottom: 1.5rem; }
+  .sec-head { break-after: avoid; break-inside: avoid; }
+  h2, h3, .slide, .asis { break-after: avoid; }
+  .slide { break-inside: avoid; }
+  .slide img { width: auto; max-width: 100%; max-height: 8cm; margin-left: auto; margin-right: auto; }
+  .para { display: grid; }
+  .para p { orphans: 3; widows: 3; }
+  .t { float: none; margin: 0; color: #555; }
+  .para.lf .t { margin: 0; }
+  ol.said li { break-inside: avoid; }
+  .key { background: none; }
+  .para.stress::before { position: absolute; display: block; left: 0; top: 1.3rem; width: calc(var(--gutter) - .7rem); margin: 0; font-size: .52rem; letter-spacing: .02em; text-transform: none; color: #555; }
+  .notice { background: none; }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* the reader bar: one lecture, five ways to study it */
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #1a1f1d; --rd-ink-2: #434a46; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #1d5c58; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; }
+.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.rd-bar [hidden] { display: none !important; }
+.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
+.rd-bar .rd-modes { display: flex; flex: none; gap: 2px; max-width: 100%; padding: 3px; border-radius: 9px; background: var(--rd-sunk); }
+.rd-bar .rd-modes a, .rd-bar .rd-modes span { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 6px; color: var(--rd-ink-2); font: inherit; text-decoration: none; white-space: nowrap; }
+.rd-bar .rd-modes a:hover { color: var(--rd-ink); text-decoration: none; }
+.rd-bar .rd-modes [aria-current] { background: var(--rd-surface); color: var(--rd-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rd-rule-2); }
+.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
+.rd-bar .rd-back::before { content: ""; width: 6px; height: 6px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-left: 2px; }
+.rd-bar .rd-back:hover { border-color: var(--rd-ink-3); color: var(--rd-ink); }
+.rd-bar .rd-hint { flex: 1 0 100%; font-size: 12.5px; color: var(--rd-ink-3); }
+.rd-bar :focus-visible { outline: 2px solid var(--rd-source); outline-offset: 2px; border-radius: 6px; }
+html { scroll-padding-top: 4.4rem; }
+.rd-bar ~ .page .toc { top: calc(48px + 1.4rem); max-height: calc(100vh - 48px - 2.8rem); }
+@media (max-width: 560px) { .rd-bar { padding: 6px 10px; } .rd-bar .rd-modes a, .rd-bar .rd-modes span { padding: 0 9px; } }
+@media print { .rd-bar { display: none; } }
+
+.ssb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 8px 16px; background: #14181d; color: #c9ced6; font: 400 13px/1.45 "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; position: relative; z-index: 5; }
+.ssb a { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-color: #6b7380; text-underline-offset: .2em; white-space: nowrap; }
+.ssb a:hover { text-decoration-color: #fff; }
+.ssb a:focus-visible { outline: 2px solid #ff8a4c; outline-offset: 2px; border-radius: 3px; }
+.ssb .ssb-home { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; }
+.ssb svg { width: 20px; height: 20px; flex: none; }
+.ssb .ssb-what { flex: 1 1 320px; min-width: 0; }
+.ssb .ssb-what b { color: #fff; font-weight: 650; }
+.ssb .ssb-links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.ssb [aria-current] { text-decoration: none; color: #c9ced6; font-weight: 400; }
+@media print { .ssb { display: none; } }
+</style>
+</head>
+<body>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample reading edition.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. The times open the sample study page, which has no video.</span><span class="ssb-links"><a href="stats-reading-edition.html" aria-current="page">Reading edition</a><a href="stats-study-guide.html">Study guide</a><a href="stats-study-page.html">Study page</a><a href="../#gallery">All samples</a></span></div>
+<div class="bar" aria-hidden="true"><div id="progress"></div></div>
+<a class="skip" href="#main">Skip to the text</a>
+<nav class="rd-bar" id="top" aria-label="This lecture" data-current="read" data-file="confidence-intervals">
+<button type="button" class="rd-back" hidden>Back to desk</button>
+<span class="rd-title">From a sample to a claim: standard error, confidence intervals and p-values</span>
+<span class="rd-modes"><a data-mode="watch" href="stats-study-page.html#t=0">Watch</a><span data-mode="read" aria-current="page">Read</span><a data-mode="guide" href="stats-study-guide.html">Guide</a></span>
+<span class="rd-hint" role="status" hidden></span>
+</nav>
+<div class="page">
+<header class="cover">
+<div class="eyebrow">Statistics for the life sciences · Reading edition</div>
+<h1>From a sample to a claim: standard error, confidence intervals and p-values</h1>
+<ul class="meta">
+<li>28 min lecture</li>
+<li>14 min read</li>
+<li>3,183 words</li>
+</ul>
+<p class="how">From the lecture&#39;s captions. Hesitation sounds and doubled words were taken out by rule. Nothing is reworded.</p>
+
+</header>
+<nav class="toc" aria-label="Contents">
+<div class="tools needs-js"><div class="size" role="group" aria-label="Text size"><button type="button" id="smaller" aria-label="Smaller text">A−</button><button type="button" id="larger" aria-label="Larger text">A+</button></div><button type="button" id="theme">Dark</button><button type="button" id="print">Print</button></div>
+<span class="label">Contents</span>
+<ol>
+<li><a href="#s1"><span class="tt">From a sample to a claim</span><span class="tm">00:01</span></a></li>
+<li><a href="#s2"><span class="tt">Standard error</span><span class="tm">06:35</span></a></li>
+<li><a href="#s3"><span class="tt">Small samples: Student&#39;s t</span><span class="tm">14:00</span></a></li>
+<li><a href="#s4"><span class="tt">What a p-value is not</span><span class="tm">21:47</span></a></li>
+</ol>
+<p class="left needs-js" id="left" aria-live="off"></p>
+<ul class="more">
+<li><a href="stats-study-page.html">Study page: video, slides and transcript</a></li>
+<li><a href="stats-study-guide.html">Study guide</a></li>
+</ul>
+</nav>
+<main id="main">
+<section class="sec" id="s1">
+<div class="sec-head"><h2>From a sample to a claim</h2><span class="span">00:01–06:34</span></div>
+<div class="body">
+<div class="para" id="s1-p1"><a class="t" href="stats-study-page.html#t=1&amp;slide=1">00:01</a><p><b class="who">Lecturer:</b> Alright, let&#39;s make a start. Can everyone see the screen? Okay. One piece of housekeeping before we begin. Quiz two has moved. It is now on Wednesday, not Monday, same room, and you will want a calculator with a square root button, because, as you are about to find out, we take a lot of square roots in this half of the course.</p></div>
+<div class="para" id="s1-p2"><a class="t" href="stats-study-page.html#t=34&amp;slide=1">00:34</a><p><b class="who">Lecturer:</b> So. Up to now everything we have done has been description. You have a pile of numbers, you draw a histogram, you work out a mean and a standard deviation, and you describe what you have got. Today we cross a line. Today we start making claims about things we have not measured. That is what inference is.</p></div>
+<div class="para" id="s1-p3"><a class="t" href="stats-study-page.html#t=64&amp;slide=1">01:04</a><p><b class="who">Lecturer:</b> We measure a few, and we say something about all of them, and the whole lecture is really about one question: how wrong could we be?</p></div>
+<div class="slide" data-slide="2"><div class="row"><span class="sl-n">Slide 2</span><span class="sl-t">Population and sample</span></div></div>
+<div class="para" id="s1-p4"><a class="t" href="stats-study-page.html#t=80&amp;slide=2">01:20</a><p><b class="who">Lecturer:</b> Let me set up the example we are going to use for the whole hour. Suppose we want to know how long students at this university sleep on a weeknight. All of them. That group, everybody we care about, is the population, and the true average for that whole population gets a Greek letter, mu. Mu is called a parameter. It is a fixed number.</p></div>
+<div class="para" id="s1-p5"><a class="t" href="stats-study-page.html#t=111&amp;slide=2">01:51</a><p><b class="who">Lecturer:</b> It exists. We just do not know it, and we are never going to know it exactly, because we are not going to follow twenty thousand people home. What we do instead is take a sample. So say we survey sixty-four students, chosen at random, and we get a sample mean of six point eight hours, with a standard deviation of one point six hours. The sample mean gets the symbol x-bar, and x-bar is called a statistic. So, parameter for the population, statistic for the sample.</p></div>
+<div class="para" id="s1-p6"><a class="t" href="stats-study-page.html#t=156&amp;slide=2">02:36</a><p><b class="who">Lecturer:</b> P goes with P, S goes with S, if that helps you. Now here is the uncomfortable thing. If I had surveyed a different sixty-four students, I would not have got six point eight. I might have got six point six, or seven point one. The parameter does not move, but the statistic moves every time you take a new sample. So when I report six point eight, the honest question is, how much would that number have bounced around?</p></div>
+<div class="para" id="s1-p7"><a class="t" href="stats-study-page.html#t=197&amp;slide=2">03:17</a><p><b class="who">Student:</b> Does it matter how big the university is? Like, sixty-four out of twenty thousand seems tiny.</p></div>
+<div class="para" id="s1-p8"><a class="t" href="stats-study-page.html#t=207&amp;slide=2">03:27</a><p><b class="who">Lecturer:</b> Good question, and the answer surprises people. As long as the population is much bigger than the sample, the size of the population barely matters. What matters is the size of the sample. Sixty-four random students tell you about as much about a university of twenty thousand as about a country of twenty million. The word doing the heavy lifting there is random. A big sample that is not random is worse than a small one that is.</p></div>
+<div class="slide" data-slide="3"><div class="row"><span class="sl-n">Slide 3</span><span class="sl-t">The sampling distribution of the mean</span></div></div>
+<div class="para" id="s1-p9"><a class="t" href="stats-study-page.html#t=251&amp;slide=3">04:11</a><p><b class="who">Lecturer:</b> So let&#39;s do a thought experiment. Imagine we did not run the survey once, but thousands of times. Each time, a fresh sixty-four students, each time we write down the mean. Six point eight, six point six, seven point one, six point nine, and so on. And then we draw a histogram, not of students, but of those means. That histogram has a name.</p></div>
+<div class="para stress" id="s1-p10"><a class="t" href="stats-study-page.html#t=285&amp;slide=3">04:45</a><div class="flow">
+<p><b class="who">Lecturer:</b> <mark class="key">It is the sampling distribution of the mean, and it is the most important idea in this course.</mark> It is a distribution of a statistic, not of individual people. And we know three things about it, without ever having to run those thousands of surveys.</p>
+<ol class="said" start="1"><li>First, it is centred on mu, the true population mean. So the sample mean is not biased; on average it lands in the right place.</li></ol>
+</div></div>
+<div class="para lf" id="s1-p11"><a class="t" href="stats-study-page.html#t=321&amp;slide=3">05:21</a><div class="flow">
+<ol class="said" start="2"><li><b class="who">Lecturer:</b> Second, its spread is the population standard deviation divided by the square root of the sample size. Sigma over root n.</li><li>And third, and this is the central limit theorem, its shape is approximately normal, the bell curve, even if the population itself is not normal at all.</li></ol>
+<p>That third one is slightly magical. Sleep is not normally distributed. There is a long tail of people who sleep four hours, there are a few who sleep eleven. It is lopsided.</p>
+</div></div>
+<div class="para" id="s1-p12"><a class="t" href="stats-study-page.html#t=361&amp;slide=3">06:01</a><p><b class="who">Lecturer:</b> It does not matter. Once you average thirty or more of them, the averages pile up in a bell shape. The usual rule of thumb is a sample size of about thirty is enough, a bit more if the population is very skewed.</p></div>
+<div class="para" id="s1-p13"><a class="t" href="stats-study-page.html#t=386&amp;slide=3">06:26</a><p><b class="who">Lecturer:</b> Now, that spread, sigma over root n, is so useful that it has its own name.</p></div>
+</div>
+</section>
+<section class="sec" id="s2">
+<div class="sec-head"><h2>Standard error</h2><span class="span">06:35–13:56</span></div>
+<div class="body">
+<div class="para" id="s2-p1"><a class="t" href="stats-study-page.html#t=395&amp;slide=4">06:35</a><p><b class="who">Lecturer:</b> It is the standard error of the mean. And since we do not know sigma, the population standard deviation, we use the sample standard deviation, s, in its place. So the standard error is s over the square root of n. Let&#39;s do it for our survey. The standard deviation was one point six hours. The sample size was sixty-four, and the square root of sixty-four is eight. So one point six divided by eight is zero point two.</p></div>
+<div class="para" id="s2-p2"><a class="t" href="stats-study-page.html#t=436&amp;slide=4">07:16</a><p><b class="who">Lecturer:</b> The standard error is zero point two hours, which is twelve minutes. I want you to be very clear on the difference between those two numbers, because it is the single most common mistake on the exam. The standard deviation, one point six hours, tells you how much individual students differ from each other. The standard error, zero point two hours, tells you how much the sample mean would differ from survey to survey. Standard deviation is about people. Standard error is about the precision of your estimate.</p></div>
+<div class="para" id="s2-p3"><a class="t" href="stats-study-page.html#t=481&amp;slide=4">08:01</a><p><b class="who">Lecturer:</b> If you collect more data, the standard deviation does not shrink, students are as varied as they ever were. The standard error does shrink. And how fast does it shrink? Look at the formula. It is the square root of n on the bottom. So to halve the standard error, you need four times the data.</p></div>
+<div class="para" id="s2-p4"><a class="t" href="stats-study-page.html#t=511&amp;slide=4">08:31</a><p><b class="who">Lecturer:</b> If we went from sixty-four students to two hundred and fifty-six, the square root is sixteen, and one point six over sixteen is zero point one. Four times the work for twice the precision. That is the law of diminishing returns in statistics, and it is why studies do not just keep getting bigger.</p></div>
+<div class="para" id="s2-p5"><a class="t" href="stats-study-page.html#t=540&amp;slide=4">09:00</a><p><b class="who">Lecturer:</b> Okay. So now we can build the thing you will see in every paper you ever read, the confidence interval. The logic goes like this. The sampling distribution is normal. In a normal distribution, ninety-five percent of the values fall within one point nine six standard deviations of the centre. So ninety-five percent of the time, our sample mean will land within one point nine six standard errors of the true mean.</p></div>
+<div class="para" id="s2-p6"><a class="t" href="stats-study-page.html#t=575&amp;slide=4">09:35</a><p><b class="who">Lecturer:</b> And if x-bar is within that distance of mu, then mu is within that distance of x-bar. Same distance, just seen from the other end. So the recipe for a ninety-five percent confidence interval is, the sample mean, plus or minus one point nine six times the standard error. For us, one point nine six times zero point two is zero point three nine two, call it zero point three nine.</p></div>
+<div class="slide" data-slide="5"><div class="row"><span class="sl-n">Slide 5</span><span class="sl-t">The 95 % confidence interval</span></div></div>
+<div class="para" id="s2-p7"><a class="t" href="stats-study-page.html#t=612&amp;slide=5">10:12</a><p><b class="who">Lecturer:</b> So six point eight minus zero point three nine is six point four one, and six point eight plus zero point three nine is seven point one nine. Our ninety-five percent confidence interval for the mean sleep of all students is six point four one to seven point one nine hours. That plus or minus part, the zero point three nine, is called the margin of error.</p></div>
+<div class="para" id="s2-p8"><a class="t" href="stats-study-page.html#t=644&amp;slide=5">10:44</a><p><b class="who">Lecturer:</b> What if you want to be more confident? You can have a ninety-nine percent interval. The multiplier goes up from one point nine six to two point five seven six. Two point five seven six times zero point two is about zero point five two, so the interval becomes six point two eight to seven point three two. Notice what happened. More confidence, wider interval.</p></div>
+<div class="para" id="s2-p9"><a class="t" href="stats-study-page.html#t=676&amp;slide=5">11:16</a><p><b class="who">Lecturer:</b> You never get something for nothing. If you want an interval that is both confident and narrow, the only honest way is a bigger sample.</p></div>
+<div class="slide" data-slide="6"><div class="row"><span class="sl-n">Slide 6</span><span class="sl-t">What “95 % confident” means</span></div></div>
+<div class="para" id="s2-p10"><a class="t" href="stats-study-page.html#t=692&amp;slide=6">11:32</a><p><b class="who">Lecturer:</b> Now I have to be a little bit annoying, because there is a right way and a wrong way to say what ninety-five percent means, and nearly everyone says it the wrong way. The wrong way is, there is a ninety-five percent chance that the true mean is between six point four one and seven point one nine. It sounds perfectly reasonable. It is not what the method gives you.</p></div>
+<div class="para" id="s2-p11"><a class="t" href="stats-study-page.html#t=728&amp;slide=6">12:08</a><p><b class="who">Lecturer:</b> Here is why. Mu is a fixed number. It is not jumping around. It is either inside this particular interval or it is not. The thing that is random is the interval, because the interval came from a random sample. So the ninety-five percent describes the procedure.</p></div>
+<div class="para" id="s2-p12"><a class="t" href="stats-study-page.html#t=752&amp;slide=6">12:32</a><p><b class="who">Lecturer:</b> If we repeated the survey a hundred times and built a hundred intervals, about ninety-five of them would contain the true mean, and about five would miss it. That is the picture on the slide, a hundred horizontal bars, and a handful, drawn in red, that do not cross the vertical line. And the awkward part is, you never know whether yours is one of the red ones. You ran one survey, you have one interval. So the careful sentence is, we are ninety-five percent confident, meaning we used a method that works ninety-five percent of the time. I am not going to take marks off if you slip in conversation.</p></div>
+<div class="para" id="s2-p13"><a class="t" href="stats-study-page.html#t=808&amp;slide=6">13:28</a><p><b class="who">Lecturer:</b> I will take marks off if you write the wrong version in the exam.</p></div>
+<div class="para" id="s2-p14"><a class="t" href="stats-study-page.html#t=817&amp;slide=6">13:37</a><p><b class="who">Student:</b> So is it wrong to say there&#39;s a five percent chance we&#39;re wrong?</p></div>
+<div class="para" id="s2-p15"><a class="t" href="stats-study-page.html#t=824&amp;slide=6">13:44</a><p><b class="who">Lecturer:</b> It is closer. I would say, the method is wrong five percent of the time. That keeps the probability attached to the method, where it belongs.</p></div>
+</div>
+</section>
+<section class="sec" id="s3">
+<div class="sec-head"><h2>Small samples: Student&#39;s t</h2><span class="span">14:00–21:47</span></div>
+<div class="body">
+<div class="para" id="s3-p1"><a class="t" href="stats-study-page.html#t=840&amp;slide=7">14:00</a><p><b class="who">Lecturer:</b> Right, a complication. Everything so far quietly assumed we had a decent sized sample. Remember we swapped sigma, which we do not know, for s, which we estimated. With sixty-four people, s is a pretty good estimate. With a small sample it is not, it is itself quite wobbly, and if we ignore that, our intervals come out too narrow. We would be claiming more precision than we have.</p></div>
+<div class="para" id="s3-p2"><a class="t" href="stats-study-page.html#t=875&amp;slide=7">14:35</a><p><b class="who">Lecturer:</b> The fix was worked out by a man called William Gosset, who was a brewer at Guinness in Dublin, and who published under the name Student because the brewery did not want competitors to know they employed statisticians. So it is called Student&#39;s t distribution. It looks like the normal curve, but with fatter tails, and exactly how fat depends on the degrees of freedom, which for one sample is n minus one.</p></div>
+<div class="para" id="s3-p3"><a class="t" href="stats-study-page.html#t=911&amp;slide=7">15:11</a><p><b class="who">Lecturer:</b> Let&#39;s see what difference it makes. Suppose we had only surveyed sixteen students and happened to get the same mean and standard deviation. The standard error is now one point six over the square root of sixteen, so one point six over four, which is zero point four. Degrees of freedom, sixteen minus one, fifteen. And instead of one point nine six, the table gives us two point one three one. So the margin of error is two point one three one times zero point four, about zero point eight five.</p></div>
+<div class="para" id="s3-p4"><a class="t" href="stats-study-page.html#t=956&amp;slide=7">15:56</a><p><b class="who">Lecturer:</b> The interval runs from five point nine five to seven point six five. Much wider than before, partly because the sample is smaller, and partly because of that bigger multiplier. As the sample grows, t settles down towards the normal value. At thirty degrees of freedom the multiplier is two point zero four two. At a hundred it is one point nine eight four. So in practice, sorry, in practice people just use t all the time when sigma is unknown, which is always, and for large samples it makes no real difference.</p></div>
+<div class="para" id="s3-p5"><a class="t" href="stats-study-page.html#t=1007&amp;slide=7">16:47</a><p><b class="who">Lecturer:</b> Okay, second half of the story. So far we have estimated. Now we test. Suppose the university wellbeing leaflet says, our students get a healthy seven and a half hours of sleep a</p></div>
+<div class="slide" data-slide="8"><div class="row"><span class="sl-n">Slide 8</span><span class="sl-t">Hypothesis testing</span></div></div>
+<div class="para" id="s3-p6"><a class="t" href="stats-study-page.html#t=1023&amp;slide=8">17:03</a><p><b class="who">Lecturer:</b> Night. And you look at your six point eight and think. A hypothesis test is the formal version of.</p></div>
+<div class="para" id="s3-p7"><a class="t" href="stats-study-page.html#t=1034&amp;slide=8">17:14</a><div class="flow">
+<p><b class="who">Lecturer:</b> It goes in steps.</p>
+<ol class="said" start="1"><li>Step one, state the null hypothesis, the claim you are testing. Here, mu equals seven point five.</li><li>Step two, ask, if that were true, how surprising is my data? We measure surprise in standard errors. Our mean is six point eight, the claim is seven point five, the difference is minus zero point seven, and the standard error is zero point two.</li></ol>
+</div></div>
+<div class="para" id="s3-p8"><a class="t" href="stats-study-page.html#t=1068&amp;slide=8">17:48</a><p><b class="who">Lecturer:</b> Minus zero point seven divided by zero point two is minus three point five. Our sample mean is three and a half standard errors below what the leaflet says. That number is the test statistic, here a z score.</p></div>
+<div class="para lf" id="s3-p9"><a class="t" href="stats-study-page.html#t=1088&amp;slide=8">18:08</a><div class="flow">
+<ol class="said" start="3"><li><b class="who">Lecturer:</b> Step three, turn that into a probability. If the null were true, how often would a sample land three and a half standard errors away or further, in either direction? The answer is about zero point zero zero zero five. Five times in ten thousand. That probability is the p-value.</li><li>And step four, compare it with a threshold you chose in advance, called alpha, which by convention is zero point zero five.</li></ol>
+</div></div>
+<div class="para" id="s3-p10"><a class="t" href="stats-study-page.html#t=1123&amp;slide=8">18:43</a><p><b class="who">Lecturer:</b> Our p-value is far below that, so we reject the null hypothesis. The data are not compatible with seven and a half hours. Now try a different claim. Suppose the leaflet had said seven hours. Then the difference is six point eight minus seven, minus zero point two, divided by the standard error of zero point two, which is minus one. One standard error away.</p></div>
+<div class="para" id="s3-p11"><a class="t" href="stats-study-page.html#t=1157&amp;slide=8">19:17</a><p><b class="who">Lecturer:</b> The p-value for that is about zero point three two. That would happen about a third of the time just by the luck of the draw. So we do not reject. And notice the wording. We do not say we have proved that the mean is seven. We say we fail to reject.</p></div>
+<div class="para" id="s3-p12"><a class="t" href="stats-study-page.html#t=1185&amp;slide=8">19:45</a><p><b class="who">Lecturer:</b> Absence of evidence against is not evidence for. And here is something neat that ties the two halves together. Seven point five was outside our ninety-five percent confidence interval, and we rejected it. Seven was inside the interval, and we did not. That is not a coincidence. The ninety-five percent confidence interval is exactly the set of values that a test at the five percent level would not reject.</p></div>
+<div class="para" id="s3-p13"><a class="t" href="stats-study-page.html#t=1222&amp;slide=8">20:22</a><p><b class="who">Lecturer:</b> So the interval tells you everything the test does, and more, because it also tells you how big the effect might be. I want to spend five minutes on what a p-value is not, because it is the most misunderstood number in science. The definition, once more. The p-value is the probability of getting data at least as extreme as yours, if the null hypothesis is true. It starts from the assumption that the null is true.</p></div>
+<div class="para" id="s3-p14"><a class="t" href="stats-study-page.html#t=1267&amp;slide=8">21:07</a><p><b class="who">Lecturer:</b> So, misreading number one. The p-value is not the probability that the null hypothesis is true. A p-value of zero point zero three does not mean there is a three percent chance the leaflet is right. It is the probability of the data given the hypothesis, not the probability of the hypothesis given the data, and those are different things. The probability that you are in this lecture hall, given that you are a statistics student, is high. The probability that you are a statistics student,</p></div>
+</div>
+</section>
+<section class="sec" id="s4">
+<div class="sec-head"><h2>What a p-value is not</h2><span class="span">21:47–27:35</span></div>
+<div class="body">
+<div class="para" id="s4-p1"><a class="t" href="stats-study-page.html#t=1307&amp;slide=9">21:47</a><p><b class="who">Lecturer:</b> Given that you are in this lecture hall, well, some of you are here for the heating. Misreading number two. A small p-value does not mean a big or important effect. It is partly about the effect and partly about the sample size. Let me show you. Suppose we survey ten thousand students, and the mean comes out just zero point zero five hours below the claim.</p></div>
+<div class="para" id="s4-p2"><a class="t" href="stats-study-page.html#t=1340&amp;slide=9">22:20</a><p><b class="who">Lecturer:</b> Zero point zero five hours is three minutes. Nobody cares about three minutes of sleep. But the standard error with ten thousand people is one point six over a hundred, zero point zero one six. So the test statistic is zero point zero five over zero point zero one six, which is about three point one, and the p-value is about zero point zero zero two. Highly significant, and completely unimportant. So we separate statistical significance, which means unlikely to be chance, from practical significance, which means big enough to matter.</p></div>
+<div class="para" id="s4-p3"><a class="t" href="stats-study-page.html#t=1384&amp;slide=9">23:04</a><p><b class="who">Lecturer:</b> Always report the size of the effect and its confidence interval, not just the p-value. And misreading number three, a p-value above zero point zero five does not show there is no effect. It may just mean your sample was too small to see it.</p></div>
+<div class="slide" data-slide="10"><div class="row"><span class="sl-n">Slide 10</span><span class="sl-t">Two kinds of error, and many tests</span></div></div>
+<div class="para" id="s4-p4"><a class="t" href="stats-study-page.html#t=1410&amp;slide=10">23:30</a><p><b class="who">Lecturer:</b> Which brings us to the two ways a test can go wrong. A type one error is rejecting a null hypothesis that is actually true. A false alarm, a false positive. And the lovely thing is that you choose how often that happens. It is alpha. Set alpha at zero point zero five, and when the null is true you will raise a false alarm five percent of the time.</p></div>
+<div class="para stress" id="s4-p5"><a class="t" href="stats-study-page.html#t=1447&amp;slide=10">24:07</a><p><b class="who">Lecturer:</b> A type two error is the opposite, failing to reject a null that is false. A miss. Its probability is called beta, and one minus beta is the power of the test, the chance of detecting an effect that is really there. Studies usually aim for a power of eighty percent. <mark class="key">And the main thing you can do to get more power is, you have guessed it, a bigger sample.</mark></p></div>
+<div class="para" id="s4-p6"><a class="t" href="stats-study-page.html#t=1483&amp;slide=10">24:43</a><p><b class="who">Lecturer:</b> Now, one consequence of that five percent that catches out professionals. Suppose you do not run one test, you run twenty. Twenty different outcomes, sleep and grades, sleep and mood, sleep and coffee, and suppose in truth nothing is going on in any of them. Each test has a five percent chance of a false alarm. Twenty times zero point zero five is one. So you expect one significant result from pure noise.</p></div>
+<div class="para" id="s4-p7"><a class="t" href="stats-study-page.html#t=1520&amp;slide=10">25:20</a><p><b class="who">Lecturer:</b> And the chance of getting at least one is one minus zero point nine five to the power of twenty, which is about sixty-four percent. Nearly two in three. So if somebody tests twenty things and shows you the one that worked, you should not be impressed.</p></div>
+<div class="para" id="s4-p8"><a class="t" href="stats-study-page.html#t=1545&amp;slide=10">25:45</a><p><b class="who">Lecturer:</b> The simplest protection is called the Bonferroni correction. You divide alpha by the number of tests. Twenty tests, zero point zero five over twenty, so each one has to beat zero point zero zero two five instead. It is strict, some would say too strict, but it is honest, and it is the one I expect you to know.</p></div>
+<div class="slide" data-slide="11"><div class="row"><span class="sl-n">Slide 11</span><span class="sl-t">Summary</span></div></div>
+<div class="para" id="s4-p9"><a class="t" href="stats-study-page.html#t=1578&amp;slide=11">26:18</a><div class="flow">
+<p><b class="who">Lecturer:</b> Let me pull it together.</p>
+<ol class="said" start="1"><li>One, a statistic varies from sample to sample, and the sampling distribution describes how.</li><li>Two, its spread is the standard error, s over root n, and you need four times the data to halve it.</li><li>Three, a ninety-five percent confidence interval is the mean plus or minus about two standard errors, and the ninety-five percent describes the method, not this one interval.</li><li>Four, small samples use t instead of z.</li><li>Five, a p-value is the probability of data this extreme if the null is true, and nothing else.</li><li>And six, significant does not mean important, and twenty tests will hand you a false positive most of the time.</li></ol>
+</div></div>
+<div class="para" id="s4-p10"><a class="t" href="stats-study-page.html#t=1636&amp;slide=11">27:16</a><p><b class="who">Lecturer:</b> Next time we take all of this and compare two groups, students with morning lectures against students without, which is the two-sample t test. Read chapter nine before then. And remember, quiz on Wednesday, bring the calculator. Thanks, everyone.</p></div>
+</div>
+</section>
+<footer class="foot">Made on your computer by StreamSnag from this lecture's captions. It says what the captions say, mistakes included.</footer>
+</main>
+</div>
+<script type="application/json" id="read-data">{"id":"248e80a266e531b1","minutes":14,"sections":[]}</script>
+<script>(function () {
+  'use strict';
+  var root = document.documentElement;
+  root.classList.add('js');
+  var data = { id: '', minutes: 0, sections: [] };
+  try {
+    var parsed = JSON.parse(document.getElementById('read-data').textContent);
+    if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sections)) data = parsed;
+  } catch (e) { /* the page still works as a document */ }
+  var key = 'streamsnag-read:' + String(data.id || '');
+  var SIZES = 5;
+  var state = { theme: '', size: 2, plain: {}, at: '' };
+  try {
+    var saved = JSON.parse(localStorage.getItem(key) || 'null');
+    if (saved && typeof saved === 'object') {
+      if (saved.theme === 'dark' || saved.theme === 'light') state.theme = saved.theme;
+      if (typeof saved.size === 'number' && saved.size >= 0 && saved.size < SIZES) state.size = Math.floor(saved.size);
+      if (saved.plain && typeof saved.plain === 'object') Object.keys(saved.plain).forEach(function (id) { if (saved.plain[id] === true) state.plain[id] = true; });
+      if (typeof saved.at === 'string' && /^[a-z0-9-]{1,40}$/.test(saved.at)) state.at = saved.at;
+    }
+  } catch (e) { /* private window, or storage switched off */ }
+  function save() {
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) { /* not remembered, that is all */ }
+  }
+  function $(sel, el) { return (el || document).querySelector(sel); }
+  function $$(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
+  function make(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  // Theme: follows the computer unless the reader chose one.
+  var themeButton = $('#theme');
+  function isDark() {
+    if (state.theme) return state.theme === 'dark';
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function showTheme() {
+    if (state.theme) root.setAttribute('data-theme', state.theme); else root.removeAttribute('data-theme');
+    if (themeButton) themeButton.textContent = isDark() ? 'Light' : 'Dark';
+  }
+  if (themeButton) themeButton.addEventListener('click', function () { state.theme = isDark() ? 'light' : 'dark'; save(); showTheme(); });
+  showTheme();
+  // The computer switching to dark in the evening changes what the button offers.
+  var scheme = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  if (scheme && scheme.addEventListener) scheme.addEventListener('change', showTheme);
+
+  // Text size.
+  var smaller = $('#smaller');
+  var larger = $('#larger');
+  function showSize() {
+    root.setAttribute('data-size', String(state.size));
+    if (smaller) smaller.disabled = state.size <= 0;
+    if (larger) larger.disabled = state.size >= SIZES - 1;
+  }
+  function resize(by) {
+    var keep = current();
+    state.size = Math.max(0, Math.min(SIZES - 1, state.size + by));
+    save();
+    showSize();
+    if (keep) keep.scrollIntoView({ block: 'start' }); // the paragraph being read stays where it was
+  }
+  if (smaller) smaller.addEventListener('click', function () { resize(-1); });
+  if (larger) larger.addEventListener('click', function () { resize(1); });
+  showSize();
+  var printButton = $('#print');
+  if (printButton) printButton.addEventListener('click', function () { window.print(); });
+
+  // "Show as transcribed": a section's untidied text is in the page's data; it is put on the page as plain text.
+  // Only a link to the study page or the video next to this file is ever made.
+  function safeHref(h) {
+    return typeof h === 'string' && h.indexOf(':') < 0 && h.indexOf('/') < 0 && h.indexOf('\\') < 0 && /#t=\d{1,6}(&slide=\d{1,4})?$/.test(h);
+  }
+  var kept = {}; // the tidied paragraphs of a section while its transcribed text is shown
+  // How a transcribed paragraph is set out (a sentence the lecturer stresses, points counted off as a list): used
+  // only when its pieces, read in order, are the paragraph's own text word for word.
+  function layOf(p) {
+    if (!Array.isArray(p.lay) || !p.lay.length) return null;
+    var said = [];
+    var ok = p.lay.every(function (b) {
+      var groups = b && Array.isArray(b.li) ? b.li : b && Array.isArray(b.p) ? [b.p] : null;
+      return !!groups && groups.length > 0 && groups.every(function (runs) {
+        return Array.isArray(runs) && runs.length > 0 && runs.every(function (r) {
+          if (!Array.isArray(r) || typeof r[0] !== 'string') return false;
+          said.push(r[0]);
+          return true;
+        });
+      });
+    });
+    return ok && said.join(' ') === p.text ? p.lay : null;
+  }
+  function fill(el, runs) {
+    var stressed = false;
+    runs.forEach(function (r, i) {
+      if (i) el.appendChild(document.createTextNode(' '));
+      el.appendChild(r[1] ? make('mark', 'key', r[0]) : document.createTextNode(r[0]));
+      if (r[1]) stressed = true;
+    });
+    return stressed;
+  }
+  function plainNodes(sec) {
+    var out = [];
+    (Array.isArray(sec.paras) ? sec.paras : []).forEach(function (p, i) {
+      if (!p || typeof p.text !== 'string') return;
+      if (p.slide && typeof p.slide.n === 'number') {
+        var picture = document.querySelector('details.slide[data-slide="' + Math.floor(p.slide.n) + '"]');
+        var holder = kept[sec.id] ? kept[sec.id].filter(function (n) { return n.nodeType === 1 && n.getAttribute('data-slide') === String(Math.floor(p.slide.n)); })[0] : null;
+        var mark;
+        if (holder || picture) mark = (holder || picture).cloneNode(true);
+        else {
+          mark = make('div', 'slide');
+          var row = make('div', 'row');
+          row.appendChild(make('span', 'sl-n', 'Slide ' + Math.floor(p.slide.n)));
+          if (typeof p.slide.title === 'string' && p.slide.title) row.appendChild(make('span', 'sl-t', p.slide.title));
+          mark.appendChild(row);
+        }
+        out.push(mark);
+      }
+      var box = make('div', 'para');
+      box.id = sec.id + '-q' + (i + 1);
+      var ok = safeHref(p.href);
+      var t = make(ok ? 'a' : 'span', 't', typeof p.t === 'string' ? p.t : '');
+      if (ok) t.setAttribute('href', p.href);
+      box.appendChild(t);
+      var who = function (el) {
+        if (typeof p.who === 'string' && p.who) {
+          el.appendChild(make('b', 'who', p.who + ':'));
+          el.appendChild(document.createTextNode(' '));
+        }
+        return el;
+      };
+      var lay = layOf(p);
+      if (!lay) {
+        var text = who(make('p'));
+        text.appendChild(document.createTextNode(p.text));
+        box.appendChild(text);
+      } else if (lay.length === 1 && lay[0].p) {
+        var one = who(make('p'));
+        if (fill(one, lay[0].p)) box.className = 'para stress';
+        box.appendChild(one);
+      } else {
+        var flow = make('div', 'flow');
+        var stress = false;
+        lay.forEach(function (b, bi) {
+          if (!b.li) {
+            var para = bi === 0 ? who(make('p')) : make('p');
+            if (fill(para, b.p)) stress = true;
+            flow.appendChild(para);
+            return;
+          }
+          var ol = make('ol', 'said');
+          ol.setAttribute('start', String(Math.max(1, Math.floor(Number(b.ol)) || 1)));
+          b.li.forEach(function (runs, k) {
+            var li = bi === 0 && k === 0 ? who(make('li')) : make('li');
+            if (fill(li, runs)) stress = true;
+            ol.appendChild(li);
+          });
+          flow.appendChild(ol);
+        });
+        box.className = 'para' + (stress ? ' stress' : '') + (lay[0].li ? ' lf' : '');
+        box.appendChild(flow);
+      }
+      out.push(box);
+    });
+    return out;
+  }
+  var allButton = $('#all-plain');
+  function showAll() {
+    if (!allButton) return;
+    var every = data.sections.length > 0 && data.sections.every(function (s) { return state.plain[s.id]; });
+    allButton.textContent = every ? 'Show the tidied text' : 'Show all as transcribed';
+    allButton.setAttribute('aria-pressed', String(every));
+  }
+  function swap(sec, plain) {
+    var el = document.getElementById(sec.id);
+    var body = el && $('.body', el);
+    if (!body) return;
+    var showing = !!kept[sec.id];
+    if (plain !== showing) {
+      if (plain) {
+        kept[sec.id] = $$(':scope > *', body);
+        var nodes = plainNodes(sec);
+        while (body.firstChild) body.removeChild(body.firstChild);
+        nodes.forEach(function (n) { body.appendChild(n); });
+      } else {
+        while (body.firstChild) body.removeChild(body.firstChild);
+        kept[sec.id].forEach(function (n) { body.appendChild(n); });
+        delete kept[sec.id];
+      }
+    }
+    el.classList.toggle('plain', plain);
+    var h = $('h2', el);
+    if (h && typeof sec.heading === 'string' && typeof sec.tidyHeading === 'string') h.textContent = plain ? sec.heading : sec.tidyHeading;
+    var b = $('.swap', el);
+    if (b) {
+      b.textContent = plain ? 'Show tidied' : 'Show as transcribed';
+      b.setAttribute('aria-pressed', String(plain));
+    }
+  }
+  function choose(sec, plain) {
+    if (plain) state.plain[sec.id] = true; else delete state.plain[sec.id];
+    swap(sec, plain);
+  }
+  data.sections.forEach(function (sec) {
+    if (!sec || typeof sec.id !== 'string' || !/^s\d{1,4}$/.test(sec.id)) return;
+    var el = document.getElementById(sec.id);
+    var b = el && $('.swap', el);
+    if (b) b.addEventListener('click', function () { choose(sec, !state.plain[sec.id]); save(); showAll(); measure(); });
+    if (state.plain[sec.id]) swap(sec, true);
+  });
+  if (allButton) allButton.addEventListener('click', function () {
+    var every = data.sections.every(function (s) { return state.plain[s.id]; });
+    var keep = current();
+    var id = keep ? keep.id.split('-')[0] : '';
+    data.sections.forEach(function (sec) { choose(sec, !every); });
+    save();
+    showAll();
+    var back = id && document.getElementById(id);
+    if (back) back.scrollIntoView({ block: 'start' });
+    measure();
+  });
+  showAll();
+
+  // Where the reader is: the bar at the top, the time left, and the place to come back to.
+  var bar = $('#progress');
+  var left = $('#left');
+  function current() {
+    var list = $$('.para');
+    for (var i = 0; i < list.length; i++) if (list[i].getBoundingClientRect().bottom > 90) return list[i];
+    return null;
+  }
+  var lastSaved = '';
+  function measure() {
+    var room = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    var done = Math.max(0, Math.min(1, window.scrollY / room));
+    if (bar) bar.style.transform = 'scaleX(' + done.toFixed(4) + ')';
+    if (left) {
+      var mins = Math.round((Number(data.minutes) || 0) * (1 - done));
+      left.textContent = done >= 0.995 ? 'You have reached the end.' : mins < 1 ? 'Less than a minute left' : 'About ' + mins + ' min left';
+    }
+    var at = current();
+    if (at && at.id && at.id !== lastSaved) {
+      lastSaved = at.id;
+      state.at = window.scrollY < 40 ? '' : at.id;
+      save();
+    }
+  }
+  var waiting = false;
+  function onScroll() {
+    if (waiting) return;
+    waiting = true;
+    (window.requestAnimationFrame || window.setTimeout)(function () { waiting = false; measure(); });
+  }
+  // Back where the reader stopped (unless the address names a place itself).
+  if (!location.hash && state.at) {
+    var there = document.getElementById(state.at) || document.getElementById(state.at.split('-')[0]);
+    if (there) {
+      root.style.scrollBehavior = 'auto';
+      there.scrollIntoView({ block: 'start' });
+      root.style.scrollBehavior = '';
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  measure();
+
+  // Contents: show which part is being read.
+  var links = $$('.toc ol a');
+  if ('IntersectionObserver' in window && links.length) {
+    var byId = {};
+    links.forEach(function (a) { byId[(a.getAttribute('href') || '').slice(1)] = a; });
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = byId[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '-8% 0px -80% 0px' });
+    Object.keys(byId).forEach(function (id) { var t = document.getElementById(id); if (t) seen.observe(t); });
+  }
+})();
+;(function readerScript() {
+  var bar = document.querySelector('.rd-bar');
+  if (!bar) return;
+  var IDS = ['watch', 'read', 'guide', 'quiz', 'cards'];
+  var FILES = { watch: ['study', '#t=0', 'Watch'], read: ['read', '#top', 'Read'], guide: ['guide', '', 'Guide'], quiz: ['guide', '#quiz', 'Quiz'], cards: ['guide', '#cards', 'Cards'] };
+  var q;
+  try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  var modes = bar.querySelector('.rd-modes');
+  var current = bar.getAttribute('data-current');
+  var file = bar.getAttribute('data-file') || '';
+  var find = function (id) { return modes.querySelector('[data-mode="' + id + '"]'); };
+  (q.get('has') || '').split(',').forEach(function (id) {
+    // This page's own sections are known to it; the rest is what the desk says is there now.
+    if (IDS.indexOf(id) < 0 || !file || find(id) || !FILES[current] || FILES[id][0] === FILES[current][0]) return;
+    var a = document.createElement('a');
+    a.setAttribute('data-mode', id);
+    a.setAttribute('href', file + '.' + FILES[id][0] + '.html' + FILES[id][1]);
+    a.textContent = FILES[id][2];
+    var next = null;
+    for (var i = IDS.indexOf(id) + 1; i < IDS.length && !next; i++) next = find(IDS[i]);
+    modes.insertBefore(a, next);
+  });
+
+  // "Quiz" asked for from outside (the desk, a page made before this guide): the questions begin at the self-test when there is one.
+  if (current === 'guide' && location.hash === '#quiz' && document.getElementById('self-test')) location.replace('#self-test');
+  function mark() {
+    if (current !== 'guide') return;
+    var id = location.hash.slice(1);
+    var on = id === 'cards' ? 'cards' : id === 'quiz' || id === 'self-test' ? 'quiz' : 'guide';
+    if (!find(on)) on = 'guide';
+    IDS.forEach(function (m) {
+      var el = find(m);
+      if (!el) return;
+      if (m === on) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+    });
+  }
+  mark();
+  addEventListener('hashchange', mark);
+
+  if (q.get('desk') !== '1') return;
+  var back = bar.querySelector('.rd-back');
+  var hint = bar.querySelector('.rd-hint');
+  back.hidden = false;
+  back.addEventListener('click', function () {
+    window.close();
+    // Still here: the browser only lets a page close a tab that has shown nothing else.
+    setTimeout(function () {
+      hint.textContent = 'Close this tab to go back to your desk.';
+      hint.hidden = false;
+    }, 350);
+  });
+  var folder = function (p) { return p.slice(0, p.lastIndexOf('/') + 1); };
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var raw = a.getAttribute('href') || '';
+    if (!raw) return;
+    if (raw.charAt(0) === '#') {
+      // A place on this page.
+      if (raw.length > 1) {
+        e.preventDefault();
+        location.replace(raw);
+      }
+      return;
+    }
+    var to;
+    try { to = new URL(raw, location.href); } catch (err) { return; }
+    // Only this lecture's own pages, in this folder.
+    if (to.protocol !== location.protocol || folder(to.pathname) !== folder(location.pathname) || !/\.(study|read|guide)(%20\(\d+\))?\.html$/i.test(to.pathname)) return;
+    to.search = location.search;
+    e.preventDefault();
+    // A mode takes this page's place (the tab can still be closed to go back); a minute in the lecture is a step you can come back from.
+    if (a.hasAttribute('data-mode')) location.replace(to.href);
+    else location.assign(to.href);
+  });
+})();</script>
+</body>
+</html>

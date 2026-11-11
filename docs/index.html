@@ -3,528 +3,1267 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This page loads nothing from other hosts: no CDN, web fonts, analytics or scripts. The policy below enforces it. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
-<title>StreamSnag: a free video download helper that understands courses</title>
-<meta name="description" content="StreamSnag is a free, open-source video download helper for Chrome, Edge and Brave. It finds the lecture you're watching, knows which ones you already have, and saves whole courses with subtitles, slides and transcripts. No accounts, no tracking.">
+<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch) and, on the home page, demo.js (the demonstration at the top). Neither sends anything anywhere. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Save online lectures and study from them | StreamSnag</title>
+<meta name="description" content="A browser extension for Chrome, Edge and Brave. Save lecture videos free with no limits, then read, transcribe and study them on your own computer with Pro.">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#151515" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="no-referrer">
+<link rel="canonical" href="https://streamsnag.app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="StreamSnag">
-<meta property="og:title" content="StreamSnag: a video download helper that understands courses">
-<meta property="og:description" content="Free and open source for Chrome, Edge and Brave. Finds the lecture you're watching, knows which ones you already have, and saves the whole course. No accounts, no tracking.">
-<meta property="og:url" content="https://cspergel.github.io/streamsnag/">
-<meta property="og:image" content="https://cspergel.github.io/streamsnag/popup.png">
-<meta property="og:image:width" content="800">
-<meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="The StreamSnag popup listing the videos on a course page, each marked downloaded or not downloaded">
-<meta name="twitter:card" content="summary">
+<meta property="og:title" content="Save online lectures and study from them">
+<meta property="og:description" content="A browser extension for Chrome, Edge and Brave. Save lecture videos free with no limits, then read, transcribe and study them on your own computer with Pro.">
+<meta property="og:url" content="https://streamsnag.app/">
+<meta property="og:image" content="https://streamsnag.app/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Save online lectures and study from them">
+<meta name="twitter:description" content="A browser extension for Chrome, Edge and Brave. Save lecture videos free with no limits, then read, transcribe and study them on your own computer with Pro.">
+<meta name="twitter:image" content="https://streamsnag.app/img/og.png">
+<meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="stylesheet" href="site.css">
+<script src="site.js"></script>
+<script src="demo.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://streamsnag.app/#organization","name":"Spergel Health AI LLC","url":"https://streamsnag.app/","email":"support@streamsnag.app","logo":"https://streamsnag.app/icon.png","address":{"@type":"PostalAddress","addressRegion":"FL","addressCountry":"US"}},{"@type":"WebSite","@id":"https://streamsnag.app/#website","url":"https://streamsnag.app/","name":"StreamSnag","description":"A browser extension for Chrome, Edge and Brave. Save lecture videos free with no limits, then read, transcribe and study them on your own computer with Pro.","inLanguage":"en","publisher":{"@id":"https://streamsnag.app/#organization"}},{"@type":"SoftwareApplication","@id":"https://streamsnag.app/#app","name":"StreamSnag","url":"https://streamsnag.app/","description":"A browser extension that saves online lectures and turns them into a document to read, a study page with the slides, a study guide, a practice quiz and flashcards. It runs on your own computer.","applicationCategory":"BrowserApplication","applicationSubCategory":"Browser extension for Chrome, Edge and Brave","operatingSystem":"Windows, macOS, Linux","browserRequirements":"Requires Chrome, Edge or Brave on a computer","publisher":{"@id":"https://streamsnag.app/#organization"},"offers":[{"@type":"Offer","name":"Free downloader","price":"0","priceCurrency":"USD","description":"The downloader, open source. No limits, no ads, no nagging."},{"@type":"Offer","name":"Pro, yearly","price":"39.97","priceCurrency":"USD","description":"Save a third against paying monthly. AI use is never part of StreamSnag's price. With a Claude or ChatGPT subscription you already have there is no extra charge: each run counts toward your plan's limits. With a pay-as-you-go key it is a few cents to about US$1.50 a lecture, depending on the provider."},{"@type":"Offer","name":"Pro, monthly","price":"4.99","priceCurrency":"USD","description":"Cancel at any time. AI use is never part of StreamSnag's price. With a Claude or ChatGPT subscription you already have there is no extra charge: each run counts toward your plan's limits. With a pay-as-you-go key it is a few cents to about US$1.50 a lecture, depending on the provider."},{"@type":"Offer","name":"Pro, once for life","price":"99.00","priceCurrency":"USD","description":"Yours for life. AI use is never part of StreamSnag's price. With a Claude or ChatGPT subscription you already have there is no extra charge: each run counts toward your plan's limits. With a pay-as-you-go key it is a few cents to about US$1.50 a lecture, depending on the provider."}]},{"@type":"FAQPage","@id":"https://streamsnag.app/#faq","mainEntity":[{"@type":"Question","name":"Is it safe, and is it private?","acceptedAnswer":{"@type":"Answer","text":"StreamSnag runs on your computer. There is no account, no analytics and no ads, and we run no servers that could receive your lectures, transcripts or study material. The free core is open source, so the code can be read. It needs access to the pages you visit because a lecture can be on any site, and seeing which video files a page loads is how it finds them. The privacy page says exactly what stays and what leaves, and there is a guide to studying from lectures without uploading them."}},{"@type":"Question","name":"What leaves my computer?","acceptedAnswer":{"@type":"Answer","text":"Two things, and only when you start them: The text you choose to send to your AI provider: a lecture's transcript and the text on its slides, with the speaker notes when the slides are a PowerPoint file. Slide pictures and the video are never sent. The smaller AI helpers in the popup (Ask your AI to find it, Summarize, Ask AI why) each show what they would send before they send it. Your Pro key, when it is checked with our payment provider. Downloads come straight from the site you are on to your own folders."}},{"@type":"Question","name":"Which AI accounts work?","acceptedAnswer":{"@type":"Answer","text":"A Claude or ChatGPT subscription you already have, or a key for Anthropic, OpenAI, Gemini, DeepSeek or OpenRouter. You choose one in Settings, and AI stays off until you do. None of them is included in the StreamSnag price. On a subscription you already have there is nothing extra to pay; with a key you pay that provider, never us. What AI use costs."}},{"@type":"Question","name":"What if my AI allowance runs out?","acceptedAnswer":{"@type":"Answer","text":"The run stops and StreamSnag tells you why. Nothing is charged by us, and what you had already saved or made stays where it is. You can run it again later, or choose another AI account in Settings. Free allowances are the usual cause: they can do part of a study pack and run out part-way. The estimate before each run shows how much AI use it will take."}},{"@type":"Question","name":"Which sites does it work on?","acceptedAnswer":{"@type":"Answer","text":"Pages that play ordinary video files or HLS and DASH streams, including players built into a course page. Press play first, because many players only load the video once it starts. When a page shows nothing, the popup offers Scan again and then Ask your AI to find it, which uses your own AI account and shows what would be sent first. It does not work where the video is DRM-protected, and it does not try to. It runs in Chrome, Edge and Brave on a computer, not in Firefox and not on phones. The quickest way to find out about your course site is to try it, which is free."}},{"@type":"Question","name":"Can I trust what the AI writes?","acceptedAnswer":{"@type":"Answer","text":"Treat it like a careful classmate's notes. A study pack is written from facts found in the lecture, a checking pass removes what the lecture does not support, and every part points to its minute and slide. Where the guide adds an explanation from outside the lecture, it sits in a box labelled “Beyond the lecture”, and you can switch those boxes off. It can still be wrong, so check anything that matters against the lecture itself."}},{"@type":"Question","name":"Am I allowed to save my lectures, or put them into an AI tool?","acceptedAnswer":{"@type":"Answer","text":"That depends on your course. Many let you keep recordings for your own study and some do not, and some universities restrict putting lecture material into AI tools. Your school's rules, the site's terms and copyright law still apply, and the choice is yours."}},{"@type":"Question","name":"What does Pro cost, and what does the AI cost?","acceptedAnswer":{"@type":"Answer","text":"Pro is US$39.97 a year, US$4.99 a month, or US$99 once for life. The yearly plan saves a third against paying monthly. One key works on the computers you use and in both editions of StreamSnag. The first lecture is free from start to finish, with no card. The study tools that use AI run on your own AI account. With a Claude or ChatGPT subscription you already have there is no extra charge: each run counts toward your plan's limits. With a pay-as-you-go key it was between a few cents and about US$1.50 a lecture on our own runs, depending on the provider. Either way it is between you and your AI provider, and never paid to StreamSnag. Transcription and the reading edition's layout need no AI at all."}},{"@type":"Question","name":"Is there a limit on minutes or on the number of lectures?","acceptedAnswer":{"@type":"Answer","text":"Not from us. Downloading has no limits, and transcription runs on your own computer, so there are no minutes to count. The study tools that use AI run on your own AI account, and that provider may have its own limits and charges."}},{"@type":"Question","name":"How do refunds and cancelling work?","acceptedAnswer":{"@type":"Answer","text":"You can have a full refund within 7 days of buying, no reason needed, by replying to your receipt. That holds for the yearly plan, the monthly plan and the lifetime key. The key stops working when the refund is made. After 7 days a yearly or monthly plan can still be cancelled at any time and runs to the end of the year or month already paid for. A lifetime key has nothing to cancel. What you made stays yours and stays readable. If you subscribe and later want the lifetime key, what you paid for Pro in the last 12 months counts toward it, up to the price of one year (US$39.97). Write to support@streamsnag.app. We send a code for the difference and cancel the subscription. It is done by hand, on request."}}]}]}</script>
 </head>
 <body id="top">
 
 <svg class="sprite" aria-hidden="true" focusable="false">
-  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-mark" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
-  <symbol id="i-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol>
+  <symbol id="i-none" viewBox="0 0 24 24"><path d="M7 12h10"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m0 0l-5-5m5 5l-5 5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
-  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.5h4l2 2.5h8a1.5 1.5 0 011.5 1.5V17a1.5 1.5 0 01-1.5 1.5H5A1.5 1.5 0 013.5 17z"/></symbol>
-  <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V19a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 016 19V4.5a1 1 0 011-1z"/><path d="M14 3.5V8h4"/></symbol>
-  <symbol id="i-stream" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/></symbol>
-  <symbol id="i-embed" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 9h17M10 12.25l-2 2 2 2M14 12.25l2 2-2 2"/></symbol>
-  <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M10.6 10.5a2.1 2.1 0 100 3M16.6 10.5a2.1 2.1 0 100 3"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V19a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 016 19V4.5a1 1 0 011-1z"/><path d="M14 3.5V8h4M9 12.5h6M9 16h4"/></symbol>
-  <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 6.5h11M4 12h8M4 17.5h6"/><path d="M15.5 13.5v6l5-3z"/></symbol>
-  <symbol id="i-tray" viewBox="0 0 24 24"><path d="M12 4v9m0 0l-3.5-3.5M12 13l3.5-3.5"/><path d="M4.5 15.5v2A2.5 2.5 0 007 20h10a2.5 2.5 0 002.5-2.5v-2"/></symbol>
-  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 11-2.2-5.3"/><path d="M19.5 4.5v4.2h-4.2"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 7.5V12l3 2"/></symbol>
-  <symbol id="i-note" viewBox="0 0 24 24"><path d="M9 17.5V6.5l10-2v11"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/></symbol>
-  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M14.5 5v14"/></symbol>
-  <symbol id="i-theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 3.75a8.25 8.25 0 010 16.5z" fill="currentColor"/></symbol>
-  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5l7 2.5v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z"/><path d="M9 12l2.2 2.2L15 10.4"/></symbol>
-  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.6 3.5 5.4 3.5 8.5s-1.100 5.900-3.500 8.500c-2.400-2.600-3.500-5.400-3.500-8.500s1.100-5.900 3.500-8.500z"/></symbol>
-  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.500 8.500h13l-1 11h-11z"/><path d="M9 8.500V7a3 3 0 016 0v1.500"/></symbol>
-  <symbol id="i-dots" viewBox="0 0 24 24"><path d="M12 6v.01M12 12v.01M12 18v.01"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.500h7l4 4V19a1.500 1.500 0 01-1.500 1.500h-9A1.500 1.500 0 016 19V4.500a1 1 0 011-1z"/><path d="M14 3.500V8h4M9 12.500h6M9 16h4"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.500h14M5 11h14M5 15.500h9"/></symbol>
+  <!-- The sample lecture's graphs: stroke volume against end-diastolic volume, and the wall of a ventricle. -->
+  <symbol id="g-starling" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 44 108 28 190 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-inotropy" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 62 108 50 190 47" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><path d="M26 102C50 30 100 16 190 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-laplace" viewBox="0 0 200 120"><circle cx="100" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="9" opacity=".85"/><path d="M100 60h37" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M100 60l-22-22M100 60l-22 22M100 60l-31 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 5" opacity=".6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h9m4 0h3M4 16h3m4 0h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
 </svg>
 
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="site-head">
   <div class="wrap head-row">
-    <a class="brand" href="#top">
-      <img src="icon.png" width="32" height="32" alt="">
+    <a class="brand" href="./">
+      <svg class="mark" aria-hidden="true"><use href="#i-mark"/></svg>
       <span>StreamSnag</span>
     </a>
-    <nav class="site-nav" aria-label="On this page">
-      <a href="#what">What it does</a>
-      <a href="#install">Install</a>
-      <a href="#safe">Is it safe?</a>
-      <a href="#faq">FAQ</a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="#read">Read</a>
+      <a href="#evening">How it works</a>
+      <a href="#gallery">Samples</a>
+      <a href="#downloader">Downloader</a>
+      <a href="#pricing">Pricing</a>
+      <a href="guides/">Guides</a>
+      <a href="#faq">Questions</a>
     </nav>
-    <a class="btn btn-sm btn-secondary" href="https://github.com/cspergel/streamsnag" rel="noopener">
-      <svg class="ic ic-fill" aria-hidden="true"><use href="#i-github"/></svg>
-      GitHub
-    </a>
+    <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch between the light and dark theme">
+      <svg class="ic i-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+      <svg class="ic i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+    </button>
+    <!-- PLACEHOLDER (install link): every link with data-install points at #install until the store listing or download exists. Replace the href of all [data-install] links with the real install address. -->
+    <a class="btn btn-quiet btn-sm" href="#install" data-install>Get StreamSnag</a>
   </div>
 </header>
 
 <main id="main">
+<p class="prelaunch" role="note"><b>Launching soon.</b> This site describes StreamSnag 1.6, which is not released yet. Pro is not on sale yet. Questions: <a href="mailto:support@streamsnag.app">support@streamsnag.app</a>.</p>
 
-  <!-- Hero -->
   <section class="hero" aria-labelledby="hero-title">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="kicker rise">Free, open source. Chrome, Edge, Brave.</p>
-        <h1 id="hero-title" class="rise rise-2">The video download helper that understands <em>courses</em>.</h1>
-        <p class="lede rise rise-3">StreamSnag finds the lecture you're watching, knows which ones you already have, and saves the rest with their subtitles, slides and transcripts.</p>
-        <div class="btn-row rise rise-4">
-          <a class="btn btn-primary" href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">
-            <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
-            Get StreamSnag
-          </a>
-          <a class="btn btn-secondary" href="https://github.com/cspergel/streamsnag" rel="noopener">
-            <svg class="ic ic-fill" aria-hidden="true"><use href="#i-github"/></svg>
-            View on GitHub
-          </a>
+    <div class="wrap">
+      <h1 id="hero-title"><span class="h1-pre">Save your online lectures</span> and actually study from them.</h1>
+
+      <div class="hero-sub">
+        <p class="lede">StreamSnag is a browser extension for Chrome, Edge and Brave. It saves the lecture you are watching, free. Pro then turns it into a document you can read, a study guide, a practice quiz and flashcards, each tagged with the minute it came from.</p>
+        <div class="hero-act">
+          <div class="btn-row">
+            <!-- PLACEHOLDER (install link): replace href="#install" on every [data-install] link with the real install address. -->
+            <a class="btn btn-primary" href="#install" data-install>
+              <svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>
+              Get StreamSnag, free
+            </a>
+            <a class="btn btn-quiet" href="#gallery">
+              See what it makes
+              <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+          </div>
+          <p class="hero-facts">Saving is free, with no limits and no ads. Pro is US$39.97 a year, US$4.99 a month, or US$99 once for life, and your first lecture is free from start to finish, with no card. <b>The study tools that use AI run on your own AI account, never on ours: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key.</b> Transcription and the reading edition need no AI at all.</p>
         </div>
-        <ul class="hero-facts rise rise-5">
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No download limits</li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No account</li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No ads</li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No tracking</li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>MIT license</li>
-        </ul>
-        <p class="fineprint rise rise-5">For videos you have the right to keep. StreamSnag refuses DRM-protected and encrypted streams. It installs from GitHub in <a href="#install">three steps</a>.</p>
       </div>
 
-      <figure class="stage rise rise-3">
-        <div class="stage-art">
-          <div class="browser" aria-hidden="true">
-            <div class="browser-bar">
-              <span class="address">Lecture 9 of 24</span>
-              <span class="tool tool-on"><img src="icon.png" width="18" height="18" alt=""></span>
-              <span class="tool"><svg class="ic"><use href="#i-dots"/></svg></span>
+      <figure class="scene-fig">
+        <div class="scene" data-state="0">
+
+          <!-- ============ Download, transcribe, read: three clicks ============ -->
+          <div class="half half-save">
+            <div class="half-head">
+              <ol class="steps3" aria-label="The three steps of the demo">
+                <li><button type="button" data-step="1" aria-current="step"><span class="half-n" aria-hidden="true">1</span><b>Download</b><span class="tag tag-free">Free, no limits</span></button></li>
+                <li><button type="button" data-step="2"><span class="half-n" aria-hidden="true">2</span><b>Transcribe</b><span class="tag tag-pro">Pro</span></button></li>
+                <li><button type="button" data-step="3"><span class="half-n" aria-hidden="true">3</span><b>Read</b><span class="tag tag-pro">Pro</span></button></li>
+              </ol>
+              <p class="clicks"><b>3 clicks</b> from a lecture page to a document you can read.<span class="tag tag-plain">No AI account</span></p>
             </div>
-            <div class="browser-page">
-              <div class="player"></div>
-              <div class="sk-list">
-                <span class="sk-head"></span>
-                <span class="sk-row done"><span class="w1"></span></span>
-                <span class="sk-row done"><span class="w2"></span></span>
-                <span class="sk-row done"><span class="w3"></span></span>
-                <span class="sk-row now"><span class="w4"></span></span>
-                <span class="sk-row"><span class="w2"></span></span>
-                <span class="sk-row"><span class="w1"></span></span>
-                <span class="sk-row"><span class="w4"></span></span>
-                <span class="sk-row"><span class="w3"></span></span>
-                <span class="sk-row"><span class="w2"></span></span>
-                <span class="sk-row"><span class="w1"></span></span>
-                <span class="sk-row"><span class="w3"></span></span>
-                <span class="sk-row"><span class="w4"></span></span>
+
+            <!-- A drawn browser window on an invented course site. The popup inside it is a working copy of the StreamSnag popup, in HTML. -->
+            <div class="browser">
+              <div class="br-bar">
+                <span class="br-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <div class="br-tabs" role="radiogroup" aria-label="Which page the demo browser is on">
+                  <label class="br-tab"><input type="radio" name="pg" id="pg-lecture" checked><span>Lecture 6</span></label>
+                  <label class="br-tab"><input type="radio" name="pg" id="pg-course"><span>Course page</span></label>
+                </div>
+                <span class="br-url" aria-hidden="true"><span class="url-lecture">course.example/phys201/lecture-6</span><span class="url-course">course.example/phys201/unit-2</span></span>
+                <span class="br-ext" aria-hidden="true"><svg class="mark mark-sm"><use href="#i-mark"/></svg></span>
+              </div>
+
+              <div class="br-body">
+
+                <!-- The lecture page -->
+                <div class="lecture">
+                  <p class="lecture-title"><span>PHYS201 · Lecture 6</span><span>Cardiac output and what sets it</span></p>
+                  <div class="frame">
+                    <div class="slide slide-a" aria-hidden="true">
+                      <p class="slide-n">Slide 4</p>
+                      <p class="slide-h">Preload and the Frank-Starling law</p>
+                      <p class="slide-p">A larger EDV gives a larger stroke volume.</p>
+                      <svg class="slide-g"><use href="#g-starling"/></svg>
+                      <span class="axis axis-y">Stroke volume</span>
+                      <span class="axis axis-x">End-diastolic volume</span>
+                    </div>
+                    <div class="slide slide-b" aria-hidden="true">
+                      <p class="slide-n">Slide 6</p>
+                      <p class="slide-h">Afterload</p>
+                      <p class="slide-p">The load the ventricle must overcome to eject.</p>
+                      <p class="slide-f">Wall stress = P × r ÷ 2h</p>
+                      <svg class="slide-g slide-g-ring"><use href="#g-laplace"/></svg>
+                    </div>
+                    <div class="slide slide-c" aria-hidden="true">
+                      <p class="slide-n">Slide 7</p>
+                      <p class="slide-h">Contractility (inotropy)</p>
+                      <p class="slide-p">More calcium, a higher curve.</p>
+                      <svg class="slide-g"><use href="#g-inotropy"/></svg>
+                      <span class="axis axis-y">Stroke volume</span>
+                      <span class="axis axis-x">End-diastolic volume</span>
+                    </div>
+                  </div>
+
+                  <div class="transport">
+                    <span class="tp-play" aria-hidden="true"><svg class="ic ic-fill"><use href="#i-play"/></svg></span>
+                    <div class="track" role="radiogroup" aria-label="Jump to a minute of the sample lecture">
+                      <span class="rail" aria-hidden="true"><span class="rail-fill"></span></span>
+                      <span class="head" aria-hidden="true"></span>
+                      <label class="tick tick-a">
+                        <input type="radio" name="minute" id="at-a" checked aria-label="07:53, slide 4: the key idea in the study guide">
+                        <span class="cite">07:53</span>
+                      </label>
+                      <label class="tick tick-b">
+                        <input type="radio" name="minute" id="at-b" aria-label="14:04, slide 6: the practice quiz question">
+                        <span class="cite">14:04</span>
+                      </label>
+                      <label class="tick tick-c">
+                        <input type="radio" name="minute" id="at-c" aria-label="20:20, slide 7: the flashcard">
+                        <span class="cite">20:20</span>
+                      </label>
+                    </div>
+                  </div>
+                  <p class="pg-files" aria-hidden="true"><span>Lesson files</span><span><svg class="ic"><use href="#i-doc"/></svg>Slides</span><span><svg class="ic"><use href="#i-doc"/></svg>Handout</span></p>
+                </div>
+
+                <!-- The course page -->
+                <div class="course" role="img" aria-label="Drawing of a course page, PHYS201 unit 2, with eight videos on it: lectures 4 to 9, lecture 6 posted a second time, and a one-minute trailer.">
+                  <p class="lecture-title"><span>PHYS201 · Unit 2</span><span>The heart and circulation</span></p>
+                  <ul class="course-list">
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>4 · The cardiac cycle</b><i>31 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>5 · Heart sounds and murmurs</b><i>24 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>6 · Cardiac output and what sets it</b><i>27 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>6 · Cardiac output and what sets it</b><i>27 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>7 · Blood pressure and its control</b><i>29 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>8 · Exercise and the circulation</b><i>33 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>9 · The microcirculation</b><i>26 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>Trailer: PHYS201</b><i>1 min</i></li>
+                  </ul>
+                </div>
+
+                <!-- The popup: a working copy -->
+                <div class="xpop" role="group" aria-label="The StreamSnag popup, a working demo">
+                  <p class="xp-head"><svg class="mark mark-sm" aria-hidden="true"><use href="#i-mark"/></svg><b>StreamSnag</b><span class="xp-site">course.example</span></p>
+
+                  <!-- On the lecture page -->
+                  <div class="xp-view xp-lecture">
+                    <div class="xp-hero">
+                      <p class="xp-eyebrow"><span class="live-dot" aria-hidden="true"></span>On this page</p>
+                      <p class="xp-title">Cardiac output and what sets it</p>
+                      <p class="xp-sub">Video · 27 min · 129 MB</p>
+                      <div class="xp-action">
+                        <button type="button" class="xp-btn" data-act="download" data-show="0"><span class="live-dot" aria-hidden="true"></span>Download · 129 MB</button>
+                        <p class="xp-busy" data-show="0b" hidden><span class="xp-fill" aria-hidden="true"></span><span class="xp-busy-text" data-say="dl">Starting…</span><button type="button" class="xp-link" data-act="cancel">Cancel</button></p>
+                        <p class="xp-done" data-show="1 1b 2 3" hidden><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Saved to Downloads › StreamSnag</span><button type="button" class="xp-link" data-act="show" aria-expanded="false">Show file</button></p>
+                        <p class="xp-file" hidden><svg class="ic" aria-hidden="true"><use href="#i-film"/></svg><span>Cardiac output and what sets it.mp4</span><i>129 MB</i></p>
+                      </div>
+                    </div>
+
+                    <!-- Before the lecture is saved the real popup offers the path in one line; the next step appears once it is saved. -->
+                    <p class="xp-pathline" data-show="0 0b" aria-hidden="true"><span>Study this lecture step by step: transcript, study page, flashcards. <b>Show the path</b></span><svg class="ic"><use href="#i-chev"/></svg></p>
+
+                    <p class="xp-pro" data-show="1 1b 2 3" hidden>Pro from here · first lecture free</p>
+
+                    <!-- Saved, no captions: the next step is the transcript, made on this computer. -->
+                    <div class="xp-card" data-show="1" hidden>
+                      <p class="xp-card-h">Transcript</p>
+                      <p class="xp-card-p">No captions here. Turns the speech into text on this computer and saves it next to the video. Nothing is uploaded.</p>
+                      <button type="button" class="xp-btn" data-act="transcribe"><span class="live-dot" aria-hidden="true"></span>Transcribe on this computer</button>
+                    </div>
+                    <div class="xp-step" data-show="1b" hidden>
+                      <p class="xp-line"><span><b>Transcript</b> · Transcribing on this computer</span></p>
+                      <p class="xp-busy xp-busy-plain" aria-hidden="true"><span class="xp-fill xp-fill-run"></span></p>
+                    </div>
+
+                    <!-- The words are there: the next step is the readable lecture. One click makes it and opens it. -->
+                    <div class="xp-card" data-show="2" hidden>
+                      <p class="xp-card-h">Reading edition</p>
+                      <p class="xp-card-p">The lecture as an article you can read instead of watching. It opens as soon as it is made.</p>
+                      <button type="button" class="xp-btn" data-act="read"><span class="live-dot" aria-hidden="true"></span>Read the lecture</button>
+                    </div>
+                    <div class="xp-step" data-show="3" hidden>
+                      <p class="xp-line"><svg class="ic xp-ok" aria-hidden="true"><use href="#i-check"/></svg><span><b>Reading edition</b> · saved</span><button type="button" class="xp-chip" data-act="open-read">Open reading edition</button></p>
+                      <p class="xp-made">4 sections, about 14 minutes to read</p>
+                    </div>
+
+                    <button type="button" class="xp-row xp-rowbtn" data-act="files" aria-expanded="false" aria-controls="xp-files">
+                      <svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg>
+                      <span class="xp-row-main"><b>Files on this page <span class="rv-count">2</span></b><span>PDFs, slides, handouts</span></span>
+                      <svg class="ic xp-chev" aria-hidden="true"><use href="#i-chev"/></svg>
+                    </button>
+                    <ul class="xp-files" id="xp-files" hidden>
+                      <li><span>Cardiac output slides.pdf</span><i>2.2 MB</i><button type="button" class="xp-link" data-act="file">Download</button></li>
+                      <li><span>Pressure-volume loop handout.pdf</span><i>0.4 MB</i><button type="button" class="xp-link" data-act="file">Download</button></li>
+                    </ul>
+                  </div>
+
+                  <!-- On the course page -->
+                  <div class="xp-view xp-course">
+                    <div class="xp-hero">
+                      <p class="xp-eyebrow">On this page · 1 of 8</p>
+                      <p class="xp-title">4 · The cardiac cycle</p>
+                      <p class="xp-sub">Video · 31 min · 142 MB</p>
+                      <div class="xp-action">
+                        <button type="button" class="xp-btn" data-act="one"><span class="live-dot" aria-hidden="true"></span>Download · 142 MB</button>
+                        <p class="xp-busy" data-one="busy" hidden><span class="xp-fill xp-fill-run" aria-hidden="true"></span><span class="xp-busy-text">Starting…</span></p>
+                        <p class="xp-done" data-one="done" hidden><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Saved to Downloads › StreamSnag › PHYS201</span></p>
+                      </div>
+                    </div>
+                    <div class="xp-strip">
+                      <p class="xp-strip-head"><b>PHYS201</b><span>8 videos here</span></p>
+                      <p class="xp-cells" role="img" aria-label="8 videos on this page: 6 to get, 2 to check." data-say-label="strip"><i class="c-get here"></i><i class="c-get"></i><i class="c-get"></i><i class="c-check"></i><i class="c-get"></i><i class="c-get"></i><i class="c-get"></i><i class="c-check"></i></p>
+                      <ul class="xp-legend" aria-hidden="true" data-fill="legend"><li><i class="c-get"></i>6 to get</li><li><i class="c-check"></i>2 to check</li></ul>
+                      <div class="xp-bulk">
+                        <button type="button" class="xp-chip" data-act="open-sheet"><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg><span data-say="bulk-btn">Download the 6 missing…</span></button>
+                        <p class="xp-note" data-say="bulk">You review the list first.</p>
+                      </div>
+                    </div>
+                    <ul class="xp-list">
+                      <li><span>4 · The cardiac cycle</span><i>Video · 142 MB</i></li>
+                      <li><span>5 · Heart sounds and murmurs</span><i>Video · 110 MB</i></li>
+                      <li><span>6 · Cardiac output and what sets it</span><i>Video · 129 MB</i></li>
+                      <li class="is-flagged"><span>6 · Cardiac output and what sets it</span><i>Video · 129 MB</i><em class="rv-tag">Same as another one</em><small>A second copy of one listed here. "Download all" leaves it unticked: tick it there if you want it.</small></li>
+                      <li><span>7 · Blood pressure and its control</span><i>Video · 134 MB</i></li>
+                      <li><span>8 · Exercise and the circulation</span><i>Video · 151 MB</i></li>
+                      <li><span>9 · The microcirculation</span><i>Video · 122 MB</i></li>
+                      <li class="is-flagged"><span>Trailer: PHYS201</span><i>Video · 6 MB</i><em class="rv-tag">Looks like a preview or ad</em><small>Probably not a lecture. "Download all" leaves it unticked: tick it there if you want it.</small></li>
+                    </ul>
+                  </div>
+
+                  <p class="xp-dock" aria-hidden="true"><span>Activity <i data-say="activity">· idle</i></span><span>Flashcards</span><span>Study desk</span><span class="xp-dock-icon"><svg class="ic"><use href="#i-sliders"/></svg></span></p>
+
+                  <!-- "Download all" opens this sheet over the popup: what would be saved, under which names, before anything starts. -->
+                  <div class="xp-sheet" role="group" aria-labelledby="rv-title" tabindex="-1" hidden>
+                    <div class="rv-head">
+                      <div>
+                        <p class="rv-title" id="rv-title">Review before downloading</p>
+                        <p class="rv-sum" data-say="summary">6 videos selected · 2 need a look</p>
+                      </div>
+                      <button type="button" class="rv-close" data-act="close-sheet" aria-label="Close without downloading"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+                    </div>
+                    <div class="rv-body">
+                      <p class="rv-where"><svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg>Downloads › StreamSnag › PHYS201</p>
+                      <div class="rv-group" role="group" aria-labelledby="rv-ready-h">
+                        <p class="rv-group-h" id="rv-ready-h">Ready to download <span class="rv-count" data-say="ready-n">6</span></p>
+                        <label class="rv-item" data-cell="0"><input type="checkbox" data-mb="142" checked><span class="rv-name">04 The cardiac cycle.mp4</span><span class="rv-meta">142 MB</span></label>
+                        <label class="rv-item" data-cell="1"><input type="checkbox" data-mb="110" checked><span class="rv-name">05 Heart sounds and murmurs.mp4</span><span class="rv-meta">110 MB</span></label>
+                        <label class="rv-item" data-cell="2"><input type="checkbox" data-mb="129" checked><span class="rv-name">06 Cardiac output and what sets it.mp4</span><span class="rv-meta">129 MB</span></label>
+                        <label class="rv-item" data-cell="4"><input type="checkbox" data-mb="134" checked><span class="rv-name">07 Blood pressure and its control.mp4</span><span class="rv-meta">134 MB</span></label>
+                        <label class="rv-item" data-cell="5"><input type="checkbox" data-mb="151" checked><span class="rv-name">08 Exercise and the circulation.mp4</span><span class="rv-meta">151 MB</span></label>
+                        <label class="rv-item" data-cell="6"><input type="checkbox" data-mb="122" checked><span class="rv-name">09 The microcirculation.mp4</span><span class="rv-meta">122 MB</span></label>
+                      </div>
+                      <div class="rv-group" role="group" aria-labelledby="rv-check-h">
+                        <p class="rv-group-h" id="rv-check-h">Check these <span class="rv-count" data-say="check-n">2</span></p>
+                        <p class="rv-hint">Left out unless you tick them.</p>
+                        <label class="rv-item" data-cell="3"><input type="checkbox" data-mb="129"><span class="rv-name">06 Cardiac output and what sets it (2).mp4</span><span class="rv-meta"><span class="rv-tag">Same as another one</span> 27:00 · 129 MB</span><span class="rv-why">A second copy of one listed here. Not ticked: tick it if you want it too.</span></label>
+                        <label class="rv-item" data-cell="7"><input type="checkbox" data-mb="6"><span class="rv-name">Trailer PHYS201.mp4</span><span class="rv-meta"><span class="rv-tag">Looks like a preview or ad</span> 1:00 · 6 MB</span><span class="rv-why">Probably not a lecture. Not ticked: tick it if you want it too.</span></label>
+                      </div>
+                      <p class="rv-have" data-say="have" hidden></p>
+                    </div>
+                    <div class="rv-foot">
+                      <span class="rv-total" data-say="total">About 788 MB in all</span>
+                      <button type="button" class="xp-chip" data-act="close-sheet">Cancel</button>
+                      <button type="button" class="xp-btn" data-act="go">Download 6</button>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
-          <picture class="popup rise">
-            <source srcset="popup-dark.png" media="(prefers-color-scheme: dark)">
-            <img src="popup.png" width="400" height="600" decoding="async" fetchpriority="high"
-                 alt="The StreamSnag popup open on a course page. The video that is playing sits in a large card with one Download button. The page's other videos are listed below it, each marked Downloaded or Not downloaded, with a playlist that has a List videos button.">
-          </picture>
+
+          <div class="step-arrow" aria-hidden="true"><svg class="ic"><use href="#i-arrow"/></svg></div>
+
+          <!-- ============ What step 3 makes: the lecture as a document ============ -->
+          <div class="half half-study">
+            <p class="half-head"><span class="doc-name"><b>The lecture, as a document</b><span class="tag tag-pro">Pro</span></span><span class="doc-state"><span data-show="0 0b 1 1b 2">What step 3 makes</span><span data-show="3" hidden><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Made in the demo</span></span></p>
+            <article class="made made-read" id="demo-read" tabindex="-1" aria-label="Sample reading edition, shortened">
+              <p class="paper-kind">PHYS201 · Reading edition</p>
+              <h2 class="made-read-h">Cardiac output and what sets it</h2>
+              <p class="paper-meta"><span>27 min lecture</span><span><b>14 min read</b></span><span>3,194 words</span></p>
+              <p class="made-slide"><b>Slide 4</b>Preload and the Frank-Starling law</p>
+              <div class="para"><a class="cite" href="sample/reading-edition.html#s2-p6" aria-label="08:47, open this paragraph in the sample reading edition">08:47</a><p>Within limits, the heart pumps out whatever volume is returned to it. So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis, and the curve rises steeply at first and then flattens off at high volumes.</p></div>
+              <div class="para"><a class="cite" href="sample/reading-edition.html#s2-p7" aria-label="09:17, open this paragraph in the sample reading edition">09:17</a><p>A little bit of history, because I like it. Otto Frank was a German physiologist working on frog hearts in the eighteen nineties, and Ernest Starling was in London about twenty years later with his heart-lung preparation in dogs. They never worked together.</p></div>
+              <p class="made-more"><a class="link-arrow" href="#read">Why you would read it instead <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+            </article>
+          </div>
+
+          <!-- ============ And then, if you want more ============ -->
+          <div class="more-row">
+            <p class="more-head"><b>And then, if you want more.</b> Neither is a required step. <a href="#evening">See the whole evening, step by step</a>.</p>
+            <div class="more-grid">
+
+              <section class="more-a" aria-labelledby="more-a-title">
+                <div class="more-top">
+                  <h2 class="more-title" id="more-a-title">Have the slides? They line up with the lecture.</h2>
+                  <p class="more-sub">Every slide is labelled with the minute it was shown.</p>
+                  <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+                </div>
+                <div class="made made-sp">
+                  <header class="made-head"><span class="made-kind">Study page</span><span class="made-kind">Slide 4 of 9</span></header>
+                  <ul class="sp-mini" aria-label="Slides, each with the minute it was shown">
+                    <li><span class="n">4</span><span>Preload and the Frank-Starling law</span><span class="cite">08:07</span></li>
+                    <li><span class="n">5</span><span>Why the Frank-Starling mechanism works</span><span class="cite">11:02</span></li>
+                    <li><span class="n">6</span><span>Afterload</span><span class="cite">14:03</span></li>
+                  </ul>
+                  <p class="made-p">A PDF or PowerPoint deck is matched to the transcript, so the video, the slides and the text move together.</p>
+                  <p class="made-more"><a class="link-arrow" href="sample/study-page.html">Open the sample study page <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+                </div>
+              </section>
+
+              <section class="more-b" aria-labelledby="more-b-title">
+                <div class="more-top">
+                  <h2 class="more-title" id="more-b-title">Have an AI account? Turn it into study material.</h2>
+                  <p class="more-sub">A study guide, a practice quiz and flashcards with Anki export. Every item points to its minute and slide.</p>
+                  <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-ai">Uses your AI</span><a class="more-cost" href="#ai-cost">Runs on your own AI account, never paid to StreamSnag</a></p>
+                </div>
+                <div class="more-cards">
+                  <article class="made made-guide">
+                    <header class="made-head">
+                      <span class="made-kind">Study guide, key idea 2</span>
+                      <label class="cite cite-a" for="at-a">07:53 · slide 4</label>
+                    </header>
+                    <h3 class="made-q">How does a larger end-diastolic volume give a larger stroke volume without extra calcium?</h3>
+                    <blockquote class="said">
+                      <span class="said-label">In the lecturer's words</span>
+                      <p>“Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction.”</p>
+                    </blockquote>
+                  </article>
+
+                  <article class="made made-quiz">
+                    <header class="made-head">
+                      <span class="made-kind">Quiz, question 3</span>
+                      <label class="cite cite-b" for="at-b">14:04 · slide 6</label>
+                    </header>
+                    <h3 class="made-q made-q-sm" id="hq-title">Afterload rises and nothing else changes. What happens to stroke volume?</h3>
+                    <div class="opts" role="radiogroup" aria-labelledby="hq-title">
+                      <label class="opt"><input type="radio" name="hq" id="hq-a"><span class="opt-k">A</span><span>It rises, with a stronger stretch</span></label>
+                      <label class="opt"><input type="radio" name="hq" id="hq-b"><span class="opt-k">B</span><span>It falls, with more blood left behind</span></label>
+                      <label class="opt"><input type="radio" name="hq" id="hq-c"><span class="opt-k">C</span><span>It is unchanged, with a faster rate</span></label>
+                    </div>
+                    <div aria-live="polite">
+                      <p class="why why-a"><b>Not quite.</b> That describes more preload, and here filling has not changed.</p>
+                      <p class="why why-b"><b>Correct.</b> The ventricle empties less well against the higher pressure, so end-systolic volume rises.</p>
+                      <p class="why why-c"><b>Not quite.</b> Heart rate changes the output per minute, not the volume of one beat.</p>
+                    </div>
+                  </article>
+
+                  <article class="made made-card">
+                    <header class="made-head">
+                      <span class="made-kind">Flashcard, 6 of 9</span>
+                      <label class="cite cite-c" for="at-c">20:20 · slide 7</label>
+                    </header>
+                    <h3 class="made-q made-q-sm">What does more contractility do to the Frank-Starling curve?</h3>
+                    <details class="flip">
+                      <summary>Show answer</summary>
+                      <p>It lifts the ventricle onto a higher curve. More preload only moves it along the same one.</p>
+                    </details>
+                  </article>
+                </div>
+              </section>
+
+            </div>
+          </div>
+
         </div>
-        <figcaption>The popup on a page with several videos. The one that's playing is on top, and the rest are marked Downloaded or Not downloaded.</figcaption>
+        <p class="demo-nojs">This demonstration needs JavaScript, which is switched off in your browser, so the picture stays on its first step. The three steps are these. <b>1. Download:</b> the popup finds the lecture that is playing and saves it, free. <b>2. Transcribe on this computer:</b> for a lecture with no captions, Pro turns the speech into text on your own machine. <b>3. Read the lecture:</b> Pro makes the document shown beside the popup, and opens it.</p>
+        <figcaption>This is a demonstration you can use, with an invented lecture on an invented course site. The popup is a copy drawn for this page, and nothing is really downloaded. In the real thing, step 2 needs the small helper program and a one-time download for transcription; an hour of lecture took under a minute on our fast desktop, and an older laptop can need several minutes. Step 3 opens the reading edition in a tab of its own as soon as it is made; here it is the document beside the popup. The tag on a study card moves the lecture to its minute. The study material is shortened from <a href="sample/study-guide.html">the sample study guide</a>, which AI wrote from the lecture's transcript and slides. <button type="button" class="demo-reset" data-act="reset" hidden>Start the demo again</button></figcaption>
       </figure>
     </div>
   </section>
 
-  <!-- Main benefits -->
-  <section class="section" id="what" aria-labelledby="what-title">
+  <!-- ============ What Pro does differently ============ -->
+  <section class="section band" id="claims" aria-labelledby="claims-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker">What it does</p>
-        <h2 id="what-title">Built for a lecture series, not a single clip.</h2>
-        <p class="lede">A list of links isn't much help halfway through a course. StreamSnag keeps track of which lecture is which, what you've saved, and what's still missing.</p>
+        <h2 id="claims-title">Two things Pro does differently.</h2>
+        <p class="lede">Many online tools that turn a recording into notes work on their own servers, count your minutes and hand back a summary. Here is what StreamSnag does instead.</p>
       </div>
-
-      <div class="lessons">
-        <article class="lesson">
-          <div class="lesson-num" aria-hidden="true">01</div>
-          <div class="lesson-body">
-            <h3>Finds the video you're watching</h3>
-            <p>Press play, then click the StreamSnag icon. It picks up MP4 and WebM files, HLS and DASH streams, subtitles, and embedded players such as Vimeo, Wistia and Loom. <strong>The video that's playing is shown first</strong>, with one Download button.</p>
-          </div>
-          <div class="viz" aria-hidden="true">
-            <p class="viz-label"><span>Playing now</span><span>Shown first</span></p>
-            <div class="playing">
-              <div class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></div>
-              <div>
-                <div class="playing-title">009 - Hypothesis tests</div>
-                <div class="playing-meta">Stream, with subtitles</div>
-              </div>
-            </div>
-            <div class="fake-btn"><svg class="ic"><use href="#i-download"/></svg>Download</div>
-            <ul class="chips">
-              <li>MP4</li><li>WebM</li><li>HLS</li><li>DASH</li><li>Subtitles</li><li>Vimeo</li><li>Wistia</li><li>Loom</li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="lesson">
-          <div class="lesson-num" aria-hidden="true">02</div>
-          <div class="lesson-body">
-            <h3>Knows what you already have</h3>
-            <p>StreamSnag checks your folders and marks each lecture Downloaded or Not downloaded, even after you rename the files. <strong>Download missing</strong> fetches only what's new in a playlist.</p>
-          </div>
-          <div class="viz" aria-hidden="true">
-            <p class="viz-label"><span>Example playlist</span><span>Folder check</span></p>
-            <ul class="rows">
-              <li class="have"><span class="row-n">007</span><span class="row-t">Sampling</span><span class="status status-ok"><svg class="ic"><use href="#i-check"/></svg>Downloaded</span></li>
-              <li class="have"><span class="row-n">008</span><span class="row-t">Confidence intervals</span><span class="status status-ok"><svg class="ic"><use href="#i-check"/></svg>Downloaded</span></li>
-              <li><span class="row-n">009</span><span class="row-t">Hypothesis tests</span><span class="status">Not downloaded</span></li>
-              <li><span class="row-n">010</span><span class="row-t">Regression</span><span class="status">Not downloaded</span></li>
-            </ul>
-            <div class="fake-btn">Download missing (2)</div>
-          </div>
-        </article>
-
-        <article class="lesson">
-          <div class="lesson-num" aria-hidden="true">03</div>
-          <div class="lesson-body">
-            <h3>Saves the whole lesson</h3>
-            <p>A lesson is more than its video. StreamSnag puts the video, its audio and soft subtitles into <strong>one MP4</strong>, saves the PDFs and slides linked on the page, and writes a readable transcript from the captions. No captions? It can transcribe the lecture on your own computer.</p>
-          </div>
-          <div class="viz" aria-hidden="true">
-            <p class="viz-label"><span>One lesson</span><span>Three things saved</span></p>
-            <ul class="bundle">
-              <li><span class="tile">MP4</span><span><b>Video, audio and subtitles</b><span>Merged into one file</span></span></li>
-              <li><span class="tile">PDF</span><span><b>PDFs and slides</b><span>The ones linked on the page</span></span></li>
-              <li><span class="tile">Aa</span><span><b>Transcript</b><span>Readable text from the captions</span></span></li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="lesson">
-          <div class="lesson-num" aria-hidden="true">04</div>
-          <div class="lesson-body">
-            <h3>Takes whole courses at once</h3>
-            <p>List every video in a playlist or showcase, or use <strong>Download all</strong> on a page. A queue works through them and retries the ones that fail. Files are named after the lecture number and title and sorted into a folder per course.</p>
-          </div>
-          <div class="viz" aria-hidden="true">
-            <p class="viz-label"><span>Example folder</span><span>Named for you</span></p>
-            <ul class="tree">
-              <li class="dir"><svg class="ic"><use href="#i-folder"/></svg>Courses</li>
-              <li class="dir d1"><svg class="ic"><use href="#i-folder"/></svg>Intro to Statistics</li>
-              <li class="d2"><svg class="ic"><use href="#i-file"/></svg><span class="fn">007 - Sampling.mp4</span></li>
-              <li class="d2"><svg class="ic"><use href="#i-file"/></svg><span class="fn">008 - Confidence intervals.mp4</span></li>
-              <li class="d2 new"><svg class="ic"><use href="#i-file"/></svg><span class="fn">009 - Hypothesis tests.mp4</span><span class="tag">Queued</span></li>
-              <li class="d2 new"><svg class="ic"><use href="#i-file"/></svg><span class="fn">010 - Regression.mp4</span><span class="tag">Queued</span></li>
-            </ul>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- Install -->
-  <section class="section band" id="install" aria-labelledby="install-title">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="kicker">How to install</p>
-        <h2 id="install-title">Three steps, from GitHub.</h2>
-        <p class="lede">StreamSnag isn't in the Chrome Web Store, so you add it by hand. It takes a few clicks and you only do it once.</p>
-      </div>
-
-      <ol class="steps" role="list">
+      <ul class="claims">
         <li>
-          <span class="step-n" aria-hidden="true">1</span>
-          <h3>Download and unzip</h3>
-          <p>Get the ZIP from the <a href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">latest release</a> and unzip it somewhere you'll keep it. The browser runs the extension from that folder.</p>
+          <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+          <h3>No minute limits: transcription runs on your own computer.</h3>
+          <p>A lecture with no captions is turned into text on your own machine. We meter nothing, because nothing comes to us: no minutes to buy, no monthly allowance, no upload. Transcribe one lecture or a whole term.</p>
+          <p><strong>The AI parts are different, and we say so plainly.</strong> The study guide, the quiz and the flashcards are written by your own AI account. That provider may have its own limits. If you already pay for a Claude or ChatGPT subscription there is nothing extra to pay; with a pay-as-you-go key the provider charges you for what you use. StreamSnag adds no limit of its own and takes no share.</p>
         </li>
         <li>
-          <span class="step-n" aria-hidden="true">2</span>
-          <h3>Turn on Developer mode</h3>
-          <p>Open <code>chrome://extensions</code> in Chrome or Brave, or <code>edge://extensions</code> in Edge. Switch on <strong>Developer mode</strong>.</p>
-        </li>
-        <li>
-          <span class="step-n" aria-hidden="true">3</span>
-          <h3>Load the extension</h3>
-          <p>Click <strong>Load unpacked</strong> and choose the <code>extension</code> folder inside the one you unzipped. That's it.</p>
-        </li>
-      </ol>
-
-      <div class="after-steps">
-        <p><strong>Then:</strong> open a page with a video, press play, and click the StreamSnag icon. Many players only load the video once it starts.</p>
-        <p><strong>Good to know:</strong> the browser shows a "Developer mode" notice for extensions added this way. That is expected.</p>
-      </div>
-
-      <div class="helper">
-        <div class="helper-copy">
-          <p class="kicker">Optional, and recommended</p>
-          <h3>The local helper</h3>
-          <p>A small program that runs on your computer and only talks to StreamSnag. The extension works without it. With it, you also get:</p>
-          <ul class="adds">
-            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Video, audio and subtitles merged into one MP4 with ffmpeg</span></li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Playlists and harder sites through <span class="nb">yt-dlp</span></span></li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Saving to any folder on your computer</span></li>
-            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>The folder check that shows what you already have</span></li>
+          <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+          <h3>It keeps what was taught, and every paragraph leads back to the recording.</h3>
+          <p>The reading edition is the lecture, not a summary of it: the lecturer's own words, examples and qualifications, set out to be read. Beside every paragraph is its time, which opens that moment in the recording.</p>
+          <ul class="facts-in" aria-label="What the reading edition adds without any AI">
+            <li><b>A contents list</b>, with the minute each part starts.</li>
+            <li><b>Headings.</b> From the slides when there are some. Without slides, a part is headed by its own most distinctive terms where some stand out, and by its number and minute where none do.</li>
+            <li><b>“Lecturer's emphasis”</b> beside a sentence where the lecturer says that something matters.</li>
+            <li><b>A spoken “first… second…”</b> set out as a numbered list.</li>
           </ul>
-        </div>
-        <div class="os">
-          <div>
-            <h4>Windows</h4>
-            <p>Double-click <span class="path">Set up StreamSnag helper.cmd</span> in the folder you unzipped.</p>
-          </div>
-          <div>
-            <h4>macOS and Linux</h4>
-            <p>Open a terminal in that folder and run <code>sh setup.sh</code></p>
-          </div>
-          <div>
-            <p class="note">The helper needs Node.js 18 or newer. Restart the browser when setup finishes.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Feature grid -->
-  <section class="section" id="features" aria-labelledby="features-title">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="kicker">Everything included</p>
-        <h2 id="features-title">Everything it does.</h2>
-      </div>
-
-      <ul class="grid">
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-stream"/></svg>
-          <h3>Files and streams</h3>
-          <p>MP4 and WebM files, plus HLS and DASH streams.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-embed"/></svg>
-          <h3>Embedded players</h3>
-          <p>Vimeo, Wistia, Loom and others built into a page.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-cc"/></svg>
-          <h3>Subtitles and transcripts</h3>
-          <p>Soft subtitles inside the MP4, and a transcript you can read. Optional speech-to-text on your PC for videos without captions.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg>
-          <h3>PDFs and slides</h3>
-          <p>The documents linked on a lesson page, saved with the video.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>
-          <h3>Playlists and showcases</h3>
-          <p>List every video, not only the ones you played.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-tray"/></svg>
-          <h3>Download missing</h3>
-          <p>Fetch only the lectures that aren't in your folders yet.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-retry"/></svg>
-          <h3>Queue with retries</h3>
-          <p>Line up a whole course. Failed downloads can be retried.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>
-          <h3>Speed and time left</h3>
-          <p>See how fast each download is going and when it will finish.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg>
-          <h3>Names and folders</h3>
-          <p>Lecture number and title in the file name, one folder per course.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-note"/></svg>
-          <h3>Convert a download</h3>
-          <p>Make an MP3 of the audio, or a smaller 720p copy.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-panel"/></svg>
-          <h3>Side panel</h3>
-          <p>Keep StreamSnag open beside the page while you watch.</p>
-        </li>
-        <li>
-          <svg class="ic" aria-hidden="true"><use href="#i-theme"/></svg>
-          <h3>Light and dark</h3>
-          <p>Both themes are included, in quiet neutral greys.</p>
+          <p>None of this rewords anything. Hesitation sounds and doubled words are taken out by rule, and that is all. <a href="sample/reading-edition-no-slides.html">See one made without slides</a>.</p>
         </li>
       </ul>
     </div>
   </section>
 
-  <!-- Optional AI -->
-  <section class="section" id="ai" aria-labelledby="ai-title">
+  <!-- ============ Read the lecture ============ -->
+  <section class="section read" id="read" aria-labelledby="read-title">
     <div class="wrap">
-      <div class="ai">
-        <div class="ai-copy">
-          <p class="kicker">Optional AI</p>
-          <h2 id="ai-title">Off by default. Yours if you want it.</h2>
-          <p class="muted">StreamSnag works without AI. If you turn it on, it uses the AI you already have: your own Claude or ChatGPT subscription, or your own API key.</p>
-          <div class="switch-demo" aria-hidden="true">
-            <span class="switch"></span>
-            <span>AI features</span>
-            <span class="switch-state">Off</span>
+      <div class="read-grid">
+        <div class="read-copy">
+          <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+          <h2 id="read-title">Read the lecture instead of rewatching it.</h2>
+          <p class="read-lede">StreamSnag turns a saved lecture into a clean document that keeps what was taught: a contents list, headed parts, proper paragraphs in the lecturer's own words, and a minute beside each one that takes you back to that moment in the video.</p>
+
+          <p class="read-fact"><b>A 27-minute lecture</b><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg><b>a 14-minute read</b><span>From the two samples on this site: 27 and 28 minutes of lecture, about 3,200 words and 14 minutes of reading each.</span></p>
+
+          <ul class="easy" aria-label="What makes it easy">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><b>It is made on your own computer.</b> <span>Nothing is uploaded.</span></span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><b>It needs no AI account.</b> <span>The words are the lecture's own.</span></span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><b>It is one button from the saved lecture.</b> <span>The button says Read the lecture, and the document opens as soon as it is made.</span></span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><b>It is not a summary.</b> <span>Examples, asides and qualifications stay in.</span></span></li>
+          </ul>
+
+          <p class="read-sub">What you can do with it</p>
+          <ul class="uses">
+            <li><b>Search it.</b> Find where a term was explained in seconds.</li>
+            <li><b>Print it.</b> It is laid out for paper as well as the screen.</li>
+            <li><b>Read it on your phone.</b> It is one file that works offline.</li>
+            <li><b>Jump to the video.</b> Any paragraph opens that minute of the lecture.</li>
+          </ul>
+
+          <p class="read-extra"><b>Optional, with your own AI account:</b> it can also tidy the wording, taking out false starts and repairing the punctuation. With an AI account chosen, it asks each time. That part runs on your own AI account: no extra charge on a Claude or ChatGPT subscription you already have, a charge from the provider with a pay-as-you-go key. It never summarises, and a part that fails its check is shown as transcribed.</p>
+
+          <div class="read-cta">
+            <div class="btn-row">
+              <a class="btn btn-primary" href="sample/reading-edition.html">Open the full sample <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+              <a class="btn btn-quiet" href="sample/stats-reading-edition.html">A second sample, on statistics</a>
+              <a class="btn btn-quiet" href="sample/reading-edition-no-slides.html">The first one, made without slides</a>
+            </div>
+            <p class="read-trial"><b>Your first lecture is free, with no card.</b> After that the reading edition is part of Pro: US$39.97 a year, US$4.99 a month, or US$99 once for life. Making it needs no AI, so it costs nothing more; the study tools that do use AI run on your own AI account, never paid to StreamSnag: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key. The steps are in <a href="guides/read-a-lecture.html">how to read a lecture instead of watching it</a>, and <a href="guides/lecture-transcript.html">how to transcribe a lecture</a>.</p>
           </div>
         </div>
-        <ul class="ai-list">
-          <li>
-            <h3>Finds links the usual check misses</h3>
-            <p>On a page where nothing turns up, AI reads the page to find the video link, then remembers how, so that site works next time.</p>
-          </li>
-          <li>
-            <h3>Explains a failed download</h3>
-            <p>Ask why a download failed and get an answer in plain words.</p>
-          </li>
-          <li>
-            <h3>Study notes from the captions</h3>
-            <p>Summaries, study notes and Anki flashcards made from a lecture's captions or transcript. It can do this after every download, if you ask it to.</p>
-          </li>
-          <li class="ai-note">When you use an AI feature, the details needed for that task are sent to the provider you chose (Anthropic or OpenAI). The <a href="https://github.com/cspergel/streamsnag/blob/main/PRIVACY.md" rel="noopener">privacy page</a> lists exactly what.</li>
-        </ul>
+
+        <div class="read-doc">
+          <article class="sheet-of-paper" aria-label="An excerpt from the sample reading edition">
+            <p class="paper-kind">PHYS201 · Reading edition</p>
+            <p class="doc-title">Cardiac output and what sets it</p>
+            <p class="doc-chips"><span>27 min lecture</span><span><b>14 min read</b></span><span>3,194 words</span></p>
+            <p class="doc-how">From the lecture's captions. Hesitation sounds and doubled words were taken out by rule. Nothing is reworded.</p>
+            <div class="doc-sec"><h3>Three determinants of stroke volume</h3><span>06:18–13:58</span></div>
+            <div class="para"><a class="cite" href="sample/study-page.html#t=378&amp;slide=3" aria-label="06:18, open this minute in the sample study page">06:18</a><p><b>Lecturer:</b> Okay. So what sets stroke volume? Three things, and you need to know these three cold. Preload, afterload, and contractility. Preload is how much the ventricle is stretched just before it contracts. Afterload is the load it has to push against to get the blood out.</p></div>
+            <div class="para"><a class="cite" href="sample/study-page.html#t=402&amp;slide=3" aria-label="06:42, open this minute in the sample study page">06:42</a><p><b>Lecturer:</b> And contractility is how strongly the muscle contracts for a given stretch and a given load. The other word for contractility is inotropy, and you'll see that on the slide, positive ionotropic and negative ionotropic drugs. The way I think about it, and this is just an analogy, is throwing a ball. Preload is how far back you pull your arm. Afterload is how heavy the ball is. And contractility is how strong your arm is.</p></div>
+            <div class="para"><a class="cite" href="sample/study-page.html#t=441&amp;slide=3" aria-label="07:21, open this minute in the sample study page">07:21</a><p><b>Lecturer:</b> You can throw further by pulling back more, by picking a lighter ball, or by going to the gym. Three different things. And the reason I labour this is that every year in the exam about a third of you mix up preload and contractility, so we are going to go slowly through each one.</p></div>
+            <p class="doc-fade">An excerpt, word for word. The whole sample has 49 paragraphs in 4 parts, and its minutes open the sample study page, which has no video.</p>
+          </article>
+          <p class="mn">In this excerpt the captions wrote “ionotropic” where the slide says inotropic. A reading edition made without AI keeps the words as they were captioned or transcribed, mistakes included. That is why every paragraph links to its minute.</p>
+        </div>
       </div>
+
+      <ul class="honest">
+        <li class="mn"><b>It is a Pro feature.</b> Free saves a video's existing captions as a transcript, when the video has them. The reading edition, and transcription for lectures with no captions, are Pro.</li>
+        <li class="mn"><b>No captions? Speech-to-text on your computer.</b> Pro turns the speech into text on your own computer, with no AI account and no minute limits. It needs the small helper program and a one-time download of about 135 MB. An hour of lecture took under a minute on our fast desktop; an older laptop can need several minutes.</li>
+        <li class="mn"><b>Most words right, not all.</b> It depends on the recording. Speech models of this size misspell unusual drug and technical names. Every paragraph links to its minute so you can check, and the optional AI tidy corrects misheard terms against the slides. The marks for the lecturer's emphasis and the spoken lists work on English lectures whose captions have punctuation.</li>
+      </ul>
     </div>
   </section>
 
-  <!-- Is it safe -->
-  <section class="section" id="safe" aria-labelledby="safe-title">
+  <!-- ============ One evening, on a clock ============ -->
+  <section class="section band" id="evening" aria-labelledby="evening-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker">Is it safe?</p>
-        <h2 id="safe-title">You don't have to take our word for it.</h2>
-        <p class="lede">An extension that can see every page deserves hard questions. Here are the plain answers.</p>
+        <h2 id="evening-title">How an evening goes.</h2>
+        <p class="lede">Tuesday, 7:10 pm. Lecture 6 went up this morning and you have not watched it. Six steps, half an hour. The first two are free, and you can stop after any of them.</p>
       </div>
 
-      <div class="safe-grid">
-        <div>
-          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-code"/></svg></span>
-          <div>
-            <h3>You can read all of it</h3>
-            <p>StreamSnag is open source under the MIT license. The extension is plain JavaScript with no build step, so the code on GitHub is the code that runs.</p>
+      <ol class="path" aria-label="The six steps in short">
+        <li><a href="#stop-save"><span class="path-n">1</span><span class="path-name">Save the lecture</span><span class="tags"><span class="tag tag-free">Free</span><span class="tag tag-plain">No AI account</span></span></a></li>
+        <li><a href="#stop-keep"><span class="path-n">2</span><span class="path-name">Keep the whole lesson</span><span class="tags"><span class="tag tag-free">Free</span><span class="tag tag-plain">No AI account</span></span></a></li>
+        <li class="path-line"><a href="#stop-read"><span class="path-n">3</span><span class="path-name">Read the lecture</span><span class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></span></a></li>
+        <li><a href="#stop-page"><span class="path-n">4</span><span class="path-name">Study page</span><span class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></span></a></li>
+        <li><a href="#stop-pack"><span class="path-n">5</span><span class="path-name">Study pack</span><span class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-ai">Uses your AI</span></span></a></li>
+        <li><a href="#stop-cards"><span class="path-n">6</span><span class="path-name">Review cards</span><span class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></span></a></li>
+      </ol>
+
+      <ol class="stops">
+
+        <!-- 7:10 -->
+        <li class="stop" id="stop-save">
+          <div class="stop-when">
+            <svg class="dial" viewBox="0 0 56 56" aria-hidden="true"><circle class="dial-face" cx="28" cy="28" r="25"/><path class="dial-ticks" d="M28 6.500v4M49.500 28h-4M28 49.500v-4M6.500 28h4"/><path class="dial-hour" d="M28 28L21.69 37.01"/><path class="dial-min" d="M28 28L42.72 19.5"/><circle class="dial-pin" cx="28" cy="28" r="2.400"/></svg>
+            <p class="stop-time"><time datetime="19:10">7:10 pm</time></p>
           </div>
+          <div class="stop-card">
+            <div class="stop-text">
+              <p class="stop-step"><span class="step-name">1 · Save the lecture</span><span class="tag tag-free">Free</span><span class="tag tag-plain">No AI account</span></p>
+              <h3>Lecture 6, saved in one click.</h3>
+              <p>Open the lecture, press play and click the StreamSnag icon. The lecture is at the top under <strong>On this page</strong>, with one button that says what it will save.</p>
+              <p>On a page with a whole course, a row of small squares shows what you have and what is missing, and <strong>Download the 21 missing…</strong> opens a checklist first: every lecture in course order with the file name it will get, and anything that cannot be downloaded listed with the reason.</p>
+            </div>
+            <div class="mock" role="img" aria-label="Drawing of the StreamSnag popup on a lecture page, showing this lecture's path. On this page: Cardiac output and what sets it, a video of 27 minutes and 129 megabytes. The first step, Save the lecture, is free and has a button, Save lecture. After it comes Transcript, from its captions; then, under Pro from here, first lecture free: Study page, Study pack and Review.">
+              <div class="win pop">
+                <p class="pop-head"><svg class="mark mark-sm"><use href="#i-mark"/></svg><b>StreamSnag</b></p>
+                <div class="pop-now">
+                  <p class="ui-label">On this page</p>
+                  <p class="pop-title">Cardiac output and what sets it</p>
+                  <p class="pop-meta">Video · 27 min · 129 MB</p>
+                </div>
+                <ul class="pop-path">
+                  <li class="is-next"><b>Save the lecture <span class="tag tag-free">Free</span></b><span class="ui-btn ui-btn-main">Save lecture · 129 MB</span></li>
+                  <li><b>Transcript</b><span>From its captions</span></li>
+                  <li class="pop-pro">Pro from here · first lecture free</li>
+                  <li><b>Study page</b><span>Slides in step</span></li>
+                  <li><b>Study pack</b><span>Guide, quiz, cards</span></li>
+                  <li><b>Review</b><span>A few due cards a day, from your study pack</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <p class="mn">Press play first: many players only load the video once it starts. If nothing is listed, the popup offers <b>Scan again</b> and <b>Ask your AI to find it</b>, which shows what would be sent before it sends anything. Protected (DRM) video is refused, and StreamSnag says so.</p>
+        </li>
+
+        <!-- 7:12 -->
+        <li class="stop" id="stop-keep">
+          <div class="stop-when">
+            <svg class="dial" viewBox="0 0 56 56" aria-hidden="true"><circle class="dial-face" cx="28" cy="28" r="25"/><path class="dial-wedge" d="M28 28L44.45 18.5A19 19 0 0 1 46.07 22.13Z"/><path class="dial-ticks" d="M28 6.500v4M49.500 28h-4M28 49.500v-4M6.500 28h4"/><path class="dial-hour" d="M28 28L21.53 36.9"/><path class="dial-min" d="M28 28L44.17 22.75"/><circle class="dial-pin" cx="28" cy="28" r="2.400"/></svg>
+            <p class="stop-time"><time datetime="19:12">7:12</time></p>
+          </div>
+          <div class="stop-card">
+            <div class="stop-text">
+              <p class="stop-step"><span class="step-name">2 · Keep the whole lesson</span><span class="tag tag-free">Free</span><span class="tag tag-plain">No AI account</span></p>
+              <h3>The slides and the words, not only the video.</h3>
+              <p>The PDFs and PowerPoint files the lesson links to are listed under the video and save into the same folder. The lecture's own captions are saved as a transcript you can read and search, with a time on every paragraph.</p>
+            </div>
+            <div class="mock" role="img" aria-label="Drawing of a course folder holding one lesson as three files: the video, the slides as a PDF, and a transcript made from the captions.">
+              <div class="win files">
+                <p class="files-path"><svg class="ic"><use href="#i-folder"/></svg>Lectures<span>/</span>PHYS201</p>
+                <ul>
+                  <li><svg class="ic"><use href="#i-film"/></svg><span class="f-name">06 Cardiac output and what sets it<i>.mp4</i></span><span class="f-what">The lecture video</span><span class="f-size">129 MB</span></li>
+                  <li><svg class="ic"><use href="#i-doc"/></svg><span class="f-name">06 Cardiac output slides<i>.pdf</i></span><span class="f-what">The slides linked on the lesson page</span><span class="f-size">9 slides</span></li>
+                  <li><svg class="ic"><use href="#i-text"/></svg><span class="f-name">06 Cardiac output and what sets it<i>.md</i></span><span class="f-what">Transcript, from the captions</span><span class="f-size">27 min</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <p class="mn">The free transcript is the captions the lecture already has, saved as text. A lecture with no captions has to be transcribed, and that is Pro.</p>
+        </li>
+      </ol>
+
+      <p class="free-line" id="free-line"><span>Everything above this line is free</span><span>Everything below it is Pro <span class="tag tag-pro">First lecture free</span></span></p>
+
+      <ol class="stops" start="3">
+
+        <!-- 7:13 -->
+        <li class="stop" id="stop-read">
+          <div class="stop-when">
+            <svg class="dial" viewBox="0 0 56 56" aria-hidden="true"><circle class="dial-face" cx="28" cy="28" r="25"/><path class="dial-wedge" d="M28 28L44.45 18.5A19 19 0 0 1 46.58 24.05Z"/><path class="dial-ticks" d="M28 6.500v4M49.500 28h-4M28 49.500v-4M6.500 28h4"/><path class="dial-hour" d="M28 28L21.46 36.84"/><path class="dial-min" d="M28 28L44.63 24.47"/><circle class="dial-pin" cx="28" cy="28" r="2.400"/></svg>
+            <p class="stop-time"><time datetime="19:13">7:13</time></p>
+          </div>
+          <div class="stop-card">
+            <div class="stop-text">
+              <p class="stop-step"><span class="step-name">3 · Read the lecture</span><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+              <h3>Read it instead of watching it.</h3>
+              <p>The reading edition is the lecture as a clean document: a contents list, headed parts, proper paragraphs, and a time beside each one that opens that moment in the video. It keeps what was taught, in the lecturer's own words. It is not a summary.</p>
+              <p>One button, <strong>Read the lecture</strong>, makes it on your computer in a few seconds and opens it. <strong>This 27-minute lecture is a 14-minute read.</strong></p>
+            </div>
+            <div class="mock" role="img" aria-label="Drawing of the reading edition of the sample lecture: 27 minute lecture, 14 minute read, 3,194 words. Under a marker for slide 4, Preload and the Frank-Starling law, are two paragraphs, each with its time beside it.">
+              <div class="win paper">
+                <p class="paper-kind">PHYS201 · Reading edition</p>
+                <p class="paper-h1">Cardiac output and what sets it</p>
+                <p class="paper-meta"><span>27 min lecture</span><span><b>14 min read</b></span><span>3,194 words</span></p>
+                <p class="paper-slide"><b>Slide 4</b>Preload and the Frank-Starling law</p>
+                <div class="para"><span class="cite">08:07</span><p>So in practice we use the end-diastolic volume, or sometimes the end-diastolic pressure, as a stand-in for preload.</p></div>
+                <div class="para"><span class="cite">08:47</span><p>Within limits, the heart pumps out whatever volume is returned to it. So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis.</p></div>
+              </div>
+            </div>
+          </div>
+          <p class="mn">It needs no AI account: the words are the lecture's own, with hesitation sounds taken out by rule. If you have chosen an AI account, Read the lecture asks each time whether to tidy the wording as well. That extra <b>uses your AI account</b>. It never summarises, and a part that fails its check is shown as transcribed.</p>
+        </li>
+
+        <!-- 7:27 -->
+        <li class="stop" id="stop-page">
+          <div class="stop-when">
+            <svg class="dial" viewBox="0 0 56 56" aria-hidden="true"><circle class="dial-face" cx="28" cy="28" r="25"/><path class="dial-wedge" d="M28 28L44.45 18.5A19 19 0 0 1 33.87 46.07Z"/><path class="dial-ticks" d="M28 6.500v4M49.500 28h-4M28 49.500v-4M6.500 28h4"/><path class="dial-hour" d="M28 28L20.43 35.98"/><path class="dial-min" d="M28 28L33.25 44.17"/><circle class="dial-pin" cx="28" cy="28" r="2.400"/></svg>
+            <p class="stop-time"><time datetime="19:27">7:27</time></p>
+          </div>
+          <div class="stop-card">
+            <div class="stop-text">
+              <p class="stop-step"><span class="step-name">4 · Study page</span><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+              <h3>Go back to the parts that did not make sense.</h3>
+              <p>The study page lines the slides up with the video and the transcript. The current slide and paragraph follow the video, and a click on a slide or a time jumps there.</p>
+              <p>It works with slides in a PDF or a PowerPoint file, and it is one page saved next to the lecture, so it opens offline.</p>
+            </div>
+            <div class="mock" role="img" aria-label="Drawing of the study page. On the left the video is at 08:25 with slide 4, Preload and the Frank-Starling law, and the list of slides below it. On the right, the transcript paragraph being spoken at 08:25 is highlighted.">
+              <div class="win sp">
+                <div class="sp-bar"><b>Cardiac output and what sets it</b><span>Slide 4 of 9</span></div>
+                <div class="sp-body">
+                  <div class="sp-video">
+                    <div class="frame">
+                      <div class="slide slide-on">
+                        <p class="slide-n">Slide 4</p>
+                        <p class="slide-h">Preload and the Frank-Starling law</p>
+                        <p class="slide-p">A larger EDV gives a larger stroke volume.</p>
+                        <svg class="slide-g"><use href="#g-starling"/></svg>
+                      </div>
+                    </div>
+                    <div class="sp-transport"><svg class="ic ic-fill"><use href="#i-play"/></svg><span class="rail"><span class="rail-fill rail-fill-static"></span></span><span class="cite cite-on">08:25</span></div>
+                  </div>
+                  <ul class="sp-slides">
+                    <li><span class="n">3</span><span>Three determinants of stroke volume</span></li>
+                    <li class="is-now"><span class="n">4</span><span>Preload and the Frank-Starling law</span></li>
+                    <li><span class="n">5</span><span>Why the Frank-Starling mechanism works</span></li>
+                    <li><span class="n">6</span><span>Afterload</span></li>
+                  </ul>
+                  <div class="sp-text">
+                    <p><span class="cite">08:07</span><span>More blood in the ventricle at the end of filling means more stretch, means more preload.</span></p>
+                    <p class="is-now"><span class="cite cite-on">08:25</span><span>If you increase the end-diastolic volume, the ventricle responds by ejecting a bigger stroke volume.</span></p>
+                    <p><span class="cite">08:47</span><span>Within limits, the heart pumps out whatever volume is returned to it.</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="mn">Slides are matched to what is said. Where the match is unsure, the slide is marked as approximate. Without slides you still get the video and the transcript together. <a href="guides/slides-with-lecture-recording.html">How to sync slides with a recording</a>.</p>
+        </li>
+
+        <!-- 7:31 -->
+        <li class="stop" id="stop-pack">
+          <div class="stop-when">
+            <svg class="dial" viewBox="0 0 56 56" aria-hidden="true"><circle class="dial-face" cx="28" cy="28" r="25"/><path class="dial-wedge" d="M28 28L44.45 18.5A19 19 0 0 1 26.01 46.9Z"/><path class="dial-ticks" d="M28 6.500v4M49.500 28h-4M28 49.500v-4M6.500 28h4"/><path class="dial-hour" d="M28 28L20.15 35.71"/><path class="dial-min" d="M28 28L26.22 44.91"/><circle class="dial-pin" cx="28" cy="28" r="2.400"/></svg>
+            <p class="stop-time"><time datetime="19:31">7:31</time></p>
+          </div>
+          <div class="stop-card">
+            <div class="stop-text">
+              <p class="stop-step"><span class="step-name">5 · Study pack</span><span class="tag tag-pro">Pro</span><span class="tag tag-ai">Uses your AI</span></p>
+              <h3>A study guide, a quiz and flashcards.</h3>
+              <p>The study guide gives the big picture and the key ideas as questions with explanations, in the lecturer's own words where it matters. With it come a practice quiz and flashcards, which also export to Anki. Every part cites the minute and slide it came from.</p>
+              <p>Before anything is sent you see what goes, to which AI account, and roughly how much AI use it takes. Then it runs in the background for one to three minutes.</p>
+            </div>
+            <div class="mock" role="img" aria-label="Drawing of the sheet shown before a study pack is made, headed Before the AI reads this lecture. It makes a study guide, deeper review sheets, a practice quiz and self-test, and flashcards. It sends the lecture's transcript, and the text and speaker notes of its slides, to Claude, your subscription; pictures of the slides are not sent. It is sent from this computer, because StreamSnag has no servers. In all it takes about 20 requests from your plan's allowance. The cost line says it counts toward your Claude plan's limits, and that AI use is billed by your own provider and is never part of StreamSnag's price.">
+              <div class="win sheet">
+                <p class="sheet-title">Before the AI reads this lecture</p>
+                <p class="sheet-sub">Exactly what happens, before anything is sent.</p>
+                <dl>
+                  <div><dt>Makes</dt><dd><b>Study guide, Deeper review sheets, Practice quiz and self-test, Flashcards</b></dd></div>
+                  <div><dt>Sends</dt><dd><b>This sends the lecture's transcript, and the text and speaker notes of its slides, to Claude (your subscription).</b> Pictures of the slides are not sent.</dd></div>
+                  <div><dt>To</dt><dd><b>Claude (your subscription)</b> Sent from this computer. StreamSnag has no servers.</dd></div>
+                  <div><dt>AI use</dt><dd><b>In all about 20 requests from your plan's allowance.</b></dd></div>
+                  <div><dt>Cost</dt><dd><b>Counts toward your Claude plan's limits.</b> AI use is billed by your own provider and is never part of StreamSnag's price.</dd></div>
+                </dl>
+                <p class="sheet-btns"><span class="ui-btn">Not now</span><span class="ui-btn ui-btn-main">Make the study pack</span></p>
+              </div>
+            </div>
+          </div>
+          <p class="mn"><b>This step runs on your own AI account.</b> AI use is never part of the StreamSnag price and is never paid to us. On a Claude or ChatGPT subscription you already have it costs nothing extra and counts toward your plan's limits. With a pay-as-you-go key, a 28-minute lecture cost about US$0.80 on Claude Sonnet on our own runs. <a href="#ai-cost">More on AI costs</a>. The pack is written from the lecture; a box that explains something from outside it is always labelled “Beyond the lecture”. What AI writes can be wrong, which is why every part cites its minute. <a href="guides/lecture-to-study-guide.html">How to make a study guide and quiz</a>.</p>
+        </li>
+
+        <!-- 7:40 -->
+        <li class="stop" id="stop-cards">
+          <div class="stop-when">
+            <svg class="dial" viewBox="0 0 56 56" aria-hidden="true"><circle class="dial-face" cx="28" cy="28" r="25"/><path class="dial-wedge" d="M28 28L44.45 18.5A19 19 0 0 1 11.55 37.5Z"/><path class="dial-ticks" d="M28 6.500v4M49.500 28h-4M28 49.500v-4M6.500 28h4"/><path class="dial-hour" d="M28 28L19.57 35.07"/><path class="dial-min" d="M28 28L13.28 36.5"/><circle class="dial-pin" cx="28" cy="28" r="2.400"/></svg>
+            <p class="stop-time"><time datetime="19:40">7:40</time></p>
+          </div>
+          <div class="stop-card">
+            <div class="stop-text">
+              <p class="stop-step"><span class="step-name">6 · Review cards</span><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+              <h3>First review done.</h3>
+              <p>You have read the lecture, gone back into the video where it mattered, and seen all nine cards once. StreamSnag brings them back over the coming days, with the due cards from every lecture in one place.</p>
+              <p>Every card has <strong>Show me in the lecture</strong>, which opens the video at that minute and slide.</p>
+            </div>
+            <div class="mock" role="img" aria-label="Drawing of a review card from the sample lecture. Question: Frank-Starling curve: how does more contractility move the ventricle, compared with more preload? Answer: Onto a higher curve. It shows the lecturer's words, the source 20:20, slide 7, a Show me in the lecture button, and the choices Again, Hard, Good and Easy.">
+              <div class="win bigcard">
+                <p class="bigcard-src"><span>PHYS201 · Cardiac output and what sets it</span><span>Card 9 of 9</span></p>
+                <p class="bigcard-q">Frank-Starling curve: how does more contractility move the ventricle, compared with more preload?</p>
+                <p class="bigcard-a">Onto a higher curve</p>
+                <blockquote class="said">
+                  <span class="said-label">In the lecturer's words</span>
+                  <p>“More preload moves you along the same curve; more contractility moves you onto a higher curve.”</p>
+                </blockquote>
+                <p class="bigcard-foot"><span class="cite cite-on">20:20 · slide 7</span><span class="ui-btn">Show me in the lecture</span></p>
+                <ul class="grades">
+                  <li><b>Again</b><span>1 min</span></li>
+                  <li><b>Hard</b><span>6 min</span></li>
+                  <li class="is-picked"><b>Good</b><span>10 min</span></li>
+                  <li><b>Easy</b><span>4 days</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <p class="mn">Review progress stays on your computer. Prefer Anki? Each study pack also saves a flashcards file you can import there. <a href="guides/lecture-to-flashcards.html">How to turn a lecture into flashcards</a>.</p>
+        </li>
+      </ol>
+
+      <div class="after-evening">
+        <div>
+          <p class="stop-step"><span class="step-name">Automation</span><span class="tag tag-pro">Pro</span><span class="tag tag-ai">Your AI for the AI steps</span></p>
+          <h3>Or save it and walk away.</h3>
+          <p>Choose what should happen when a lecture finishes saving: the transcript, the reading edition, the study page, the study pack. It is waiting when you come back. In the popup this is one switch, called Autopilot. All of it is off until you turn it on, and the first time it pauses before the AI step to show you what will be sent.</p>
         </div>
         <div>
-          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-shield"/></svg></span>
-          <div>
-            <h3>Nothing phones home</h3>
-            <p>No servers, accounts, analytics or ads. Everything stays on your computer except the downloads themselves and the AI requests you choose to make.</p>
-          </div>
+          <p class="stop-step"><span class="step-name">No captions</span><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+          <h3>If the lecture has no captions.</h3>
+          <p>Pro turns the speech into text on your own computer, with no minute limits. Nothing is uploaded and no AI account is used. It needs the small helper program and a one-time download of about 135 MB. It is set up for English; a larger model covers 25 European languages. An hour of lecture took under a minute on our fast desktop, and an older laptop can need several minutes.</p>
         </div>
         <div>
-          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-globe"/></svg></span>
-          <div>
-            <h3>Why it needs access to all sites</h3>
-            <p>A video can be on any site, and seeing which media files a page loads is how StreamSnag finds them. The privacy page lists each permission and what it is used for.</p>
-          </div>
-        </div>
-        <div>
-          <span class="badge" aria-hidden="true"><svg class="ic"><use href="#i-bag"/></svg></span>
-          <div>
-            <h3>Why it isn't in the Chrome Web Store</h3>
-            <p>The store doesn't allow extensions that can download from YouTube, and the optional <span class="nb">yt-dlp</span> helper can. So StreamSnag is shared through GitHub instead.</p>
-          </div>
+          <p class="stop-step"><span class="step-name">A caveat</span></p>
+          <h3>About those times.</h3>
+          <p>They are an example with our 27-minute sample lecture, which has captions. A longer lecture is a longer read, a study pack takes one to three minutes, and 7:40 is a first pass at one lecture, not the end of a backlog.</p>
         </div>
       </div>
+      <p class="drawn">The pictures in this section are drawings of StreamSnag, filled in with the sample lecture. The real outputs are just below.</p>
+    </div>
+  </section>
 
-      <div class="safe-links">
-        <a class="link-arrow" href="https://github.com/cspergel/streamsnag/blob/main/PRIVACY.md" rel="noopener">Read the privacy details <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <a class="link-arrow" href="https://github.com/cspergel/streamsnag/blob/main/SECURITY.md" rel="noopener">Security policy <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <span class="muted">This page keeps the same promise: no scripts, web fonts, cookies or analytics.</span>
+  <!-- ============ See what it makes ============ -->
+  <section class="section" id="gallery" aria-labelledby="gallery-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="gallery-title">See what it makes.</h2>
+        <p class="lede">Real output you can open, from two lectures we wrote for the purpose. Nothing here comes from anyone's course. Start with the reading edition.</p>
+      </div>
+
+      <!-- Lecture one -->
+      <article class="lec" aria-labelledby="lec1-title">
+        <header class="lec-head">
+          <span class="lec-n">Lecture one · PHYS201, lecture 6</span>
+          <h3 id="lec1-title">Cardiac output and what sets it</h3>
+          <p class="lec-meta">An invented physiology lecture: 27 minutes, 9 slides, with captions.</p>
+        </header>
+        <div class="samples">
+          <div class="sample sample-read">
+            <div class="sample-top"><h4 class="sample-kind">Reading edition</h4><span class="tag tag-plain">No AI used</span></div>
+            <p class="sample-what">The whole lecture as a document you read instead of watching: 3,194 words, a 14-minute read, with a time beside every paragraph.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="paper-slide"><b>Slide 4</b>Preload and the Frank-Starling law</p>
+              <div class="para"><span class="cite">08:07</span><p>So in practice we use the end-diastolic volume, or sometimes the end-diastolic pressure, as a stand-in for preload. More blood in the ventricle at the end of filling means more stretch, means more preload.</p></div>
+              <div class="para"><span class="cite">08:47</span><p>Within limits, the heart pumps out whatever volume is returned to it. So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis, and the curve rises steeply at first and then flattens off at high volumes.</p></div>
+              <div class="para"><span class="cite">09:17</span><p>A little bit of history, because I like it. Otto Frank was a German physiologist working on frog hearts in the eighteen nineties, and Ernest Starling was in London about twenty years later with his heart-lung preparation in dogs. They never worked together.</p></div>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/reading-edition.html">Open the reading edition <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a><span class="also"><a href="sample/reading-edition-no-slides.html">The same lecture made without its slides</a>: two of its four parts are headed by their own terms, two by number and minute.</span></p>
+          </div>
+
+          <div class="sample">
+            <div class="sample-top"><h4 class="sample-kind">Study guide</h4><span class="tag tag-ai">Written by AI</span></div>
+            <p class="sample-what">5 key ideas, 2 review sheets, key figures, easily confused pairs, formulas and a glossary.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="ex-label">Key idea 2</p>
+              <p class="ex-q">How does a larger end-diastolic volume give a larger stroke volume without extra calcium?</p>
+              <p class="ex-cites"><span class="cite">07:53 · slide 4</span></p>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/study-guide.html">Open the study guide <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+          </div>
+
+          <div class="sample">
+            <div class="sample-top"><h4 class="sample-kind">Flashcards and quiz</h4><span class="tag tag-ai">Written by AI</span></div>
+            <p class="sample-what">9 flashcards and 8 questions, each with its minute, its slide and the lecturer's words.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="ex-label">Flashcard</p>
+              <p class="ex-q">Afterload: what happens to stroke volume when afterload rises with preload and contractility unchanged?</p>
+              <p class="ex-a">Stroke volume falls</p>
+              <p class="ex-cites"><span class="cite">14:59 · slide 6</span></p>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/study-guide.html#quiz">Open the quiz <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a><span class="also"><a href="sample/study-guide.html#cards">The flashcards</a> · <a href="sample/cardiac-flashcards.txt" download>Anki file</a></span></p>
+          </div>
+
+          <div class="sample sample-wide">
+            <div class="sample-top"><h4 class="sample-kind">Study page</h4><span class="tag tag-plain">No AI used</span></div>
+            <p class="sample-what">The slides lined up with the transcript. This sample has no video, so choose a slide or a time and watch the other side follow.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="ex-row"><span class="n">4</span><span>Preload and the Frank-Starling law</span><span class="cite">08:07</span></p>
+              <p class="ex-row"><span class="n">5</span><span>Why the Frank-Starling mechanism works</span><span class="cite">11:02</span></p>
+              <p class="ex-row"><span class="n">6</span><span>Afterload</span><span class="cite">14:03</span></p>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/study-page.html">Open the study page <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Lecture two -->
+      <article class="lec" aria-labelledby="lec2-title">
+        <header class="lec-head">
+          <span class="lec-n">Lecture two · Statistics for the life sciences, lecture 9</span>
+          <h3 id="lec2-title">From a sample to a claim: standard error, confidence intervals and p-values</h3>
+          <p class="lec-meta">An invented statistics lecture: 28 minutes, 11 slides, with captions.</p>
+        </header>
+        <div class="samples">
+          <div class="sample sample-read">
+            <div class="sample-top"><h4 class="sample-kind">Reading edition</h4><span class="tag tag-plain">No AI used</span></div>
+            <p class="sample-what">The whole lecture as a document you read instead of watching: 3,183 words, a 14-minute read, with a time beside every paragraph. It has two sentences marked as the lecturer's emphasis and five spoken lists set out as lists.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="paper-slide"><b>Slide 3</b>The sampling distribution of the mean</p>
+              <div class="para"><span class="cite">04:11</span><p>So let's do a thought experiment. Imagine we did not run the survey once, but thousands of times. Each time, a fresh sixty-four students, each time we write down the mean.</p></div>
+              <div class="para"><span class="cite">04:45</span><p>It is the sampling distribution of the mean, and it is the most important idea in this course. It is a distribution of a statistic, not of individual people.</p></div>
+              <div class="para"><span class="cite">05:21</span><p>Second, its spread is the population standard deviation divided by the square root of the sample size. Sigma over root n. And third, and this is the central limit theorem, its shape is approximately normal, the bell curve, even if the population itself is not normal at all.</p></div>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/stats-reading-edition.html">Open the reading edition <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+          </div>
+
+          <div class="sample">
+            <div class="sample-top"><h4 class="sample-kind">Study guide</h4><span class="tag tag-ai">Written by AI</span></div>
+            <p class="sample-what">5 key ideas, 2 review sheets, key figures, easily confused pairs, formulas and a glossary.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="ex-label">Key idea 3</p>
+              <p class="ex-q">How is a 95% confidence interval built, and what does “95%” actually refer to?</p>
+              <p class="ex-cites"><span class="cite">09:54 · slide 5</span></p>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/stats-study-guide.html">Open the study guide <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+          </div>
+
+          <div class="sample">
+            <div class="sample-top"><h4 class="sample-kind">Flashcards and quiz</h4><span class="tag tag-ai">Written by AI</span></div>
+            <p class="sample-what">9 flashcards and 8 questions, each with its minute, its slide and the lecturer's words.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="ex-label">Flashcard</p>
+              <p class="ex-q">Sampling distribution of the mean: how is it built?</p>
+              <p class="ex-a">Histogram of sample means from thousands of repeated surveys</p>
+              <p class="ex-cites"><span class="cite">04:45 · slide 3</span></p>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/stats-study-guide.html#quiz">Open the quiz <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a><span class="also"><a href="sample/stats-study-guide.html#cards">The flashcards</a> · <a href="sample/stats-flashcards.txt" download>Anki file</a></span></p>
+          </div>
+
+          <div class="sample sample-wide">
+            <div class="sample-top"><h4 class="sample-kind">Study page</h4><span class="tag tag-plain">No AI used</span></div>
+            <p class="sample-what">The slides lined up with the transcript: 9 of the 11 slides matched to what is said, and 2 marked as approximate. This sample has no video.</p>
+            <div class="sample-ex" aria-hidden="true">
+              <p class="ex-row"><span class="n">3</span><span>The sampling distribution of the mean</span><span class="cite">04:11</span></p>
+              <p class="ex-row"><span class="n">4</span><span>Standard error</span><span class="cite">06:35</span></p>
+              <p class="ex-row"><span class="n">6</span><span>What “95 % confident” means</span><span class="cite">11:32</span></p>
+            </div>
+            <p class="sample-links"><a class="link-arrow sample-open" href="sample/stats-study-page.html">Open the study page <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+          </div>
+        </div>
+      </article>
+
+      <div class="gallery-note">
+        <p class="mn"><b>Which parts AI wrote.</b> The study guides, quizzes and flashcards were written by AI from each lecture's captions and slide text, then checked against them. They can still be wrong, and each guide says so on its first screen. The reading editions and study pages were made without AI, by the current version of StreamSnag.</p>
+        <p class="mn"><b>What the second pack took.</b> The statistics pack was 20 AI requests in 1 minute 31 seconds and cost US$0.80 on Claude Sonnet. Of 65 statements pulled from the lecture, 61 passed the quote check. Of 17 flashcards written, 9 were kept.</p>
       </div>
     </div>
   </section>
 
-  <!-- FAQ -->
+  <!-- ============ Only the downloader ============ -->
+  <section class="section band" id="downloader" aria-labelledby="downloader-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="downloader-title">Only here for the downloader?</h2>
+        <p class="lede">Then that is all you need to install it for. It is free forever and open source, and nothing is held back to sell you Pro.</p>
+      </div>
+
+      <ul class="nones" aria-label="What the free downloader costs and limits">
+        <li><b>US$0</b><span>forever</span></li>
+        <li><b>No limits</b><span>on files or on streams</span></li>
+        <li><b>No ads</b><span>and no nagging to upgrade</span></li>
+        <li><b>No account</b><span>nothing to sign up for</span></li>
+      </ul>
+
+      <ul class="handles" aria-label="What the free downloader handles">
+        <li><h3>Video files</h3><p>The file a page plays, saved at the quality you choose.</p></li>
+        <li><h3>Streams</h3><p>HLS and DASH, the kinds most lecture players use, put together into one download.</p></li>
+        <li><h3>Whole course pages</h3><p>A review step opens first: file names in course order, copies and previews left unticked. On a long page a row of squares shows what you already have.</p></li>
+        <li><h3>PDFs and PowerPoint files</h3><p>The slides and handouts a lesson links to, saved beside the video.</p></li>
+        <li><h3>Captions as a transcript</h3><p>A video's existing captions saved as text you can read and search, with times.</p></li>
+        <li><h3>Converting</h3><p>An MP3 of the sound, or a smaller copy of the video.</p></li>
+      </ul>
+
+      <p class="cannot"><b>What it cannot save:</b> protected (DRM) streams. StreamSnag says so plainly and does not try to get round the protection. Live broadcasts cannot be saved either.</p>
+
+      <div class="more-than" id="more-than">
+      <div class="section-head">
+        <h2 id="more-than-title">More than lectures.</h2>
+        <p class="lede">It is built for lectures, and it does the same things for other recordings that play in your browser, on a page you are allowed to save from.</p>
+      </div>
+      <ul class="kinds" aria-labelledby="more-than-title">
+        <li><h3>Webinars</h3><p>Save the recording from its replay page, with the slides or handouts the page links to.</p></li>
+        <li><h3>Training recordings</h3><p>Course and compliance videos behind your own login, saved in order with the names the page gives them.</p></li>
+        <li><h3>Podcasts</h3><p>Audio is found and saved too, named after the episode. An MP3 can also be made from a saved video.</p></li>
+        <li><h3>Recorded talks</h3><p>Conference and seminar recordings, with their captions saved as a transcript when the page has them.</p></li>
+      </ul>
+      <p class="mn kinds-note">With Pro, a saved recording that has captions, or that you transcribe on your computer, can be turned into a reading edition and a study pack in the same way as a lecture. Those tools were built for, and tested on, someone teaching, usually with slides: a conversation or a panel reads less tidily. Live broadcasts and protected video stay out, as above.</p>
+      </div>
+
+      <div class="dl-foot">
+        <!-- PLACEHOLDER (install link): see the note in the header. -->
+        <div class="btn-row">
+          <a class="btn btn-primary" href="#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+          <a class="btn btn-quiet" href="guides/save-a-lecture.html">How to download a lecture</a>
+          <a class="btn btn-quiet" href="guides/download-a-whole-course.html">How to download a whole course</a>
+        </div>
+        <p class="mn">The free core is published under the GNU General Public License, version 3, so the code that runs can be read. <a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Free and Pro ============ -->
+  <section class="section" id="plans" aria-labelledby="plans-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="plans-title">Free and Pro, side by side.</h2>
+        <p class="lede">Saving a lecture is free. Turning it into something you can study is Pro. Where a step uses an AI account, the row says so.</p>
+      </div>
+
+      <div class="fp-wrap">
+        <table class="fp">
+          <caption class="vh">What is free and what is Pro</caption>
+          <thead>
+            <tr><th scope="col">What it does</th><th scope="col">Free</th><th scope="col">Pro</th></tr>
+          </thead>
+          <tbody>
+            <tr class="group"><th scope="rowgroup" colspan="3">Save and keep</th></tr>
+            <tr><th scope="row">Find and save the videos on a page: files and streams</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">Download all, with a review step first</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">Files on the page: PDFs and PowerPoint files</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">Convert a download to an MP3 or a smaller copy</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">Save a video's existing captions as a transcript</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">Download limits, ads, nagging</th><td class="txt">None</td><td class="txt">None</td></tr>
+            <tr class="line-row"><td colspan="3"><p class="free-line"><span>Everything above this line is free</span><span>Everything below it is Pro</span></p></td></tr>
+            <tr class="group"><th scope="rowgroup" colspan="3">Study</th></tr>
+            <tr><th scope="row"><b>Reading edition</b>: the whole lecture as a readable document, every paragraph linked to its minute (tidying the wording with your own AI is optional) <span class="tag tag-plain">No AI account</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Transcription</b> on your own computer, for lectures with no captions. No minute limits <span class="tag tag-plain">No AI account</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Study pack</b>: study guide, quiz, and flashcards with Anki export <span class="tag tag-ai">Uses your AI</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Study page</b>: slides lined up with the video and the transcript <span class="tag tag-plain">No AI account</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Slide matching</b> for PowerPoint and PDF slides <span class="tag tag-plain">No AI account</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Review cards</b>: your due flashcards from every lecture <span class="tag tag-plain">No AI account</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Automation</b> after a download <span class="tag tag-ai">Your AI for the AI steps</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr class="group"><th scope="rowgroup" colspan="3">What you pay</th></tr>
+            <tr><th scope="row">To StreamSnag</th><td class="txt">US$0</td><td class="txt">US$39.97 a year, US$4.99 a month, or US$99 once</td></tr>
+            <tr><th scope="row">To your AI provider, for the steps tagged “your AI”</th><td class="txt">Nothing needed</td><td class="txt">Nothing extra on a Claude or ChatGPT subscription you already have. A few cents to about US$1.50 a lecture with a pay-as-you-go key. Never to StreamSnag</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Pricing ============ -->
+  <section class="section band" id="pricing" aria-labelledby="pricing-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="pricing-title"><span class="h2-part">Saving is free.</span> <span class="h2-part">Studying is US$39.97&nbsp;a&nbsp;year.</span> <span class="h2-part">The AI parts run on your own AI account.</span></h2>
+        <p class="lede">Or US$4.99 a month, or US$99 once for life. One key works on the computers you use and in both editions of StreamSnag, the one from your browser's store and the one from this site. Try Pro on one whole lecture first, with no card. If you already pay for a Claude or ChatGPT subscription, the AI parts cost you nothing extra.</p>
+      </div>
+
+      <div class="plans">
+        <div class="plan plan-free">
+          <h3>Free <span class="tag tag-free">Forever</span></h3>
+          <p class="price" data-offer="Free downloader" data-price="0"><span class="amount">US$0</span></p>
+          <p class="plan-line" data-desc-for="Free downloader">The downloader, open source. No limits, no ads, no nagging.</p>
+          <ul class="ticks">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Find and save videos: files and streams</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Download all, with a review step</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>PDFs and PowerPoint files on the page</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Converting to an MP3 or a smaller copy</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Existing captions saved as a transcript</li>
+          </ul>
+          <!-- PLACEHOLDER (install link): see the note in the header. -->
+          <div class="btn-row"><a class="btn btn-quiet" href="#install" data-install>Get StreamSnag</a></div>
+        </div>
+
+        <div class="plan plan-pro inverse" id="buy">
+          <h3>Pro</h3>
+          <ul class="price-list" aria-label="Three ways to pay for Pro, and what the AI costs">
+            <li class="is-first" data-offer="Pro, yearly" data-price="39.97"><span class="amount">US$39.97</span><span class="per">a year</span><span class="price-what" data-desc-for="Pro, yearly">Save a third against paying monthly</span></li>
+            <li data-offer="Pro, monthly" data-price="4.99"><span class="amount">US$4.99</span><span class="per">a month</span><span class="price-what" data-desc-for="Pro, monthly">Cancel at any time</span></li>
+            <li data-offer="Pro, once for life" data-price="99.00"><span class="amount">US$99</span><span class="per">once</span><span class="price-what" data-desc-for="Pro, once for life">Yours for life</span></li>
+            <li class="price-ai">
+              <span class="price-ai-h">Plus your own AI account, for the AI parts only</span>
+              <span class="price-ai-row"><span class="amount">+ nothing extra</span><span class="per">with a Claude or ChatGPT subscription you already have. Each run counts toward that plan's limits.</span></span>
+              <span class="price-ai-row"><span class="amount">+ a few cents to about US$1.50</span><span class="per">a lecture with a pay-as-you-go key, depending on the provider.</span></span>
+              <span class="per">Either way it is between you and your AI provider. It is never paid to StreamSnag.</span>
+            </li>
+          </ul>
+          <p class="plan-line">Everything in Free, and the study tools.</p>
+          <ul class="ticks">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Reading edition</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Transcription on your own computer</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Study page, with PowerPoint and PDF slide matching</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Study pack: guide, quiz, flashcards, Anki export</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Review cards</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Automation after a download</li>
+          </ul>
+          <p class="plan-ai"><b>Which parts use AI.</b> The study pack, and the optional tidying of a reading edition, run on your own AI account. <span data-ai-note>AI use is never part of StreamSnag's price. With a Claude or ChatGPT subscription you already have there is no extra charge: each run counts toward your plan's limits. With a pay-as-you-go key it is a few cents to about US$1.50 a lecture, depending on the provider.</span> Transcription and the reading edition's layout need no AI at all. <a href="#ai-cost">What the AI costs, measured</a>.</p>
+          <!-- PLACEHOLDER (buy links): the payment account does not exist yet. Replace href="#buy" on the three links below with the checkout addresses for the yearly plan (data-plan="yearly"), the monthly plan (data-plan="monthly") and the lifetime key (data-plan="lifetime"). The yearly plan stays first. -->
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#buy" data-plan="yearly" aria-disabled="true">Yearly, US$39.97 a year: available soon</a>
+            <a class="btn btn-quiet" href="#buy" data-plan="monthly" aria-disabled="true">Monthly, US$4.99 a month: available soon</a>
+            <a class="btn btn-quiet" href="#buy" data-plan="lifetime" aria-disabled="true">Once, US$99: available soon</a>
+          </div>
+          <p class="plan-foot"><strong>Try it first:</strong> without a key, Pro takes one lecture from start to finish, free. No card. The yearly and monthly plans can be cancelled at any time, and every purchase can be refunded within 7 days, no reason needed. Sold by Spergel Health AI LLC.</p>
+          <p class="plan-foot"><strong>Changed your mind?</strong> What you paid for Pro in the last 12 months counts toward the lifetime key, up to the price of one year. Write to <a href="mailto:support@streamsnag.app">support@streamsnag.app</a>: we send you a code for the difference and cancel your subscription. A person does this by hand, so it is not instant.</p>
+        </div>
+      </div>
+
+      <div class="own-ai" id="ai-cost">
+        <h3>AI costs are not included in the price. <span class="tag tag-ai">Uses your AI</span></h3>
+        <div class="own-ai-body">
+          <div class="own-ai-text">
+            <p>StreamSnag has no servers, so it cannot run an AI for you. The steps tagged “your AI” are written by an AI account that is <strong>your own</strong>: a Claude or ChatGPT subscription you already have, or a pay-as-you-go key for Anthropic, OpenAI, Gemini, DeepSeek or OpenRouter. What you spend there, if anything, is between you and that provider. It is never paid to StreamSnag.</p>
+            <p><strong>With a Claude or ChatGPT subscription you already have, there is no extra charge.</strong> Each run counts toward your plan's limits, and a plan can run out part-way through a busy day. <strong>With a pay-as-you-go key</strong> (Anthropic, OpenAI, DeepSeek, OpenRouter) you are billed for what the run uses: the table shows what that came to. Google Gemini has a free daily allowance and then charges your Google account. We have not tested whether a whole lecture fits in it, and a free allowance can run out part-way.</p>
+            <p>Before every AI run you see what will be sent, to which provider, and an estimate of how much AI use it takes. An estimate is not a guarantee, and your provider may have limits of its own. Saving, transcription, the reading edition, the study page and reviewing cards use no AI account at all.</p>
+          </div>
+          <div>
+            <table class="cost">
+              <caption>What a study pack cost on our own runs, with a pay-as-you-go key</caption>
+              <thead>
+                <tr><th scope="col">Lecture</th><th scope="col">AI account</th><th scope="col">Cost</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">64 minutes</th><td>Claude Sonnet</td><td>about US$1.50</td></tr>
+                <tr><th scope="row">64 minutes</th><td>DeepSeek Flash</td><td>US$0.04 to 0.08</td></tr>
+                <tr><th scope="row">28 minutes</th><td>Claude Sonnet</td><td>about US$0.80</td></tr>
+              </tbody>
+            </table>
+            <p class="cost-note">Measured in November 2026: the 64-minute pack took about 30 AI requests. Prices are set by the AI providers and change. A longer lecture costs more, and your lectures and settings will give different numbers.</p>
+          </div>
+        </div>
+      </div>
+
+      <ul class="terms-row">
+        <li>
+          <h3>The trial</h3>
+          <p>One lecture, start to finish, free: transcription, the reading edition and the study pack. No card and no account with us. The study pack still needs an AI account of your own: a Claude or ChatGPT subscription you already have costs nothing extra, and a pay-as-you-go key is charged by its provider.</p>
+        </li>
+        <li>
+          <h3>Refunds</h3>
+          <p>A full refund within 7 days of buying, no reason needed, on the yearly plan, the monthly plan and the lifetime key alike. Reply to your receipt or write to <a href="mailto:support@streamsnag.app">support@streamsnag.app</a>.</p>
+        </li>
+        <li>
+          <h3>Keys for access needs</h3>
+          <p>If you need transcription because of a disability or another access need and cannot pay, write to <a href="mailto:support@streamsnag.app">support@streamsnag.app</a> and we will send a key.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Questions ============ -->
   <section class="section" id="faq" aria-labelledby="faq-title">
     <div class="wrap faq">
       <div class="faq-head">
-        <p class="kicker">Questions</p>
         <h2 id="faq-title">Short answers.</h2>
-        <p class="muted">Something else? <a href="https://github.com/cspergel/streamsnag/issues" rel="noopener">Open an issue on GitHub</a>.</p>
+        <p>Something else? <a href="#contact">Write to us</a>.</p>
       </div>
-
       <div class="faq-list">
         <details open>
-          <summary>Is it free? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-          <p>Yes. There are no accounts, no limits and no ads. The code is open source under the MIT license.</p>
+          <summary>Is it safe, and is it private? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>StreamSnag runs on your computer. There is no account, no analytics and no ads, and we run no servers that could receive your lectures, transcripts or study material. The free core is open source, so the code can be read.</p>
+            <p>It needs access to the pages you visit because a lecture can be on any site, and seeing which video files a page loads is how it finds them. The <a href="privacy/">privacy page</a> says exactly what stays and what leaves, and there is a guide to <a href="guides/private-offline-lecture-tools.html">studying from lectures without uploading them</a>.</p>
+          </div>
         </details>
         <details>
-          <summary>Does it work on the site my course is on? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-          <p>It works on pages that play ordinary video files or HLS and DASH streams, and with common embedded players such as Vimeo, Wistia and Loom. Press play first, because many players only load the video once it starts. With the optional helper, <span class="nb">yt-dlp</span> handles more sites. It will not work where the video is DRM-protected or encrypted. The quickest way to find out is to try it.</p>
+          <summary>What leaves my computer? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>Two things, and only when you start them:</p>
+            <ul>
+              <li>The text you choose to send to your AI provider: a lecture's transcript and the text on its slides, with the speaker notes when the slides are a PowerPoint file. Slide pictures and the video are never sent. The smaller AI helpers in the popup (Ask your AI to find it, Summarize, Ask AI why) each show what they would send before they send it.</li>
+              <li>Your Pro key, when it is checked with our payment provider.</li>
+            </ul>
+            <p>Downloads come straight from the site you are on to your own folders.</p>
+          </div>
         </details>
         <details>
-          <summary>Why won't it save DRM-protected video? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-          <p>StreamSnag detects DRM-protected and encrypted streams and refuses them. It is made for videos you have the right to keep, and it does not try to get around protection.</p>
+          <summary>Which AI accounts work? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>A Claude or ChatGPT subscription you already have, or a key for Anthropic, OpenAI, Gemini, DeepSeek or OpenRouter. You choose one in Settings, and AI stays off until you do.</p>
+            <p>None of them is included in the StreamSnag price. On a subscription you already have there is nothing extra to pay; with a key you pay that provider, never us. <a href="#ai-cost">What AI use costs</a>.</p>
+          </div>
         </details>
         <details>
-          <summary>Do I need the helper? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-          <p>No. The extension finds and saves videos on its own. The helper adds merging into one MP4, playlists and harder sites through <span class="nb">yt-dlp</span>, saving to any folder, and the check for lectures you already have. Most people saving a course will want it.</p>
+          <summary>What if my AI allowance runs out? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>The run stops and StreamSnag tells you why. Nothing is charged by us, and what you had already saved or made stays where it is. You can run it again later, or choose another AI account in Settings.</p>
+            <p>Free allowances are the usual cause: they can do part of a study pack and run out part-way. The estimate before each run shows how much AI use it will take.</p>
+          </div>
         </details>
         <details>
-          <summary>Does it work in Firefox? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-          <p>Not yet. StreamSnag runs in Chrome, Edge and Brave.</p>
+          <summary>Which sites does it work on? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>Pages that play ordinary video files or HLS and DASH streams, including players built into a course page. Press play first, because many players only load the video once it starts.</p>
+            <p>When a page shows nothing, the popup offers <strong>Scan again</strong> and then <strong>Ask your AI to find it</strong>, which uses your own AI account and shows what would be sent first.</p>
+            <p>It does not work where the video is DRM-protected, and it does not try to. It runs in Chrome, Edge and Brave on a computer, not in Firefox and not on phones. The quickest way to find out about your course site is to try it, which is free.</p>
+          </div>
         </details>
         <details>
-          <summary>Do the AI features cost anything? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-          <p>StreamSnag charges nothing. The AI features are off by default, and if you turn them on they use your own Claude or ChatGPT subscription, or your own API key.</p>
+          <summary>Can I trust what the AI writes? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>Treat it like a careful classmate's notes. A study pack is written from facts found in the lecture, a checking pass removes what the lecture does not support, and every part points to its minute and slide. Where the guide adds an explanation from outside the lecture, it sits in a box labelled “Beyond the lecture”, and you can switch those boxes off. It can still be wrong, so check anything that matters against the lecture itself.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Am I allowed to save my lectures, or put them into an AI tool? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>That depends on your course. Many let you keep recordings for your own study and some do not, and some universities restrict putting lecture material into AI tools. Your school's rules, the site's terms and copyright law still apply, and the choice is yours.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What does Pro cost, and what does the AI cost? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>Pro is US$39.97 a year, US$4.99 a month, or US$99 once for life. The yearly plan saves a third against paying monthly. One key works on the computers you use and in both editions of StreamSnag. The first lecture is free from start to finish, with no card.</p>
+            <p>The study tools that use AI run on your own AI account. With a Claude or ChatGPT subscription you already have there is no extra charge: each run counts toward your plan's limits. With a pay-as-you-go key it was between a few cents and about US$1.50 a lecture on our own runs, depending on the provider. Either way it is between you and your AI provider, and never paid to StreamSnag. Transcription and the reading edition's layout need no AI at all.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Is there a limit on minutes or on the number of lectures? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>Not from us. Downloading has no limits, and transcription runs on your own computer, so there are no minutes to count. The study tools that use AI run on your own AI account, and that provider may have its own limits and charges.</p>
+          </div>
+        </details>
+        <details>
+          <summary>How do refunds and cancelling work? <svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <div>
+            <p>You can have a full refund within 7 days of buying, no reason needed, by replying to your receipt. That holds for the yearly plan, the monthly plan and the lifetime key. The key stops working when the refund is made. After 7 days a yearly or monthly plan can still be cancelled at any time and runs to the end of the year or month already paid for. A lifetime key has nothing to cancel. What you made stays yours and stays readable.</p>
+            <p>If you subscribe and later want the lifetime key, what you paid for Pro in the last 12 months counts toward it, up to the price of one year (US$39.97). Write to <a href="mailto:support@streamsnag.app">support@streamsnag.app</a>. We send a code for the difference and cancel the subscription. It is done by hand, on request.</p>
+          </div>
         </details>
       </div>
     </div>
   </section>
 
-  <!-- Closing -->
-  <section class="section" aria-labelledby="get-title">
-    <div class="wrap">
-      <div class="closing">
-        <div>
-          <h2 id="get-title">Start with your next lecture.</h2>
-          <p>Free, open source, and private. Get the latest release from GitHub and follow the three steps above.</p>
-        </div>
+  <!-- ============ Contact ============ -->
+  <section class="section band" id="contact" aria-labelledby="contact-title">
+    <div class="wrap contact">
+      <div class="contact-copy">
+        <h2 id="contact-title">Write to us.</h2>
+        <p><a class="mailto" href="mailto:support@streamsnag.app">support@streamsnag.app</a></p>
+        <p>There is no form and no ticket system. Email goes to the people who make StreamSnag, at Spergel Health AI LLC.</p>
+      </div>
+      <ul class="write-for" aria-label="What to write in for">
+        <li><b>A lecture it will not save</b><span>Send the address of the page and what StreamSnag showed. Course sites differ, and reports are how they get fixed.</span></li>
+        <li><b>A refund</b><span>Within 7 days of buying, no reason needed, whichever way you paid. Replying to your receipt works too.</span></li>
+        <li><b>Moving to the lifetime key</b><span>What you paid in the last 12 months counts toward it, up to the price of one year. We send a code for the difference.</span></li>
+        <li><b>A key for access needs</b><span>If you need transcription for access and cannot pay, say so and we will send a key.</span></li>
+        <li><b>A lost or shared key</b><span>Write from the address you bought with.</span></li>
+        <li><b>Something that looks wrong</b><span>A study guide that got a fact wrong, a slide matched to the wrong minute, a bug. Say which lecture step it was.</span></li>
+        <li><b>A question before buying</b><span>Whether it suits your course, your AI account or your computer.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Get it ============ -->
+  <section class="closing night" id="install" aria-labelledby="install-title">
+    <div class="wrap closing-row">
+      <h2 id="install-title">Start with tonight's lecture.</h2>
+      <div class="closing-act">
+        <p>StreamSnag is for Chrome, Edge and Brave on a computer. Save the lecture for free, then let Pro take that one lecture all the way to a study pack, and see whether it is worth US$39.97&nbsp;a&nbsp;year to you. The study pack runs on your own AI account: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key.</p>
+        <!-- PLACEHOLDER (install link): this is the main install button. It points at this section (#install) until the store listing or download exists. Replace the href of every [data-install] link on the site with the real install address. -->
+        <p><b>Not released yet.</b> When StreamSnag 1.6 is out, this button will lead to your browser's store.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">
-            <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
-            Get StreamSnag
-          </a>
-          <a class="btn btn-secondary" href="https://github.com/cspergel/streamsnag" rel="noopener">
-            <svg class="ic ic-fill" aria-hidden="true"><use href="#i-github"/></svg>
-            View on GitHub
-          </a>
+          <a class="btn btn-primary" href="#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+          <a class="btn btn-quiet" href="#gallery">See what it makes</a>
         </div>
+        <ol class="first-steps" aria-label="After you install it">
+          <li><span><b>Pin it to your toolbar.</b> The icon shows a number when a page has videos.</span></li>
+          <li><span><b>Open a lecture and press play.</b> Many players only load the video once it starts.</span></li>
+          <li><span><b>Click the StreamSnag icon.</b> The lecture is at the top, under On this page, with one button.</span></li>
+        </ol>
       </div>
     </div>
   </section>
-
 </main>
 
 <footer class="site-foot">
   <div class="wrap">
-    <div class="foot-top">
-      <a class="brand" href="#top">
-        <img src="icon.png" width="32" height="32" alt="">
-        <span>StreamSnag</span>
-      </a>
-      <ul class="foot-links">
-        <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">GitHub</a></li>
-        <li><a href="https://github.com/cspergel/streamsnag/releases/latest" rel="noopener">Latest release</a></li>
-        <li><a href="https://github.com/cspergel/streamsnag/blob/main/PRIVACY.md" rel="noopener">Privacy</a></li>
-        <li><a href="https://github.com/cspergel/streamsnag/blob/main/SECURITY.md" rel="noopener">Security</a></li>
-        <li><a href="https://github.com/cspergel/streamsnag/blob/main/LICENSE" rel="noopener">MIT license</a></li>
-      </ul>
+    <div class="foot-grid">
+      <div class="foot-about">
+        <a class="brand" href="./">
+          <svg class="mark" aria-hidden="true"><use href="#i-mark"/></svg>
+          <span>StreamSnag</span>
+        </a>
+        <p>Save your online lectures and actually study from them. Made by Spergel Health AI LLC, Florida, USA.</p>
+      </div>
+      <nav class="foot-col" aria-label="The product">
+        <h2>The product</h2>
+        <ul>
+          <li><a href="#read">Read the lecture</a></li>
+          <li><a href="#evening">How an evening goes</a></li>
+          <li><a href="#gallery">See what it makes</a></li>
+          <li><a href="#downloader">Only the downloader</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="compare/">Compared with a well-known download helper</a></li>
+        </ul>
+      </nav>
+      <nav class="foot-col" aria-label="Guides">
+        <h2>Guides</h2>
+        <ul>
+          <li><a href="guides/save-a-lecture.html">Download a lecture video</a></li>
+          <li><a href="guides/download-a-whole-course.html">Download a whole course</a></li>
+          <li><a href="guides/lecture-transcript.html">Transcribe a lecture</a></li>
+          <li><a href="guides/read-a-lecture.html">Read a lecture instead of watching</a></li>
+          <li><a href="guides/slides-with-lecture-recording.html">Sync slides with the recording</a></li>
+          <li><a href="guides/lecture-to-flashcards.html">Lecture to flashcards</a></li>
+          <li><a href="guides/lecture-to-study-guide.html">Study guide and practice quiz</a></li>
+          <li><a href="guides/private-offline-lecture-tools.html">Private, offline lecture tools</a></li>
+        </ul>
+      </nav>
+      <nav class="foot-col" aria-label="Legal and contact">
+        <h2>Legal and contact</h2>
+        <ul>
+          <li><a href="privacy/">Privacy</a></li>
+          <li><a href="terms/">Terms and the Pro licence</a></li>
+          <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code of the free core (GPL-3.0)</a></li>
+          <li><a href="mailto:support@streamsnag.app">support@streamsnag.app</a></li>
+        </ul>
+      </nav>
     </div>
     <div class="foot-notes">
-      <p>StreamSnag is free software under the MIT license. It refuses DRM-protected and encrypted streams and is meant for videos you have the right to keep.</p>
-      <p>Not affiliated with any video platform, any other download helper, Anthropic or OpenAI. Product names mentioned here belong to their owners.</p>
+      <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
+      <p>The product pictures on this site are drawings, and every sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

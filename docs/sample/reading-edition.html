@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-TXc6EWMAe2sHYiE3OW1aipkYADOuY+iSlXBD9fD8GZY=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../icon.png">
+<meta name="generator" content="StreamSnag reading edition">
+<title>Sample reading edition: Cardiac output and what sets it | StreamSnag</title>
+<style>
+:root {
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Sitka Text", Georgia, serif;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --size: 19px; --gutter: 4.4rem;
+  color-scheme: light;
+}
+:root[data-size="0"] { --size: 16px; }
+:root[data-size="1"] { --size: 17.5px; }
+:root[data-size="2"] { --size: 19px; }
+:root[data-size="3"] { --size: 21px; }
+:root[data-size="4"] { --size: 23.5px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
+  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
+  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { font-size: var(--size); scroll-behavior: smooth; scroll-padding-top: 2.2rem; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--serif); line-height: 1.72; text-rendering: optimizeLegibility; font-kerning: normal; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--paper); color: var(--accent-ink); padding: .5rem 1rem; z-index: 7; }
+.skip:focus { left: 1rem; top: 1rem; }
+a { color: var(--accent-ink); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3, .toc, .eyebrow, .meta, .how, .notice, .t, button, summary, .label, .span, .slide, .asis, .foot, .fixes { font-family: var(--sans); }
+
+/* how far through the lecture the reader is */
+.bar { position: fixed; left: 0; right: 0; top: 0; height: 3px; z-index: 6; pointer-events: none; }
+#progress { height: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+html:not(.js) .bar, html:not(.js) .needs-js { display: none; }
+
+/* The title comes first in the page (and on a phone); on a wide window the contents sit beside it. */
+.page { display: grid; grid-template-columns: 232px minmax(0, 36.4rem); grid-template-rows: auto 1fr; grid-template-areas: "toc cover" "toc main"; column-gap: 3.6rem; justify-content: center; max-width: 68rem; margin: 0 auto; padding: 3.6rem 1.5rem 7rem; }
+.cover { grid-area: cover; }
+.toc { grid-area: toc; }
+main { grid-area: main; min-width: 0; }
+
+/* contents and the reader's own settings */
+.toc { position: sticky; top: 2.2rem; align-self: start; font-size: 14px; line-height: 1.4; max-height: calc(100vh - 4.4rem); overflow: auto; padding-right: 6px; }
+.toc .label { display: block; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin: 0 0 10px; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc ol a { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; padding: 6px 12px; margin-left: -12px; color: var(--soft); text-decoration: none; border-left: 2px solid transparent; border-radius: 0 6px 6px 0; }
+.toc ol a:hover { color: var(--ink); background: var(--accent-tint); }
+.toc ol a.on { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 600; }
+.toc .tm { flex: none; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--faint); font-weight: 400; }
+.tools { display: flex; gap: 8px; margin: 0 0 26px; flex-wrap: wrap; }
+.tools .size { display: flex; }
+.tools .size button:first-child { border-radius: 8px 0 0 8px; }
+.tools .size button:last-child { border-radius: 0 8px 8px 0; margin-left: -1px; }
+button { font-size: 13.5px; font-weight: 600; color: var(--soft); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 12px; cursor: pointer; line-height: 1.2; }
+button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-ink); position: relative; }
+button:disabled { opacity: .45; cursor: default; }
+.left { margin: 18px 0 0; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.more { list-style: none; margin: 18px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); font-size: 13px; }
+.more li { margin: 0 0 6px; }
+
+/* cover */
+.cover { margin: 0 0 3.2rem; }
+.eyebrow { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 650; }
+h1 { font-size: 2.05rem; line-height: 1.16; letter-spacing: -.02em; font-weight: 650; margin: .35rem 0 .95rem; text-wrap: balance; overflow-wrap: break-word; }
+.meta { display: flex; flex-wrap: wrap; gap: .35rem .45rem; margin: 0 0 .9rem; padding: 0; list-style: none; font-size: .72rem; color: var(--soft); }
+.meta li { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: .16rem .68rem; }
+.how { font-size: .74rem; line-height: 1.5; color: var(--muted); margin: 0; }
+.notice { margin: 1.3rem 0 0; padding: .85rem 1.05rem .9rem; border: 1px solid var(--note-line); border-left-width: 3px; background: var(--note); border-radius: 8px; font-size: .76rem; line-height: 1.58; color: var(--soft); }
+.notice strong { color: var(--note-ink); }
+.notice p { margin: 0 0 .45rem; }
+.notice p:last-of-type { margin-bottom: 0; }
+.notice button { margin-top: .7rem; }
+
+/* sections */
+.sec { margin: 0 0 3.2rem; }
+.sec-head { display: flex; flex-wrap: wrap; gap: .2rem 1rem; align-items: baseline; justify-content: space-between; margin: 0 0 1.25rem; padding-top: 1.3rem; border-top: 1px solid var(--line-strong); }
+h2 { flex: 1 1 14rem; font-size: 1.32rem; line-height: 1.26; letter-spacing: -.01em; font-weight: 650; margin: 0; text-wrap: balance; overflow-wrap: break-word; }
+.span { flex: none; font-size: .68rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.swap { flex: none; font-size: .68rem; font-weight: 600; padding: .2rem .55rem; border-radius: 999px; background: none; }
+.asis { display: inline-block; margin: -.4rem 0 1.1rem var(--gutter); padding: .22rem .7rem; font-size: .68rem; line-height: 1.5; color: var(--note-ink); background: var(--note); border: 1px dashed var(--note-line); border-radius: 999px; }
+h3 { margin: 1.9rem 0 .7rem var(--gutter); font-size: 1rem; line-height: 1.35; font-weight: 650; text-wrap: balance; }
+
+/* the text: real paragraphs, with the minute they were said in the margin */
+.para { display: grid; grid-template-columns: var(--gutter) minmax(0, 1fr); align-items: baseline; position: relative; }
+.para p { margin: 0 0 1.08em; overflow-wrap: break-word; }
+.flow { min-width: 0; }
+
+/* points the lecturer counts off ("First… Second…"), set out as a list: every word is still there */
+ol.said { margin: 0 0 1.08em; padding: 0 0 0 1.5em; }
+ol.said li { margin: 0 0 .42em; padding-left: .3em; overflow-wrap: break-word; }
+ol.said li::marker { font-family: var(--sans); font-size: .76em; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--accent-ink); }
+
+/* where the lecturer says that something matters: a quiet tint under the sentence, and a note under the paragraph's time */
+.key { color: inherit; background: var(--accent-tint); border-bottom: 1px solid var(--accent-line); border-radius: 3px; padding: .05em .16em; margin: 0 -.16em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.para.stress::before { content: "Lecturer’s emphasis"; position: absolute; left: 0; top: 1.5rem; width: calc(var(--gutter) - 1.1rem); font-family: var(--sans); font-size: .54rem; font-weight: 650; line-height: 1.22; letter-spacing: .02em; color: var(--accent-ink); }
+.t { font-size: .66rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .01em; color: var(--faint); text-decoration: none; line-height: 1; white-space: nowrap; justify-self: start; padding: .15rem 0; }
+a.t:hover, .para:target .t { color: var(--accent-ink); text-decoration: underline; }
+.who { font-family: var(--sans); font-size: .82em; font-weight: 650; letter-spacing: .01em; }
+.unsure { color: var(--note-ink); }
+
+/* where the slide changes */
+.slide { margin: 1.7rem 0 1.15rem var(--gutter); padding-top: .65rem; border-top: 1px solid var(--line); font-size: .7rem; line-height: 1.45; color: var(--soft); }
+.slide .row, .slide summary { display: flex; gap: .65rem; align-items: baseline; }
+.slide summary { cursor: pointer; list-style: none; }
+.slide summary::-webkit-details-marker { display: none; }
+.sl-n { flex: none; font-weight: 700; font-size: .62rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-ink); }
+.sl-t { min-width: 0; overflow-wrap: break-word; }
+.sl-see { flex: none; margin-left: auto; color: var(--accent-ink); font-weight: 600; text-decoration: underline; text-underline-offset: .18em; }
+.sl-see::after { content: "Show slide"; }
+details[open] > summary .sl-see::after { content: "Hide slide"; }
+.slide img { display: block; width: 100%; height: auto; margin: .75rem 0 .2rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.sec .body > .slide:first-child { margin-top: 0; }
+
+.fixes { font-size: .78rem; line-height: 1.55; color: var(--soft); }
+.fixes h2 { font-size: 1rem; }
+.fixes p { margin: 0 0 .6rem; }
+.fixes ul { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 2rem; }
+.fixes li { margin: 0 0 .3rem; break-inside: avoid; }
+.fixes .was { font-style: italic; color: var(--muted); }
+.foot { font-size: .7rem; color: var(--muted); border-top: 1px solid var(--line-strong); padding-top: 1.1rem; line-height: 1.55; }
+
+@media (max-width: 60rem) {
+  :root { --gutter: 0rem; }
+  .page { display: block; padding: 1.4rem 1.15rem 4.5rem; max-width: 37rem; }
+  .toc { position: static; max-height: none; margin: 0 0 2.4rem; padding: 14px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+  .tools { margin-bottom: 16px; }
+  .cover { margin-bottom: 1.6rem; }
+  h1 { font-size: 1.62rem; }
+  h2 { font-size: 1.18rem; }
+  /* No margin to put the minute in: it sits at the start of the paragraph's first line. */
+  .para { display: block; }
+  .t { float: left; margin: .52em .6em 0 0; padding: 0; }
+  .para.lf .t { float: none; display: block; margin: 0 0 .35em; }
+  /* ...and none for the note: it stands in small capitals over its paragraph. */
+  .para.stress::before { position: static; display: block; width: auto; margin: 0 0 .1rem; font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; }
+  .fixes ul { columns: 1; }
+}
+
+@page { margin: 22mm 27mm; }
+@media print {
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
+    --bg: #fff; --paper: #fff; --gutter: 3.6rem; color-scheme: light; }
+  html, :root[data-size] { font-size: 11.5pt; }
+  body { background: #fff; }
+  .page { display: block; max-width: none; padding: 0; }
+  .bar, .toc, .needs-js, .skip, .swap, .sl-see { display: none !important; }
+  .cover { margin-bottom: 1.6rem; }
+  .sec { margin-bottom: 1.5rem; }
+  .sec-head { break-after: avoid; break-inside: avoid; }
+  h2, h3, .slide, .asis { break-after: avoid; }
+  .slide { break-inside: avoid; }
+  .slide img { width: auto; max-width: 100%; max-height: 8cm; margin-left: auto; margin-right: auto; }
+  .para { display: grid; }
+  .para p { orphans: 3; widows: 3; }
+  .t { float: none; margin: 0; color: #555; }
+  .para.lf .t { margin: 0; }
+  ol.said li { break-inside: avoid; }
+  .key { background: none; }
+  .para.stress::before { position: absolute; display: block; left: 0; top: 1.3rem; width: calc(var(--gutter) - .7rem); margin: 0; font-size: .52rem; letter-spacing: .02em; text-transform: none; color: #555; }
+  .notice { background: none; }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* the reader bar: one lecture, five ways to study it */
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #1a1f1d; --rd-ink-2: #434a46; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #1d5c58; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; }
+.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.rd-bar [hidden] { display: none !important; }
+.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
+.rd-bar .rd-modes { display: flex; flex: none; gap: 2px; max-width: 100%; padding: 3px; border-radius: 9px; background: var(--rd-sunk); }
+.rd-bar .rd-modes a, .rd-bar .rd-modes span { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 6px; color: var(--rd-ink-2); font: inherit; text-decoration: none; white-space: nowrap; }
+.rd-bar .rd-modes a:hover { color: var(--rd-ink); text-decoration: none; }
+.rd-bar .rd-modes [aria-current] { background: var(--rd-surface); color: var(--rd-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rd-rule-2); }
+.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
+.rd-bar .rd-back::before { content: ""; width: 6px; height: 6px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-left: 2px; }
+.rd-bar .rd-back:hover { border-color: var(--rd-ink-3); color: var(--rd-ink); }
+.rd-bar .rd-hint { flex: 1 0 100%; font-size: 12.5px; color: var(--rd-ink-3); }
+.rd-bar :focus-visible { outline: 2px solid var(--rd-source); outline-offset: 2px; border-radius: 6px; }
+html { scroll-padding-top: 4.4rem; }
+.rd-bar ~ .page .toc { top: calc(48px + 1.4rem); max-height: calc(100vh - 48px - 2.8rem); }
+@media (max-width: 560px) { .rd-bar { padding: 6px 10px; } .rd-bar .rd-modes a, .rd-bar .rd-modes span { padding: 0 9px; } }
+@media print { .rd-bar { display: none; } }
+
+.ssb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 8px 16px; background: #14181d; color: #c9ced6; font: 400 13px/1.45 "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; position: relative; z-index: 5; }
+.ssb a { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-color: #6b7380; text-underline-offset: .2em; white-space: nowrap; }
+.ssb a:hover { text-decoration-color: #fff; }
+.ssb a:focus-visible { outline: 2px solid #ff8a4c; outline-offset: 2px; border-radius: 3px; }
+.ssb .ssb-home { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; }
+.ssb svg { width: 20px; height: 20px; flex: none; }
+.ssb .ssb-what { flex: 1 1 320px; min-width: 0; }
+.ssb .ssb-what b { color: #fff; font-weight: 650; }
+.ssb .ssb-links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.ssb [aria-current] { text-decoration: none; color: #c9ced6; font-weight: 400; }
+@media print { .ssb { display: none; } }
+</style>
+</head>
+<body>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample reading edition.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. The times open the sample study page, which has no video.</span><span class="ssb-links"><a href="reading-edition.html" aria-current="page">Reading edition</a><a href="reading-edition-no-slides.html">The same without slides</a><a href="study-guide.html">Study guide</a><a href="study-page.html">Study page</a><a href="../#gallery">All samples</a></span></div>
+<div class="bar" aria-hidden="true"><div id="progress"></div></div>
+<a class="skip" href="#main">Skip to the text</a>
+<nav class="rd-bar" id="top" aria-label="This lecture" data-current="read" data-file="cardiac-output">
+<button type="button" class="rd-back" hidden>Back to desk</button>
+<span class="rd-title">Cardiac output and what sets it</span>
+<span class="rd-modes"><a data-mode="watch" href="study-page.html#t=0">Watch</a><span data-mode="read" aria-current="page">Read</span><a data-mode="guide" href="study-guide.html">Guide</a></span>
+<span class="rd-hint" role="status" hidden></span>
+</nav>
+<div class="page">
+<header class="cover">
+<div class="eyebrow">PHYS201 · Reading edition</div>
+<h1>Cardiac output and what sets it</h1>
+<ul class="meta">
+<li>27 min lecture</li>
+<li>14 min read</li>
+<li>3,194 words</li>
+</ul>
+<p class="how">From the lecture&#39;s captions. Hesitation sounds and doubled words were taken out by rule. Nothing is reworded.</p>
+
+</header>
+<nav class="toc" aria-label="Contents">
+<div class="tools needs-js"><div class="size" role="group" aria-label="Text size"><button type="button" id="smaller" aria-label="Smaller text">A−</button><button type="button" id="larger" aria-label="Larger text">A+</button></div><button type="button" id="theme">Dark</button><button type="button" id="print">Print</button></div>
+<span class="label">Contents</span>
+<ol>
+<li><a href="#s1"><span class="tt">Cardiac output and what sets it</span><span class="tm">00:01</span></a></li>
+<li><a href="#s2"><span class="tt">Three determinants of stroke volume</span><span class="tm">06:18</span></a></li>
+<li><a href="#s3"><span class="tt">Afterload</span><span class="tm">14:03</span></a></li>
+<li><a href="#s4"><span class="tt">The pressure-volume loop</span><span class="tm">20:41</span></a></li>
+</ol>
+<p class="left needs-js" id="left" aria-live="off"></p>
+<ul class="more">
+<li><a href="study-page.html">Study page: video, slides and transcript</a></li>
+<li><a href="study-guide.html">Study guide</a></li>
+</ul>
+</nav>
+<main id="main">
+<section class="sec" id="s1">
+<div class="sec-head"><h2>Cardiac output and what sets it</h2><span class="span">00:01–06:14</span></div>
+<div class="body">
+<div class="para" id="s1-p1"><a class="t" href="study-page.html#t=1&amp;slide=1">00:01</a><p><b class="who">Lecturer:</b> Okay good morning everybody. Can you hear me at the back? Good. So, before we start, two quick bits of housekeeping. The problem set on the cardiac cycle is due this Friday at five, not Thursday as it says on the course page, and the practical groups for next week are posted outside the lab. Right.</p></div>
+<div class="para" id="s1-p2"><a class="t" href="study-page.html#t=30&amp;slide=1">00:30</a><p><b class="who">Lecturer:</b> So last time we went through the cardiac cycle, the valves opening and closing, the pressures in the chambers. Today is really the pay-off for all of that. Today&#39;s question is very simple to ask: how much blood does the heart pump, and what decides that number? That number is the cardiac output, and by the end of the hour I want you to be able to look at a patient, or a graph, and say which of three or four knobs has been turned.</p></div>
+<div class="para" id="s1-p3"><a class="t" href="study-page.html#t=76&amp;slide=1">01:16</a><p><b class="who">Lecturer:</b> So let&#39;s define it. Cardiac output is the volume of blood one ventricle pumps per minute. One ventricle, not both.</p></div>
+<div class="slide" data-slide="2"><div class="row"><span class="sl-n">Slide 2</span><span class="sl-t">Cardiac output = heart rate × stroke volume</span></div></div>
+<div class="para" id="s1-p4"><a class="t" href="study-page.html#t=87&amp;slide=2">01:27</a><p><b class="who">Lecturer:</b> And you get it by multiplying two things: heart rate times stroke volume. Heart rate is beats per minute, stroke volume is the volume ejected in a single beat. So for a typical resting adult, heart rate about seventy beats per minute, stroke volume about seventy millilitres, and seventy times seventy is four thousand nine hundred millilitres per minute, so roughly five litres per minute. Five litres a minute at rest. And your total blood volume is also about five litres, so a nice way to remember it is that at rest your whole blood volume goes round about once a minute.</p></div>
+<div class="para" id="s1-p5"><a class="t" href="study-page.html#t=138&amp;slide=2">02:18</a><p><b class="who">Lecturer:</b> Now, where does the stroke volume come from? At the end of filling, the end of diastole, the left ventricle holds about a hundred and twenty millilitres. We call that the end-diastolic volume, EDV. After it has contracted there are still about fifty millilitres left behind. That is the end-systolic volume, ESV. The heart never empties completely.</p></div>
+<div class="para" id="s1-p6"><a class="t" href="study-page.html#t=168&amp;slide=2">02:48</a><p><b class="who">Lecturer:</b> So the stroke volume is just the difference: end-diastolic volume minus end-systolic volume, a hundred and twenty minus fifty, which gives you our seventy millilitres. And from those same numbers you get the ejection fraction, which you will hear on the wards every single day. The ejection fraction is the stroke volume divided by the end-diastolic volume. So seventy over a hundred and twenty, which is about fifty-eight percent. A normal ejection fraction is somewhere above fifty-five percent. Once you are below about forty percent we call it reduced, and that matters, because it is how we classify heart failure.</p></div>
+<div class="para" id="s1-p7"><a class="t" href="study-page.html#t=218&amp;slide=2">03:38</a><p><b class="who">Lecturer:</b> I&#39;ll come back to that at the end. Let me do one quick calculation with you, because the numbers can fool you. Imagine a patient with a heart rate of a hundred, an end-diastolic volume of a hundred and fifty millilitres, and an end-systolic volume of a hundred. So what is the stroke volume? A hundred and fifty minus a hundred, fifty millilitres. Cardiac output?</p></div>
+<div class="para" id="s1-p8"><a class="t" href="study-page.html#t=253&amp;slide=2">04:13</a><p><b class="who">Lecturer:</b> Fifty times a hundred, five thousand, so five litres a minute. That looks completely normal. But now the ejection fraction: fifty over a hundred and fifty, thirty-three percent. That is a badly failing ventricle. It is big, it is emptying poorly, and it is only keeping its output up by beating faster. So the lesson is that a normal cardiac output at rest does not mean a normal heart.</p></div>
+<div class="para" id="s1-p9"><a class="t" href="study-page.html#t=288&amp;slide=2">04:48</a><p><b class="who">Lecturer:</b> You have to look at how the output is being achieved. And the opposite case, just as an aside. A trained endurance athlete might have a resting heart rate of forty-five. Do they have a low cardiac output? No. Their ventricle is bigger and their stroke volume at rest is more like a hundred and ten millilitres, and forty-five times a hundred and ten is, again, about five litres a minute.</p></div>
+<div class="para" id="s1-p10"><a class="t" href="study-page.html#t=327&amp;slide=2">05:27</a><p><b class="who">Lecturer:</b> Same output, completely different way of getting there. I had a cyclist in the practical class two years ago with a resting rate of thirty-eight, and the ECG machine kept flagging him as abnormal, which he was very proud of. So I&#39;ll say this once now and again at the end: anything that changes cardiac output has to do it either by changing heart rate or by changing stroke volume. There is no third way. Heart rate we did last week with the pacemaker cells and the autonomic nervous system, so today is nearly all about stroke volume.</p></div>
+</div>
+</section>
+<section class="sec" id="s2">
+<div class="sec-head"><h2>Three determinants of stroke volume</h2><span class="span">06:18–13:58</span></div>
+<div class="body">
+<div class="para" id="s2-p1"><a class="t" href="study-page.html#t=378&amp;slide=3">06:18</a><p><b class="who">Lecturer:</b> Okay. So what sets stroke volume? Three things, and you need to know these three cold. Preload, afterload, and contractility. Preload is how much the ventricle is stretched just before it contracts. Afterload is the load it has to push against to get the blood out.</p></div>
+<div class="para" id="s2-p2"><a class="t" href="study-page.html#t=402&amp;slide=3">06:42</a><p><b class="who">Lecturer:</b> And contractility is how strongly the muscle contracts for a given stretch and a given load. The other word for contractility is inotropy, and you&#39;ll see that on the slide, positive ionotropic and negative ionotropic drugs. The way I think about it, and this is just an analogy, is throwing a ball. Preload is how far back you pull your arm. Afterload is how heavy the ball is. And contractility is how strong your arm is.</p></div>
+<div class="para" id="s2-p3"><a class="t" href="study-page.html#t=441&amp;slide=3">07:21</a><p><b class="who">Lecturer:</b> You can throw further by pulling back more, by picking a lighter ball, or by going to the gym. Three different things. And the reason I labour this is that every year in the exam about a third of you mix up preload and contractility, so we are going to go slowly through each one.</p></div>
+<div class="para" id="s2-p4"><a class="t" href="study-page.html#t=471&amp;slide=3">07:51</a><p><b class="who">Lecturer:</b> So, preload first. Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction. Now we can&#39;t measure the stretch on a muscle cell in a patient,</p></div>
+<div class="slide" data-slide="4"><div class="row"><span class="sl-n">Slide 4</span><span class="sl-t">Preload and the Frank-Starling law</span></div></div>
+<div class="para" id="s2-p5"><a class="t" href="study-page.html#t=487&amp;slide=4">08:07</a><p><b class="who">Lecturer:</b> So in practice we use the end-diastolic volume, or sometimes the end-diastolic pressure, as a stand-in for preload. More blood in the ventricle at the end of filling means more stretch, means more preload. And here is the key relationship, which is the graph on this slide. If you increase the end-diastolic volume, the ventricle responds by ejecting a bigger stroke volume. The more it is filled, the more it pumps out. That is the Frank Sterling law of the heart.</p></div>
+<div class="para" id="s2-p6"><a class="t" href="study-page.html#t=527&amp;slide=4">08:47</a><p><b class="who">Lecturer:</b> Within limits, the heart pumps out whatever volume is returned to it. So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis, and the curve rises steeply at first and then flattens off at high volumes. It flattens because you cannot stretch the muscle indefinitely and keep getting more force.</p></div>
+<div class="para" id="s2-p7"><a class="t" href="study-page.html#t=557&amp;slide=4">09:17</a><p><b class="who">Lecturer:</b> A little bit of history, because I like it. Otto Frank was a German physiologist working on frog hearts in the eighteen nineties, and Ernest Starling was in London about twenty years later with his heart-lung preparation in dogs. They never worked together. Starling, by the way, is also the person who came up with the word hormone. Anyway, none of that is examinable, I just think you should know these were real people.</p></div>
+<div class="para" id="s2-p8"><a class="t" href="study-page.html#t=594&amp;slide=4">09:54</a><p><b class="who">Lecturer:</b> Let me give you a number to hang on to. Say venous return goes up, you lie down and put your legs up, and end-diastolic volume goes from a hundred and twenty to a hundred and forty millilitres. If the end-systolic volume stays at about fifty, the stroke volume goes from seventy to ninety millilitres on the very next beats. Nothing nervous, no hormones, it is a property of the muscle itself. That is why we call it intrinsic regulation.</p></div>
+<div class="para" id="s2-p9"><a class="t" href="study-page.html#t=633&amp;slide=4">10:33</a><p><b class="who">Student:</b> Sorry, can I ask, is preload just the same thing as venous return then?</p></div>
+<div class="para" id="s2-p10"><a class="t" href="study-page.html#t=641&amp;slide=4">10:41</a><p><b class="who">Lecturer:</b> Good question, and no, not quite, and people do blur them. Venous return is a flow: it is the volume of blood coming back to the heart per minute. Preload is the stretch that results in the ventricle at the end of</p></div>
+<div class="slide" data-slide="5"><div class="row"><span class="sl-n">Slide 5</span><span class="sl-t">Why the Frank-Starling mechanism works</span></div></div>
+<div class="para" id="s2-p11"><a class="t" href="study-page.html#t=662&amp;slide=5">11:02</a><p><b class="who">Lecturer:</b> Filling. So venous return is one of the things that determines preload, but they are not the same. For example, if the heart rate is very fast there is less time to fill, so preload falls even though venous return hasn&#39;t changed. Does that make sense? Okay.</p></div>
+<div class="para" id="s2-p12"><a class="t" href="study-page.html#t=691&amp;slide=5">11:31</a><p><b class="who">Lecturer:</b> So why does stretching the muscle make it contract harder? Two reasons, and the second one is the more important. The first one you met in skeletal muscle: the overlap of the filaments. In the resting heart the sarcomeres are quite short, about one point eight micrometres, which is shorter than the optimum. As you stretch them towards about two point two micrometres the actin and myosin overlap better, so more cross-bridges can form. But the bigger effect is the second one.</p></div>
+<div class="para" id="s2-p13"><a class="t" href="study-page.html#t=732&amp;slide=5">12:12</a><p><b class="who">Lecturer:</b> When the sarcomere is stretched, troponin C becomes more sensitive to calcium. Same amount of calcium released, but more force produced. We call that length-dependent activation. So, to be clear, in the Frank Sterling mechanism the amount of calcium does not change. What changes is how sensitive the filaments are to it. Hold on to that sentence, because it is exactly what separates this from contractility, which we get to in a few minutes.</p></div>
+<div class="para" id="s2-p14"><a class="t" href="study-page.html#t=770&amp;slide=5">12:50</a><p><b class="who">Lecturer:</b> And what is all this for? The most important job of this mechanism is to keep the outputs of the two ventricles matched. Think about it. The right and left ventricle are in series. If the right ventricle pumped even one millilitre more per beat than the left, then at seventy beats a minute that is seventy millilitres every minute piling up in your lungs, and in a quarter of an hour you would have about a litre of extra blood in the pulmonary circulation. That can&#39;t be allowed to happen.</p></div>
+<div class="para" id="s2-p15"><a class="t" href="study-page.html#t=815&amp;slide=5">13:35</a><p><b class="who">Lecturer:</b> So what stops it? If the right side pumps a bit more, more blood returns to the left ventricle, its end-diastolic volume goes up, and by Frank Sterling its stroke volume goes up on the next beat. Beat by beat, automatically, the two sides are kept equal.</p></div>
+</div>
+</section>
+<section class="sec" id="s3">
+<div class="sec-head"><h2>Afterload</h2><span class="span">14:03–20:36</span></div>
+<div class="body">
+<div class="para" id="s3-p1"><a class="t" href="study-page.html#t=843&amp;slide=6">14:03</a><p><b class="who">Lecturer:</b> Right, afterload. Afterload is the load the ventricle has to overcome in order to eject blood. For the left ventricle the simplest way to think of it is the pressure in the aorta. The aortic valve will not open until the pressure in the ventricle is higher than the pressure in the aorta, which in diastole is about eighty millimetres of mercury. So the ventricle spends the first part of every contraction just building up pressure, without moving any blood at all. The higher the aortic pressure, the more of the contraction is spent building pressure, and the less is left over for ejecting.</p></div>
+<div class="para" id="s3-p2"><a class="t" href="study-page.html#t=894&amp;slide=6">14:54</a><p><b class="who">Lecturer:</b> So here is the rule, and this one I will definitely examine. If afterload goes up, and preload and contractility stay the same, stroke volume goes down. The ventricle cannot empty as well against the higher pressure, so more blood is left behind, the end-systolic volume goes up. Afterload up, stroke volume down, end-systolic volume up.</p></div>
+<div class="para" id="s3-p3"><a class="t" href="study-page.html#t=922&amp;slide=6">15:22</a><p><b class="who">Lecturer:</b> Now, strictly speaking, afterload is not the pressure itself, it is the stress in the wall of the ventricle during ejection, and for that we use the law of Laplace. Wall stress equals pressure times radius, divided by two times the wall thickness. So pressure times radius over two h. Three things follow from that. Higher pressure, more wall stress. A bigger, dilated ventricle, bigger radius, more wall stress for the same pressure, which is one reason a dilated failing heart is in trouble. And a thicker wall means less stress, because the load is shared across more muscle.</p></div>
+<div class="para" id="s3-p4"><a class="t" href="study-page.html#t=973&amp;slide=6">16:13</a><p><b class="who">Lecturer:</b> And that last point explains something you will see clinically. In a patient with long-standing high blood pressure, or with a narrowed aortic valve, aortic stenosis, the left ventricle faces a high afterload for years. And what does it do? The wall gets thicker. Left ventricular hypertrophy. By Laplace, the thicker wall brings the wall stress back towards normal.</p></div>
+<div class="para" id="s3-p5"><a class="t" href="study-page.html#t=1001&amp;slide=6">16:41</a><p><b class="who">Lecturer:</b> So hypertrophy is a compensation for high afterload. It comes at a price, a thick ventricle is stiff and fills badly, but that&#39;s for the pathology course.</p></div>
+<div class="para" id="s3-p6"><a class="t" href="study-page.html#t=1016&amp;slide=6">16:56</a><p><b class="who">Student:</b> [Inaudible] the right ventricle?</p></div>
+<div class="para" id="s3-p7"><a class="t" href="study-page.html#t=1020&amp;slide=6">17:00</a><p><b class="who">Lecturer:</b> The question, for those who didn&#39;t hear, was whether the same thing applies to the right ventricle. Yes, the same idea, different numbers. The afterload for the right ventricle is the pressure in the pulmonary artery, and that is much lower, about twenty-five millimetres of mercury in systole compared with a hundred and twenty in the aorta. And that is why the wall of the right ventricle is so much thinner than the left. It simply never has to generate much pressure. It also means the right ventricle copes badly if its afterload suddenly rises, as in a large pulmonary embolism, because it has no reserve of muscle.</p></div>
+<div class="slide" data-slide="7"><div class="row"><span class="sl-n">Slide 7</span><span class="sl-t">Contractility (inotropy)</span></div></div>
+<div class="para" id="s3-p8"><a class="t" href="study-page.html#t=1076&amp;slide=7">17:56</a><p><b class="who">Lecturer:</b> Third knob, contractility, or inotropy. Contractility is the strength of contraction at a given preload and a given afterload. That phrase at the end is the whole point. If the ventricle pumps more because you filled it more, that is not a change in contractility, that is Frank Sterling. A change in contractility means that for the same end-diastolic volume, you get a bigger stroke volume. And the mechanism is different.</p></div>
+<div class="para" id="s3-p9"><a class="t" href="study-page.html#t=1113&amp;slide=7">18:33</a><p><b class="who">Lecturer:</b> Contractility goes up when more calcium is made available to the filaments inside the cell. The classic example is the sympathetic nervous system. Noradrenaline binds to beta one receptors on the ventricular muscle cells. That raises cyclic AMP, which activates protein kinase A, and protein kinase A phosphorylates the L-type calcium channels so more calcium comes in with each action potential. More calcium in means more calcium released from the sarcoplasmic reticulum, means more cross-bridges, means a stronger contraction. Anything that does that we call a positive ionotropic agent.</p></div>
+<div class="para" id="s3-p10"><a class="t" href="study-page.html#t=1156&amp;slide=7">19:16</a><p><b class="who">Lecturer:</b> Noradrenaline, adrenaline, and drugs like dobutamine and digoxin. And there are negative ones as well. Beta blockers block that beta one receptor, and calcium channel blockers like verapamil reduce the calcium coming in, so both of them reduce contractility. That is useful when you want the heart to do less work, after a heart attack for instance.</p></div>
+<div class="para" id="s3-p11"><a class="t" href="study-page.html#t=1189&amp;slide=7">19:49</a><p><b class="who">Lecturer:</b> So what does a positive ionotropic agent do to the graph? It does not move you along the curve. It gives you a whole new curve, shifted upwards and to the left. At any end-diastolic volume you pick, the stroke volume is higher. The ventricle empties more completely, so the end-systolic volume falls, and the ejection fraction goes up. Compare that to preload: more preload moves you along the same curve; more contractility moves you onto a higher curve.</p></div>
+<div class="para stress" id="s3-p12"><a class="t" href="study-page.html#t=1227&amp;slide=7">20:27</a><p><b class="who">Lecturer:</b> <mark class="key">If you remember one thing from today, remember that distinction.</mark> Along the curve is preload, a new curve is contractility.</p></div>
+</div>
+</section>
+<section class="sec" id="s4">
+<div class="sec-head"><h2>The pressure-volume loop</h2><span class="span">20:41–27:29</span></div>
+<div class="body">
+<div class="para" id="s4-p1"><a class="t" href="study-page.html#t=1241&amp;slide=8">20:41</a><p><b class="who">Lecturer:</b> Okay, now the diagram that pulls all of this together, the pressure-volume loop of the left ventricle. Volume on the x axis, pressure on the y axis, and one heartbeat is one trip anticlockwise round the loop. Let&#39;s walk round it. Start at the bottom left corner. The mitral valve has just opened, the ventricle holds its fifty millilitres, and it fills along the bottom of the loop, volume going up to a hundred and twenty, pressure staying low. That bottom right corner is the end-diastolic volume.</p></div>
+<div class="para" id="s4-p2"><a class="t" href="study-page.html#t=1285&amp;slide=8">21:25</a><p><b class="who">Lecturer:</b> That is your preload. Then the ventricle starts to contract, the mitral valve closes, and for a moment both valves are closed. So pressure shoots straight up with no change in volume. A vertical line. That is isovolumetric contraction. When the pressure reaches the aortic pressure, about eighty, the aortic valve opens, top right corner, and ejection begins.</p></div>
+<div class="para" id="s4-p3"><a class="t" href="study-page.html#t=1316&amp;slide=8">21:56</a><p><b class="who">Lecturer:</b> Pressure carries on rising to a peak of about a hundred and twenty millimetres of mercury while the volume falls, across the top of the loop, back to fifty. Then the aortic valve closes, top left corner, and the pressure drops straight down with both valves closed again. Isovolumetric relaxation. And you are back where you started.</p></div>
+<div class="para" id="s4-p4"><a class="t" href="study-page.html#t=1346&amp;slide=8">22:26</a><p><b class="who">Lecturer:</b> Two things to read off the loop. The width of the loop is the stroke volume, a hundred and twenty minus fifty. And the area inside the loop is the stroke work, the work the ventricle does in one beat. There is one more line people draw on this diagram. If you take the top left corner, the end-systolic point, from several loops at different filling volumes, those points fall on a straight line. It is called the end-systolic pressure-volume relationship.</p></div>
+<div class="para" id="s4-p5"><a class="t" href="study-page.html#t=1386&amp;slide=8">23:06</a><p><b class="who">Lecturer:</b> The slope of that line is a measure of contractility. A steeper line means a more strongly contracting ventricle, and a positive ionotropic agent makes it steeper. You don&#39;t need to draw it in the exam, but you need to know that its slope means contractility.</p></div>
+<div class="para" id="s4-p6"><a class="t" href="study-page.html#t=1409&amp;slide=8">23:29</a><p><b class="who">Lecturer:</b> Now turn each knob. Increase preload: the ventricle fills more, the bottom right corner moves to the right, the loop gets wider, stroke volume up. Increase afterload: the aortic valve opens later, at a higher pressure, so the loop gets taller and narrower. It stops ejecting sooner, the end-systolic volume is higher, stroke volume down. Increase contractility: the ventricle empties further, the left side of the loop moves to the left, end-systolic volume is lower, the loop is wider, stroke volume up. I strongly suggest you draw those three loops yourselves tonight</p></div>
+<div class="slide" data-slide="9"><div class="row"><span class="sl-n">Slide 9</span><span class="sl-t">Putting it together: exercise and heart failure</span></div></div>
+<div class="para" id="s4-p7"><a class="t" href="study-page.html#t=1452&amp;slide=9">24:12</a><p><b class="who">Lecturer:</b> Without looking. If you can draw them, you understand this lecture. Let&#39;s finish by putting it together with two situations. First, exercise. In hard exercise a healthy young adult can take cardiac output from five up to about twenty litres per minute, a fourfold increase. How?</p></div>
+<div class="para" id="s4-p8"><a class="t" href="study-page.html#t=1480&amp;slide=9">24:40</a><p><b class="who">Lecturer:</b> Heart rate goes from seventy up to maybe a hundred and eighty, and stroke volume goes from seventy to around a hundred and ten or a hundred and twenty millilitres. And every knob is involved. Sympathetic drive raises heart rate and contractility. The skeletal muscles squeeze the veins and push blood back to the heart, so venous return and preload go up. And the arterioles in the working muscle dilate, so the resistance the heart pumps against falls, which stops afterload from rising much even though more blood is being pumped.</p></div>
+<div class="para" id="s4-p9"><a class="t" href="study-page.html#t=1525&amp;slide=9">25:25</a><p><b class="who">Lecturer:</b> Second, heart failure, the kind with a reduced ejection fraction. Here the basic problem is that contractility is down. The muscle is damaged, say after a heart attack. So the patient is on a lower, flatter curve: for any filling volume, the stroke volume is less than normal. The body compensates the only way it can. The kidneys hold on to salt and water, blood volume goes up, preload goes up, and that moves the patient along their poor curve to get a bit more stroke volume back.</p></div>
+<div class="para" id="s4-p10"><a class="t" href="study-page.html#t=1570&amp;slide=9">26:10</a><p><b class="who">Lecturer:</b> But the curve is flat, so they don&#39;t gain much, and the cost of all that extra filling pressure is that fluid backs up into the lungs. That is why these patients are breathless, and why we give them diuretics. Not to make the heart stronger, but to take the preload back down.</p></div>
+<div class="para stress" id="s4-p11"><a class="t" href="study-page.html#t=1597&amp;slide=9">26:37</a><p><b class="who">Lecturer:</b> <mark class="key">So, to sum up.</mark> Cardiac output is heart rate times stroke volume, about five litres a minute at rest. Stroke volume is set by preload, afterload and contractility. More preload, more stroke volume, by the Frank Sterling mechanism, which works by stretch and calcium sensitivity. More afterload, less stroke volume. More contractility, more stroke volume at the same filling, and that works by more calcium.</p></div>
+<div class="para" id="s4-p12"><a class="t" href="study-page.html#t=1631&amp;slide=9">27:11</a><p><b class="who">Lecturer:</b> And the pressure-volume loop shows you all three on one picture. Next time we look at how blood pressure is controlled, so please read the chapter on the baroreceptor reflex. Thanks, see you Thursday.</p></div>
+</div>
+</section>
+<footer class="foot">Made on your computer by StreamSnag from this lecture's captions. It says what the captions say, mistakes included.</footer>
+</main>
+</div>
+<script type="application/json" id="read-data">{"id":"3fb7f8d2a77dabc0","minutes":14,"sections":[]}</script>
+<script>(function () {
+  'use strict';
+  var root = document.documentElement;
+  root.classList.add('js');
+  var data = { id: '', minutes: 0, sections: [] };
+  try {
+    var parsed = JSON.parse(document.getElementById('read-data').textContent);
+    if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sections)) data = parsed;
+  } catch (e) { /* the page still works as a document */ }
+  var key = 'streamsnag-read:' + String(data.id || '');
+  var SIZES = 5;
+  var state = { theme: '', size: 2, plain: {}, at: '' };
+  try {
+    var saved = JSON.parse(localStorage.getItem(key) || 'null');
+    if (saved && typeof saved === 'object') {
+      if (saved.theme === 'dark' || saved.theme === 'light') state.theme = saved.theme;
+      if (typeof saved.size === 'number' && saved.size >= 0 && saved.size < SIZES) state.size = Math.floor(saved.size);
+      if (saved.plain && typeof saved.plain === 'object') Object.keys(saved.plain).forEach(function (id) { if (saved.plain[id] === true) state.plain[id] = true; });
+      if (typeof saved.at === 'string' && /^[a-z0-9-]{1,40}$/.test(saved.at)) state.at = saved.at;
+    }
+  } catch (e) { /* private window, or storage switched off */ }
+  function save() {
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) { /* not remembered, that is all */ }
+  }
+  function $(sel, el) { return (el || document).querySelector(sel); }
+  function $$(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
+  function make(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  // Theme: follows the computer unless the reader chose one.
+  var themeButton = $('#theme');
+  function isDark() {
+    if (state.theme) return state.theme === 'dark';
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function showTheme() {
+    if (state.theme) root.setAttribute('data-theme', state.theme); else root.removeAttribute('data-theme');
+    if (themeButton) themeButton.textContent = isDark() ? 'Light' : 'Dark';
+  }
+  if (themeButton) themeButton.addEventListener('click', function () { state.theme = isDark() ? 'light' : 'dark'; save(); showTheme(); });
+  showTheme();
+  // The computer switching to dark in the evening changes what the button offers.
+  var scheme = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  if (scheme && scheme.addEventListener) scheme.addEventListener('change', showTheme);
+
+  // Text size.
+  var smaller = $('#smaller');
+  var larger = $('#larger');
+  function showSize() {
+    root.setAttribute('data-size', String(state.size));
+    if (smaller) smaller.disabled = state.size <= 0;
+    if (larger) larger.disabled = state.size >= SIZES - 1;
+  }
+  function resize(by) {
+    var keep = current();
+    state.size = Math.max(0, Math.min(SIZES - 1, state.size + by));
+    save();
+    showSize();
+    if (keep) keep.scrollIntoView({ block: 'start' }); // the paragraph being read stays where it was
+  }
+  if (smaller) smaller.addEventListener('click', function () { resize(-1); });
+  if (larger) larger.addEventListener('click', function () { resize(1); });
+  showSize();
+  var printButton = $('#print');
+  if (printButton) printButton.addEventListener('click', function () { window.print(); });
+
+  // "Show as transcribed": a section's untidied text is in the page's data; it is put on the page as plain text.
+  // Only a link to the study page or the video next to this file is ever made.
+  function safeHref(h) {
+    return typeof h === 'string' && h.indexOf(':') < 0 && h.indexOf('/') < 0 && h.indexOf('\\') < 0 && /#t=\d{1,6}(&slide=\d{1,4})?$/.test(h);
+  }
+  var kept = {}; // the tidied paragraphs of a section while its transcribed text is shown
+  // How a transcribed paragraph is set out (a sentence the lecturer stresses, points counted off as a list): used
+  // only when its pieces, read in order, are the paragraph's own text word for word.
+  function layOf(p) {
+    if (!Array.isArray(p.lay) || !p.lay.length) return null;
+    var said = [];
+    var ok = p.lay.every(function (b) {
+      var groups = b && Array.isArray(b.li) ? b.li : b && Array.isArray(b.p) ? [b.p] : null;
+      return !!groups && groups.length > 0 && groups.every(function (runs) {
+        return Array.isArray(runs) && runs.length > 0 && runs.every(function (r) {
+          if (!Array.isArray(r) || typeof r[0] !== 'string') return false;
+          said.push(r[0]);
+          return true;
+        });
+      });
+    });
+    return ok && said.join(' ') === p.text ? p.lay : null;
+  }
+  function fill(el, runs) {
+    var stressed = false;
+    runs.forEach(function (r, i) {
+      if (i) el.appendChild(document.createTextNode(' '));
+      el.appendChild(r[1] ? make('mark', 'key', r[0]) : document.createTextNode(r[0]));
+      if (r[1]) stressed = true;
+    });
+    return stressed;
+  }
+  function plainNodes(sec) {
+    var out = [];
+    (Array.isArray(sec.paras) ? sec.paras : []).forEach(function (p, i) {
+      if (!p || typeof p.text !== 'string') return;
+      if (p.slide && typeof p.slide.n === 'number') {
+        var picture = document.querySelector('details.slide[data-slide="' + Math.floor(p.slide.n) + '"]');
+        var holder = kept[sec.id] ? kept[sec.id].filter(function (n) { return n.nodeType === 1 && n.getAttribute('data-slide') === String(Math.floor(p.slide.n)); })[0] : null;
+        var mark;
+        if (holder || picture) mark = (holder || picture).cloneNode(true);
+        else {
+          mark = make('div', 'slide');
+          var row = make('div', 'row');
+          row.appendChild(make('span', 'sl-n', 'Slide ' + Math.floor(p.slide.n)));
+          if (typeof p.slide.title === 'string' && p.slide.title) row.appendChild(make('span', 'sl-t', p.slide.title));
+          mark.appendChild(row);
+        }
+        out.push(mark);
+      }
+      var box = make('div', 'para');
+      box.id = sec.id + '-q' + (i + 1);
+      var ok = safeHref(p.href);
+      var t = make(ok ? 'a' : 'span', 't', typeof p.t === 'string' ? p.t : '');
+      if (ok) t.setAttribute('href', p.href);
+      box.appendChild(t);
+      var who = function (el) {
+        if (typeof p.who === 'string' && p.who) {
+          el.appendChild(make('b', 'who', p.who + ':'));
+          el.appendChild(document.createTextNode(' '));
+        }
+        return el;
+      };
+      var lay = layOf(p);
+      if (!lay) {
+        var text = who(make('p'));
+        text.appendChild(document.createTextNode(p.text));
+        box.appendChild(text);
+      } else if (lay.length === 1 && lay[0].p) {
+        var one = who(make('p'));
+        if (fill(one, lay[0].p)) box.className = 'para stress';
+        box.appendChild(one);
+      } else {
+        var flow = make('div', 'flow');
+        var stress = false;
+        lay.forEach(function (b, bi) {
+          if (!b.li) {
+            var para = bi === 0 ? who(make('p')) : make('p');
+            if (fill(para, b.p)) stress = true;
+            flow.appendChild(para);
+            return;
+          }
+          var ol = make('ol', 'said');
+          ol.setAttribute('start', String(Math.max(1, Math.floor(Number(b.ol)) || 1)));
+          b.li.forEach(function (runs, k) {
+            var li = bi === 0 && k === 0 ? who(make('li')) : make('li');
+            if (fill(li, runs)) stress = true;
+            ol.appendChild(li);
+          });
+          flow.appendChild(ol);
+        });
+        box.className = 'para' + (stress ? ' stress' : '') + (lay[0].li ? ' lf' : '');
+        box.appendChild(flow);
+      }
+      out.push(box);
+    });
+    return out;
+  }
+  var allButton = $('#all-plain');
+  function showAll() {
+    if (!allButton) return;
+    var every = data.sections.length > 0 && data.sections.every(function (s) { return state.plain[s.id]; });
+    allButton.textContent = every ? 'Show the tidied text' : 'Show all as transcribed';
+    allButton.setAttribute('aria-pressed', String(every));
+  }
+  function swap(sec, plain) {
+    var el = document.getElementById(sec.id);
+    var body = el && $('.body', el);
+    if (!body) return;
+    var showing = !!kept[sec.id];
+    if (plain !== showing) {
+      if (plain) {
+        kept[sec.id] = $$(':scope > *', body);
+        var nodes = plainNodes(sec);
+        while (body.firstChild) body.removeChild(body.firstChild);
+        nodes.forEach(function (n) { body.appendChild(n); });
+      } else {
+        while (body.firstChild) body.removeChild(body.firstChild);
+        kept[sec.id].forEach(function (n) { body.appendChild(n); });
+        delete kept[sec.id];
+      }
+    }
+    el.classList.toggle('plain', plain);
+    var h = $('h2', el);
+    if (h && typeof sec.heading === 'string' && typeof sec.tidyHeading === 'string') h.textContent = plain ? sec.heading : sec.tidyHeading;
+    var b = $('.swap', el);
+    if (b) {
+      b.textContent = plain ? 'Show tidied' : 'Show as transcribed';
+      b.setAttribute('aria-pressed', String(plain));
+    }
+  }
+  function choose(sec, plain) {
+    if (plain) state.plain[sec.id] = true; else delete state.plain[sec.id];
+    swap(sec, plain);
+  }
+  data.sections.forEach(function (sec) {
+    if (!sec || typeof sec.id !== 'string' || !/^s\d{1,4}$/.test(sec.id)) return;
+    var el = document.getElementById(sec.id);
+    var b = el && $('.swap', el);
+    if (b) b.addEventListener('click', function () { choose(sec, !state.plain[sec.id]); save(); showAll(); measure(); });
+    if (state.plain[sec.id]) swap(sec, true);
+  });
+  if (allButton) allButton.addEventListener('click', function () {
+    var every = data.sections.every(function (s) { return state.plain[s.id]; });
+    var keep = current();
+    var id = keep ? keep.id.split('-')[0] : '';
+    data.sections.forEach(function (sec) { choose(sec, !every); });
+    save();
+    showAll();
+    var back = id && document.getElementById(id);
+    if (back) back.scrollIntoView({ block: 'start' });
+    measure();
+  });
+  showAll();
+
+  // Where the reader is: the bar at the top, the time left, and the place to come back to.
+  var bar = $('#progress');
+  var left = $('#left');
+  function current() {
+    var list = $$('.para');
+    for (var i = 0; i < list.length; i++) if (list[i].getBoundingClientRect().bottom > 90) return list[i];
+    return null;
+  }
+  var lastSaved = '';
+  function measure() {
+    var room = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    var done = Math.max(0, Math.min(1, window.scrollY / room));
+    if (bar) bar.style.transform = 'scaleX(' + done.toFixed(4) + ')';
+    if (left) {
+      var mins = Math.round((Number(data.minutes) || 0) * (1 - done));
+      left.textContent = done >= 0.995 ? 'You have reached the end.' : mins < 1 ? 'Less than a minute left' : 'About ' + mins + ' min left';
+    }
+    var at = current();
+    if (at && at.id && at.id !== lastSaved) {
+      lastSaved = at.id;
+      state.at = window.scrollY < 40 ? '' : at.id;
+      save();
+    }
+  }
+  var waiting = false;
+  function onScroll() {
+    if (waiting) return;
+    waiting = true;
+    (window.requestAnimationFrame || window.setTimeout)(function () { waiting = false; measure(); });
+  }
+  // Back where the reader stopped (unless the address names a place itself).
+  if (!location.hash && state.at) {
+    var there = document.getElementById(state.at) || document.getElementById(state.at.split('-')[0]);
+    if (there) {
+      root.style.scrollBehavior = 'auto';
+      there.scrollIntoView({ block: 'start' });
+      root.style.scrollBehavior = '';
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  measure();
+
+  // Contents: show which part is being read.
+  var links = $$('.toc ol a');
+  if ('IntersectionObserver' in window && links.length) {
+    var byId = {};
+    links.forEach(function (a) { byId[(a.getAttribute('href') || '').slice(1)] = a; });
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = byId[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '-8% 0px -80% 0px' });
+    Object.keys(byId).forEach(function (id) { var t = document.getElementById(id); if (t) seen.observe(t); });
+  }
+})();
+;(function readerScript() {
+  var bar = document.querySelector('.rd-bar');
+  if (!bar) return;
+  var IDS = ['watch', 'read', 'guide', 'quiz', 'cards'];
+  var FILES = { watch: ['study', '#t=0', 'Watch'], read: ['read', '#top', 'Read'], guide: ['guide', '', 'Guide'], quiz: ['guide', '#quiz', 'Quiz'], cards: ['guide', '#cards', 'Cards'] };
+  var q;
+  try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  var modes = bar.querySelector('.rd-modes');
+  var current = bar.getAttribute('data-current');
+  var file = bar.getAttribute('data-file') || '';
+  var find = function (id) { return modes.querySelector('[data-mode="' + id + '"]'); };
+  (q.get('has') || '').split(',').forEach(function (id) {
+    // This page's own sections are known to it; the rest is what the desk says is there now.
+    if (IDS.indexOf(id) < 0 || !file || find(id) || !FILES[current] || FILES[id][0] === FILES[current][0]) return;
+    var a = document.createElement('a');
+    a.setAttribute('data-mode', id);
+    a.setAttribute('href', file + '.' + FILES[id][0] + '.html' + FILES[id][1]);
+    a.textContent = FILES[id][2];
+    var next = null;
+    for (var i = IDS.indexOf(id) + 1; i < IDS.length && !next; i++) next = find(IDS[i]);
+    modes.insertBefore(a, next);
+  });
+
+  // "Quiz" asked for from outside (the desk, a page made before this guide): the questions begin at the self-test when there is one.
+  if (current === 'guide' && location.hash === '#quiz' && document.getElementById('self-test')) location.replace('#self-test');
+  function mark() {
+    if (current !== 'guide') return;
+    var id = location.hash.slice(1);
+    var on = id === 'cards' ? 'cards' : id === 'quiz' || id === 'self-test' ? 'quiz' : 'guide';
+    if (!find(on)) on = 'guide';
+    IDS.forEach(function (m) {
+      var el = find(m);
+      if (!el) return;
+      if (m === on) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+    });
+  }
+  mark();
+  addEventListener('hashchange', mark);
+
+  if (q.get('desk') !== '1') return;
+  var back = bar.querySelector('.rd-back');
+  var hint = bar.querySelector('.rd-hint');
+  back.hidden = false;
+  back.addEventListener('click', function () {
+    window.close();
+    // Still here: the browser only lets a page close a tab that has shown nothing else.
+    setTimeout(function () {
+      hint.textContent = 'Close this tab to go back to your desk.';
+      hint.hidden = false;
+    }, 350);
+  });
+  var folder = function (p) { return p.slice(0, p.lastIndexOf('/') + 1); };
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var raw = a.getAttribute('href') || '';
+    if (!raw) return;
+    if (raw.charAt(0) === '#') {
+      // A place on this page.
+      if (raw.length > 1) {
+        e.preventDefault();
+        location.replace(raw);
+      }
+      return;
+    }
+    var to;
+    try { to = new URL(raw, location.href); } catch (err) { return; }
+    // Only this lecture's own pages, in this folder.
+    if (to.protocol !== location.protocol || folder(to.pathname) !== folder(location.pathname) || !/\.(study|read|guide)(%20\(\d+\))?\.html$/i.test(to.pathname)) return;
+    to.search = location.search;
+    e.preventDefault();
+    // A mode takes this page's place (the tab can still be closed to go back); a minute in the lecture is a step you can come back from.
+    if (a.hasAttribute('data-mode')) location.replace(to.href);
+    else location.assign(to.href);
+  });
+})();</script>
+</body>
+</html>

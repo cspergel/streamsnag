@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-eplTkrGgY8Wv+ju4tl8OUqjxM8Hh8c/DPRS/a0gaBlE=&#39;; style-src &#39;sha256-eeL8q96nH7PIu0dUadTZR3hza3Kd4R7SW3jQ9lheo4M=&#39;; media-src &#39;self&#39; file:; frame-src &#39;self&#39; file:; img-src &#39;self&#39;; connect-src &#39;none&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../icon.png">
+<meta name="generator" content="StreamSnag study page">
+<title>Sample study page: From a sample to a claim: standard error, confidence intervals and p-values | StreamSnag</title>
+<style>
+:root {
+  color-scheme: light dark;
+  /* The desk's paper and ink (lib/readerbar.js has the same for its bar); orange only marks where the lecture is now. */
+  --bg: #f5f3ee; --surface: #fffefb; --text: #1a1f1d; --muted: #5c635e; --line: #dfdbd1;
+  --accent: #b5420a; --now: #fbe8da; --now-line: #e8590c; --chip: #ebe8e0;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141716; --surface: #1b1f1d; --text: #ebe9e3; --muted: #959a95; --line: #2a2f2c;
+    --accent: #f6905a; --now: #33211a; --now-line: #f0702a; --chip: #262b29;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body { display: flex; flex-direction: column; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--now-line); outline-offset: 2px; }
+.top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; padding: 12px 22px; border-bottom: 1px solid var(--line); }
+h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650; line-height: 1.3; overflow-wrap: anywhere; }
+.meta { color: var(--muted); font-size: 13px; }
+a.read { color: var(--accent); white-space: nowrap; }
+/* Under the reader bar, which already names the lecture and offers "Read": the heading stays for screen readers, the line keeps what the bar does not say. */
+.rd-bar + .top { padding-top: 7px; padding-bottom: 7px; }
+.rd-bar + .top h1 { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.rd-bar + .top .meta:not(.read) { flex: 1 1 auto; }
+.rd-bar:has([data-mode="read"]) + .top a.read { display: none; }
+.check { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; white-space: nowrap; }
+.app { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "stage slides" "words slides"; }
+.no-slides .app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "words"; }
+.stage { grid-area: stage; padding: 18px 22px 6px; }
+.stage video { display: block; width: 100%; max-height: 46vh; border-radius: 10px; background: #000; }
+.no-slides .stage video, .no-slides .stage .note { max-width: 960px; margin-left: auto; margin-right: auto; }
+.note { margin: 0; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font-size: 14px; }
+.stage .note { margin-top: 10px; }
+.words { grid-area: words; min-height: 0; overflow-y: auto; margin-top: 10px; padding: 0 22px 48px; border-top: 1px solid var(--line); }
+.words-in { max-width: 70ch; margin: 0 auto; }
+.words h2 { margin: 14px 0 2px; font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mark { display: flex; align-items: baseline; gap: 10px; margin: 26px 0 6px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--muted); }
+.mark .mnum { color: var(--accent); white-space: nowrap; }
+.mark .mname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.para { position: relative; margin: 0; padding: 7px 12px 7px 70px; border-radius: 8px; font: 17px/1.65 ui-serif, Georgia, Cambria, "Iowan Old Style", "Palatino Linotype", serif; overflow-wrap: anywhere; }
+.para.now { background: var(--now); box-shadow: inset 3px 0 0 var(--now-line); }
+.stamp { position: absolute; left: 8px; top: 9px; padding: 1px 6px; border: 0; border-radius: 6px; background: none; color: var(--muted); font: 12.5px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; }
+.stamp:hover { background: var(--chip); color: var(--text); }
+.para.now .stamp { color: var(--accent); font-weight: 600; }
+.who { font-weight: 600; }
+.slides { grid-area: slides; min-height: 0; display: flex; flex-direction: column; border-left: 1px solid var(--line); background: var(--surface); }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.bar button { padding: 4px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.bar button:hover:not(:disabled) { border-color: var(--muted); }
+.bar button:disabled { opacity: .45; cursor: default; }
+#where { flex: 1; min-width: 120px; text-align: center; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.viewer { flex: none; aspect-ratio: 16 / 9; max-height: 46%; border-bottom: 1px solid var(--line); background: var(--chip); }
+.viewer iframe { display: block; width: 100%; height: 100%; border: 0; }
+/* A PowerPoint slide, laid out here from its words and pictures: a sheet with the proportions of a slide that grows when there is more on it. */
+.viewer.deck { flex: 0 1 auto; aspect-ratio: auto; min-height: 150px; max-height: 58%; overflow-y: auto; padding: 14px; }
+.sheet { display: flex; flex-direction: column; aspect-ratio: 16 / 9; max-width: 760px; margin: 0 auto; padding: 20px 24px 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 10px 24px -18px rgba(0, 0, 0, .35); }
+.sh-num { font-size: 11.5px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.sh-title { margin: 3px 0 0; font-size: 21px; font-weight: 650; line-height: 1.25; overflow-wrap: anywhere; text-wrap: balance; }
+.sheet.bare { justify-content: center; }
+.sheet.bare .sh-title { font-size: 26px; }
+.sh-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 22px; align-items: start; margin-top: 14px; }
+.sh-text { min-width: 0; }
+.outline { margin: 0; padding: 0; list-style: none; }
+.outline li { position: relative; margin: 0 0 7px; padding-left: 17px; font-size: 14.5px; line-height: 1.45; overflow-wrap: anywhere; }
+.outline li::before { content: ""; position: absolute; left: 3px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--now-line); }
+.sh-table { width: 100%; margin: 0 0 9px; border-collapse: collapse; font-size: 13.5px; line-height: 1.4; }
+.sh-table td { padding: 5px 9px; border: 1px solid var(--line); text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.sh-table tr:first-child td { background: var(--chip); font-weight: 600; }
+.sh-pics { display: grid; gap: 8px; min-width: 0; }
+.sh-pics.many { grid-template-columns: 1fr 1fr; }
+.sh-pics img { display: block; width: 100%; max-height: 320px; object-fit: contain; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.sh-more { margin: 12px 0 0; color: var(--muted); font-size: 12.5px; }
+.lnotes { flex: none; border-bottom: 1px solid var(--line); }
+.lnotes summary { padding: 8px 14px; color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+.lnotes summary:hover, .lnotes[open] summary { color: var(--text); }
+.lnotes-text { max-height: 24vh; overflow-y: auto; margin: 0 14px 12px; padding: 2px 0 2px 14px; border-left: 3px solid var(--now-line); }
+.lnotes-text p { margin: 0 0 7px; font: 15px/1.55 ui-serif, Georgia, Cambria, "Iowan Old Style", "Palatino Linotype", serif; overflow-wrap: anywhere; }
+.lnotes-text p:last-child { margin-bottom: 0; }
+.list { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 8px; list-style: none; }
+/* Under a laid-out slide and its open notes the list keeps room for a card or two: the slide above scrolls instead. */
+.viewer.deck ~ .list { min-height: 132px; }
+.card { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 2px 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 9px; background: none; text-align: left; }
+.card:hover { background: var(--chip); }
+.num { grid-row: 1 / span 2; align-self: start; margin-top: 1px; height: 22px; border-radius: 6px; background: var(--chip); color: var(--muted); font-size: 12px; font-weight: 600; line-height: 22px; text-align: center; font-variant-numeric: tabular-nums; }
+.stitle { font-weight: 600; overflow-wrap: anywhere; }
+.time { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.about { display: block; font-size: 11px; font-style: italic; }
+.stext { grid-column: 2 / span 2; color: var(--muted); font-size: 13px; line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.thumb { grid-column: 3; grid-row: 2; justify-self: end; width: 54px; height: 38px; object-fit: cover; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
+.card.pic .stext { grid-column: 2; }
+.card.now { background: var(--now); box-shadow: inset 4px 0 0 var(--now-line); }
+.card.now .num { background: var(--now-line); color: #fff; }
+.card.now .stitle { font-size: 16px; }
+.card.now .stext { display: block; color: var(--text); }
+.card.now .time { color: var(--accent); font-weight: 600; }
+@media (max-width: 899px) {
+  .top { padding: 10px 14px; }
+  /* Stacked: the video, the slides, then the transcript in what is left of the window (the page scrolls if that is too little). */
+  .app { display: flex; flex-direction: column; }
+  .stage { flex: none; padding: 10px 14px 8px; }
+  .stage video { max-height: 30vh; }
+  .slides { flex: none; border-left: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .bar { padding: 7px 10px; }
+  .viewer { max-height: 28vh; }
+  .viewer.deck { max-height: 44vh; padding: 10px; }
+  .sheet { aspect-ratio: auto; padding: 16px 18px 18px; }
+  .lnotes-text { max-height: 30vh; }
+  .list, .viewer.deck ~ .list { flex: none; min-height: 0; max-height: 21vh; }
+  .words { flex: 1 1 0; min-height: 240px; margin-top: 0; padding: 0 14px 40px; border-top: 0; }
+  .para { padding-left: 62px; }
+}
+@media print {
+  body { height: auto; display: block; }
+  .stage, .bar, .viewer, .lnotes, .thumb, .check { display: none; }
+  .app { display: block; }
+  .words, .list { overflow: visible; max-height: none; }
+}
+
+/* the reader bar: one lecture, five ways to study it */
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #1a1f1d; --rd-ink-2: #434a46; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #1d5c58; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; }
+.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.rd-bar [hidden] { display: none !important; }
+.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
+.rd-bar .rd-modes { display: flex; flex: none; gap: 2px; max-width: 100%; padding: 3px; border-radius: 9px; background: var(--rd-sunk); }
+.rd-bar .rd-modes a, .rd-bar .rd-modes span { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 6px; color: var(--rd-ink-2); font: inherit; text-decoration: none; white-space: nowrap; }
+.rd-bar .rd-modes a:hover { color: var(--rd-ink); text-decoration: none; }
+.rd-bar .rd-modes [aria-current] { background: var(--rd-surface); color: var(--rd-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rd-rule-2); }
+.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
+.rd-bar .rd-back::before { content: ""; width: 6px; height: 6px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-left: 2px; }
+.rd-bar .rd-back:hover { border-color: var(--rd-ink-3); color: var(--rd-ink); }
+.rd-bar .rd-hint { flex: 1 0 100%; font-size: 12.5px; color: var(--rd-ink-3); }
+.rd-bar :focus-visible { outline: 2px solid var(--rd-source); outline-offset: 2px; border-radius: 6px; }
+html { scroll-padding-top: 4.4rem; }
+.rd-bar ~ .page .toc { top: calc(48px + 1.4rem); max-height: calc(100vh - 48px - 2.8rem); }
+@media (max-width: 560px) { .rd-bar { padding: 6px 10px; } .rd-bar .rd-modes a, .rd-bar .rd-modes span { padding: 0 9px; } }
+@media print { .rd-bar { display: none; } }
+
+.ssb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 8px 16px; background: #14181d; color: #c9ced6; font: 400 13px/1.45 "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; position: relative; z-index: 5; }
+.ssb a { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-color: #6b7380; text-underline-offset: .2em; white-space: nowrap; }
+.ssb a:hover { text-decoration-color: #fff; }
+.ssb a:focus-visible { outline: 2px solid #ff8a4c; outline-offset: 2px; border-radius: 3px; }
+.ssb .ssb-home { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; }
+.ssb svg { width: 20px; height: 20px; flex: none; }
+.ssb .ssb-what { flex: 1 1 320px; min-width: 0; }
+.ssb .ssb-what b { color: #fff; font-weight: 650; }
+.ssb .ssb-links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.ssb [aria-current] { text-decoration: none; color: #c9ced6; font-weight: 400; }
+@media print { .ssb { display: none; } }
+</style>
+</head>
+<body>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample study page.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. This sample has no video: choose a slide or a time to see the slides and the transcript move together.</span><span class="ssb-links"><a href="stats-reading-edition.html">Reading edition</a><a href="stats-study-guide.html">Study guide</a><a href="stats-study-page.html" aria-current="page">Study page</a><a href="../#gallery">All samples</a></span></div>
+<nav class="rd-bar" id="top" aria-label="This lecture" data-current="watch" data-file="">
+<button type="button" class="rd-back" hidden>Back to desk</button>
+<span class="rd-title">From a sample to a claim: standard error, confidence intervals and p-values</span>
+<span class="rd-modes"><span data-mode="watch" aria-current="page">Watch</span></span>
+<span class="rd-hint" role="status" hidden></span>
+</nav>
+<header class="top">
+<h1 id="title">From a sample to a claim: standard error, confidence intervals and p-values</h1>
+<span class="meta" id="meta">11 slides · 2 about here · 27:35</span>
+<label class="check"><input type="checkbox" id="follow" checked> Follow the video</label>
+</header>
+<main class="app">
+<section class="stage" aria-label="Video">
+<video id="video" controls preload="metadata" playsinline></video>
+<p class="note" id="video-note" hidden></p>
+<p class="note" id="slides-note" hidden></p>
+</section>
+<section class="slides" id="slides" aria-label="Slides">
+<div class="bar">
+<button type="button" id="prev" title="Previous slide (left arrow)">Previous</button>
+<span id="where" aria-live="polite"></span>
+<button type="button" id="next" title="Next slide (right arrow)">Next</button>
+<label class="check" id="show-pdf-label" hidden><input type="checkbox" id="show-pdf"> Show the slide</label>
+</div>
+<div class="viewer" id="viewer" hidden></div>
+<details class="lnotes" id="notes" hidden><summary>Lecturer&#39;s notes</summary><div class="lnotes-text" id="notes-text"></div></details>
+<ol class="list" id="slide-list"></ol>
+</section>
+<section class="words" id="words" aria-label="Transcript">
+<div class="words-in">
+<h2>Transcript</h2>
+<div id="paras"></div>
+</div>
+</section>
+</main>
+<noscript><p class="note">This page needs JavaScript to line the slides up with the video.</p></noscript>
+<script type="application/json" id="study-data">{"title":"From a sample to a claim: standard error, confidence intervals and p-values","videos":[],"videoKnown":false,"pdf":"","total":1655.722,"note":"","slides":[{"n":1,"title":"From a sample to a claim","text":"Statistics for the life sciences, lecture 9. Standard error, confidence intervals and p-values.\nSo far: describing data.\nToday: inference.\nQuiz 2 is now on Wednesday: bring a calculator.","start":0,"end":80.309,"approx":false},{"n":2,"title":"Population and sample","text":"Population: every student at the university.\nParameter: the true mean μ (fixed, unknown).\nSample: n = 64 students chosen at random.\nStatistic: sample mean x̄ = 6.8 h, standard deviation s = 1.6 h.\nA different sample gives a different x̄.\nSample size matters;\npopulation size barely does.","start":80.309,"end":251.457,"approx":false},{"n":3,"title":"The sampling distribution of the mean","text":"Repeat the survey thousands of times and plot the means.\n1. Centre: μ (the sample mean is unbiased).\n2. Spread: σ / √n.\n3. Shape: approximately normal (central limit theorem), even when the population is skewed.\nRule of thumb: n ≥ 30.\nFigure: skewed histogram of individual sleep times beside a narrow bell curve of sample means.","start":251.457,"end":395.025,"approx":false},{"n":4,"title":"Standard error","text":"SE = s / √n = 1.6 / √64 = 1.6 / 8 = 0.2 h (12 minutes).\nStandard deviation: how much individuals differ.\nStandard error: how much the sample mean varies between samples.\nMore data shrinks the SE, not the SD.\nFour times the sample halves the SE: n = 256 gives SE = 0.1 h.","start":395.025,"end":612.093,"approx":false},{"n":5,"title":"The 95 % confidence interval","text":"x̄ ± 1.96 × SE = 6.8 ± 0.39, so 6.41 to 7.19 h.\nMargin of error = 0.39 h.\n99 % interval: x̄ ± 2.576 × SE = 6.8 ± 0.52, so 6.28 to 7.32 h.\nMore confidence means a wider interval.\nNarrow and confident needs a larger n.","start":612.093,"end":692.2,"approx":true},{"n":6,"title":"What “95 % confident” means","text":"μ is fixed;\nthe interval is random.\nOf 100 intervals built from 100 samples, about 95 contain μ and about 5 miss.\nFigure: 100 horizontal intervals around a vertical line at μ, the misses in red.\nWrong: “there is a 95 % chance μ is in this interval”.\nRight: “the method captures μ 95 % of the time”.","start":692.2,"end":840.247,"approx":false},{"n":7,"title":"Small samples: Student's t","text":"s is an uncertain estimate of σ when n is small.\nUse the t distribution with n − 1 degrees of freedom (fatter tails).\nExample: n = 16, SE = 1.6 / 4 = 0.4, df = 15, t* = 2.131, interval 6.8 ± 0.85, so 5.95 to 7.65 h.\nt* by df: 15 → 2.131, 30 → 2.042, 100 → 1.984, ∞ → 1.960.\nW.\nS.\nGosset (“Student”), Guinness, 1908.","start":840.247,"end":1023.27,"approx":false},{"n":8,"title":"Hypothesis testing","text":"1. Null hypothesis H0: μ = 7.5 h.\n2. Test statistic z = (x̄ − μ0) / SE = (6.8 − 7.5) / 0.2 = −3.5. 3. p-value ≈ 0.0005 (two-sided).\n4. Compare with α = 0.05: reject H0.\nWith H0: μ = 7.0 h, z = −1.0, p ≈ 0.32: fail to reject.\nA value inside the 95 % confidence interval is not rejected at the 5 % level.","start":1023.27,"end":1307.325,"approx":false},{"n":9,"title":"What a p-value is not","text":"p = P(data at least this extreme | H0 true).\nNot P(H0 true | data).\nNot the size of the effect.\nExample: n = 10 000, difference 0.05 h (3 minutes), SE = 0.016, z ≈ 3.1, p ≈ 0.002: statistically significant, practically unimportant.\np \u003e 0.05 is not proof of no effect.\nReport the effect size and its confidence interval.","start":1307.325,"end":1410.936,"approx":true},{"n":10,"title":"Two kinds of error, and many tests","text":"Type I error: rejecting a true H0 (false positive), probability α.\nType II error: failing to reject a false H0 (false negative), probability β.\nPower = 1 − β, usually aimed at 80 %.\n20 tests at α = 0.05 with no real effects: 1 false positive expected;\nP(at least one) = 1 − 0.95^20 ≈ 64 %.\nBonferroni correction: α / m = 0.05 / 20 = 0.0025.","start":1410.936,"end":1578.538,"approx":false},{"n":11,"title":"Summary","text":"Statistics vary;\nthe sampling distribution says how.\nSE = s / √n.\n95 % CI ≈ mean ± 2 SE;\nthe 95 % describes the method.\nSmall samples: t, not z.\np-value: probability of data this extreme if H0 is true.\nSignificant is not the same as important.\nNext time: comparing two groups (two-sample t test).\nRead chapter 9.","start":1578.538,"end":1655.722,"approx":false}],"paras":[{"t":1.5,"who":"Lecturer","text":"Alright, let's make a start. Can everyone see the screen? Okay. Um, one piece of housekeeping before we begin. Quiz two has moved.","slide":0},{"t":14.168,"who":"Lecturer","text":"It is now on Wednesday, not Monday, same room, and you will want a calculator with a square root button, because, as you are about to find out, we take a lot of square roots in this half of the course.","slide":0},{"t":34.982,"who":"Lecturer","text":"So. Up to now everything we have done has been description. You have a pile of numbers, you draw a histogram, you work out a mean and a standard deviation, and you describe what you have got. Today we cross a line. Today we start making claims about things we have not measured.","slide":0},{"t":61.975,"who":"Lecturer","text":"That is what inference is. We measure a few, and we say something about all of them, and the whole lecture is really about one question: how wrong could we be?","slide":0},{"t":80.309,"who":"Lecturer","text":"Let me set up the example we are going to use for the whole hour. Suppose we want to know how long students at this university sleep on a weeknight. All of them. That group, everybody we care about, is the population, and the true average for that whole population gets a Greek letter, mu. Mu is called a parameter.","slide":1},{"t":107.847,"who":"Lecturer","text":"It is a fixed number. It exists. We just do not know it, and we are never going to know it exactly, because we are not going to follow twenty thousand people home.","slide":1},{"t":125.724,"who":"Lecturer","text":"What we do instead is take a sample. So say we survey sixty-four students, chosen at random, and we get a sample mean of six point eight hours, with a standard deviation of one point six hours. The sample mean gets the symbol x-bar, and x-bar is called a statistic. So, parameter for the population, statistic for the sample. P goes with P, S goes with S, if that helps you.","slide":1},{"t":163.577,"who":"Lecturer","text":"Now here is the uncomfortable thing. If I had surveyed a different sixty-four students, I would not have got six point eight. I might have got six point six, or seven point one. The parameter does not move, but the statistic moves every time you take a new sample. So when I report six point eight, the honest question is, how much would that number have bounced around?","slide":1},{"t":197.767,"who":"Student","text":"Does it matter how big the university is? Like, sixty-four out of twenty thousand seems tiny.","slide":1},{"t":207.978,"who":"Lecturer","text":"Good question, and the answer surprises people. As long as the population is much bigger than the sample, the size of the population barely matters. What matters is the size of the sample. Sixty-four random students tell you about as much about a university of twenty thousand as about a country of twenty million. The word doing the heavy lifting there is random.","slide":1},{"t":239.794,"who":"Lecturer","text":"A big sample that is not random is worse than a small one that is.","slide":1},{"t":251.457,"who":"Lecturer","text":"So let's do a thought experiment. Imagine we did not run the survey once, but thousands of times. Each time, a fresh sixty-four students, each time we write down the mean. Six point eight, six point six, seven point one, six point nine, and so on. And then we draw a histogram, not of students, but of those means.","slide":2},{"t":282.089,"who":"Lecturer","text":"That histogram has a name. It is the sampling distribution of the mean, and it is the most important idea in this course. It is a distribution of a statistic, not of individual people.","slide":2},{"t":301.424,"who":"Lecturer","text":"And we know three things about it, without ever having to run those thousands of surveys. First, it is centred on mu, the true population mean. So the sample mean is not biased; on average it lands in the right place. Second, its spread is the population standard deviation divided by the square root of the sample size. Sigma over root n.","slide":2},{"t":332.387,"who":"Lecturer","text":"And third, and this is the central limit theorem, its shape is approximately normal, the bell curve, even if the population itself is not normal at all.","slide":2},{"t":346.458,"who":"Lecturer","text":"That third one is slightly magical. Sleep is not normally distributed. There is a long tail of people who sleep four hours, there are a few who sleep eleven. It is lopsided. It does not matter.","slide":2},{"t":365.335,"who":"Lecturer","text":"Once you average thirty or more of them, the averages pile up in a bell shape. The usual rule of thumb is a sample size of about thirty is enough, a bit more if the population is very skewed.","slide":2},{"t":386.92,"who":"Lecturer","text":"Now, that spread, sigma over root n, is so useful that it has its own name.","slide":2},{"t":395.025,"who":"Lecturer","text":"It is the standard error of the mean. And since we do not know sigma, the population standard deviation, we use the sample standard deviation, s, in its place. So the standard error is s over the square root of n. Let's do it for our survey. The standard deviation was one point six hours.","slide":3},{"t":424.538,"who":"Lecturer","text":"The sample size was sixty-four, and the square root of sixty-four is eight. So one point six divided by eight is zero point two. The standard error is zero point two hours, which is twelve minutes.","slide":3},{"t":444.131,"who":"Lecturer","text":"I want you to be very clear on the difference between those two numbers, because it is the single most common mistake on the exam. The standard deviation, one point six hours, tells you how much individual students differ from each other. The standard error, zero point two hours, tells you how much the sample mean would differ from survey to survey. Standard deviation is about people. Standard error is about the precision of your estimate.","slide":3},{"t":481.003,"who":"Lecturer","text":"If you collect more data, the standard deviation does not shrink, students are as varied as they ever were. The standard error does shrink.","slide":3},{"t":494.683,"who":"Lecturer","text":"And how fast does it shrink? Look at the formula. It is the square root of n on the bottom. So to halve the standard error, you need four times the data. If we went from sixty-four students to two hundred and fifty-six, the square root is sixteen, and one point six over sixteen is zero point one. Four times the work for twice the precision.","slide":3},{"t":527.302,"who":"Lecturer","text":"That is the law of diminishing returns in statistics, and it is why studies do not just keep getting bigger.","slide":3},{"t":540.25,"who":"Lecturer","text":"Okay. So now we can build the thing you will see in every paper you ever read, the confidence interval. The logic goes like this. The sampling distribution is normal. In a normal distribution, ninety-five percent of the values fall within one point nine six standard deviations of the centre.","slide":3},{"t":565.257,"who":"Lecturer","text":"So ninety-five percent of the time, our sample mean will land within one point nine six standard errors of the true mean. And if x-bar is within that distance of mu, then mu is within that distance of x-bar. Same distance, just seen from the other end.","slide":3},{"t":589.659,"who":"Lecturer","text":"So the recipe for a ninety-five percent confidence interval is, the sample mean, plus or minus one point nine six times the standard error. For us, one point nine six times zero point two is zero point three nine two, call it zero point three nine.","slide":3},{"t":612.093,"who":"Lecturer","text":"So six point eight minus zero point three nine is six point four one, and six point eight plus zero point three nine is seven point one nine. Our ninety-five percent confidence interval for the mean sleep of all students is six point four one to seven point one nine hours. That plus or minus part, the zero point three nine, is called the margin of error.","slide":4},{"t":644.613,"who":"Lecturer","text":"What if you want to be more confident? You can have a ninety-nine percent interval. The multiplier goes up from one point nine six to two point five seven six. Two point five seven six times zero point two is about zero point five two, so the interval becomes six point two eight to seven point three two. Notice what happened. More confidence, wider interval.","slide":4},{"t":676.208,"who":"Lecturer","text":"You never get something for nothing. If you want an interval that is both confident and narrow, the only honest way is a bigger sample.","slide":4},{"t":692.2,"who":"Lecturer","text":"Now I have to be a little bit annoying, because there is a right way and a wrong way to say what ninety-five percent means, and nearly everyone says it the wrong way. The wrong way is, there is a ninety-five percent chance that the true mean is between six point four one and seven point one nine. It sounds perfectly reasonable. It is not what the method gives you.","slide":5},{"t":728.991,"who":"Lecturer","text":"Here is why. Mu is a fixed number. It is not jumping around. It is either inside this particular interval or it is not. The thing that is random is the interval, because the interval came from a random sample.","slide":5},{"t":748.878,"who":"Lecturer","text":"So the ninety-five percent describes the procedure. If we repeated the survey a hundred times and built a hundred intervals, about ninety-five of them would contain the true mean, and about five would miss it. That is the picture on the slide, a hundred horizontal bars, and a handful, drawn in red, that do not cross the vertical line.","slide":5},{"t":779.789,"who":"Lecturer","text":"And the awkward part is, you never know whether yours is one of the red ones. You ran one survey, you have one interval. So the careful sentence is, we are ninety-five percent confident, meaning we used a method that works ninety-five percent of the time. I am not going to take marks off if you slip in conversation. I will take marks off if you write the wrong version in the exam.","slide":5},{"t":817.165,"who":"Student","text":"So is it wrong to say there's a five percent chance we're wrong?","slide":5},{"t":824.863,"who":"Lecturer","text":"It is closer. I would say, the method is wrong five percent of the time. That keeps the probability attached to the method, where it belongs.","slide":5},{"t":840.247,"who":"Lecturer","text":"Right, a complication. Everything so far quietly assumed we had a decent sized sample. Remember we swapped sigma, which we do not know, for s, which we estimated. With sixty-four people, s is a pretty good estimate. With a small sample it is not, it is itself quite wobbly, and if we ignore that, our intervals come out too narrow.","slide":6},{"t":869.033,"who":"Lecturer","text":"We would be claiming more precision than we have.","slide":6},{"t":875.231,"who":"Lecturer","text":"The fix was worked out by a man called William Gosset, who was a brewer at Guinness in Dublin, and who published under the name Student because the brewery did not want competitors to know they employed statisticians. So it is called Student's t distribution. It looks like the normal curve, but with fatter tails, and exactly how fat depends on the degrees of freedom, which for one sample is n minus one.","slide":6},{"t":911.989,"who":"Lecturer","text":"Let's see what difference it makes. Suppose we had only surveyed sixteen students and happened to get the same mean and standard deviation. The standard error is now one point six over the square root of sixteen, so one point six over four, which is zero point four. Degrees of freedom, sixteen minus one, fifteen. And instead of one point nine six, the table gives us two point one three one.","slide":6},{"t":946.255,"who":"Lecturer","text":"So the margin of error is two point one three one times zero point four, about zero point eight five. The interval runs from five point nine five to seven point six five. Much wider than before, partly because the sample is smaller, and partly because of that bigger multiplier.","slide":6},{"t":973.008,"who":"Lecturer","text":"As the sample grows, t settles down towards the normal value. At thirty degrees of freedom the multiplier is two point zero four two. At a hundred it is one point nine eight four. So in practice, sorry, in practice people just use t all the time when sigma is unknown, which is always, and for large samples it makes no real difference.","slide":6},{"t":1007.468,"who":"Lecturer","text":"Okay, second half of the story. So far we have estimated. Now we test. Suppose the university wellbeing leaflet says, our students get a healthy seven and a half hours of sleep a","slide":6},{"t":1023.27,"who":"Lecturer","text":"night. And you look at your six point eight and think, hmm. A hypothesis test is the formal version of hmm.","slide":7},{"t":1034.912,"who":"Lecturer","text":"It goes in steps. Step one, state the null hypothesis, the claim you are testing. Here, mu equals seven point five. Step two, ask, if that were true, how surprising is my data? We measure surprise in standard errors.","slide":7},{"t":1055.902,"who":"Lecturer","text":"Our mean is six point eight, the claim is seven point five, the difference is minus zero point seven, and the standard error is zero point two. Minus zero point seven divided by zero point two is minus three point five. Our sample mean is three and a half standard errors below what the leaflet says. That number is the test statistic, here a z score.","slide":7},{"t":1088.237,"who":"Lecturer","text":"Step three, turn that into a probability. If the null were true, how often would a sample land three and a half standard errors away or further, in either direction? The answer is about zero point zero zero zero five. Five times in ten thousand. That probability is the p-value.","slide":7},{"t":1112.453,"who":"Lecturer","text":"And step four, compare it with a threshold you chose in advance, called alpha, which by convention is zero point zero five. Our p-value is far below that, so we reject the null hypothesis. The data are not compatible with seven and a half hours.","slide":7},{"t":1137.169,"who":"Lecturer","text":"Now try a different claim. Suppose the leaflet had said seven hours. Then the difference is six point eight minus seven, minus zero point two, divided by the standard error of zero point two, which is minus one. One standard error away. The p-value for that is about zero point three two.","slide":7},{"t":1163.099,"who":"Lecturer","text":"That would happen about a third of the time just by the luck of the draw. So we do not reject. And notice the wording. We do not say we have proved that the mean is seven. We say we fail to reject.","slide":7},{"t":1185.165,"who":"Lecturer","text":"Absence of evidence against is not evidence for.","slide":7},{"t":1191.154,"who":"Lecturer","text":"And here is something neat that ties the two halves together. Seven point five was outside our ninety-five percent confidence interval, and we rejected it. Seven was inside the interval, and we did not. That is not a coincidence. The ninety-five percent confidence interval is exactly the set of values that a test at the five percent level would not reject.","slide":7},{"t":1222.984,"who":"Lecturer","text":"So the interval tells you everything the test does, and more, because it also tells you how big the effect might be.","slide":7},{"t":1237.604,"who":"Lecturer","text":"I want to spend five minutes on what a p-value is not, because it is the most misunderstood number in science. The definition, once more. The p-value is the probability of getting data at least as extreme as yours, if the null hypothesis is true. It starts from the assumption that the null is true.","slide":7},{"t":1267.3,"who":"Lecturer","text":"So, misreading number one. The p-value is not the probability that the null hypothesis is true. A p-value of zero point zero three does not mean there is a three percent chance the leaflet is right. It is the probability of the data given the hypothesis, not the probability of the hypothesis given the data, and those are different things. The probability that you are in this lecture hall, given that you are a statistics student, is high. The probability that you are a statistics student,","slide":7},{"t":1307.325,"who":"Lecturer","text":"given that you are in this lecture hall, well, some of you are here for the heating.","slide":8},{"t":1316.678,"who":"Lecturer","text":"Misreading number two. A small p-value does not mean a big or important effect. It is partly about the effect and partly about the sample size. Let me show you. Suppose we survey ten thousand students, and the mean comes out just zero point zero five hours below the claim.","slide":8},{"t":1340.65,"who":"Lecturer","text":"Zero point zero five hours is three minutes. Nobody cares about three minutes of sleep. But the standard error with ten thousand people is one point six over a hundred, zero point zero one six. So the test statistic is zero point zero five over zero point zero one six, which is about three point one, and the p-value is about zero point zero zero two. Highly significant, and completely unimportant.","slide":8},{"t":1375.043,"who":"Lecturer","text":"So we separate statistical significance, which means unlikely to be chance, from practical significance, which means big enough to matter. Always report the size of the effect and its confidence interval, not just the p-value.","slide":8},{"t":1392.954,"who":"Lecturer","text":"And misreading number three, a p-value above zero point zero five does not show there is no effect. It may just mean your sample was too small to see it.","slide":8},{"t":1410.936,"who":"Lecturer","text":"Which brings us to the two ways a test can go wrong. A type one error is rejecting a null hypothesis that is actually true. A false alarm, a false positive. And the lovely thing is that you choose how often that happens. It is alpha. Set alpha at zero point zero five, and when the null is true you will raise a false alarm five percent of the time.","slide":9},{"t":1447.609,"who":"Lecturer","text":"A type two error is the opposite, failing to reject a null that is false. A miss. Its probability is called beta, and one minus beta is the power of the test, the chance of detecting an effect that is really there. Studies usually aim for a power of eighty percent. And the main thing you can do to get more power is, you have guessed it, a bigger sample.","slide":9},{"t":1483.641,"who":"Lecturer","text":"Now, one consequence of that five percent that catches out professionals. Suppose you do not run one test, you run twenty. Twenty different outcomes, sleep and grades, sleep and mood, sleep and coffee, and suppose in truth nothing is going on in any of them. Each test has a five percent chance of a false alarm. Twenty times zero point zero five is one.","slide":9},{"t":1515.76,"who":"Lecturer","text":"So you expect one significant result from pure noise. And the chance of getting at least one is one minus zero point nine five to the power of twenty, which is about sixty-four percent. Nearly two in three. So if somebody tests twenty things and shows you the one that worked, you should not be impressed.","slide":9},{"t":1545.117,"who":"Lecturer","text":"The simplest protection is called the Bonferroni correction. You divide alpha by the number of tests. Twenty tests, zero point zero five over twenty, so each one has to beat zero point zero zero two five instead. It is strict, some would say too strict, but it is honest, and it is the one I expect you to know.","slide":9},{"t":1578.538,"who":"Lecturer","text":"Let me pull it together. One, a statistic varies from sample to sample, and the sampling distribution describes how. Two, its spread is the standard error, s over root n, and you need four times the data to halve it. Three, a ninety-five percent confidence interval is the mean plus or minus about two standard errors, and the ninety-five percent describes the method, not this one interval. Four, small samples use t instead of z.","slide":10},{"t":1616.275,"who":"Lecturer","text":"Five, a p-value is the probability of data this extreme if the null is true, and nothing else. And six, significant does not mean important, and twenty tests will hand you a false positive most of the time.","slide":10},{"t":1636.43,"who":"Lecturer","text":"Next time we take all of this and compare two groups, students with morning lectures against students without, which is the two-sample t test. Read chapter nine before then. And remember, quiz on Wednesday, bring the calculator. Thanks, everyone.","slide":10}],"bar":{"base":"","has":{"read":false,"guide":false,"quiz":false,"cards":false}}}</script>
+<script>(function studyScript(parseHash, outline) {
+  const data = JSON.parse(document.getElementById('study-data').textContent);
+  const $ = (id) => document.getElementById(id);
+  const make = (tag, cls, text) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const stamp = (sec) => {
+    const s = Math.max(0, Math.floor(Number(sec) || 0));
+    const pad = (x) => String(x).padStart(2, '0');
+    const rest = `${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+    return s >= 3600 ? `${Math.floor(s / 3600)}:${rest}` : rest;
+  };
+  const slides = Array.isArray(data.slides) ? data.slides : [];
+  const paras = Array.isArray(data.paras) ? data.paras : [];
+  const video = $('video');
+  const list = $('slide-list');
+  const words = $('words');
+  const follow = $('follow');
+  const state = { now: 0, slide: -1, para: -1, picked: -1, playable: false, pinned: -1, pinnedAt: 0 };
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const narrow = window.matchMedia('(max-width: 899px)');
+
+  // A picture from a PowerPoint slide: only ever one of the page's own data: pictures (the page's policy
+  // allows no other kind either).
+  const picture = (src, cls, alt) => {
+    const img = make('img', cls);
+    img.alt = alt;
+    img.decoding = 'async';
+    if (/^data:image\/(?:png|jpeg|gif|webp);base64,/.test(src)) img.src = src;
+    return img;
+  };
+  const picsOf = (s) => (Array.isArray(s.pics) ? s.pics.filter((p) => typeof p === 'string') : []);
+
+  // ---- the slide cards
+  const cards = slides.map((s, i) => {
+    const card = make('button', 'card');
+    card.type = 'button';
+    const time = make('span', 'time', stamp(s.start));
+    if (s.approx) time.append(make('span', 'about', 'about here'));
+    card.append(make('span', 'num', String(s.n)), make('span', 'stitle', s.title), time);
+    // (The cells of a table's row, which a PowerPoint slide's text keeps apart with tabs, are set apart here too.)
+    if (s.text) card.append(make('span', 'stext', s.text.replace(/\t+/g, ' \xb7 ')));
+    if (picsOf(s).length) {
+      const thumb = picture(picsOf(s)[0], 'thumb', '');
+      thumb.loading = 'lazy';
+      card.classList.add('pic');
+      card.append(thumb);
+    }
+    card.title = `Go to ${stamp(s.start)}`;
+    card.addEventListener('click', () => pick(i));
+    const li = make('li');
+    li.append(card);
+    list.append(li);
+    return card;
+  });
+
+  // ---- the transcript, with a line where each slide starts
+  const paraEls = [];
+  const holder = $('paras');
+  let lastSlide = -2;
+  for (const p of paras) {
+    if (p.slide !== lastSlide && slides[p.slide]) {
+      const s = slides[p.slide];
+      const mark = make('div', 'mark');
+      mark.append(make('span', 'mnum', `Slide ${s.n}`));
+      if (s.title !== `Slide ${s.n}`) mark.append(make('span', 'mname', s.title));
+      holder.append(mark);
+    }
+    lastSlide = p.slide;
+    const row = make('p', 'para');
+    const at = make('button', 'stamp', stamp(p.t));
+    at.type = 'button';
+    at.title = 'Play from here';
+    at.addEventListener('click', () => { state.picked = -1; seek(p.t); });
+    row.append(at);
+    if (p.who) row.append(make('span', 'who', `${p.who}: `));
+    row.append(make('span', 'said', p.text));
+    holder.append(row);
+    paraEls.push(row);
+  }
+  if (!paras.length) holder.append(make('p', 'note', 'There are no captions to show.'));
+
+  // ---- keeping the current slide and paragraph in view (not while you are scrolling yourself)
+  const hold = new Map();
+  for (const box of [list, words]) {
+    for (const ev of ['wheel', 'touchmove', 'pointerdown', 'keydown']) {
+      box.addEventListener(ev, () => hold.set(box, Date.now() + 6000), { passive: true });
+    }
+  }
+  function keepInView(box, el) {
+    if (!el || !follow.checked || Date.now() < (hold.get(box) || 0)) return;
+    const top = el.getBoundingClientRect().top - box.getBoundingClientRect().top;
+    if (top >= box.clientHeight * 0.08 && top + el.offsetHeight <= box.clientHeight * 0.8) return;
+    box.scrollTo({ top: box.scrollTop + top - box.clientHeight * 0.22, behavior: calm ? 'auto' : 'smooth' });
+  }
+
+  // ---- which slide and paragraph belong to a time
+  function slideAt(t) {
+    // A link that names a slide shows that slide, until the video moves on from the linked moment.
+    if (state.pinned >= 0) {
+      if (Math.abs(t - state.pinnedAt) < 1) return state.pinned;
+      state.pinned = -1;
+    }
+    const p = state.picked;
+    if (p >= 0 && slides[p]) {
+      // A slide you chose stays chosen until the time moves on to a later one (slides can share a time).
+      const later = slides.find((s, i) => i > p && s.start > slides[p].start);
+      if (t >= slides[p].start - 0.5 && t < (later ? later.start : Infinity)) return p;
+      state.picked = -1;
+    }
+    let found = -1;
+    for (let i = 0; i < slides.length && slides[i].start <= t; i++) if (slides[i].end > slides[i].start) found = i;
+    return found < 0 && slides.length ? 0 : found;
+  }
+  function paraAt(t) {
+    let lo = 0;
+    let hi = paras.length - 1;
+    let found = -1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (paras[mid].t <= t + 0.25) { found = mid; lo = mid + 1; } else hi = mid - 1;
+    }
+    return found;
+  }
+
+  // ---- the slide itself, from the PDF next to this page
+  const viewer = $('viewer');
+  const showPdf = $('show-pdf');
+  let frame = null;
+  let pageTimer = 0;
+  function showPage() {
+    clearTimeout(pageTimer);
+    if (!data.pdf || !showPdf.checked || state.slide < 0) return;
+    // Just the slide: no toolbar, no page list, the whole page fitted in.
+    const src = `${encodeURIComponent(data.pdf)}#toolbar=0&navpanes=0&view=Fit&page=${slides[state.slide].n}`;
+    // A PDF viewer does not always follow a changed "#page": a fresh frame always opens on the right page.
+    pageTimer = setTimeout(() => {
+      if (frame && frame.getAttribute('src') === src) return;
+      const next = make('iframe');
+      next.id = 'pdf';
+      next.title = `Slide ${slides[state.slide].n}`;
+      next.setAttribute('src', src);
+      if (frame) frame.replaceWith(next); else viewer.append(next);
+      frame = next;
+    }, frame ? 250 : 0);
+  }
+  // ---- a PowerPoint slide cannot be shown as a page: its title, its words as an outline and its pictures, laid out here
+  const deck = !data.pdf && data.deck === true;
+  function showSheet() {
+    if (!deck || !showPdf.checked || state.slide < 0) return;
+    const s = slides[state.slide];
+    const sheet = make('article', 'sheet');
+    sheet.append(make('span', 'sh-num', `Slide ${s.n}`), make('h3', 'sh-title', s.title));
+    const body = make('div', 'sh-body');
+    const blocks = outline(s.text);
+    if (blocks.length) {
+      const text = make('div', 'sh-text');
+      for (const block of blocks) {
+        if (block.rows) {
+          const table = make('table', 'sh-table');
+          for (const cells of block.rows) {
+            const tr = make('tr');
+            for (const cell of cells) tr.append(make('td', '', cell));
+            table.append(tr);
+          }
+          text.append(table);
+        } else {
+          const list = make('ul', 'outline');
+          for (const line of block.lines) list.append(make('li', '', line));
+          text.append(list);
+        }
+      }
+      body.append(text);
+    }
+    const pics = picsOf(s);
+    if (pics.length) {
+      const box = make('div', pics.length > 1 ? 'sh-pics many' : 'sh-pics');
+      pics.forEach((src, i) => box.append(picture(src, '', pics.length > 1 ? `Picture ${i + 1} on slide ${s.n}` : `Picture on slide ${s.n}`)));
+      body.append(box);
+    }
+    if (body.childNodes.length) sheet.append(body);
+    else sheet.classList.add('bare'); // a title and nothing else: set as a title slide
+    if (s.more > 0) {
+      sheet.append(make('p', 'sh-more', `${s.more === 1 ? 'One picture on this slide is' : `${s.more} pictures on this slide are`} not shown here, to keep this page small.${data.pptx ? ` ${s.more === 1 ? 'It is' : 'They are'} in "${data.pptx}", next to this page.` : ''}`));
+    }
+    viewer.replaceChildren(sheet);
+    viewer.scrollTop = 0;
+  }
+  // ---- the lecturer's notes for the slide that is up (closed until you open them; they stay as you left them)
+  const notes = $('notes');
+  function showNotes() {
+    const text = state.slide >= 0 && typeof slides[state.slide].notes === 'string' ? slides[state.slide].notes : '';
+    notes.hidden = !text;
+    const box = $('notes-text');
+    box.replaceChildren();
+    for (const line of text.split('\n')) if (line) box.append(make('p', '', line));
+    box.scrollTop = 0;
+  }
+  if ((data.pdf || deck) && slides.length) {
+    if (deck) viewer.classList.add('deck');
+    showPdf.checked = !narrow.matches;
+    $('show-pdf-label').hidden = false;
+    viewer.hidden = !showPdf.checked;
+    let chosen = false; // until you tick or untick it yourself, a narrow window leaves the room to the transcript
+    const apply = () => {
+      viewer.hidden = !showPdf.checked;
+      showPage();
+      showSheet();
+    };
+    showPdf.addEventListener('change', () => {
+      chosen = true;
+      apply();
+    });
+    narrow.addEventListener('change', () => {
+      if (chosen) return;
+      showPdf.checked = !narrow.matches;
+      apply();
+    });
+  }
+  // A window made narrower or wider lays the page out anew: bring the current slide and words back into view.
+  let resized = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resized);
+    resized = setTimeout(() => {
+      keepInView(list, cards[state.slide]);
+      keepInView(words, paraEls[state.para]);
+    }, 200);
+  });
+
+  function render(t) {
+    const s = slideAt(t);
+    if (s !== state.slide) {
+      if (cards[state.slide]) { cards[state.slide].classList.remove('now'); cards[state.slide].removeAttribute('aria-current'); }
+      state.slide = s;
+      if (cards[s]) {
+        cards[s].classList.add('now');
+        cards[s].setAttribute('aria-current', 'true');
+        // "of 11": a PowerPoint deck's slides keep their own numbers, and a hidden one that was left out leaves a gap.
+        $('where').textContent = `Slide ${slides[s].n} of ${Math.max(slides.length, Number(slides[slides.length - 1].n) || 0)} \xb7 ${slides[s].approx ? 'about ' : ''}${stamp(slides[s].start)}`;
+        keepInView(list, cards[s]);
+      }
+      $('prev').disabled = s <= 0;
+      $('next').disabled = s < 0 || s >= slides.length - 1;
+      showPage();
+      showSheet();
+      showNotes();
+    }
+    const p = paraAt(t);
+    if (p !== state.para) {
+      if (paraEls[state.para]) paraEls[state.para].classList.remove('now');
+      state.para = p;
+      if (paraEls[p]) {
+        paraEls[p].classList.add('now');
+        keepInView(words, paraEls[p]);
+      }
+    }
+  }
+  function seek(t) {
+    state.now = Math.max(0, Number(t) || 0);
+    if (state.playable) {
+      try { video.currentTime = state.now; } catch (e) { /* not ready yet */ }
+    }
+    render(state.now);
+  }
+  function pick(i) {
+    if (!slides[i]) return;
+    state.picked = i;
+    hold.delete(words); // you asked for this slide: bring its words into view too
+    seek(slides[i].start);
+  }
+  // A link from the study guide or from a flashcard: "#t=<seconds>&slide=<page>". Go to that moment, show
+  // that slide and bring its words into view.
+  function goTo(at) {
+    if (!at) return;
+    const i = at.slide === null ? -1 : slides.findIndex((s) => s.n === at.slide);
+    hold.clear();
+    state.picked = -1;
+    state.pinned = -1;
+    if (at.t === null) {
+      if (i >= 0) pick(i);
+      return;
+    }
+    if (i >= 0) {
+      state.pinned = i;
+      state.pinnedAt = at.t;
+    }
+    seek(at.t);
+  }
+  window.addEventListener('hashchange', () => goTo(parseHash(location.hash)));
+  const step = (by) => pick(Math.min(slides.length - 1, Math.max(0, (state.slide < 0 ? 0 : state.slide) + by)));
+  $('prev').addEventListener('click', () => step(-1));
+  $('next').addEventListener('click', () => step(1));
+  document.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const tag = e.target && e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'VIDEO' || tag === 'SUMMARY') return; // the player has its own keys, and so do the notes
+    if (e.key === 'ArrowRight' && slides.length) { step(1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' && slides.length) { step(-1); e.preventDefault(); }
+    else if (e.key === ' ' && tag !== 'BUTTON' && state.playable) {
+      if (video.paused) video.play().catch(() => {}); else video.pause();
+      e.preventDefault();
+    }
+  });
+
+  // ---- the video: the file next to this page
+  const names = (Array.isArray(data.videos) ? data.videos : []).filter((n) => typeof n === 'string' && n);
+  let trying = 0;
+  function tryVideo() {
+    if (trying < names.length) {
+      video.src = encodeURIComponent(names[trying++]);
+      return;
+    }
+    video.hidden = true;
+    video.removeAttribute('src');
+    const note = $('video-note');
+    note.hidden = false;
+    note.textContent = !names.length ? 'There is no video with this page. The slides and the transcript still work.'
+      : data.videoKnown ? `The video "${names[0]}" was not found, or this browser cannot play it. Keep this page in the same folder as the video. The slides and the transcript still work.`
+        : `The video is not in this folder yet. Download it and make the study page again, or save it here as "${names[0]}". The slides and the transcript still work.`;
+  }
+  video.addEventListener('error', () => { if (!state.playable) tryVideo(); });
+  video.addEventListener('loadedmetadata', () => {
+    state.playable = true;
+    if (state.now > 0) video.currentTime = state.now;
+  });
+  for (const ev of ['timeupdate', 'seeking', 'seeked']) {
+    video.addEventListener(ev, () => {
+      state.now = video.currentTime;
+      render(state.now);
+    });
+  }
+
+  if (!slides.length) {
+    document.body.classList.add('no-slides');
+    $('slides').hidden = true;
+    const note = $('slides-note');
+    note.hidden = false;
+    note.textContent = `${data.note || 'No slides were found on this page.'} This page has the video and the transcript.`;
+  }
+  tryVideo();
+  render(0);
+  goTo(parseHash(location.hash));
+})(function parseStudyHash(hash) {
+  const text = String(hash == null ? '' : hash).replace(/^#/, '');
+  let t = null;
+  let slide = null;
+  for (const part of text.split('&')) {
+    const eq = part.indexOf('=');
+    if (eq < 1) continue;
+    const key = part.slice(0, eq);
+    const value = part.slice(eq + 1);
+    if (key === 't' && /^\d{1,6}(?:\.\d{1,3})?$/.test(value)) t = Number(value);
+    if (key === 'slide' && /^\d{1,4}$/.test(value) && Number(value) > 0) slide = Number(value);
+  }
+  return t === null && slide === null ? null : { t, slide };
+}, function outlineOf(text) {
+  const out = [];
+  let rows = [];
+  const flush = () => {
+    if (rows.length > 1) out.push({ rows });
+    else if (rows.length) out.push({ lines: [rows[0].filter(Boolean).join(' · ')] });
+    rows = [];
+  };
+  for (const line of String(text == null ? '' : text).split('\n')) {
+    if (!line.trim()) continue;
+    if (line.indexOf('\t') >= 0) {
+      rows.push(line.split('\t').map((cell) => cell.trim()));
+      continue;
+    }
+    flush();
+    const last = out[out.length - 1];
+    if (last && last.lines) last.lines.push(line.trim());
+    else out.push({ lines: [line.trim()] });
+  }
+  flush();
+  return out;
+});
+;(function readerScript() {
+  var bar = document.querySelector('.rd-bar');
+  if (!bar) return;
+  var IDS = ['watch', 'read', 'guide', 'quiz', 'cards'];
+  var FILES = { watch: ['study', '#t=0', 'Watch'], read: ['read', '#top', 'Read'], guide: ['guide', '', 'Guide'], quiz: ['guide', '#quiz', 'Quiz'], cards: ['guide', '#cards', 'Cards'] };
+  var q;
+  try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  var modes = bar.querySelector('.rd-modes');
+  var current = bar.getAttribute('data-current');
+  var file = bar.getAttribute('data-file') || '';
+  var find = function (id) { return modes.querySelector('[data-mode="' + id + '"]'); };
+  (q.get('has') || '').split(',').forEach(function (id) {
+    // This page's own sections are known to it; the rest is what the desk says is there now.
+    if (IDS.indexOf(id) < 0 || !file || find(id) || !FILES[current] || FILES[id][0] === FILES[current][0]) return;
+    var a = document.createElement('a');
+    a.setAttribute('data-mode', id);
+    a.setAttribute('href', file + '.' + FILES[id][0] + '.html' + FILES[id][1]);
+    a.textContent = FILES[id][2];
+    var next = null;
+    for (var i = IDS.indexOf(id) + 1; i < IDS.length && !next; i++) next = find(IDS[i]);
+    modes.insertBefore(a, next);
+  });
+
+  // "Quiz" asked for from outside (the desk, a page made before this guide): the questions begin at the self-test when there is one.
+  if (current === 'guide' && location.hash === '#quiz' && document.getElementById('self-test')) location.replace('#self-test');
+  function mark() {
+    if (current !== 'guide') return;
+    var id = location.hash.slice(1);
+    var on = id === 'cards' ? 'cards' : id === 'quiz' || id === 'self-test' ? 'quiz' : 'guide';
+    if (!find(on)) on = 'guide';
+    IDS.forEach(function (m) {
+      var el = find(m);
+      if (!el) return;
+      if (m === on) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+    });
+  }
+  mark();
+  addEventListener('hashchange', mark);
+
+  if (q.get('desk') !== '1') return;
+  var back = bar.querySelector('.rd-back');
+  var hint = bar.querySelector('.rd-hint');
+  back.hidden = false;
+  back.addEventListener('click', function () {
+    window.close();
+    // Still here: the browser only lets a page close a tab that has shown nothing else.
+    setTimeout(function () {
+      hint.textContent = 'Close this tab to go back to your desk.';
+      hint.hidden = false;
+    }, 350);
+  });
+  var folder = function (p) { return p.slice(0, p.lastIndexOf('/') + 1); };
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var raw = a.getAttribute('href') || '';
+    if (!raw) return;
+    if (raw.charAt(0) === '#') {
+      // A place on this page.
+      if (raw.length > 1) {
+        e.preventDefault();
+        location.replace(raw);
+      }
+      return;
+    }
+    var to;
+    try { to = new URL(raw, location.href); } catch (err) { return; }
+    // Only this lecture's own pages, in this folder.
+    if (to.protocol !== location.protocol || folder(to.pathname) !== folder(location.pathname) || !/\.(study|read|guide)(%20\(\d+\))?\.html$/i.test(to.pathname)) return;
+    to.search = location.search;
+    e.preventDefault();
+    // A mode takes this page's place (the tab can still be closed to go back); a minute in the lecture is a step you can come back from.
+    if (a.hasAttribute('data-mode')) location.replace(to.href);
+    else location.assign(to.href);
+  });
+})();</script>
+</body>
+</html>

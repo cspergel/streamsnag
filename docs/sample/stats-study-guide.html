@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-ofVJvuQR1jH2Vt1ZkP3lCnAtwFv41Er+HrYLH+p5/n4=&#39;; script-src &#39;sha256-AATnVFCX1a/92zk4Pxp6dwxL7wYWUrE5FXM5CYBmbjE=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../icon.png">
+<meta name="generator" content="StreamSnag study pack">
+<title>Sample study guide: From a sample to a claim: standard error, confidence intervals and p-values | StreamSnag</title>
+<style>
+:root {
+  --bg: #f6f3ec; --paper: #fffdf8; --ink: #1e2630; --soft: #4a5562; --muted: #6b7480; --line: #e4dfd3; --line-strong: #cfc8b8;
+  --accent: #23605c; --accent-ink: #1a4a47; --accent-tint: #e4efec; --accent-line: #b9d3ce;
+  --beyond: #fbf4e1; --beyond-line: #dcc48a; --beyond-ink: #7a5a12;
+  --good: #2c7a4e; --good-tint: #e3f2e8; --bad: #b0473c; --bad-tint: #f8e7e3; --shadow: 0 1px 2px rgba(30, 38, 48, .06), 0 8px 24px rgba(30, 38, 48, .05);
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Sitka Text", Georgia, serif;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #13171c; --paper: #1a1f26; --ink: #e7e3da; --soft: #c2c5c8; --muted: #949ca6; --line: #2a313a; --line-strong: #3a434e;
+  --accent: #7cc6bd; --accent-ink: #a3d9d2; --accent-tint: #1c2c2d; --accent-line: #2f4a49;
+  --beyond: #262112; --beyond-line: #5e4f26; --beyond-ink: #dcbb6a;
+  --good: #6fc393; --good-tint: #183024; --bad: #e08a7e; --bad-tint: #3a1f1c; --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #13171c; --paper: #1a1f26; --ink: #e7e3da; --soft: #c2c5c8; --muted: #949ca6; --line: #2a313a; --line-strong: #3a434e;
+  --accent: #7cc6bd; --accent-ink: #a3d9d2; --accent-tint: #1c2c2d; --accent-line: #2f4a49;
+  --beyond: #262112; --beyond-line: #5e4f26; --beyond-ink: #dcbb6a;
+  --good: #6fc393; --good-tint: #183024; --bad: #e08a7e; --bad-tint: #3a1f1c; --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+html { font-size: 17px; scroll-behavior: smooth; scroll-padding-top: 1.5rem; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--serif); line-height: 1.68; text-rendering: optimizeLegibility; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--paper); color: var(--accent-ink); padding: .5rem 1rem; z-index: 5; }
+.skip:focus { left: 1rem; top: 1rem; }
+.page { display: grid; grid-template-columns: 15rem minmax(0, 44rem); gap: 3.5rem; justify-content: center; max-width: 68rem; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+h1, h2, h3, h4, .toc, .eyebrow, .meta, .chip, .where, button, summary, .label, .tag, th, .note, .score, .num, .foot { font-family: var(--sans); }
+h1 { font-size: 2.3rem; line-height: 1.15; letter-spacing: -.02em; font-weight: 650; margin: .35rem 0 1rem; text-wrap: balance; }
+h2 { font-size: 1.45rem; line-height: 1.25; letter-spacing: -.01em; font-weight: 650; margin: 0 0 1.25rem; padding-top: 1.4rem; border-top: 1px solid var(--line-strong); }
+h3 { font-size: 1.14rem; line-height: 1.35; font-weight: 650; margin: 0 0 .5rem; text-wrap: balance; }
+h4 { font-size: .74rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin: 1.5rem 0 .5rem; }
+p { margin: 0 0 1rem; }
+a { color: var(--accent-ink); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+section { margin: 0 0 3.5rem; }
+
+/* contents */
+.toc { position: sticky; top: 2rem; align-self: start; font-size: .84rem; line-height: 1.4; max-height: calc(100vh - 4rem); overflow: auto; padding-right: .5rem; }
+.toc .label { display: block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin: 0 0 .75rem; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0; }
+.toc a { display: block; padding: .32rem .75rem; margin-left: -.75rem; color: var(--soft); text-decoration: none; border-left: 2px solid transparent; border-radius: 0 6px 6px 0; }
+.toc a:hover { color: var(--ink); background: var(--accent-tint); }
+.toc a.on { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 600; }
+.toc ol ol a { margin-left: 0; padding: 0 .75rem; font-size: .8rem; color: var(--muted); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; border-radius: 0; }
+.toc ol ol li { padding: .24rem 0; }
+.toc ol ol { margin: .1rem 0 .3rem; }
+.tools { display: flex; gap: .5rem; margin: 0 0 1.5rem; flex-wrap: wrap; }
+button { font-size: .82rem; font-weight: 600; color: var(--soft); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 8px; padding: .45rem .8rem; cursor: pointer; line-height: 1.2; }
+button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-ink); }
+html:not(.js) .needs-js { display: none; }
+
+/* cover */
+.cover { margin-bottom: 3rem; }
+.eyebrow { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 650; }
+.meta { display: flex; flex-wrap: wrap; gap: .4rem .5rem; margin: 0 0 1.25rem; padding: 0; list-style: none; font-size: .8rem; color: var(--soft); }
+.meta li { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: .2rem .7rem; }
+.note { font-size: .8rem; line-height: 1.5; color: var(--muted); margin: 0; max-width: 38rem; }
+.lead { font-size: 1.16rem; line-height: 1.62; }
+.objectives { list-style: none; margin: 0; padding: 0; }
+.objectives li { position: relative; padding: .1rem 0 .1rem 1.9rem; margin: 0 0 .45rem; }
+.objectives li::before { content: ""; position: absolute; left: .1rem; top: .5rem; width: .85rem; height: .85rem; border: 1.5px solid var(--accent); border-radius: 3px; }
+
+/* references to the lecture */
+.where { display: inline-block; font-size: .76rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent-ink); background: var(--accent-tint); border: 1px solid var(--accent-line); border-radius: 999px; padding: .08rem .6rem; text-decoration: none; white-space: nowrap; line-height: 1.5; vertical-align: .08em; }
+a.where:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.where.plain { background: none; border-color: var(--line-strong); color: var(--soft); }
+.sources { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: 0 0 .9rem; font-family: var(--sans); font-size: .76rem; color: var(--muted); }
+
+/* key ideas */
+.idea { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 1.6rem 1.75rem 1.35rem; margin: 0 0 1.25rem; box-shadow: var(--shadow); }
+.idea-head { display: flex; gap: .9rem; align-items: baseline; }
+.num { flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--accent); color: var(--paper); font-size: .82rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; position: relative; top: -.1rem; }
+.tag { display: inline-block; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--accent-ink); border: 1px solid var(--accent-line); border-radius: 4px; padding: 0 .35rem; margin-left: .4rem; vertical-align: .15em; }
+.idea-body { margin-left: 2.65rem; }
+.said { margin: 0 0 1rem; padding: 0 0 0 1rem; border-left: 2px solid var(--line-strong); color: var(--soft); font-style: italic; font-size: .96rem; }
+.said .label { font-style: normal; display: block; font-size: .68rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin-bottom: .1rem; }
+.block { margin: 0 0 .9rem; padding: .7rem 1rem; border-radius: 10px; background: var(--accent-tint); font-size: .97rem; }
+.block .label, .ask .label, .beyond .label { display: block; font-size: .68rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 700; margin-bottom: .15rem; }
+.block .label { color: var(--accent-ink); }
+.block p, .ask p, .beyond p { margin: 0; }
+.ask { margin: 0 0 .9rem; padding: .1rem 0 .1rem 1rem; border-left: 3px solid var(--accent); font-size: .97rem; }
+.ask .label { color: var(--accent-ink); }
+.beyond { margin: 1.1rem 0 .3rem; padding: .75rem 1rem .8rem; border: 1px dashed var(--beyond-line); background: var(--beyond); border-radius: 10px; font-family: var(--sans); font-size: .86rem; line-height: 1.55; color: var(--soft); }
+.beyond .label { color: var(--beyond-ink); }
+.beyond .look { margin-top: .4rem; font-size: .8rem; color: var(--muted); }
+.beyond .look span { display: inline-block; border: 1px solid var(--beyond-line); border-radius: 999px; padding: 0 .55rem; margin: .15rem .2rem 0 0; color: var(--soft); }
+
+/* review sheets */
+.sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 1.75rem 1.9rem 1.5rem; margin: 0 0 1.5rem; box-shadow: var(--shadow); }
+.sheet h3 { font-size: 1.3rem; }
+.sheet .summary { color: var(--soft); font-size: 1.04rem; }
+.steps { list-style: none; counter-reset: step; margin: 0 0 1rem; padding: 0; }
+.steps li { counter-increment: step; position: relative; padding: 0 0 1rem 2.6rem; margin: 0; }
+.steps li::before { content: counter(step); position: absolute; left: 0; top: .12rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 1.5px solid var(--accent); color: var(--accent-ink); font-family: var(--sans); font-size: .78rem; font-weight: 700; display: flex; align-items: center; justify-content: center; background: var(--paper); }
+.steps li::after { content: ""; position: absolute; left: .78rem; top: 1.85rem; bottom: .1rem; width: 1.5px; background: var(--accent-line); }
+.steps li:last-child::after { display: none; }
+.steps .where { margin-left: .35rem; }
+.mistakes { list-style: none; margin: 0 0 1rem; padding: 0; }
+.mistakes li { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0 0 .55rem; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: .93rem; line-height: 1.5; }
+.mistakes span { padding: .55rem .85rem; }
+.mistakes .no { background: var(--bad-tint); }
+.mistakes .yes { background: var(--good-tint); }
+.mistakes b { display: block; font-family: var(--sans); font-size: .66rem; letter-spacing: .09em; text-transform: uppercase; }
+.mistakes .no b { color: var(--bad); }
+.mistakes .yes b { color: var(--good); }
+.goback { list-style: none; margin: 0; padding: 0; font-family: var(--sans); font-size: .86rem; color: var(--soft); }
+.goback li { margin: 0 0 .35rem; }
+
+/* figures, tables, glossary */
+figure { margin: 0 0 1.5rem; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+figure img { display: block; width: 100%; height: auto; background: #fff; border-bottom: 1px solid var(--line); }
+figure .noimg { padding: 2.2rem 1rem; text-align: center; font-family: var(--sans); font-size: .86rem; color: var(--muted); background: var(--accent-tint); border-bottom: 1px solid var(--line); }
+figcaption { padding: 1.1rem 1.4rem 1.2rem; font-size: .96rem; }
+figcaption h3 { margin-bottom: .45rem; }
+figcaption p { margin: 0 0 .5rem; }
+figcaption b, .check b { font-family: var(--sans); font-size: .82rem; }
+.table { overflow-x: auto; margin: 0 0 1.5rem; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); box-shadow: var(--shadow); }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; line-height: 1.5; }
+th, td { text-align: left; vertical-align: top; padding: .65rem .9rem; border-bottom: 1px solid var(--line); }
+tr:last-child > td, tr:last-child > th { border-bottom: 0; }
+thead th { font-size: .9rem; background: var(--accent-tint); color: var(--accent-ink); }
+tbody th { font-size: .78rem; font-weight: 650; color: var(--muted); width: 24%; }
+.table .cap { padding: .5rem .9rem; border-top: 1px solid var(--line); }
+dl { margin: 0; }
+dt { font-family: var(--sans); font-weight: 650; font-size: .95rem; margin-top: .9rem; }
+dd { margin: .1rem 0 0; color: var(--soft); font-size: .96rem; }
+
+/* questions */
+.hint { font-family: var(--sans); font-size: .86rem; color: var(--muted); margin: -.6rem 0 1.25rem; }
+.qs { list-style: none; counter-reset: q; margin: 0; padding: 0; }
+.q { counter-increment: q; position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.3rem 1rem 3.3rem; margin: 0 0 .85rem; }
+.q::before { content: counter(q); position: absolute; left: 1.15rem; top: 1.1rem; font-family: var(--sans); font-weight: 700; font-size: .95rem; color: var(--accent-ink); }
+.q.right { border-color: var(--good); }
+.q.wrong { border-color: var(--bad); }
+.q .text { margin: 0 0 .6rem; }
+.level { font-family: var(--sans); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--muted); display: block; margin-bottom: .15rem; }
+details.answer { font-size: .96rem; }
+summary { cursor: pointer; font-size: .84rem; font-weight: 600; color: var(--accent-ink); padding: .15rem 0; width: fit-content; }
+details.answer[open] summary { margin-bottom: .5rem; }
+.answer .model { margin: 0 0 .6rem; }
+.answer ul { margin: 0 0 .7rem; padding-left: 1.2rem; }
+.answer li { margin: 0 0 .15rem; }
+.q .label { display: block; font-size: .68rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin: 0 0 .15rem; }
+.mark { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--line); font-family: var(--sans); font-size: .82rem; color: var(--muted); }
+.mark button[aria-pressed="true"].yes { background: var(--good-tint); border-color: var(--good); color: var(--good); }
+.mark button[aria-pressed="true"].no { background: var(--bad-tint); border-color: var(--bad); color: var(--bad); }
+.opts { display: grid; gap: .45rem; margin: 0 0 .7rem; }
+.opt { display: grid; grid-template-columns: 1.5rem 1fr; gap: .4rem; text-align: left; font-family: var(--serif); font-size: .97rem; font-weight: 400; color: var(--ink); padding: .55rem .8rem; line-height: 1.45; }
+.opt .letter { font-family: var(--sans); font-weight: 700; color: var(--muted); font-size: .84rem; padding-top: .08rem; }
+.opt:disabled { cursor: default; opacity: 1; }
+.opt.is-right { background: var(--good-tint); border-color: var(--good); }
+.opt.is-wrong { background: var(--bad-tint); border-color: var(--bad); }
+.whys { list-style: none; margin: 0 0 .7rem; padding: 0; }
+.whys li { margin: 0 0 .4rem; padding-left: 1.6rem; position: relative; }
+.whys .letter { position: absolute; left: 0; font-family: var(--sans); font-weight: 700; font-size: .84rem; color: var(--muted); }
+.whys .correct .letter { color: var(--good); }
+.whys .correct { font-weight: 600; }
+.facts { list-style: none; margin: 0; padding: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+.facts li { display: flex; gap: 1rem; justify-content: space-between; align-items: baseline; padding: .7rem 1.1rem; border-bottom: 1px solid var(--line); font-size: .97rem; line-height: 1.55; }
+.facts li:last-child { border-bottom: 0; }
+.score { margin: 1.5rem 0 3.5rem; padding: 1.1rem 1.3rem; border-radius: 12px; background: var(--accent-tint); border: 1px solid var(--accent-line); font-size: .9rem; line-height: 1.55; }
+.score strong { font-size: 1.02rem; }
+.score ul { margin: .4rem 0 .6rem; padding-left: 1.2rem; }
+.score li { margin: 0 0 .3rem; }
+.score .row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; }
+
+/* check this, cards, footer */
+.check { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.3rem; margin: 0 0 .85rem; font-size: .95rem; }
+.check p { margin: .35rem 0 .2rem; }
+.check ul { margin: .4rem 0 0; padding-left: 1.2rem; }
+.check li { margin: 0 0 .3rem; }
+.heard { font-style: italic; }
+details.cards { border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: .8rem 1.2rem; }
+details.cards table { margin-top: .6rem; font-size: .9rem; }
+details.cards td { padding-left: 0; }
+.gap { border-bottom: 1.5px solid var(--accent); padding: 0 .2rem; color: var(--accent-ink); font-weight: 600; }
+.foot { font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line-strong); padding-top: 1.2rem; line-height: 1.5; }
+.print-only { display: none; }
+
+@media (max-width: 62rem) {
+  .page { display: block; padding: 1.5rem 1.1rem 4rem; max-width: 46rem; }
+  .toc { position: static; max-height: none; margin: 0 0 2rem; padding: 1rem 1.2rem; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+  .toc ol ol { display: none; }
+  h1 { font-size: 1.9rem; }
+  .idea { padding: 1.25rem 1.2rem 1.1rem; }
+  .idea-body { margin-left: 0; }
+  .sheet { padding: 1.3rem 1.2rem; }
+  .mistakes li { grid-template-columns: 1fr; }
+}
+
+@page { margin: 18mm 17mm; }
+@media print {
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+  --bg: #f6f3ec; --paper: #fffdf8; --ink: #1e2630; --soft: #4a5562; --muted: #6b7480; --line: #e4dfd3; --line-strong: #cfc8b8;
+  --accent: #23605c; --accent-ink: #1a4a47; --accent-tint: #e4efec; --accent-line: #b9d3ce;
+  --beyond: #fbf4e1; --beyond-line: #dcc48a; --beyond-ink: #7a5a12;
+  --good: #2c7a4e; --good-tint: #e3f2e8; --bad: #b0473c; --bad-tint: #f8e7e3; --shadow: 0 1px 2px rgba(30, 38, 48, .06), 0 8px 24px rgba(30, 38, 48, .05);
+    --bg: #fff; --paper: #fff; --shadow: none; color-scheme: light; }
+  html { font-size: 10pt; }
+  body { background: #fff; }
+  .page { display: block; max-width: none; padding: 0; }
+  .toc, .tools, .needs-js, .score, .skip, summary, .mark { display: none !important; }
+  section { margin-bottom: 1.4rem; }
+  .cover { margin-bottom: 1.6rem; }
+  h2 { break-after: avoid; margin-bottom: .8rem; }
+  h3, h4 { break-after: avoid; }
+  /* Paper is not a screen: no cards, and a long idea may run over the page rather than leave half of one empty. */
+  .idea { border: 0; border-top: 1px solid #cfc8b8; border-radius: 0; padding: .9rem 0 .1rem; margin: 0; }
+  .idea-body { margin-left: 0; }
+  .idea-head, .sources, .said, .block, .ask, .beyond { break-inside: avoid; }
+  .q { border: 0; border-top: 1px solid #ddd6c8; border-radius: 0; padding: .6rem 0 .2rem 2rem; margin: 0; }
+  .q::before { left: 0; top: .6rem; }
+  .q, figure, .table, .check, .mistakes li, .steps li, .facts li, dt, dd { break-inside: avoid; }
+  .mistakes li { grid-template-columns: 1fr 1fr; }
+  figure img { width: auto; max-width: 100%; max-height: 9.5cm; margin: 0 auto; }
+  .idea, .sheet, figure, .table, .q, .check, .facts { box-shadow: none; }
+  .sheet { break-before: page; border: 0; padding: 0; }
+  #review-sheets > h2 { break-after: avoid; }
+  #review-sheets > .sheet:first-of-type { break-before: auto; }
+  details.answer { display: none; }
+  details.cards { display: none; }
+  .print-only { display: block; }
+  #answers { break-before: page; }
+  a { color: inherit; text-decoration: none; }
+  .where { border-color: #999; background: none; color: #333; }
+  .opt { border-color: #bbb; }
+}
+
+.ssb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 8px 16px; background: #14181d; color: #c9ced6; font: 400 13px/1.45 "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; position: relative; z-index: 5; }
+.ssb a { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-color: #6b7380; text-underline-offset: .2em; white-space: nowrap; }
+.ssb a:hover { text-decoration-color: #fff; }
+.ssb a:focus-visible { outline: 2px solid #ff8a4c; outline-offset: 2px; border-radius: 3px; }
+.ssb .ssb-home { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; }
+.ssb svg { width: 20px; height: 20px; flex: none; }
+.ssb .ssb-what { flex: 1 1 320px; min-width: 0; }
+.ssb .ssb-what b { color: #fff; font-weight: 650; }
+.ssb .ssb-links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.ssb [aria-current] { text-decoration: none; color: #c9ced6; font-weight: 400; }
+@media print { .ssb { display: none; } }
+</style>
+</head>
+<body>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample study guide.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. The guide, quiz and flashcards were written by AI from the lecture's captions and slide text. The times open the sample study page, which has no video.</span><span class="ssb-links"><a href="stats-reading-edition.html">Reading edition</a><a href="stats-study-guide.html" aria-current="page">Study guide</a><a href="stats-study-page.html">Study page</a><a href="../#gallery">All samples</a></span></div>
+<a class="skip" href="#main">Skip to the guide</a>
+<div class="page">
+<nav class="toc" aria-label="Contents">
+<div class="tools needs-js"><button type="button" id="theme">Dark</button><button type="button" id="print">Print</button></div>
+<span class="label">Contents</span>
+<ol>
+<li><a href="#big-picture">Big picture</a></li>
+<li><a href="#key-ideas">Key ideas</a>
+<ol>
+<li><a href="#idea-1">Why does the sample mean vary between samples, and how is that variation described?</a></li>
+<li><a href="#idea-2">How does the standard error differ from the standard deviation, and how does sample size affect it?</a></li>
+<li><a href="#idea-3">How is a 95% confidence interval built, and what does &#39;95%&#39; actually refer to?</a></li>
+<li><a href="#idea-4">Why do small samples need Student&#39;s t, and how does it change the interval?</a></li>
+<li><a href="#idea-5">How does a hypothesis test turn the sample mean into a p-value and a decision?</a></li>
+</ol></li>
+<li><a href="#review-sheets">Review sheets</a>
+<ol>
+<li><a href="#sheet-1">Building and interpreting a confidence interval</a></li>
+<li><a href="#sheet-2">From test statistic to p-value, and what p does not mean</a></li>
+</ol></li>
+<li><a href="#figures">Key figures</a></li>
+<li><a href="#confused">Easily confused</a></li>
+<li><a href="#numbers">Formulas and numbers</a></li>
+<li><a href="#self-test">Self-test</a></li>
+<li><a href="#quiz">Practice quiz</a></li>
+<li><a href="#check">Check this</a></li>
+<li><a href="#glossary">Glossary</a></li>
+<li><a href="#cards">Flashcards</a></li>
+</ol>
+</nav>
+<main id="main">
+<header class="cover">
+<div class="eyebrow">Statistics for the life sciences · Study guide</div>
+<h1>From a sample to a claim: standard error, confidence intervals and p-values</h1>
+<ul class="meta">
+<li>28 min lecture</li>
+<li>5 key ideas</li>
+<li>2 review sheets</li>
+<li>8 questions</li>
+<li>9 flashcards</li>
+</ul>
+<p class="note">Made by StreamSnag with AI from the transcript of this lecture. Every part points to the minute it comes from: check anything important against the lecture itself.</p>
+</header>
+<section id="big-picture">
+<h2>Big picture</h2>
+<p class="lead">The lecture asks how a single sample can support a claim about a whole population. It first shows that the sample mean varies from sample to sample in a predictable way (the sampling distribution). That variation is measured by the standard error, which gives confidence intervals, with t for small samples. The same logic yields hypothesis tests and p-values, and the lecture ends with their misreadings, error types and multiple testing.</p>
+<h4>After this lecture you should be able to</h4>
+<ul class="objectives">
+<li>explain the difference between a parameter and a statistic and describe the sampling distribution of the mean (centre, spread, shape)</li>
+<li>calculate a standard error and a 95% or 99% confidence interval from a sample mean, s and n, using t when the sample is small</li>
+<li>distinguish standard deviation from standard error and predict how sample size changes the standard error</li>
+<li>interpret a 95% confidence interval correctly, as a statement about the method and not about one interval</li>
+<li>carry out a one-sample hypothesis test with z, decide whether to reject H0, and link the result to the confidence interval</li>
+<li>compare type I and type II errors and power, and decide how to adjust alpha with a Bonferroni correction when running many tests</li>
+</ul>
+</section>
+<section id="key-ideas">
+<h2>Key ideas</h2>
+<article class="idea" id="idea-1">
+<div class="idea-head"><span class="num">1</span><h3>Why does the sample mean vary between samples, and how is that variation described?<span class="tag">Core</span></h3></div>
+<div class="idea-body">
+<p class="sources"><a class="where" href="stats-study-page.html#t=95&amp;slide=2">01:35 · slide 2</a><span>also at</span><a class="where" href="stats-study-page.html#t=144&amp;slide=2">02:24</a><a class="where" href="stats-study-page.html#t=180&amp;slide=2">03:00</a><a class="where" href="stats-study-page.html#t=285&amp;slide=3">04:45</a><a class="where" href="stats-study-page.html#t=309&amp;slide=3">05:09</a><a class="where" href="stats-study-page.html#t=321&amp;slide=3">05:21</a></p>
+<p>The sample mean varies because each survey picks different students, while the population mean stays fixed. The population is everybody the question is about, and its true average, mu, is a parameter: a fixed number you never learn exactly. The sample mean, x-bar, is a statistic and changes with every new sample. Repeat the survey thousands of times and draw a histogram of the means, not of students: that is the sampling distribution of the mean. It is centred on mu, so the sample mean is unbiased. Its spread is sigma over root n. Its shape is approximately normal, even if the population is not, by the central limit theorem.</p>
+<blockquote class="said"><span class="label">In the lecturer's words</span>“That group, everybody we care about, is the population, and the true average for that whole population gets a Greek letter, mu.”</blockquote>
+<div class="block"><span class="label">Example</span><p>A survey of 64 students gave a mean of 6.8 hours, but a different 64 students might give 6.6 or 7.1, even though the true mean has not moved.</p></div>
+<div class="ask"><span class="label">Ask yourself</span><p>Why can the sampling distribution of the mean be centred on mu and still be different from the distribution of individual students&#39; sleep?</p></div>
+<aside class="beyond"><span class="label">Beyond the lecture (not from your lecturer)</span><p>Think of mu as a bullseye painted on a wall and each sample mean as one dart. Unbiased means the darts cluster around the bullseye, not that any single dart hits it. Sample size controls how tightly they cluster.</p><p class="look">To read more, search for: <span>sampling distribution of the mean</span><span>central limit theorem</span><span>unbiased estimator</span></p></aside>
+</div>
+</article>
+<article class="idea" id="idea-2">
+<div class="idea-head"><span class="num">2</span><h3>How does the standard error differ from the standard deviation, and how does sample size affect it?<span class="tag">Core</span></h3></div>
+<div class="idea-body">
+<p class="sources"><a class="where" href="stats-study-page.html#t=456&amp;slide=4">07:36 · slide 4</a><span>also at</span><a class="where" href="stats-study-page.html#t=436&amp;slide=4">07:16</a><a class="where" href="stats-study-page.html#t=464&amp;slide=4">07:44</a><a class="where" href="stats-study-page.html#t=481&amp;slide=4">08:01</a><a class="where" href="stats-study-page.html#t=505&amp;slide=4">08:25</a></p>
+<p>The standard deviation measures how much individual people differ, while the standard error measures how much the sample mean would vary from survey to survey. The standard error is the standard deviation divided by the square root of n. Collecting more data does not shrink the standard deviation, because students are as varied as ever, but it does shrink the standard error. Since n sits under a square root, the gain is slow: to halve the standard error you need four times the data. Confusing the two is the most common exam mistake.</p>
+<blockquote class="said"><span class="label">In the lecturer's words</span>“The standard deviation, one point six hours, tells you how much individual students differ from each other.”</blockquote>
+<div class="block"><span class="label">Example</span><p>With s = 1.6 hours and n = 64, SE = 1.6/8 = 0.2 hours, or 12 minutes. Going to 256 students gives 1.6/16 = 0.1 hours: four times the work for twice the precision.</p></div>
+<div class="ask"><span class="label">Ask yourself</span><p>Why does collecting more data shrink the standard error but leave the standard deviation unchanged?</p></div>
+<aside class="beyond"><span class="label">Beyond the lecture (not from your lecturer)</span><p>The square-root law means returns diminish. The first extra participants sharpen your estimate a lot, later ones much less, so there is a point where more data stops being worth its cost.</p><p class="look">To read more, search for: <span>diminishing returns sample size</span><span>standard error of the mean</span></p></aside>
+</div>
+</article>
+<article class="idea" id="idea-3">
+<div class="idea-head"><span class="num">3</span><h3>How is a 95% confidence interval built, and what does &#39;95%&#39; actually refer to?<span class="tag">Core</span></h3></div>
+<div class="idea-body">
+<p class="sources"><a class="where" href="stats-study-page.html#t=594&amp;slide=5">09:54 · slide 5</a><span>also at</span><a class="where" href="stats-study-page.html#t=565&amp;slide=5">09:25</a><a class="where" href="stats-study-page.html#t=630&amp;slide=5">10:30</a><a class="where" href="stats-study-page.html#t=674&amp;slide=5">11:14</a><a class="where" href="stats-study-page.html#t=710&amp;slide=6">11:50</a><a class="where" href="stats-study-page.html#t=730&amp;slide=6">12:10</a></p>
+<p>A 95% confidence interval is the sample mean plus or minus 1.96 standard errors, and the 95% describes the method, not any single interval. The sampling distribution is normal, and in a normal distribution 95% of values fall within 1.96 standard deviations of the centre. So 95% of the time x-bar lands within 1.96 standard errors of mu, and so mu is within that distance of x-bar. Higher confidence widens the interval. Because mu is fixed, it is either in your interval or not; the random thing is the interval. Across repeated surveys, about 95 in 100 intervals would contain mu.</p>
+<blockquote class="said"><span class="label">In the lecturer's words</span>“the sample mean, plus or minus one point nine six times the standard error.”</blockquote>
+<div class="block"><span class="label">Example</span><p>For the sleep survey, 1.96 × 0.2 ≈ 0.39, so the interval is 6.8 ± 0.39, or 6.41 to 7.19 hours. At 99% the multiplier is 2.576, giving 6.28 to 7.32.</p></div>
+<div class="ask"><span class="label">Ask yourself</span><p>Why is it wrong to say there is a 95% chance the true mean lies between 6.41 and 7.19, and what does the 95% refer to instead?</p></div>
+<aside class="beyond"><span class="label">Beyond the lecture (not from your lecturer)</span><p>Think of a net thrown at a fixed fish. Your net works 95% of the time, but once it has landed, the fish is either under it or not. Confidence belongs to the throwing method.</p><p class="look">To read more, search for: <span>confidence interval interpretation</span><span>margin of error</span></p></aside>
+</div>
+</article>
+<article class="idea" id="idea-4">
+<div class="idea-head"><span class="num">4</span><h3>Why do small samples need Student&#39;s t, and how does it change the interval?</h3></div>
+<div class="idea-body">
+<p class="sources"><a class="where" href="stats-study-page.html#t=858&amp;slide=7">14:18 · slide 7</a><span>also at</span><a class="where" href="stats-study-page.html#t=923&amp;slide=7">15:23</a><a class="where" href="stats-study-page.html#t=938&amp;slide=7">15:38</a><a class="where" href="stats-study-page.html#t=956&amp;slide=7">15:56</a><a class="where" href="stats-study-page.html#t=973&amp;slide=7">16:13</a></p>
+<p>Small samples need Student&#39;s t because the sample standard deviation s is a wobbly estimate of the true sigma, and ignoring that makes intervals too narrow, claiming more precision than the data justify. The t distribution has fatter tails, and its multiplier depends on the degrees of freedom, which for one sample is n minus one. A bigger multiplier widens the interval. As the sample grows, t settles towards the normal value, so for large samples it makes little difference. In practice people use t whenever sigma is unknown, which is always.</p>
+<blockquote class="said"><span class="label">In the lecturer's words</span>“With a small sample it is not, it is itself quite wobbly, and if we ignore that, our intervals come out too narrow.”</blockquote>
+<div class="block"><span class="label">Example</span><p>With n = 16 and s = 1.6, SE = 0.4 and there are 15 degrees of freedom. The multiplier is 2.131 instead of 1.96, so the margin is about 0.85 and the interval runs 5.95 to 7.65 hours. At 30 degrees of freedom it is 2.042, and at 100 it is 1.984.</p></div>
+<div class="ask"><span class="label">Ask yourself</span><p>How do the smaller sample and the larger t multiplier each contribute to the wider interval at n = 16 compared with n = 64?</p></div>
+<aside class="beyond"><span class="label">Beyond the lecture (not from your lecturer)</span><p>The t distribution is the price of not knowing sigma: extra uncertainty about the spread is paid for with heavier tails. When degrees of freedom are large, that extra uncertainty vanishes and t becomes the normal curve.</p><p class="look">To read more, search for: <span>Student&#39;s t distribution</span><span>degrees of freedom explained</span></p></aside>
+</div>
+</article>
+<article class="idea" id="idea-5">
+<div class="idea-head"><span class="num">5</span><h3>How does a hypothesis test turn the sample mean into a p-value and a decision?<span class="tag">Core</span></h3></div>
+<div class="idea-body">
+<p class="sources"><a class="where" href="stats-study-page.html#t=1092&amp;slide=8">18:12 · slide 8</a><span>also at</span><a class="where" href="stats-study-page.html#t=1037&amp;slide=8">17:17</a><a class="where" href="stats-study-page.html#t=1068&amp;slide=8">17:48</a><a class="where" href="stats-study-page.html#t=1113&amp;slide=8">18:33</a><a class="where" href="stats-study-page.html#t=1175&amp;slide=8">19:35</a><a class="where" href="stats-study-page.html#t=1211&amp;slide=8">20:11</a></p>
+<p>A hypothesis test measures how surprising your sample mean would be if a claim were true, turns that into a probability, and compares it with a threshold. First state the null hypothesis, the claim being tested. Then express the gap between sample mean and claim in standard errors: this is the test statistic. Then find the p-value: the probability, if the null were true, of landing that far or further away in either direction. Finally compare it with alpha, chosen in advance, conventionally 0.05. If p is below alpha, reject the null; otherwise you fail to reject, which is not proof, since absence of evidence against is not evidence for.</p>
+<blockquote class="said"><span class="label">In the lecturer's words</span>“If the null were true, how often would a sample land three and a half standard errors away or further, in either direction?”</blockquote>
+<div class="block"><span class="label">Example</span><p>The leaflet claims mu = 7.5 hours. The sample gives (6.8 − 7.5)/0.2 = −3.5 standard errors, a p-value of about 0.0005 (five in ten thousand), so the null is rejected. For a claim of 7 hours, the distance is one standard error, p ≈ 0.32, so we fail to reject.</p></div>
+<div class="ask"><span class="label">Ask yourself</span><p>Why do we say we fail to reject a null of 7 hours rather than saying we have proved the mean is 7, and how does this match the confidence interval?</p></div>
+<aside class="beyond"><span class="label">Beyond the lecture (not from your lecturer)</span><p>A p-value is not the probability that the null is true. It assumes the null and asks how surprising the data are. Also, a tiny p-value says the effect is detectable, not that it is large; the interval shows size.</p><p class="look">To read more, search for: <span>p-value misconceptions</span><span>statistical vs practical significance</span><span>duality confidence interval hypothesis test</span></p></aside>
+</div>
+</article>
+</section>
+<section id="review-sheets">
+<h2>Review sheets</h2>
+<article class="sheet" id="sheet-1">
+<h3>Building and interpreting a confidence interval</h3>
+<p class="summary">A confidence interval turns one sample mean into a range for the true mean of all students, built from the standard error and a multiplier such as 1.96 for 95%. The rest of the lecture needs it because the &#39;95%&#39; wording is the most commonly misinterpreted statement in the course and loses exam marks.</p>
+<h4>Step by step</h4>
+<ol class="steps">
+<li>First get the standard error. In the sleep survey the standard deviation was 1.6 hours and n was 64, whose square root is 8. So 1.6 divided by 8 is 0.2 hours, which is 12 minutes. <a class="where" href="stats-study-page.html#t=436&amp;slide=4">07:16</a></li>
+<li>The standard error of 0.2 hours says how much the sample mean would differ from survey to survey. The standard deviation of 1.6 hours says how much individual students differ. Mixing these two up is the most common exam mistake. <a class="where" href="stats-study-page.html#t=464&amp;slide=4">07:44</a></li>
+<li>The sampling distribution is normal, and in a normal distribution 95% of values fall within 1.96 standard deviations of the centre. So 95% of the time the sample mean lands within 1.96 standard errors of the true mean. That is the basis of the interval. <a class="where" href="stats-study-page.html#t=565&amp;slide=5">09:25</a></li>
+<li>If the sample mean is within that distance of the true mean, the true mean is within the same distance of the sample mean. So a 95% interval is the sample mean plus or minus 1.96 times the standard error. <a class="where" href="stats-study-page.html#t=565&amp;slide=5">09:25</a></li>
+<li>For the survey, 1.96 times 0.2 is 0.392, about 0.39. The interval for the mean sleep of all students is 6.8 ± 0.39, so 6.41 to 7.19 hours. The plus-or-minus part, 0.39, is the margin of error. <a class="where" href="stats-study-page.html#t=594&amp;slide=5">09:54</a></li>
+<li>For more confidence, use a 99% interval. The multiplier rises from 1.96 to 2.576, and 2.576 times 0.2 is about 0.52. The interval becomes 6.28 to 7.32 hours: more confidence gives a wider interval. <a class="where" href="stats-study-page.html#t=653&amp;slide=5">10:53</a></li>
+<li>Now the meaning of 95%. The true mean is a fixed number, either inside this interval or not; the interval is the random thing, since it comes from a random sample. So 95% describes the procedure: of 100 repeated surveys, about 95 intervals would contain the true mean and about 5 would miss. <a class="where" href="stats-study-page.html#t=730&amp;slide=6">12:10</a></li>
+</ol>
+<h4>How it connects</h4>
+<p>The standard error step links to the lecture&#39;s idea of how the standard error differs from the standard deviation. The interval&#39;s meaning of &#39;95%&#39; is the lecture&#39;s idea of what 95% actually refers to.</p>
+<h4>Common mistakes</h4>
+<ul class="mistakes">
+<li><span class="no"><b>Mistake</b>Treating the standard error and the standard deviation as the same number.</span><span class="yes"><b>Instead</b>The standard deviation (1.6 hours) is about how individual students differ; the standard error (0.2 hours) is about how the sample mean varies between surveys.</span></li>
+<li><span class="no"><b>Mistake</b>Saying there is a 95% chance the true mean lies between 6.41 and 7.19.</span><span class="yes"><b>Instead</b>The true mean is fixed, either in the interval or not. The 95% describes the procedure, not this one interval.</span></li>
+<li><span class="no"><b>Mistake</b>Thinking the true mean is the random quantity that jumps around.</span><span class="yes"><b>Instead</b>The true mean is fixed; the interval is random because it comes from a random sample.</span></li>
+<li><span class="no"><b>Mistake</b>Expecting higher confidence to come with the same interval width.</span><span class="yes"><b>Instead</b>More confidence means a wider interval: the multiplier rises from 1.96 to 2.576, so 99% gives 6.28 to 7.32 hours.</span></li>
+</ul>
+<h4>Go back to</h4>
+<ul class="goback">
+<li><a class="where" href="stats-study-page.html#t=436&amp;slide=4">07:16 · slide 4</a> works the standard error calculation through</li>
+<li><a class="where" href="stats-study-page.html#t=464&amp;slide=4">07:44 · slide 4</a> standard deviation versus standard error warning</li>
+<li><a class="where" href="stats-study-page.html#t=594&amp;slide=5">09:54 · slide 5</a> builds the 95% interval from the recipe</li>
+<li><a class="where" href="stats-study-page.html#t=730&amp;slide=6">12:10 · slide 6</a> explains why the 95% chance wording is wrong</li>
+</ul>
+</article>
+<article class="sheet" id="sheet-2">
+<h3>From test statistic to p-value, and what p does not mean</h3>
+<p class="summary">This topic is the four-step procedure that turns a sample mean into a p-value and a decision about a claim, together with what the p-value does and does not tell you. The rest of the lecture needs it because it is the formal use of the standard error and links testing to confidence intervals.</p>
+<h4>Step by step</h4>
+<ol class="steps">
+<li>A test begins by stating the null hypothesis, the claim being tested. In the sleep example the leaflet says students get seven and a half hours a night, so the null is that the mean mu equals 7.5. <a class="where" href="stats-study-page.html#t=1037&amp;slide=8">17:17</a></li>
+<li>Next ask how surprising the data would be if that claim were true, measured in standard errors. The sample mean is 6.8, the claim is 7.5, so the difference is minus 0.7, and the standard error is 0.2. <a class="where" href="stats-study-page.html#t=1037&amp;slide=8">17:17</a></li>
+<li>Divide the difference by the standard error: minus 0.7 divided by 0.2 is minus 3.5. This is the test statistic, here a z score. The sample mean lies 3.5 standard errors below what the leaflet claims. <a class="where" href="stats-study-page.html#t=1068&amp;slide=8">17:48</a></li>
+<li>Turn the test statistic into a probability. If the null were true, how often would a sample land 3.5 standard errors away or further, in either direction? The answer is about 0.0005, five times in ten thousand, and this is the p-value. <a class="where" href="stats-study-page.html#t=1092&amp;slide=8">18:12</a></li>
+<li>Compare p with a threshold alpha chosen in advance, by convention 0.05. Here p is far below it, so the null is rejected: the data are not compatible with 7.5 hours. <a class="where" href="stats-study-page.html#t=1113&amp;slide=8">18:33</a></li>
+<li>The p-value is the probability of data at least as extreme as yours, if the null is true. It starts by assuming the null, so it is the probability of the data given the hypothesis, not of the hypothesis given the data. p = 0.03 does not mean a 3% chance the leaflet is right. <a class="where" href="stats-study-page.html#t=1250&amp;slide=9">20:50</a></li>
+<li>A small p does not mean a big effect, since it depends on effect size and sample size. With 10,000 students and a mean only 0.05 hours (3 minutes) below the claim, SE is 1.6/100 = 0.016, z is about 3.1 and p about 0.002. <a class="where" href="stats-study-page.html#t=1318&amp;slide=9">21:58</a></li>
+</ol>
+<h4>How it connects</h4>
+<p>The test statistic is built from the standard error, which depends on sample size (with 10,000 students, SE = 1.6/100 = 0.016). The test also mirrors the 95% confidence interval: the interval is exactly the set of values a 5% level test would not reject.</p>
+<h4>Common mistakes</h4>
+<ul class="mistakes">
+<li><span class="no"><b>Mistake</b>A p-value of 0.03 means there is a 3% chance the null hypothesis is true.</span><span class="yes"><b>Instead</b>The p-value is the probability of the data given the null, not the probability of the hypothesis given the data.</span></li>
+<li><span class="no"><b>Mistake</b>A very small p-value means the effect is big or important.</span><span class="yes"><b>Instead</b>p depends partly on effect size and partly on sample size; 3 minutes of sleep can be highly significant with 10,000 students.</span></li>
+<li><span class="no"><b>Mistake</b>A p-value above 0.05 shows there is no effect.</span><span class="yes"><b>Instead</b>It may just mean the sample was too small to detect the effect.</span></li>
+<li><span class="no"><b>Mistake</b>Treating the test and the confidence interval as unrelated results that could disagree.</span><span class="yes"><b>Instead</b>The 95% interval is exactly the set of values a 5% level test would not reject: 7.5 lay outside and was rejected, 7 lay inside and was not.</span></li>
+</ul>
+<h4>Go back to</h4>
+<ul class="goback">
+<li><a class="where" href="stats-study-page.html#t=1068&amp;slide=8">17:48 · slide 8</a> Calculates the z score of minus 3.5</li>
+<li><a class="where" href="stats-study-page.html#t=1092&amp;slide=8">18:12 · slide 8</a> Explains the p-value as a probability, about 0.0005</li>
+<li><a class="where" href="stats-study-page.html#t=1284&amp;slide=9">21:24 · slide 9</a> Data given hypothesis versus hypothesis given data</li>
+<li><a class="where" href="stats-study-page.html#t=1347&amp;slide=9">22:27 · slide 9</a> Works the 10,000-student example through</li>
+</ul>
+</article>
+</section>
+<section id="figures">
+<h2>Key figures</h2>
+<figure id="figure-3">
+<div class="noimg">Slide 3: open the study page to see this figure</div>
+<figcaption>
+<h3>Skewed histogram of individual sleep times beside the narrow normal sampling distribution of means</h3>
+<p><b>What it shows.</b> A skewed histogram of individual sleep times beside a narrow bell curve of sample means, illustrating the sampling distribution of the mean.</p>
+<p><b>What the lecturer said.</b> Repeating the survey thousands of times with fresh samples and plotting the means gives the sampling distribution of the mean, a distribution of a statistic, not of individuals. It is centred on the true mean μ, its spread is σ over root n, and by the central limit theorem its shape is approximately normal even though sleep times are lopsided.</p>
+<p><a class="where" href="stats-study-page.html#t=251&amp;slide=3">04:11 · slide 3</a></p>
+</figcaption>
+</figure>
+<figure id="figure-6">
+<div class="noimg">Slide 6: open the study page to see this figure</div>
+<figcaption>
+<h3>100 confidence intervals around the true mean, misses in red</h3>
+<p><b>What it shows.</b> 100 horizontal confidence intervals drawn around a vertical line at μ, with the intervals that miss μ shown in red.</p>
+<p><b>What the lecturer said.</b> The lecturer said μ is fixed and the interval is the random part, so the 95% describes the procedure: of 100 repeated surveys, about 95 intervals contain the true mean and about 5 (the red ones) miss. With one survey you never know whether your interval is one of the red ones.</p>
+<p><a class="where" href="stats-study-page.html#t=692&amp;slide=6">11:32 · slide 6</a></p>
+</figcaption>
+</figure>
+<figure id="figure-7">
+<div class="noimg">Slide 7: open the study page to see this figure</div>
+<figcaption>
+<h3>Table of t multipliers by degrees of freedom</h3>
+<p><b>What it shows.</b> A table of t multipliers (t*) by degrees of freedom: 15 → 2.131, 30 → 2.042, 100 → 1.984, ∞ → 1.960.</p>
+<p><b>What the lecturer said.</b> With a sample of 16 and 15 degrees of freedom, the multiplier is 2.131 instead of 1.96, giving a margin of error of about 0.85. As the sample grows, t settles towards the normal value: 2.042 at 30 degrees of freedom and 1.984 at 100.</p>
+<p><a class="where" href="stats-study-page.html#t=840&amp;slide=7">14:00 · slide 7</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="confused">
+<h2>Easily confused</h2>
+<div class="table">
+<table>
+<thead><tr><th></th><th scope="col">Standard deviation</th><th scope="col">Standard error</th></tr></thead>
+<tbody>
+<tr><th scope="row">What it describes</th><td>How much individual students differ from each other</td><td>How much the sample mean would differ from survey to survey</td></tr>
+<tr><th scope="row">Value in the survey</th><td>1.6 hours</td><td>0.2 hours</td></tr>
+<tr><th scope="row">With more data</th><td>Does not shrink; students stay as varied as ever</td><td>Does shrink as the sample grows</td></tr>
+</tbody>
+</table>
+<div class="cap"><a class="where" href="stats-study-page.html#t=456&amp;slide=4">07:36 · slide 4</a></div>
+</div>
+<div class="table">
+<table>
+<thead><tr><th></th><th scope="col">Type I error (alpha)</th><th scope="col">Type II error (beta)</th></tr></thead>
+<tbody>
+<tr><th scope="row">What it is</th><td>Rejecting a null hypothesis that is actually true (false positive)</td><td>Failing to reject a null hypothesis that is false (a miss)</td></tr>
+<tr><th scope="row">Its probability</th><td>Alpha, which the researcher chooses</td><td>Beta; one minus beta is the power of the test</td></tr>
+</tbody>
+</table>
+<div class="cap"><a class="where" href="stats-study-page.html#t=1417&amp;slide=10">23:37 · slide 10</a></div>
+</div>
+</section>
+<section id="numbers">
+<h2>Formulas and numbers</h2>
+<p class="hint">As given in this lecture. Where a value matters beyond the exam, check it against a current source.</p>
+<ul class="facts">
+<li><span>The spread of the sampling distribution of the mean is the population standard deviation divided by the square root of the sample size, sigma over root n.</span> <a class="where" href="stats-study-page.html#t=321&amp;slide=3">05:21 · slide 3</a></li>
+<li><span>As a rule of thumb, a sample size of about thirty is enough for approximate normality of sample means, a bit more if the population is very skewed.</span> <a class="where" href="stats-study-page.html#t=373&amp;slide=3">06:13 · slide 3</a></li>
+<li><span>A 95% confidence interval is the sample mean plus or minus 1.96 times the standard error.</span> <a class="where" href="stats-study-page.html#t=594&amp;slide=5">09:54 · slide 5</a></li>
+<li><span>A 99% interval uses the multiplier 2.576 instead of 1.96, giving about 6.8 ± 0.52, or 6.28 to 7.32 hours in the survey.</span> <a class="where" href="stats-study-page.html#t=653&amp;slide=5">10:53 · slide 5</a></li>
+<li><span>With 15 degrees of freedom the t multiplier is 2.131 instead of 1.96, giving a margin of error of about 0.85.</span> <a class="where" href="stats-study-page.html#t=938&amp;slide=7">15:38 · slide 7</a></li>
+<li><span>As sample size grows the t multiplier approaches the normal value: 2.042 at 30 degrees of freedom and 1.984 at 100.</span> <a class="where" href="stats-study-page.html#t=973&amp;slide=7">16:13 · slide 7</a></li>
+<li><span>The test statistic is the difference between sample mean and claimed mean divided by the standard error: (6.8 − 7.5)/0.2 = −3.5, a z score, meaning 3.5 standard errors below the claim.</span> <a class="where" href="stats-study-page.html#t=1068&amp;slide=8">17:48 · slide 8</a></li>
+</ul>
+</section>
+<section id="self-test">
+<h2>Self-test</h2>
+<p class="hint">Answer each one from memory, out loud or on paper, before you open the answer. Then mark yourself honestly.</p>
+<ol class="qs">
+<li class="q" id="q1">
+<span class="level">Explain</span>
+<p class="text">A student says: &#39;The population mean mu is 6.8 hours in one survey and 7.1 in the next, so mu keeps changing.&#39; Using the lecture&#39;s terms parameter and statistic, explain what is wrong with this statement.</p>
+<details class="answer"><summary>Show answer</summary>
+<p class="model">6.8 and 7.1 are sample means (x-bar), which are statistics and change with each new sample. The parameter mu is a fixed but unknown number that does not move. Only the statistic varies from sample to sample.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>6.8 and 7.1 are sample means, statistics</li>
+<li>mu is a fixed, unknown parameter</li>
+<li>statistic changes with each new sample</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=95&amp;slide=2">01:35 · slide 2</a></p>
+<div class="mark needs-js"><span>How did you do?</span><button type="button" class="yes" data-v="right" aria-pressed="false">I had it</button><button type="button" class="no" data-v="wrong" aria-pressed="false">Not yet</button></div>
+</details>
+</li>
+<li class="q" id="q2">
+<span class="level">Explain</span>
+<p class="text">Sleep times in the population are lopsided, with a long tail of short sleepers. Why can we still use a bell-curve (normal) model for the sample mean, and what rule of thumb says when this is reasonable?</p>
+<details class="answer"><summary>Show answer</summary>
+<p class="model">The sampling distribution of the mean is approximately normal by the central limit theorem, even if the population is not normal. Averages of thirty or more sleep times still pile up in a bell shape. About thirty is enough, a bit more if the population is very skewed.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>central limit theorem</li>
+<li>sampling distribution of the mean is approximately normal</li>
+<li>about thirty, more if very skewed</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=336&amp;slide=3">05:36 · slide 3</a></p>
+<div class="mark needs-js"><span>How did you do?</span><button type="button" class="yes" data-v="right" aria-pressed="false">I had it</button><button type="button" class="no" data-v="wrong" aria-pressed="false">Not yet</button></div>
+</details>
+</li>
+<li class="q" id="q3">
+<span class="level">Apply</span>
+<p class="text">A study of resting heart rate has s = 12 beats per minute and n = 36, giving a mean of 70. The researchers then quadruple the sample to n = 144, assuming s stays at 12. What happens to the standard deviation and the standard error? Give numbers.</p>
+<details class="answer"><summary>Show answer</summary>
+<p class="model">The standard deviation stays about 12, since individuals are as varied as before. The standard error falls from 12/6 = 2 to 12/12 = 1, halved, because n is under a square root and four times the data halves it.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>SD stays about 12</li>
+<li>SE goes from 2 to 1</li>
+<li>four times the data halves the SE</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=464&amp;slide=4">07:44 · slide 4</a></p>
+<div class="mark needs-js"><span>How did you do?</span><button type="button" class="yes" data-v="right" aria-pressed="false">I had it</button><button type="button" class="no" data-v="wrong" aria-pressed="false">Not yet</button></div>
+</details>
+</li>
+<li class="q" id="q4">
+<span class="level">Explain</span>
+<p class="text">A report says: &#39;There is a 95% chance that the true mean lies between 6.41 and 7.19 hours.&#39; Explain why the lecturer treats this as wrong and give the correct meaning of the 95%.</p>
+<details class="answer"><summary>Show answer</summary>
+<p class="model">The true mean mu is a fixed number, so it is either inside this particular interval or not; the random thing is the interval, which comes from a random sample. The 95% describes the method: if the survey were repeated 100 times, about 95 intervals would contain mu and about 5 would miss.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>mu is fixed, either inside or not</li>
+<li>the interval is the random thing</li>
+<li>95% describes the procedure over repeated surveys</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=710&amp;slide=6">11:50 · slide 6</a></p>
+<div class="mark needs-js"><span>How did you do?</span><button type="button" class="yes" data-v="right" aria-pressed="false">I had it</button><button type="button" class="no" data-v="wrong" aria-pressed="false">Not yet</button></div>
+</details>
+</li>
+<li class="q" id="q5">
+<span class="level">Go further</span>
+<p class="text">A researcher wants a 99% interval to be as narrow as the 95% interval from the same survey (s = 1.6, n = 64). Using the lecture&#39;s multipliers, say what changes with the 99% interval and what the researcher would have to do to restore the narrowness.</p>
+<details class="answer"><summary>Show answer</summary>
+<p class="model">The multiplier rises from 1.96 to 2.576, so the margin of error grows from about 0.39 to 0.52 hours: more confidence gives a wider interval. The only honest way to get an interval that is both confident and narrow is a bigger sample, which shrinks the standard error.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>multiplier rises from 1.96 to 2.576</li>
+<li>higher confidence widens the interval</li>
+<li>bigger sample is the honest fix</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=653&amp;slide=5">10:53 · slide 5</a></p>
+<div class="mark needs-js"><span>How did you do?</span><button type="button" class="yes" data-v="right" aria-pressed="false">I had it</button><button type="button" class="no" data-v="wrong" aria-pressed="false">Not yet</button></div>
+</details>
+</li>
+<li class="q" id="q6">
+<span class="level">Apply</span>
+<p class="text">A sample of n = 100 has mean 52 and standard error 2. A leaflet claims the true mean is 55. Compute the test statistic and say whether a test at alpha = 0.05 would reject, using the confidence interval to check your reasoning (use 1.96).</p>
+<details class="answer"><summary>Show answer</summary>
+<p class="model">z = (52 − 55)/2 = −1.5, so the sample is 1.5 standard errors below the claim. The 95% interval is 52 ± 1.96×2 = 48.1 to 55.9, which contains 55, so the null is not rejected. We would say we fail to reject, not that 55 is proved.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>z = −1.5</li>
+<li>interval 48.1 to 55.9 contains 55</li>
+<li>fail to reject, not proved</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=1068&amp;slide=8">17:48 · slide 8</a></p>
+<div class="mark needs-js"><span>How did you do?</span><button type="button" class="yes" data-v="right" aria-pressed="false">I had it</button><button type="button" class="no" data-v="wrong" aria-pressed="false">Not yet</button></div>
+</details>
+</li>
+</ol>
+</section>
+<section id="quiz">
+<h2>Practice quiz</h2>
+<p class="hint">New cases to try the lecture's ideas on. Pick an answer to see why each option is right or wrong.</p>
+<ol class="qs">
+<li class="q" id="q7">
+<span class="level">Apply</span>
+<p class="text">A survey of 10,000 people finds a mean 3 minutes below a claimed value, with p = 0.002. A colleague wants to write &#39;the effect is large and important because p is so small.&#39; Which response is best?</p>
+<div class="opts">
+<button type="button" class="opt" data-correct="1"><span class="letter">A</span><span>Disagree: the sample is huge, so a tiny difference can be significant yet unimportant</span></button>
+<button type="button" class="opt" data-correct="0"><span class="letter">B</span><span>Agree: a p-value of 0.002 means there is a 0.2% chance the null is true</span></button>
+<button type="button" class="opt" data-correct="0"><span class="letter">C</span><span>Agree: smaller p-values always indicate larger effects, whatever the sample</span></button>
+<button type="button" class="opt" data-correct="0"><span class="letter">D</span><span>Disagree: the result is not significant because the sample is too large</span></button>
+</div>
+<details class="answer"><summary>Show answer</summary>
+<ul class="whys">
+<li class="correct"><span class="letter">A</span>Correct. Small p reflects both effect and sample size; statistical and practical significance differ.</li>
+<li><span class="letter">B</span>Confuses probability of data given the null with probability of the null given data.</li>
+<li><span class="letter">C</span>Ignores that p also depends on sample size.</li>
+<li><span class="letter">D</span>Reverses the effect of sample size; large n makes small effects significant.</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=1318&amp;slide=9">21:58 · slide 9</a></p>
+</details>
+</li>
+<li class="q" id="q8">
+<span class="level">Go further</span>
+<p class="text">A team runs 20 independent tests at alpha = 0.05 and none of the effects are real. They then switch to a Bonferroni correction. What happens, and why?</p>
+<div class="opts">
+<button type="button" class="opt" data-correct="1"><span class="letter">A</span><span>Each test must beat 0.0025, which cuts the chance of at least one false positive</span></button>
+<button type="button" class="opt" data-correct="0"><span class="letter">B</span><span>Each test must beat 0.05 × 20 = 1, which loosens the standard</span></button>
+<button type="button" class="opt" data-correct="0"><span class="letter">C</span><span>The chance of at least one false positive was already 5% overall, so nothing changes</span></button>
+<button type="button" class="opt" data-correct="0"><span class="letter">D</span><span>Each test must beat 0.0025, which raises the power of every test</span></button>
+</div>
+<details class="answer"><summary>Show answer</summary>
+<ul class="whys">
+<li class="correct"><span class="letter">A</span>Correct. Bonferroni divides alpha by the number of tests, countering about 64% chance of a false alarm.</li>
+<li><span class="letter">B</span>Multiplies instead of dividing alpha.</li>
+<li><span class="letter">C</span>Applies alpha to one test, ignoring that risks accumulate across 20 tests.</li>
+<li><span class="letter">D</span>Right threshold, wrong consequence; a stricter threshold makes misses more likely, not power higher.</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=1435&amp;slide=10">23:55 · slide 10</a></p>
+</details>
+</li>
+</ol>
+</section>
+<div class="score needs-js" id="score" hidden>
+<div class="row"><strong id="score-line"></strong><button type="button" id="again">Start over</button></div>
+<div id="review" hidden><p>Review these parts:</p><ul id="review-list"></ul></div>
+<p>Come back to these questions tomorrow, in three days and in a week. Spaced practice is what makes it stick.</p>
+</div>
+<section id="check">
+<h2>Check this</h2>
+<div class="check"><b>Not from the lecture</b>
+<p>The boxes marked “Beyond the lecture (not from your lecturer)” were added by the AI to help. Your lecturer did not say what is in them. They are under:</p>
+<ul>
+<li><a href="#idea-1">Key idea 1</a>: Why does the sample mean vary between samples, and how is that variation described?</li>
+<li><a href="#idea-2">Key idea 2</a>: How does the standard error differ from the standard deviation, and how does sample size affect it?</li>
+<li><a href="#idea-3">Key idea 3</a>: How is a 95% confidence interval built, and what does &#39;95%&#39; actually refer to?</li>
+<li><a href="#idea-4">Key idea 4</a>: Why do small samples need Student&#39;s t, and how does it change the interval?</li>
+<li><a href="#idea-5">Key idea 5</a>: How does a hypothesis test turn the sample mean into a p-value and a decision?</li>
+</ul></div>
+</section>
+<section id="glossary">
+<h2>Glossary</h2>
+<dl>
+<dt>95% confidence interval <a class="where" href="stats-study-page.html#t=594&amp;slide=5">09:54 · slide 5</a></dt>
+<dd>A 95% confidence interval is the sample mean plus or minus 1.96 times the standard error.</dd>
+<dt>Bonferroni correction <a class="where" href="stats-study-page.html#t=1549&amp;slide=10">25:49 · slide 10</a></dt>
+<dd>The Bonferroni correction divides alpha by the number of tests; for 20 tests each must beat 0.05/20 = 0.0025. It is strict but honest.</dd>
+<dt>Margin of error <a class="where" href="stats-study-page.html#t=635&amp;slide=5">10:35 · slide 5</a></dt>
+<dd>The plus-or-minus part of the interval, 0.39 hours here, is called the margin of error.</dd>
+<dt>p-value <a class="where" href="stats-study-page.html#t=1250&amp;slide=9">20:50 · slide 9</a></dt>
+<dd>A p-value is the probability of obtaining data at least as extreme as the observed data, assuming the null hypothesis is true.</dd>
+<dt>Parameter <a class="where" href="stats-study-page.html#t=95&amp;slide=2">01:35 · slide 2</a></dt>
+<dd>The population is everybody the question is about, and its true average is called mu, which is a parameter.</dd>
+<dt>Power <a class="where" href="stats-study-page.html#t=1458&amp;slide=10">24:18 · slide 10</a></dt>
+<dd>Power equals 1 minus beta: the chance of detecting an effect that is really there. Studies usually aim for 80% power.</dd>
+<dt>Sampling distribution of the mean <a class="where" href="stats-study-page.html#t=285&amp;slide=3">04:45 · slide 3</a></dt>
+<dd>The sampling distribution of the mean is the histogram of sample means from repeating the survey thousands of times with fresh samples; it is a distribution of a statistic, not of individuals.</dd>
+<dt>Standard error <a class="where" href="stats-study-page.html#t=464&amp;slide=4">07:44 · slide 4</a></dt>
+<dd>The standard error (0.2 hours in the survey) describes how much the sample mean would vary from survey to survey; confusing it with the standard deviation is the most common exam mistake.</dd>
+<dt>Statistic <a class="where" href="stats-study-page.html#t=144&amp;slide=2">02:24 · slide 2</a></dt>
+<dd>The sample mean is written x-bar and is a statistic; parameters describe the population, statistics describe the sample (P with population, S with sample).</dd>
+<dt>Statistical significance <a class="where" href="stats-study-page.html#t=1376&amp;slide=9">22:56 · slide 9</a></dt>
+<dd>Statistical significance means the result is unlikely to be due to chance; practical significance means the effect is big enough to matter. The two must be separated.</dd>
+<dt>Type I error <a class="where" href="stats-study-page.html#t=1417&amp;slide=10">23:37 · slide 10</a></dt>
+<dd>A type I error is rejecting a null hypothesis that is actually true (a false positive).</dd>
+</dl>
+</section>
+<section id="cards">
+<h2>Flashcards</h2>
+<p class="hint">9 cards from this lecture are in your flashcard file and in StreamSnag's review. Each one shows the minute it comes from.</p>
+<details class="cards"><summary>Look through the cards</summary>
+<table>
+<tbody>
+<tr><td colspan="2">Population mean: the true average of the whole population is written with the Greek letter <span class="gap">mu</span>, a parameter.</td><td><a class="where" href="stats-study-page.html#t=95&amp;slide=2">01:35 · slide 2</a></td></tr>
+<tr><td>Sampling distribution of the mean: how is it built?</td><td>Histogram of sample means from thousands of repeated surveys</td><td><a class="where" href="stats-study-page.html#t=285&amp;slide=3">04:45 · slide 3</a></td></tr>
+<tr><td>Standard deviation: what does a standard deviation of 1.6 hours describe in the student survey?</td><td>How much individual students differ from each other</td><td><a class="where" href="stats-study-page.html#t=456&amp;slide=4">07:36 · slide 4</a></td></tr>
+<tr><td>Standard error: what does a standard error of 0.2 hours describe?</td><td>How much the sample mean varies between surveys</td><td><a class="where" href="stats-study-page.html#t=464&amp;slide=4">07:44 · slide 4</a></td></tr>
+<tr><td colspan="2">95% confidence interval: sample mean plus or minus <span class="gap">1.96</span> times the standard error.</td><td><a class="where" href="stats-study-page.html#t=594&amp;slide=5">09:54 · slide 5</a></td></tr>
+<tr><td colspan="2">Hypothesis test: a sample 3.5 standard errors from the claimed value, in either direction, has p of about <span class="gap">0.0005</span>.</td><td><a class="where" href="stats-study-page.html#t=1092&amp;slide=8">18:12 · slide 8</a></td></tr>
+<tr><td>Confidence interval: a 95% interval is the set of which values, in hypothesis-testing terms?</td><td>Those a 5% level test would not reject</td><td><a class="where" href="stats-study-page.html#t=1211&amp;slide=8">20:11 · slide 8</a></td></tr>
+<tr><td colspan="2">p-value: the probability of data at least as <span class="gap">extreme</span> as observed, assuming the null hypothesis is true.</td><td><a class="where" href="stats-study-page.html#t=1250&amp;slide=9">20:50 · slide 9</a></td></tr>
+<tr><td>Bonferroni correction: how is the per-test threshold found from alpha?</td><td>Divide alpha by the number of tests</td><td><a class="where" href="stats-study-page.html#t=1549&amp;slide=10">25:49 · slide 10</a></td></tr>
+</tbody>
+</table>
+</details>
+</section>
+<section id="answers" class="print-only">
+<h2>Answers</h2>
+<h4>Self-test</h4>
+<ol class="qs">
+<li class="q"><p class="model">6.8 and 7.1 are sample means (x-bar), which are statistics and change with each new sample. The parameter mu is a fixed but unknown number that does not move. Only the statistic varies from sample to sample.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>6.8 and 7.1 are sample means, statistics</li>
+<li>mu is a fixed, unknown parameter</li>
+<li>statistic changes with each new sample</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=95&amp;slide=2">01:35 · slide 2</a></p></li>
+<li class="q"><p class="model">The sampling distribution of the mean is approximately normal by the central limit theorem, even if the population is not normal. Averages of thirty or more sleep times still pile up in a bell shape. About thirty is enough, a bit more if the population is very skewed.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>central limit theorem</li>
+<li>sampling distribution of the mean is approximately normal</li>
+<li>about thirty, more if very skewed</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=336&amp;slide=3">05:36 · slide 3</a></p></li>
+<li class="q"><p class="model">The standard deviation stays about 12, since individuals are as varied as before. The standard error falls from 12/6 = 2 to 12/12 = 1, halved, because n is under a square root and four times the data halves it.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>SD stays about 12</li>
+<li>SE goes from 2 to 1</li>
+<li>four times the data halves the SE</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=464&amp;slide=4">07:44 · slide 4</a></p></li>
+<li class="q"><p class="model">The true mean mu is a fixed number, so it is either inside this particular interval or not; the random thing is the interval, which comes from a random sample. The 95% describes the method: if the survey were repeated 100 times, about 95 intervals would contain mu and about 5 would miss.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>mu is fixed, either inside or not</li>
+<li>the interval is the random thing</li>
+<li>95% describes the procedure over repeated surveys</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=710&amp;slide=6">11:50 · slide 6</a></p></li>
+<li class="q"><p class="model">The multiplier rises from 1.96 to 2.576, so the margin of error grows from about 0.39 to 0.52 hours: more confidence gives a wider interval. The only honest way to get an interval that is both confident and narrow is a bigger sample, which shrinks the standard error.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>multiplier rises from 1.96 to 2.576</li>
+<li>higher confidence widens the interval</li>
+<li>bigger sample is the honest fix</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=653&amp;slide=5">10:53 · slide 5</a></p></li>
+<li class="q"><p class="model">z = (52 − 55)/2 = −1.5, so the sample is 1.5 standard errors below the claim. The 95% interval is 52 ± 1.96×2 = 48.1 to 55.9, which contains 55, so the null is not rejected. We would say we fail to reject, not that 55 is proved.</p>
+<span class="label">A good answer includes</span>
+<ul>
+<li>z = −1.5</li>
+<li>interval 48.1 to 55.9 contains 55</li>
+<li>fail to reject, not proved</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=1068&amp;slide=8">17:48 · slide 8</a></p></li>
+</ol>
+<h4>Practice quiz</h4>
+<ol class="qs">
+<li class="q"><ul class="whys">
+<li class="correct"><span class="letter">A</span>Correct. Small p reflects both effect and sample size; statistical and practical significance differ.</li>
+<li><span class="letter">B</span>Confuses probability of data given the null with probability of the null given data.</li>
+<li><span class="letter">C</span>Ignores that p also depends on sample size.</li>
+<li><span class="letter">D</span>Reverses the effect of sample size; large n makes small effects significant.</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=1318&amp;slide=9">21:58 · slide 9</a></p></li>
+<li class="q"><ul class="whys">
+<li class="correct"><span class="letter">A</span>Correct. Bonferroni divides alpha by the number of tests, countering about 64% chance of a false alarm.</li>
+<li><span class="letter">B</span>Multiplies instead of dividing alpha.</li>
+<li><span class="letter">C</span>Applies alpha to one test, ignoring that risks accumulate across 20 tests.</li>
+<li><span class="letter">D</span>Right threshold, wrong consequence; a stricter threshold makes misses more likely, not power higher.</li>
+</ul>
+<p><span class="label">Review this part</span><a class="where" href="stats-study-page.html#t=1435&amp;slide=10">23:55 · slide 10</a></p></li>
+</ol>
+</section>
+<footer class="foot">Made on your computer by StreamSnag, with the AI account you chose, from this lecture's transcript and slides. It can still be wrong: where it matters, follow the link to the minute and hear it for yourself.</footer>
+</main>
+</div>
+<script type="application/json" id="pack-data">{"lectureId":"Lecture 9","questions":[{"id":"q1","kind":"short","label":"A student says: 'The population mean mu is 6.8 hours in one survey and 7.1 in the next,…","where":"01:35 · slide 2","href":"stats-study-page.html#t=95\u0026slide=2"},{"id":"q2","kind":"short","label":"Sleep times in the population are lopsided, with a long tail of short sleepers. Why can…","where":"05:36 · slide 3","href":"stats-study-page.html#t=336\u0026slide=3"},{"id":"q3","kind":"short","label":"A study of resting heart rate has s = 12 beats per minute and n = 36, giving a mean of 7…","where":"07:44 · slide 4","href":"stats-study-page.html#t=464\u0026slide=4"},{"id":"q4","kind":"short","label":"A report says: 'There is a 95% chance that the true mean lies between 6.41 and 7.19 hour…","where":"11:50 · slide 6","href":"stats-study-page.html#t=710\u0026slide=6"},{"id":"q5","kind":"short","label":"A researcher wants a 99% interval to be as narrow as the 95% interval from the same surv…","where":"10:53 · slide 5","href":"stats-study-page.html#t=653\u0026slide=5"},{"id":"q6","kind":"short","label":"A sample of n = 100 has mean 52 and standard error 2. A leaflet claims the true mean is…","where":"17:48 · slide 8","href":"stats-study-page.html#t=1068\u0026slide=8"},{"id":"q7","kind":"mcq","label":"A survey of 10,000 people finds a mean 3 minutes below a claimed value, with p = 0.002.…","where":"21:58 · slide 9","href":"stats-study-page.html#t=1318\u0026slide=9"},{"id":"q8","kind":"mcq","label":"A team runs 20 independent tests at alpha = 0.05 and none of the effects are real. They…","where":"23:55 · slide 10","href":"stats-study-page.html#t=1435\u0026slide=10"}]}</script>
+<script>(function () {
+  'use strict';
+  var root = document.documentElement;
+  root.classList.add('js');
+  var data = { lectureId: '', questions: [] };
+  try {
+    var parsed = JSON.parse(document.getElementById('pack-data').textContent);
+    if (parsed && typeof parsed === 'object' && Array.isArray(parsed.questions)) data = parsed;
+  } catch (e) { /* the page still works as a document */ }
+  var key = 'streamsnag-guide:' + String(data.lectureId || '');
+  var state = { theme: '', marks: {} };
+  try {
+    var saved = JSON.parse(localStorage.getItem(key) || 'null');
+    if (saved && typeof saved === 'object') {
+      if (saved.theme === 'dark' || saved.theme === 'light') state.theme = saved.theme;
+      if (saved.marks && typeof saved.marks === 'object') {
+        Object.keys(saved.marks).forEach(function (id) {
+          var m = saved.marks[id];
+          if (m && (m.v === 'right' || m.v === 'wrong')) state.marks[id] = { v: m.v, pick: typeof m.pick === 'number' ? m.pick : -1 };
+        });
+      }
+    }
+  } catch (e) { /* private window, or storage switched off */ }
+  function save() {
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) { /* not remembered, that is all */ }
+  }
+  function $(sel, el) { return (el || document).querySelector(sel); }
+  function $$(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
+
+  // Theme: follows the computer unless the student chose one.
+  var themeButton = $('#theme');
+  function isDark() {
+    if (state.theme) return state.theme === 'dark';
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function showTheme() {
+    if (state.theme) root.setAttribute('data-theme', state.theme); else root.removeAttribute('data-theme');
+    if (themeButton) themeButton.textContent = isDark() ? 'Light' : 'Dark';
+  }
+  if (themeButton) themeButton.addEventListener('click', function () { state.theme = isDark() ? 'light' : 'dark'; save(); showTheme(); });
+  showTheme();
+  var printButton = $('#print');
+  if (printButton) printButton.addEventListener('click', function () { window.print(); });
+
+  // Marking.
+  function questionEl(id) { return document.getElementById(id); }
+  function paint(id) {
+    var el = questionEl(id);
+    if (!el) return;
+    var m = state.marks[id];
+    el.classList.toggle('right', !!m && m.v === 'right');
+    el.classList.toggle('wrong', !!m && m.v === 'wrong');
+    $$('.mark button', el).forEach(function (b) { b.setAttribute('aria-pressed', String(!!m && b.getAttribute('data-v') === m.v)); });
+    var opts = $$('.opt', el);
+    opts.forEach(function (b, i) {
+      b.disabled = !!m;
+      b.classList.toggle('is-right', !!m && b.getAttribute('data-correct') === '1');
+      b.classList.toggle('is-wrong', !!m && m.pick === i && b.getAttribute('data-correct') !== '1');
+    });
+    if (m && opts.length) { var d = $('details.answer', el); if (d) d.open = true; }
+  }
+  function tally() {
+    var box = $('#score');
+    if (!box) return;
+    var total = data.questions.length;
+    var marked = 0;
+    var right = 0;
+    var missed = [];
+    data.questions.forEach(function (q) {
+      var m = state.marks[q.id];
+      if (!m) return;
+      marked++;
+      if (m.v === 'right') right++; else missed.push(q);
+    });
+    box.hidden = marked === 0;
+    $('#score-line').textContent = right + ' of ' + marked + ' right' + (marked < total ? ' so far (' + (total - marked) + ' still to do)' : '');
+    var wrap = $('#review');
+    var list = $('#review-list');
+    while (list.firstChild) list.removeChild(list.firstChild);
+    wrap.hidden = missed.length === 0;
+    missed.forEach(function (q) {
+      var li = document.createElement('li');
+      var jump = document.createElement('a');
+      jump.href = '#' + q.id;
+      jump.textContent = q.label;
+      li.appendChild(jump);
+      if (q.where) {
+        li.appendChild(document.createTextNode(' '));
+        // Only a link to the study page next to this file is ever followed.
+        var ok = typeof q.href === 'string' && q.href.indexOf(':') < 0 && q.href.indexOf('/') < 0 && q.href.indexOf('.study.html#t=') > 0;
+        var w = document.createElement(ok ? 'a' : 'span');
+        w.className = ok ? 'where' : 'where plain';
+        if (ok) w.setAttribute('href', q.href);
+        w.textContent = q.where;
+        li.appendChild(w);
+      }
+      list.appendChild(li);
+    });
+  }
+  function mark(id, v, pick) {
+    state.marks[id] = { v: v, pick: typeof pick === 'number' ? pick : -1 };
+    save();
+    paint(id);
+    tally();
+  }
+  data.questions.forEach(function (q) {
+    var el = questionEl(q.id);
+    if (!el) return;
+    $$('.mark button', el).forEach(function (b) {
+      b.addEventListener('click', function () { mark(q.id, b.getAttribute('data-v') === 'right' ? 'right' : 'wrong'); });
+    });
+    $$('.opt', el).forEach(function (b, i) {
+      b.addEventListener('click', function () { mark(q.id, b.getAttribute('data-correct') === '1' ? 'right' : 'wrong', i); });
+    });
+    paint(q.id);
+  });
+  var again = $('#again');
+  if (again) again.addEventListener('click', function () {
+    state.marks = {};
+    save();
+    data.questions.forEach(function (q) {
+      paint(q.id);
+      var d = $('details.answer', questionEl(q.id) || document.createElement('div'));
+      if (d) d.open = false;
+    });
+    tally();
+  });
+  tally();
+
+  // Contents: show where the reader is.
+  var links = $$('.toc a');
+  if ('IntersectionObserver' in window && links.length) {
+    var byId = {};
+    links.forEach(function (a) { byId[(a.getAttribute('href') || '').slice(1)] = a; });
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = byId[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    Object.keys(byId).forEach(function (id) { var t = document.getElementById(id); if (t) seen.observe(t); });
+  }
+})();</script>
+</body>
+</html>

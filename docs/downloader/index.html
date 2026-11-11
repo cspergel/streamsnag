@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
-<title>A free lecture video downloader, with no limits | StreamSnag</title>
-<meta name="description" content="The free part of StreamSnag saves video files, HLS and DASH streams, whole course pages, slides and captions. Open source, with no limits, ads or account.">
+<title>Free video downloader for lectures and courses | StreamSnag</title>
+<meta name="description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
@@ -14,16 +14,16 @@
 <link rel="canonical" href="https://streamsnag.app/downloader/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="StreamSnag">
-<meta property="og:title" content="A free lecture video downloader, with no limits">
-<meta property="og:description" content="The free part of StreamSnag saves video files, HLS and DASH streams, whole course pages, slides and captions. Open source, with no limits, ads or account.">
+<meta property="og:title" content="Free video downloader for lectures and courses">
+<meta property="og:description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
 <meta property="og:url" content="https://streamsnag.app/downloader/">
 <meta property="og:image" content="https://streamsnag.app/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="A free lecture video downloader, with no limits">
-<meta name="twitter:description" content="The free part of StreamSnag saves video files, HLS and DASH streams, whole course pages, slides and captions. Open source, with no limits, ads or account.">
+<meta name="twitter:title" content="Free video downloader for lectures and courses">
+<meta name="twitter:description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
 <meta name="twitter:image" content="https://streamsnag.app/img/og.png">
 <meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
 <link rel="icon" type="image/png" href="../icon.png">
@@ -98,124 +98,183 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <!-- This page holds, word for word, two sections that stood on the home page until the pass of 2026-11-11:
-       "Only here for the downloader?" (with "More than lectures") and "Free and Pro, side by side". The three
-       steps after installing come from the home page's closing block. -->
-  <header class="doc-head">
+  <!-- Pass 5 (2026-11-11): this page in the home page's language. A strong top (headline, one sentence, one
+       button, one large picture of the popup on a lecture page), then a few calm sections: what it saves, what it
+       does not do, after you install it, Free and Pro (simplified), more than lectures, and the button again.
+       Until pass 4 it held, word for word, "Only here for the downloader?" (with "More than lectures") and "Free
+       and Pro, side by side" from the home page; every fact of those is still here, shorter. The ids
+       #downloader, #more-than, #first-steps and #plans are kept for old links. The styles are in pass5.css. -->
+  <section class="top dl-top" id="downloader" aria-labelledby="downloader-title">
     <div class="wrap">
-      <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>The downloader</span></p>
-      <h1 id="downloader-title">Only here for the downloader?</h1>
-      <p class="lede">Then that is all you need to install it for. It is free forever and open source, and nothing is held back to sell you Pro.</p>
-      <p class="page-jumps">Also on this page: <a href="#more-than">more than lectures</a> · <a href="#first-steps">after you install it</a> · <a href="#plans">Free and Pro, side by side</a></p>
-    </div>
-  </header>
-
-  <!-- ============ Only the downloader ============ -->
-  <section class="section band" id="downloader" aria-labelledby="downloader-title">
-    <div class="wrap">
-      <ul class="nones" aria-label="What the free downloader costs and limits">
-        <li><b>US$0</b><span>forever</span></li>
-        <li><b>No limits</b><span>on files or on streams</span></li>
-        <li><b>No ads</b><span>and no nagging to upgrade</span></li>
-        <li><b>No account</b><span>nothing to sign up for</span></li>
-      </ul>
-
-      <ul class="handles" aria-label="What the free downloader handles">
-        <li><h3>Video files</h3><p>The file a page plays, saved at the quality you choose.</p></li>
-        <li><h3>Streams</h3><p>HLS and DASH, the kinds most lecture players use, put together into one download.</p></li>
-        <li><h3>Whole course pages</h3><p>A review step opens first: file names in course order, copies and previews left unticked. On a long page a row of squares shows what you already have.</p></li>
-        <li><h3>PDFs and PowerPoint files</h3><p>The slides and handouts a lesson links to, saved beside the video.</p></li>
-        <li><h3>Captions as a transcript</h3><p>A video's existing captions saved as text you can read and search, with times.</p></li>
-        <li><h3>Converting</h3><p>An MP3 of the sound, or a smaller copy of the video.</p></li>
-      </ul>
-
-      <p class="cannot"><b>What it cannot save:</b> protected (DRM) streams. StreamSnag says so plainly and does not try to get round the protection. Live broadcasts cannot be saved either.</p>
-
-      <div class="more-than" id="more-than">
-      <div class="section-head">
-        <h2 id="more-than-title">More than lectures.</h2>
-        <p class="lede">It is built for lectures, and it does the same things for other recordings that play in your browser, on a page you are allowed to save from.</p>
-      </div>
-      <ul class="kinds" aria-labelledby="more-than-title">
-        <li><h3>Webinars</h3><p>Save the recording from its replay page, with the slides or handouts the page links to.</p></li>
-        <li><h3>Training recordings</h3><p>Course and compliance videos behind your own login, saved in order with the names the page gives them.</p></li>
-        <li><h3>Podcasts</h3><p>Audio is found and saved too, named after the episode. An MP3 can also be made from a saved video.</p></li>
-        <li><h3>Recorded talks</h3><p>Conference and seminar recordings, with their captions saved as a transcript when the page has them.</p></li>
-      </ul>
-      <p class="mn kinds-note">With Pro, a saved recording that has captions, or that you transcribe on your computer, can be turned into a reading edition and a study pack in the same way as a lecture. Those tools were built for, and tested on, someone teaching, usually with slides: a conversation or a panel reads less tidily. Live broadcasts and protected video stay out, as above.</p>
-      </div>
-
-      <div class="after-install" id="first-steps">
-        <h2 id="first-steps-title">After you install it.</h2>
-        <ol class="first-steps" aria-labelledby="first-steps-title">
-          <li><span><b>Pin it to your toolbar.</b> The icon shows a number when a page has videos.</span></li>
-          <li><span><b>Open a lecture and press play.</b> Many players only load the video once it starts.</span></li>
-          <li><span><b>Click the StreamSnag icon.</b> The lecture is at the top, under On this page, with one button.</span></li>
-        </ol>
-      </div>
-
-      <div class="dl-foot">
+      <p class="crumbs dl-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>The downloader</span></p>
+      <h1 id="downloader-title"><span class="h1-line">Download your</span> <span class="h1-line">lecture videos, free.</span></h1>
+      <p class="top-say">Only here for the downloader? It saves the video on the page you are watching to your own folders, with the slides and files beside it.</p>
+      <div class="top-act">
         <!-- PLACEHOLDER (install link): see the note in the header. -->
-        <div class="btn-row">
-          <a class="btn btn-primary" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
-          <a class="btn btn-quiet" href="../guides/save-a-lecture.html">How to download a lecture</a>
-          <a class="btn btn-quiet" href="../guides/download-a-whole-course.html">How to download a whole course</a>
-        </div>
-        <p class="mn">The free core is published under the GNU General Public License, version 3, so the code that runs can be read. <a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code</a>.</p>
+        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
       </div>
+      <p class="top-price">Unlimited video downloads, free forever. No ads, no account, and nothing held back to sell you Pro.</p>
+
+      <!-- The one picture: a lecture page in the browser with the StreamSnag popup open over it. The page is drawn
+           in HTML (the invented lecture PHYS201, lecture 6); the popup is the product's own screenshot. -->
+      <figure class="dl-pic">
+        <div class="dl-stage">
+          <div class="dl-browser" role="img" aria-label="A lecture page in the browser, course.example: PHYS201, lecture 6, Cardiac output and what sets it. The recording is paused at 08:47 on a slide called Preload and the Frank-Starling law, and under it the page links the slides as a PDF and a handout.">
+            <div class="dl-bar"><span class="dl-dots"><i></i><i></i><i></i></span><span class="dl-url">course.example/phys201/lecture-6</span><span class="dl-icon"><svg class="mark mark-sm"><use href="#i-mark"/></svg></span></div>
+            <div class="dl-page">
+              <p class="dl-course">PHYS201 · Lecture 6</p>
+              <p class="dl-title">Cardiac output and what sets it</p>
+              <div class="pic-video">
+                <div class="pic-slide">
+                  <p class="pic-slide-h">Preload and the Frank-Starling law</p>
+                  <svg class="pic-graph"><use href="#g-starling"/></svg>
+                </div>
+                <div class="pic-bar"><svg class="ic ic-fill"><use href="#i-play"/></svg><span class="pic-rail"><i></i></span><span class="pic-time">08:47</span></div>
+              </div>
+              <p class="dl-files"><span><svg class="ic"><use href="#i-doc"/></svg>Slides (PDF)</span><span><svg class="ic"><use href="#i-doc"/></svg>Handout</span></p>
+            </div>
+          </div>
+          <img class="dl-popup" src="../img/popup.png" width="600" height="896" alt="The StreamSnag popup open on that page. On this page: Cardiac output and what sets it, a video of 27 minutes and 129 MB, with one button, Download, and under it the files on the page: PDFs, slides, handouts.">
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ What it saves ============ -->
+  <section class="calm dl-saves" aria-labelledby="saves-title">
+    <div class="wrap calm-narrow">
+      <div class="calm-head">
+        <h2 id="saves-title">What it saves.</h2>
+        <p>US$0, forever. No limits on files or on streams, and no nagging to upgrade.</p>
+      </div>
+      <div class="saves-row">
+        <ul class="saves" aria-labelledby="saves-title">
+          <li><h3>Video files</h3><p>The file a page plays, saved at the quality you choose.</p></li>
+          <li><h3>Streams</h3><p>HLS and DASH, the kinds most lecture players use, put together into one download.</p></li>
+          <li><h3>Whole courses</h3><p><b>Download all</b> opens a review step first: file names in course order, copies and previews left unticked. On a long page a row of squares shows what you already have.</p></li>
+          <li><h3>The files on the page</h3><p>The PDFs, PowerPoint slides and handouts a lesson links to, saved beside the video.</p></li>
+        </ul>
+        <!-- A drawing of the review step, in the popup's own words (REPLICA-STRINGS.md, the course page). -->
+        <div class="dl-review-pic">
+          <div class="xpop dl-review" role="img" aria-label="Drawing of the review step on a course page. Review before downloading: 6 videos selected, 2 need a look, saved to Downloads, StreamSnag, PHYS201. Ready to download: six lectures in course order, from 04 The cardiac cycle to 09 The microcirculation, all ticked. Check these, left out unless you tick them: a second copy of lecture 6, tagged Same as another one, and a one-minute trailer, tagged Looks like a preview or ad. About 788 MB in all, with the buttons Cancel and Download 6.">
+            <div class="xp-sheet">
+              <div class="rv-head"><div><p class="rv-title">Review before downloading</p><p class="rv-sum">6 videos selected · 2 need a look</p></div></div>
+              <div class="rv-body">
+                <p class="rv-where"><svg class="ic"><use href="#i-folder"/></svg>Downloads › StreamSnag › PHYS201</p>
+                <div class="rv-group">
+                  <p class="rv-group-h">Ready to download <span class="rv-count">6</span></p>
+                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">04 The cardiac cycle.mp4</span><span class="rv-meta">142 MB</span></p>
+                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">05 Heart sounds and murmurs.mp4</span><span class="rv-meta">110 MB</span></p>
+                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">06 Cardiac output and what sets it.mp4</span><span class="rv-meta">129 MB</span></p>
+                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">07 Blood pressure and its control.mp4</span><span class="rv-meta">134 MB</span></p>
+                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">08 Exercise and the circulation.mp4</span><span class="rv-meta">151 MB</span></p>
+                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">09 The microcirculation.mp4</span><span class="rv-meta">122 MB</span></p>
+                </div>
+                <div class="rv-group">
+                  <p class="rv-group-h">Check these <span class="rv-count">2</span></p>
+                  <p class="rv-hint">Left out unless you tick them.</p>
+                  <p class="rv-item"><i class="dl-tick"></i><span class="rv-name">06 Cardiac output and what sets it (2).mp4</span><span class="rv-meta"><span class="rv-tag">Same as another one</span> 27:00 · 129 MB</span></p>
+                  <p class="rv-item"><i class="dl-tick"></i><span class="rv-name">Trailer PHYS201.mp4</span><span class="rv-meta"><span class="rv-tag">Looks like a preview or ad</span> 1:00 · 6 MB</span></p>
+                </div>
+              </div>
+              <div class="rv-foot"><span class="rv-total">About 788 MB in all</span><span class="xp-chip">Cancel</span><span class="xp-btn">Download 6</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="saves-also">
+        <li><b>Captions as a transcript.</b> A video's existing captions saved as text you can read and search, with times.</li>
+        <li><b>Converting.</b> An MP3 of the sound, or a smaller copy of the video.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ What it does not do ============ -->
+  <section class="calm dl-not" aria-labelledby="not-title">
+    <div class="wrap calm-narrow qa-row">
+      <h2 id="not-title">What it cannot save.</h2>
+      <p class="dl-not-say">Protected (DRM) streams. StreamSnag says so plainly and does not try to get round the protection. Live broadcasts cannot be saved either.</p>
+    </div>
+  </section>
+
+  <!-- ============ After you install it ============ -->
+  <section class="calm dl-steps" id="first-steps" aria-labelledby="first-steps-title">
+    <div class="wrap calm-narrow">
+      <h2 id="first-steps-title">After you install it.</h2>
+      <ol class="steps-big" aria-labelledby="first-steps-title">
+        <li><b>Pin it to your toolbar.</b> The icon shows a number when a page has videos.</li>
+        <li><b>Open a lecture and press play.</b> Many players only load the video once it starts.</li>
+        <li><b>Click the StreamSnag icon.</b> The lecture is at the top, under On this page, with one button.</li>
+      </ol>
     </div>
   </section>
 
   <!-- ============ Free and Pro ============ -->
-  <section class="section" id="plans" aria-labelledby="plans-title">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 id="plans-title">Free and Pro, side by side.</h2>
-        <p class="lede">Saving a lecture is free. Turning it into something you can study is Pro. Where a step uses an AI account, the row says so.</p>
+  <!-- Simplified in pass 5: shorter row names, one row for the study page and its slide matching, and an AI tag
+       only on the rows that use an AI account. The longer wording of each Pro row is on how-it-works/. -->
+  <section class="calm dl-plans" id="plans" aria-labelledby="plans-title">
+    <div class="wrap calm-narrow">
+      <div class="calm-head">
+        <h2 id="plans-title">Free and Pro.</h2>
+        <p>Saving a lecture is free. Turning it into something you can study is Pro, and your first lecture is free.</p>
       </div>
 
       <div class="fp-wrap">
-        <table class="fp">
+        <table class="fp fp-calm">
           <caption class="vh">What is free and what is Pro</caption>
           <thead>
             <tr><th scope="col">What it does</th><th scope="col">Free</th><th scope="col">Pro</th></tr>
           </thead>
           <tbody>
-            <tr class="group"><th scope="rowgroup" colspan="3">Save and keep</th></tr>
-            <tr><th scope="row">Find and save the videos on a page: files and streams</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">Find and save videos: files and streams</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
             <tr><th scope="row">Download all, with a review step first</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">Files on the page: PDFs and PowerPoint files</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">Convert a download to an MP3 or a smaller copy</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">Save a video's existing captions as a transcript</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">PDFs and PowerPoint files on the page</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">Convert to an MP3 or a smaller copy</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row">A video's existing captions, saved as a transcript</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
             <tr><th scope="row">Download limits, ads, nagging</th><td class="txt">None</td><td class="txt">None</td></tr>
             <tr class="line-row"><td colspan="3"><p class="free-line"><span>Everything above this line is free</span><span>Everything below it is Pro</span></p></td></tr>
-            <tr class="group"><th scope="rowgroup" colspan="3">Study</th></tr>
-            <tr><th scope="row"><b>Reading edition</b>: the whole lecture as a readable document, every paragraph linked to its minute (tidying the wording with your own AI is optional) <span class="tag tag-plain">No AI account</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Transcription</b> on your own computer, for lectures with no captions. No minute limits <span class="tag tag-plain">No AI account</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Reading edition</b>: the lecture as a document to read</th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Transcription</b> for lectures with no captions. No minute limits</th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
             <tr><th scope="row"><b>Study pack</b>: study guide, quiz, and flashcards with Anki export <span class="tag tag-ai">Uses your AI</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Study page</b>: slides lined up with the video and the transcript <span class="tag tag-plain">No AI account</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Slide matching</b> for PowerPoint and PDF slides <span class="tag tag-plain">No AI account</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Review cards</b>: your due flashcards from every lecture <span class="tag tag-plain">No AI account</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Study page</b>, with slide matching for PowerPoint and PDF slides</th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
+            <tr><th scope="row"><b>Review cards</b>: your due flashcards from every lecture</th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
             <tr><th scope="row"><b>Automation</b> after a download <span class="tag tag-ai">Your AI for the AI steps</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr class="group"><th scope="rowgroup" colspan="3">What you pay</th></tr>
-            <tr><th scope="row">To StreamSnag</th><td class="txt">US$0</td><td class="txt">US$39.97 a year, US$4.99 a month, or US$99.95 once</td></tr>
-            <tr><th scope="row">To your AI provider, for the steps tagged “your AI”</th><td class="txt">Nothing needed</td><td class="txt">Nothing extra on a Claude or ChatGPT subscription you already have. A few cents to about US$1.50 a lecture with a pay-as-you-go key. Never to StreamSnag</td></tr>
           </tbody>
         </table>
       </div>
+      <dl class="pay">
+        <div><dt>What you pay StreamSnag</dt><dd>Free: US$0. Pro: US$39.97 a year, US$4.99 a month, or US$99.95 once.</dd></div>
+        <div><dt>What you pay your AI provider, for the steps tagged “your AI”</dt><dd>Free: nothing needed. Pro: nothing extra on a Claude or ChatGPT subscription you already have. A few cents to about US$1.50 a lecture with a pay-as-you-go key. Never to StreamSnag.</dd></div>
+      </dl>
     </div>
   </section>
 
-  <!-- The foot of a page that used to be a section of the home page: where to go next. -->
-  <section class="page-next" aria-label="Next">
-    <div class="wrap">
-      <p>Saving is free, and Pro takes your first lecture from start to finish, free, with no card.</p>
-      <!-- PLACEHOLDER (install link): see the note in the header. -->
-      <div class="btn-row">
-        <a class="btn btn-primary" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
-        <a class="btn btn-quiet" href="../#pricing">What it costs</a>
-        <a class="btn btn-quiet" href="../#gallery">See what it makes</a>
+  <!-- ============ More than lectures ============ -->
+  <section class="calm dl-more" id="more-than" aria-labelledby="more-than-title">
+    <div class="wrap calm-narrow">
+      <div class="calm-head">
+        <h2 id="more-than-title">More than lectures.</h2>
+        <p>It is built for lectures, and it does the same things for other recordings that play in your browser, on a page you are allowed to save from.</p>
       </div>
+      <ul class="kinds-big" aria-labelledby="more-than-title">
+        <li><h3>Webinars</h3><p>The recording from its replay page, with the slides or handouts the page links to.</p></li>
+        <li><h3>Training recordings</h3><p>Course and compliance videos behind your own login, saved in order with the names the page gives them.</p></li>
+        <li><h3>Podcasts</h3><p>Audio is found and saved too, named after the episode. An MP3 can also be made from a saved video.</p></li>
+        <li><h3>Recorded talks</h3><p>Conference and seminar recordings, with their captions saved as a transcript when the page has them.</p></li>
+      </ul>
+      <p class="kinds-say">With Pro, a saved recording that has captions, or that you transcribe, can be turned into a reading edition and a study pack in the same way as a lecture. Those tools were built for, and tested on, someone teaching, usually with slides: a conversation or a panel reads less tidily. Live broadcasts and protected video stay out, as above.</p>
+    </div>
+  </section>
+
+  <!-- ============ Get it ============ -->
+  <section class="calm last dl-last" aria-labelledby="dl-last-title">
+    <div class="wrap">
+      <h2 id="dl-last-title">Save tonight's lecture.</h2>
+      <p class="last-say">For Chrome, Edge and Brave on a computer.</p>
+      <!-- PLACEHOLDER (install link): see the note in the header. -->
+      <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+      <p class="dl-guides"><a href="../guides/save-a-lecture.html">How to download a lecture</a> <a href="../guides/download-a-whole-course.html">How to download a whole course</a></p>
+      <p class="last-note">The free core is published under the GNU General Public License, version 3, so the code that runs can be read. <a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code</a>.</p>
     </div>
   </section>
 </main>

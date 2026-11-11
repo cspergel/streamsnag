@@ -1919,3 +1919,173 @@ label.cite:hover { border-color: var(--accent); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .prelaunch { background: #262112; color: #e6cf8f; border-color: #5e4f26; } }
 .legal .prelaunch, article .prelaunch { text-align: left; border: 1px solid #dcc48a; border-radius: 8px; margin: 12px 0; }
 a[aria-disabled="true"] { cursor: default; opacity: .85; }
+
+/* ==== Pass 3 (2026-11-11): the short home page and the pages its depth moved to. Kept in pass3.css beside the site tooling. ==== */
+
+/* The menu: on a phone or tablet the header's links fold into one button, so the header stays one row. */
+.menu { display: none; }
+@media (max-width: 1079px) {
+  .menu { display: block; flex: none; }
+  .menu > summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 .85em;
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition: border-color .2s, background-color .2s;
+  }
+  .menu > summary::-webkit-details-marker { display: none; }
+  .menu > summary:hover { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+  .menu[open] > summary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .menu-list {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    display: grid;
+    padding: 0 var(--gutter) 10px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line-strong);
+    box-shadow: 0 22px 30px -22px rgba(0, 0, 0, .45);
+  }
+  .menu-list a {
+    display: flex;
+    align-items: center;
+    min-height: 46px;
+    border-top: 1px solid var(--line);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .menu-list a[aria-current="page"] { color: var(--accent-ink); }
+  .head-row .btn { white-space: nowrap; }
+  /* On a phone the light and dark switch moves into the menu, so the row has room for the three things that matter. */
+  .menu-theme { display: none; }
+}
+@media (max-width: 480px) {
+  .head-row { gap: 8px; }
+  .head-row .theme-btn, .js .head-row .theme-btn { display: none; }
+  .head-row .btn { margin-left: auto; }
+  .head-row .btn, .menu > summary { padding: 0 .7em; font-size: .86rem; }
+  .brand { gap: 8px; font-size: 1rem; }
+  .js .menu-theme {
+    display: flex;
+    align-items: center;
+    min-height: 46px;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    background: none;
+    color: var(--ink-2);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+}
+@media (min-width: 1080px) { .menu-theme { display: none; } }
+/* The narrowest phones: the mark alone stands for the name, which stays there for a screen reader. */
+@media (max-width: 349px) {
+  .brand span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media print { .menu { display: none !important; } }
+
+/* The home page: the line under the buttons, and the row of what it does. */
+.hero-facts a { color: var(--ink-2); font-weight: 600; }
+.feats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: clamp(20px, 2.4vw, 30px); }
+.feats a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start;
+  gap: 8px;
+  height: 100%;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  text-decoration: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.feats a:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); }
+.feats .tag { grid-column: 1 / -1; justify-self: start; }
+.feats b { font: 650 1rem/1.3 var(--font-display); letter-spacing: -.008em; text-wrap: balance; }
+.feats .ic { margin-top: .2em; color: var(--ink-3); transition: transform .35s var(--ease); }
+.feats a:hover .ic { transform: translateX(3px); color: var(--ink); }
+@media (max-width: 1079px) { .feats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 719px) {
+  .feats { grid-template-columns: minmax(0, 1fr); gap: 0; border-top: 1px solid var(--line); }
+  .feats a {
+    grid-template-columns: 3.1rem minmax(0, 1fr) auto;
+    align-items: center;
+    align-content: center;
+    gap: 10px;
+    min-height: 50px;
+    padding: 9px 2px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+  }
+  .feats a:hover { box-shadow: none; }
+  .feats .tag { grid-column: auto; justify-content: center; }
+  .feats .ic { margin-top: 0; }
+}
+
+/* The note about the demonstration, folded under one line. */
+.demo-about { margin-top: 4px; }
+.demo-about > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  cursor: pointer;
+  list-style: none;
+}
+.demo-about > summary::-webkit-details-marker { display: none; }
+.demo-about > summary:hover { text-decoration-color: currentColor; }
+.demo-about > p { margin-top: 4px; }
+
+/* One "more" link under a short section. */
+.more { font-size: .98rem; color: var(--ink-2); text-wrap: pretty; }
+.more .link-arrow { display: inline; color: var(--ink); }
+.more .link-arrow .ic { display: inline-block; vertical-align: -.16em; margin-left: .15em; }
+.more-section { margin-top: clamp(22px, 3vw, 36px); }
+.claims .more { max-width: none; }
+
+/* On a phone the demonstration stops at its three steps. The cards after them ("And then, if you want more")
+   show the study page, the guide, the quiz and a flashcard, which the samples further down the page open in full. */
+@media (max-width: 719px) { .scene .more-row { display: none; } }
+
+/* The samples on the home page: four cards, no excerpts. */
+.samples-brief { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.samples-brief .sample-links { margin-top: auto; padding-top: 4px; }
+@media (max-width: 1099px) { .samples-brief { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 719px) { .samples-brief { grid-template-columns: minmax(0, 1fr); } }
+
+/* The Free card's links to the downloader's own page. */
+.plan-more a { color: var(--ink-2); }
+.plan-more#downloader { padding: 0; } /* (#downloader is also the section on the downloader's page, which has its own padding) */
+.doc-head + #downloader { padding-top: clamp(28px, 4vw, 52px); }
+.faq-head p a { color: var(--ink); }
+
+/* Pages made from sections that used to be on the home page. */
+.doc-head + .section { padding-top: clamp(28px, 4vw, 52px); }
+.doc-head .page-jumps { margin-top: 14px; font-size: .93rem; color: var(--ink-3); max-width: 70ch; }
+.doc-head .page-jumps a { color: var(--ink-2); }
+.section > .wrap > .path:first-child, .section > .wrap > .nones:first-child, .section > .wrap > .own-ai:first-child, .section > .wrap > .terms-row:first-child { margin-top: 0; }
+.section .after-install { margin-top: clamp(28px, 3.4vw, 44px); max-width: 70ch; }
+.section .after-install h2 { font-size: clamp(1.3rem, 2.1vw, 1.65rem); letter-spacing: -.018em; margin-bottom: 12px; }
+.page-next { padding: clamp(36px, 5vw, 64px) 0; border-top: 1px solid var(--line); }
+.page-next .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
+.page-next p { flex: 1 1 280px; max-width: 56ch; color: var(--ink-2); text-wrap: pretty; }
+.faq-all { max-width: 860px; }
+.terms-four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 899px) { .terms-four { grid-template-columns: minmax(0, 1fr); } }
+.ai-more { padding: clamp(36px, 5vw, 64px) 0 clamp(48px, 6vw, 84px); }
+.ai-more .prose { max-width: 72ch; }

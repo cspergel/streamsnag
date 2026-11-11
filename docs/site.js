@@ -52,3 +52,57 @@
     if (system && system.addEventListener) system.addEventListener('change', function () { label(buttons); });
   });
 })();
+
+// ==== Pass 3 (2026-11-11): the menu, and old links into sections that now have pages of their own. Kept in pass3.js beside the site tooling. ====
+// Old links. Sections that used to be on the home page now have pages of their own; an address such as
+// streamsnag.app/#downloader, which the product and other sites may still use, is sent on to the new page.
+// This runs in the head, before anything is drawn. Nothing is sent anywhere.
+(function () {
+  var MOVED = {
+    'evening': 'how-it-works/',
+    'stop-save': 'how-it-works/#stop-save',
+    'stop-keep': 'how-it-works/#stop-keep',
+    'free-line': 'how-it-works/#free-line',
+    'stop-read': 'how-it-works/#stop-read',
+    'stop-page': 'how-it-works/#stop-page',
+    'stop-pack': 'how-it-works/#stop-pack',
+    'stop-cards': 'how-it-works/#stop-cards',
+    'read': 'how-it-works/#read',
+    'downloader': 'downloader/',
+    'more-than': 'downloader/#more-than',
+    'plans': 'downloader/#plans',
+    'ai-cost': 'ai-costs/',
+    'contact': 'questions/#contact'
+  };
+  var canonical = document.querySelector('link[rel="canonical"]');
+  var here = document.currentScript && document.currentScript.src;
+  // Only on the home page itself (the "not found" page shares its canonical address, and is marked noindex).
+  if (!here || !canonical || canonical.getAttribute('href') !== 'https://streamsnag.app/' || document.querySelector('meta[name="robots"]')) return;
+  function go() {
+    var to = MOVED[decodeURIComponent(location.hash.slice(1))];
+    if (to) location.replace(new URL(to, here).href);
+  }
+  go();
+  window.addEventListener('hashchange', go);
+})();
+
+// The menu on a phone or tablet is a <details>, so it opens without JavaScript. With it: choosing a link,
+// pressing Escape or clicking elsewhere closes it.
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    var menu = document.querySelector('.menu');
+    if (!menu) return;
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('a')) menu.removeAttribute('open');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.hasAttribute('open')) {
+        menu.removeAttribute('open');
+        menu.querySelector('summary').focus();
+      }
+    });
+    document.addEventListener('click', function (e) {
+      if (menu.hasAttribute('open') && !menu.contains(e.target)) menu.removeAttribute('open');
+    });
+  });
+})();

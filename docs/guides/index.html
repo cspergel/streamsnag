@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch) and, on the home page, demo.js (the demonstration at the top). Neither sends anything anywhere. -->
+<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the home page, demo.js (the demonstration at the top). Neither sends anything anywhere. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
 <title>Guides to saving and studying recorded lectures | StreamSnag</title>
 <meta name="description" content="Eight plain how-to guides: download a lecture or a whole course, transcribe it, read it, line up the slides, and make flashcards, a study guide and a quiz.">
@@ -55,13 +55,12 @@
       <span>StreamSnag</span>
     </a>
     <nav class="site-nav" aria-label="Site">
-      <a href="../#read">Read</a>
-      <a href="../#evening">How it works</a>
+      <a href="../how-it-works/">How it works</a>
       <a href="../#gallery">Samples</a>
-      <a href="../#downloader">Downloader</a>
+      <a href="../downloader/">Downloader</a>
       <a href="../#pricing">Pricing</a>
       <a href="../guides/" aria-current="page">Guides</a>
-      <a href="../#faq">Questions</a>
+      <a href="../questions/">Questions</a>
     </nav>
     <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch between the light and dark theme">
       <svg class="ic i-moon" aria-hidden="true"><use href="#i-moon"/></svg>
@@ -69,6 +68,20 @@
     </button>
     <!-- PLACEHOLDER (install link): every link with data-install points at #install until the store listing or download exists. Replace the href of all [data-install] links with the real install address. -->
     <a class="btn btn-quiet btn-sm" href="../#install" data-install>Get StreamSnag</a>
+    <!-- On a phone or tablet the links above are folded into this one button. It works without JavaScript. -->
+    <details class="menu">
+      <summary>Menu</summary>
+      <nav class="menu-list" aria-label="Site, as a menu">
+        <a href="../how-it-works/">How it works</a>
+        <a href="../#gallery">Samples</a>
+        <a href="../downloader/">The downloader</a>
+        <a href="../#pricing">Pricing</a>
+        <a href="../ai-costs/">What the AI costs</a>
+        <a href="../guides/" aria-current="page">Guides</a>
+        <a href="../questions/">Questions</a>
+        <button class="menu-theme" type="button" data-theme-toggle>Light or dark</button>
+      </nav>
+    </details>
   </div>
 </header>
 
@@ -109,11 +122,13 @@
       <nav class="foot-col" aria-label="The product">
         <h2>The product</h2>
         <ul>
-          <li><a href="../#read">Read the lecture</a></li>
-          <li><a href="../#evening">How an evening goes</a></li>
+          <li><a href="../how-it-works/">How an evening goes</a></li>
+          <li><a href="../how-it-works/#read">Read the lecture</a></li>
           <li><a href="../#gallery">See what it makes</a></li>
-          <li><a href="../#downloader">Only the downloader</a></li>
+          <li><a href="../downloader/">Only the downloader</a></li>
           <li><a href="../#pricing">Pricing</a></li>
+          <li><a href="../ai-costs/">What the AI costs</a></li>
+          <li><a href="../questions/">Questions</a></li>
           <li><a href="../compare/">Compared with a well-known download helper</a></li>
         </ul>
       </nav>

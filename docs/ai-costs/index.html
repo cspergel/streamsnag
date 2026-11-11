@@ -98,82 +98,101 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <!-- This page holds the box "AI costs are not included in the price" that stood under the prices on the home
-       page until the pass of 2026-11-11, word for word, and gathers what the home page said elsewhere about
-       AI use: which parts use it, what is sent, what happens when an allowance runs out, what the second
-       sample pack took, and the trial. Every sentence is one the site already had. -->
-  <header class="doc-head">
+  <!-- Pass 6 (2026-11-11): the answer first in one line, the measured table, then short sections, in the home
+       page's calm language. The box that stood under the home page's prices (_own-ai.html until this pass) and
+       the page's own sections are folded together here, every fact kept; the sheet shown before a study pack is
+       made, which stood in step five of how-it-works/ until this pass, is drawn here. Ids kept for old links:
+       #measured, #which-parts, #accounts, #sent, #runs-out, #second-pack, #trial, #ai-cost. -->
+  <section class="top ai-top" aria-labelledby="ai-title">
     <div class="wrap">
-      <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>What the AI costs</span></p>
-      <h1>AI costs are not included in the price.</h1>
-      <p class="lede">The study tools that use AI run on your own AI account, never on ours: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key. Transcription and the reading edition need no AI at all.</p>
-      <p class="tags"><span class="tag tag-ai">Uses your AI</span></p>
+      <p class="crumbs how-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>What the AI costs</span></p>
+      <h1 id="ai-title">AI costs are not included in the price.</h1>
+      <p class="ai-answer" id="ai-cost">Nothing extra on a Claude or ChatGPT subscription you already have; a few cents to about US$1.50 a lecture with a pay-as-you-go key; never paid to StreamSnag.</p>
+      <p class="top-say">Saving, transcription, the reading edition, the study page and reviewing cards use no AI account at all.</p>
     </div>
-  </header>
+  </section>
 
-  <section class="section" aria-label="What a study pack cost on our own runs">
-    <div class="wrap">
-      <div class="own-ai" id="measured">
-        <div class="own-ai-body">
-          <div class="own-ai-text">
-            <p>StreamSnag has no servers, so it cannot run an AI for you. The steps tagged “your AI” are written by an AI account that is <strong>your own</strong>: a Claude or ChatGPT subscription you already have, or a pay-as-you-go key for Anthropic, OpenAI, Gemini, DeepSeek or OpenRouter. What you spend there, if anything, is between you and that provider. It is never paid to StreamSnag.</p>
-            <p><strong>With a Claude or ChatGPT subscription you already have, there is no extra charge.</strong> Each run counts toward your plan's limits, and a plan can run out part-way through a busy day. <strong>With a pay-as-you-go key</strong> (Anthropic, OpenAI, DeepSeek, OpenRouter) you are billed for what the run uses: the table shows what that came to. Google Gemini has a free daily allowance and then charges your Google account. We have not tested whether a whole lecture fits in it, and a free allowance can run out part-way.</p>
-            <p>Before every AI run you see what will be sent, to which provider, and an estimate of how much AI use it takes. An estimate is not a guarantee, and your provider may have limits of its own. Saving, transcription, the reading edition, the study page and reviewing cards use no AI account at all.</p>
-          </div>
-          <div>
-            <table class="cost">
-              <caption>What a study pack cost on our own runs, with a pay-as-you-go key</caption>
-              <thead>
-                <tr><th scope="col">Lecture</th><th scope="col">AI account</th><th scope="col">Cost</th></tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">64 minutes</th><td>Claude Sonnet</td><td>about US$1.50</td></tr>
-                <tr><th scope="row">64 minutes</th><td>DeepSeek Flash</td><td>US$0.04 to 0.08</td></tr>
-                <tr><th scope="row">28 minutes</th><td>Claude Sonnet</td><td>about US$0.80</td></tr>
-              </tbody>
-            </table>
-            <p class="cost-note">Measured in November 2026: the 64-minute pack took about 30 AI requests. Prices are set by the AI providers and change. A longer lecture costs more, and your lectures and settings will give different numbers.</p>
+  <section class="calm" id="measured" aria-labelledby="measured-title">
+    <div class="wrap calm-narrow ai-row">
+      <div class="calm-head">
+        <h2 id="measured-title">What a study pack cost on our own runs.</h2>
+        <p>With a pay-as-you-go key (Anthropic, OpenAI, DeepSeek, OpenRouter) you are billed for what the run uses: the table shows what that came to.</p>
+      </div>
+      <div>
+        <table class="cost">
+          <caption>What a study pack cost on our own runs, with a pay-as-you-go key</caption>
+          <thead>
+            <tr><th scope="col">Lecture</th><th scope="col">AI account</th><th scope="col">Cost</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">64 minutes</th><td>Claude Sonnet</td><td>about US$1.50</td></tr>
+            <tr><th scope="row">64 minutes</th><td>DeepSeek Flash</td><td>US$0.04 to 0.08</td></tr>
+            <tr><th scope="row">28 minutes</th><td>Claude Sonnet</td><td>about US$0.80</td></tr>
+          </tbody>
+        </table>
+        <p class="ai-say">Measured in November 2026: the 64-minute pack took about 30 AI requests. Prices are set by the AI providers and change. A longer lecture costs more, and your lectures and settings will give different numbers.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="calm" id="which-parts" aria-labelledby="which-title">
+    <div class="wrap calm-narrow ai-text">
+      <h2 id="which-title">Your own AI account, never ours.</h2>
+      <p>StreamSnag has no servers, so it cannot run an AI for you. The study pack, and the optional tidying of a reading edition, are written by an AI account that is <strong>your own</strong>. What you spend there, if anything, is between you and that provider. It is never paid to StreamSnag, which adds no limit of its own and takes no share.</p>
+      <p id="accounts">A Claude or ChatGPT subscription you already have, or a key for Anthropic, OpenAI, Gemini, DeepSeek or OpenRouter. You choose one in Settings, and AI stays off until you do.</p>
+    </div>
+  </section>
+
+  <section class="calm" id="sent" aria-labelledby="sent-title">
+    <div class="wrap moment-row">
+      <div class="moment-words">
+        <h2 id="sent-title">You see what is sent, before it is sent.</h2>
+        <p>Before every AI run you see what will be sent, to which provider, and an estimate of how much AI use it takes. An estimate is not a guarantee, and your provider may have limits of its own.</p>
+        <p>What goes is a lecture's transcript and the text on its slides, with the speaker notes when the slides are a PowerPoint file. Slide pictures and the video are never sent. The smaller AI helpers in the popup (Ask your AI to find it, Summarize, Ask AI why) each show what they would send before they send it. It is sent from your computer, because StreamSnag has no servers.</p>
+        <p class="moment-link"><a href="../privacy/">What stays and what leaves</a></p>
+      </div>
+      <div class="tl-pic">
+        <div class="mock" role="img" aria-label="Drawing of the sheet shown before a study pack is made, headed Before the AI reads this lecture. It makes a study guide, deeper review sheets, a practice quiz and self-test, and flashcards. It sends the lecture's transcript, and the text and speaker notes of its slides, to Claude, your subscription; pictures of the slides are not sent. It is sent from this computer, because StreamSnag has no servers. In all it takes about 20 requests from your plan's allowance. The cost line says it counts toward your Claude plan's limits, and that AI use is billed by your own provider and is never part of StreamSnag's price.">
+          <div class="win sheet">
+            <p class="sheet-title">Before the AI reads this lecture</p>
+            <p class="sheet-sub">Exactly what happens, before anything is sent.</p>
+            <dl>
+              <div><dt>Makes</dt><dd><b>Study guide, Deeper review sheets, Practice quiz and self-test, Flashcards</b></dd></div>
+              <div><dt>Sends</dt><dd><b>This sends the lecture's transcript, and the text and speaker notes of its slides, to Claude (your subscription).</b> Pictures of the slides are not sent.</dd></div>
+              <div><dt>To</dt><dd><b>Claude (your subscription)</b> Sent from this computer. StreamSnag has no servers.</dd></div>
+              <div><dt>AI use</dt><dd><b>In all about 20 requests from your plan's allowance.</b></dd></div>
+              <div><dt>Cost</dt><dd><b>Counts toward your Claude plan's limits.</b> AI use is billed by your own provider and is never part of StreamSnag's price.</dd></div>
+            </dl>
+            <p class="sheet-btns"><span class="ui-btn">Not now</span><span class="ui-btn ui-btn-main">Make the study pack</span></p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="wrap ai-more">
-    <div class="prose">
-      <h2 id="which-parts">Which parts use AI</h2>
-      <p>The study pack, and the optional tidying of a reading edition, run on your own AI account. AI use is never part of StreamSnag's price. With a Claude or ChatGPT subscription you already have there is no extra charge: each run counts toward your plan's limits. With a pay-as-you-go key it is a few cents to about US$1.50 a lecture, depending on the provider. Transcription and the reading edition's layout need no AI at all.</p>
-      <p>That provider may have its own limits. StreamSnag adds no limit of its own and takes no share.</p>
-
-      <h2 id="accounts">Which AI accounts work</h2>
-      <p>A Claude or ChatGPT subscription you already have, or a key for Anthropic, OpenAI, Gemini, DeepSeek or OpenRouter. You choose one in Settings, and AI stays off until you do.</p>
-
-      <h2 id="sent">What is sent, and when</h2>
-      <p>Before anything is sent you see what goes, to which AI account, and roughly how much AI use it takes. <a href="../how-it-works/#stop-pack">The sheet that is shown before a study pack is made</a> is drawn in step five of the walkthrough.</p>
-      <p>What goes is the text you choose to send to your AI provider: a lecture's transcript and the text on its slides, with the speaker notes when the slides are a PowerPoint file. Slide pictures and the video are never sent. The smaller AI helpers in the popup (Ask your AI to find it, Summarize, Ask AI why) each show what they would send before they send it. It is sent from your computer, because StreamSnag has no servers. The <a href="../privacy/">privacy page</a> says exactly what stays and what leaves.</p>
-
-      <h2 id="runs-out">If your AI allowance runs out</h2>
-      <p>The run stops and StreamSnag tells you why. Nothing is charged by us, and what you had already saved or made stays where it is. You can run it again later, or choose another AI account in Settings.</p>
-      <p>Free allowances are the usual cause: they can do part of a study pack and run out part-way. The estimate before each run shows how much AI use it will take.</p>
-
-      <h2 id="second-pack">What the second sample pack took</h2>
-      <p>The statistics pack was 20 AI requests in 1 minute 31 seconds and cost US$0.80 on Claude Sonnet. Of 65 statements pulled from the lecture, 61 passed the quote check. Of 17 flashcards written, 9 were kept. You can open <a href="../sample/stats-study-guide.html">that study guide</a>.</p>
-
-      <h2 id="trial">The trial</h2>
-      <p>One lecture, start to finish, free: transcription, the reading edition and the study pack. No card and no account with us. The study pack still needs an AI account of your own: a Claude or ChatGPT subscription you already have costs nothing extra, and a pay-as-you-go key is charged by its provider. <a href="../#pricing">What Pro costs</a>.</p>
+  <section class="calm" id="runs-out" aria-labelledby="runs-out-title">
+    <div class="wrap calm-narrow ai-text">
+      <h2 id="runs-out-title">If your allowance runs out.</h2>
+      <p><strong>With a Claude or ChatGPT subscription you already have, there is no extra charge.</strong> Each run counts toward your plan's limits, and a plan can run out part-way through a busy day. Google Gemini has a free daily allowance and then charges your Google account. We have not tested whether a whole lecture fits in it, and a free allowance can run out part-way.</p>
+      <p>The run stops and StreamSnag tells you why. Nothing is charged by us, and what you had already saved or made stays where it is. You can run it again later, or choose another AI account in Settings. Free allowances are the usual cause: they can do part of a study pack and run out part-way.</p>
     </div>
-  </div>
+  </section>
 
-  <!-- The foot of a page that used to be a section of the home page: where to go next. -->
-  <section class="page-next" aria-label="Next">
+  <section class="calm" id="second-pack" aria-labelledby="second-title">
+    <div class="wrap calm-narrow ai-text">
+      <h2 id="second-title">What the second sample pack took.</h2>
+      <p>The statistics pack was 20 AI requests in 1 minute 31 seconds and cost US$0.80 on Claude Sonnet. Of 65 statements pulled from the lecture, 61 passed the quote check. Of 17 flashcards written, 9 were kept.</p>
+      <p class="moment-link"><a href="../sample/stats-study-guide.html">Open that study guide</a></p>
+    </div>
+  </section>
+
+  <section class="calm last" id="trial" aria-labelledby="trial-title">
     <div class="wrap">
-      <p>Saving is free, and Pro takes your first lecture from start to finish, free, with no card.</p>
+      <h2 id="trial-title">Try it on one lecture.</h2>
+      <p class="last-say">One lecture, start to finish, free: transcription, the reading edition and the study pack. No card and no account with us. The study pack still needs an AI account of your own: a Claude or ChatGPT subscription you already have costs nothing extra, and a pay-as-you-go key is charged by its provider.</p>
+      <p class="last-links"><a href="../#pricing">What Pro costs</a></p>
       <!-- PLACEHOLDER (install link): see the note in the header. -->
-      <div class="btn-row">
-        <a class="btn btn-primary" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
-        <a class="btn btn-quiet" href="../#pricing">What it costs</a>
-        <a class="btn btn-quiet" href="../#gallery">See what it makes</a>
-      </div>
+      <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
     </div>
   </section>
 </main>

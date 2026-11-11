@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Try StreamSnag: a working demo of the popup | StreamSnag</title>
+<meta name="description" content="A working copy of the StreamSnag popup on an invented lecture page: download the lecture, transcribe it and read it, in three clicks. Nothing really downloads.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<meta name="referrer" content="no-referrer">
+<link rel="canonical" href="https://streamsnag.app/demo/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="StreamSnag">
+<meta property="og:title" content="Try StreamSnag: a working demo of the popup">
+<meta property="og:description" content="A working copy of the StreamSnag popup on an invented lecture page: download the lecture, transcribe it and read it, in three clicks. Nothing really downloads.">
+<meta property="og:url" content="https://streamsnag.app/demo/">
+<meta property="og:image" content="https://streamsnag.app/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Try StreamSnag: a working demo of the popup">
+<meta name="twitter:description" content="A working copy of the StreamSnag popup on an invented lecture page: download the lecture, transcribe it and read it, in three clicks. Nothing really downloads.">
+<meta name="twitter:image" content="https://streamsnag.app/img/og.png">
+<meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
+<link rel="icon" type="image/png" href="../icon.png">
+<link rel="apple-touch-icon" href="../icon.png">
+<link rel="stylesheet" href="../site.css">
+<script src="../site.js"></script>
+<script src="../demo.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"Demo","item":"https://streamsnag.app/demo/"}]}]}</script>
+</head>
+<body id="top">
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-mark" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-none" viewBox="0 0 24 24"><path d="M7 12h10"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m0 0l-5-5m5 5l-5 5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.500h7l4 4V19a1.500 1.500 0 01-1.500 1.500h-9A1.500 1.500 0 016 19V4.500a1 1 0 011-1z"/><path d="M14 3.500V8h4M9 12.500h6M9 16h4"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M6.500 6h11M9 3.500h6"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.500h14M5 11h14M5 15.500h9"/></symbol>
+  <!-- The sample lecture's graphs: stroke volume against end-diastolic volume, and the wall of a ventricle. -->
+  <symbol id="g-starling" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 44 108 28 190 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-inotropy" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 62 108 50 190 47" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><path d="M26 102C50 30 100 16 190 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-laplace" viewBox="0 0 200 120"><circle cx="100" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="9" opacity=".85"/><path d="M100 60h37" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M100 60l-22-22M100 60l-22 22M100 60l-31 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 5" opacity=".6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h9m4 0h3M4 16h3m4 0h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="../">
+      <svg class="mark" aria-hidden="true"><use href="#i-mark"/></svg>
+      <span>StreamSnag</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../how-it-works/">How it works</a>
+      <a href="../#gallery">Samples</a>
+      <a href="../#pricing">Pricing</a>
+      <a href="../guides/">Guides</a>
+      <a href="../questions/">Questions</a>
+    </nav>
+    <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch between the light and dark theme">
+      <svg class="ic i-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+      <svg class="ic i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+    </button>
+    <!-- PLACEHOLDER (install link): every link with data-install points at #install until the store listing or download exists. Replace the href of all [data-install] links with the real install address. -->
+    <a class="btn btn-quiet btn-sm" href="../#install" data-install>Get StreamSnag</a>
+    <!-- On a phone or tablet the links above are folded into this one button. It works without JavaScript. -->
+    <details class="menu">
+      <summary>Menu</summary>
+      <nav class="menu-list" aria-label="Site, as a menu">
+        <a href="../how-it-works/">How it works</a>
+        <a href="../#gallery">Samples</a>
+        <a href="../downloader/">The downloader</a>
+        <a href="../#pricing">Pricing</a>
+        <a href="../ai-costs/">What the AI costs</a>
+        <a href="../guides/">Guides</a>
+        <a href="../questions/">Questions</a>
+        <button class="menu-theme" type="button" data-theme-toggle>Light or dark</button>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<main id="main">
+<p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
+  <!-- Pass 6 (2026-11-11): the working demo, whole and unchanged, on a page of its own. It stood at the top of
+       how-it-works/ from pass 4 until this pass; that page and the home page's picture each link here once. -->
+  <section class="top demo-top" aria-labelledby="demo-title">
+    <div class="wrap">
+      <p class="crumbs how-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Demo</span></p>
+      <h1 id="demo-title">Try it: three clicks.</h1>
+      <p class="top-say">A working copy of the StreamSnag popup, on an invented lecture page. Press Download and follow it.</p>
+    </div>
+  </section>
+
+  <section class="demo-sec" id="demo" aria-label="The working demo">
+    <div class="wrap">
+      <figure class="scene-fig" id="demo-fig">
+        <div class="scene" data-state="0">
+
+          <!-- ============ Download, transcribe, read: three clicks ============ -->
+          <div class="half half-save">
+            <div class="half-head">
+              <ol class="steps3" aria-label="The three steps of the demo">
+                <li><button type="button" data-step="1" aria-current="step"><span class="half-n" aria-hidden="true">1</span><b>Download</b><span class="tag tag-free">Free, no limits</span></button></li>
+                <li><button type="button" data-step="2"><span class="half-n" aria-hidden="true">2</span><b>Transcribe</b><span class="tag tag-pro">Pro</span></button></li>
+                <li><button type="button" data-step="3"><span class="half-n" aria-hidden="true">3</span><b>Read</b><span class="tag tag-pro">Pro</span></button></li>
+              </ol>
+              <p class="clicks"><b>3 clicks</b> from a lecture page to a document you can read.<span class="tag tag-plain">No AI account</span></p>
+            </div>
+
+            <!-- A drawn browser window on an invented course site. The popup inside it is a working copy of the StreamSnag popup, in HTML. -->
+            <div class="browser">
+              <div class="br-bar">
+                <span class="br-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <div class="br-tabs" role="radiogroup" aria-label="Which page the demo browser is on">
+                  <label class="br-tab"><input type="radio" name="pg" id="pg-lecture" checked><span>Lecture 6</span></label>
+                  <label class="br-tab"><input type="radio" name="pg" id="pg-course"><span>Course page</span></label>
+                </div>
+                <span class="br-url" aria-hidden="true"><span class="url-lecture">course.example/phys201/lecture-6</span><span class="url-course">course.example/phys201/unit-2</span></span>
+                <span class="br-ext" aria-hidden="true"><svg class="mark mark-sm"><use href="#i-mark"/></svg></span>
+              </div>
+
+              <div class="br-body">
+
+                <!-- The lecture page -->
+                <div class="lecture">
+                  <p class="lecture-title"><span>PHYS201 · Lecture 6</span><span>Cardiac output and what sets it</span></p>
+                  <div class="frame">
+                    <div class="slide slide-a" aria-hidden="true">
+                      <p class="slide-n">Slide 4</p>
+                      <p class="slide-h">Preload and the Frank-Starling law</p>
+                      <p class="slide-p">A larger EDV gives a larger stroke volume.</p>
+                      <svg class="slide-g"><use href="#g-starling"/></svg>
+                      <span class="axis axis-y">Stroke volume</span>
+                      <span class="axis axis-x">End-diastolic volume</span>
+                    </div>
+                    <div class="slide slide-b" aria-hidden="true">
+                      <p class="slide-n">Slide 6</p>
+                      <p class="slide-h">Afterload</p>
+                      <p class="slide-p">The load the ventricle must overcome to eject.</p>
+                      <p class="slide-f">Wall stress = P × r ÷ 2h</p>
+                      <svg class="slide-g slide-g-ring"><use href="#g-laplace"/></svg>
+                    </div>
+                    <div class="slide slide-c" aria-hidden="true">
+                      <p class="slide-n">Slide 7</p>
+                      <p class="slide-h">Contractility (inotropy)</p>
+                      <p class="slide-p">More calcium, a higher curve.</p>
+                      <svg class="slide-g"><use href="#g-inotropy"/></svg>
+                      <span class="axis axis-y">Stroke volume</span>
+                      <span class="axis axis-x">End-diastolic volume</span>
+                    </div>
+                  </div>
+
+                  <div class="transport">
+                    <span class="tp-play" aria-hidden="true"><svg class="ic ic-fill"><use href="#i-play"/></svg></span>
+                    <div class="track" role="radiogroup" aria-label="Jump to a minute of the sample lecture">
+                      <span class="rail" aria-hidden="true"><span class="rail-fill"></span></span>
+                      <span class="head" aria-hidden="true"></span>
+                      <label class="tick tick-a">
+                        <input type="radio" name="minute" id="at-a" checked aria-label="07:53, slide 4: the key idea in the study guide">
+                        <span class="cite">07:53</span>
+                      </label>
+                      <label class="tick tick-b">
+                        <input type="radio" name="minute" id="at-b" aria-label="14:04, slide 6: the practice quiz question">
+                        <span class="cite">14:04</span>
+                      </label>
+                      <label class="tick tick-c">
+                        <input type="radio" name="minute" id="at-c" aria-label="20:20, slide 7: the flashcard">
+                        <span class="cite">20:20</span>
+                      </label>
+                    </div>
+                  </div>
+                  <p class="pg-files" aria-hidden="true"><span>Lesson files</span><span><svg class="ic"><use href="#i-doc"/></svg>Slides</span><span><svg class="ic"><use href="#i-doc"/></svg>Handout</span></p>
+                </div>
+
+                <!-- The course page -->
+                <div class="course" role="img" aria-label="Drawing of a course page, PHYS201 unit 2, with eight videos on it: lectures 4 to 9, lecture 6 posted a second time, and a one-minute trailer.">
+                  <p class="lecture-title"><span>PHYS201 · Unit 2</span><span>The heart and circulation</span></p>
+                  <ul class="course-list">
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>4 · The cardiac cycle</b><i>31 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>5 · Heart sounds and murmurs</b><i>24 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>6 · Cardiac output and what sets it</b><i>27 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>6 · Cardiac output and what sets it</b><i>27 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>7 · Blood pressure and its control</b><i>29 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>8 · Exercise and the circulation</b><i>33 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>9 · The microcirculation</b><i>26 min</i></li>
+                    <li><span class="thumb"><svg class="ic ic-fill"><use href="#i-play"/></svg></span><b>Trailer: PHYS201</b><i>1 min</i></li>
+                  </ul>
+                </div>
+
+                <!-- The popup: a working copy -->
+                <div class="xpop" role="group" aria-label="The StreamSnag popup, a working demo">
+                  <p class="xp-head"><svg class="mark mark-sm" aria-hidden="true"><use href="#i-mark"/></svg><b>StreamSnag</b><span class="xp-site">course.example</span></p>
+
+                  <!-- On the lecture page -->
+                  <div class="xp-view xp-lecture">
+                    <div class="xp-hero">
+                      <p class="xp-eyebrow"><span class="live-dot" aria-hidden="true"></span>On this page</p>
+                      <p class="xp-title">Cardiac output and what sets it</p>
+                      <p class="xp-sub">Video · 27 min · 129 MB</p>
+                      <div class="xp-action">
+                        <button type="button" class="xp-btn" data-act="download" data-show="0"><span class="live-dot" aria-hidden="true"></span>Download · 129 MB</button>
+                        <p class="xp-busy" data-show="0b" hidden><span class="xp-fill" aria-hidden="true"></span><span class="xp-busy-text" data-say="dl">Starting…</span><button type="button" class="xp-link" data-act="cancel">Cancel</button></p>
+                        <p class="xp-done" data-show="1 1b 2 3" hidden><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Saved to Downloads › StreamSnag</span><button type="button" class="xp-link" data-act="show" aria-expanded="false">Show file</button></p>
+                        <p class="xp-file" hidden><svg class="ic" aria-hidden="true"><use href="#i-film"/></svg><span>Cardiac output and what sets it.mp4</span><i>129 MB</i></p>
+                      </div>
+                    </div>
+
+                    <!-- Before the lecture is saved the real popup offers the path in one line; the next step appears once it is saved. -->
+                    <p class="xp-pathline" data-show="0 0b" aria-hidden="true"><span>Study this lecture step by step: transcript, study page, flashcards. <b>Show the path</b></span><svg class="ic"><use href="#i-chev"/></svg></p>
+
+                    <p class="xp-pro" data-show="1 1b 2 3" hidden>Pro from here · first lecture free</p>
+
+                    <!-- Saved, no captions: the next step is the transcript, made on this computer. -->
+                    <div class="xp-card" data-show="1" hidden>
+                      <p class="xp-card-h">Transcript</p>
+                      <p class="xp-card-p">No captions here. Turns the speech into text on this computer and saves it next to the video. Nothing is uploaded.</p>
+                      <button type="button" class="xp-btn" data-act="transcribe"><span class="live-dot" aria-hidden="true"></span>Transcribe on this computer</button>
+                    </div>
+                    <div class="xp-step" data-show="1b" hidden>
+                      <p class="xp-line"><span><b>Transcript</b> · Transcribing on this computer</span></p>
+                      <p class="xp-busy xp-busy-plain" aria-hidden="true"><span class="xp-fill xp-fill-run"></span></p>
+                    </div>
+
+                    <!-- The words are there: the next step is the readable lecture. One click makes it and opens it. -->
+                    <div class="xp-card" data-show="2" hidden>
+                      <p class="xp-card-h">Reading edition</p>
+                      <p class="xp-card-p">The lecture as an article you can read instead of watching. It opens as soon as it is made.</p>
+                      <button type="button" class="xp-btn" data-act="read"><span class="live-dot" aria-hidden="true"></span>Read the lecture</button>
+                    </div>
+                    <div class="xp-step" data-show="3" hidden>
+                      <p class="xp-line"><svg class="ic xp-ok" aria-hidden="true"><use href="#i-check"/></svg><span><b>Reading edition</b> · saved</span><button type="button" class="xp-chip" data-act="open-read">Open reading edition</button></p>
+                      <p class="xp-made">4 sections, about 14 minutes to read</p>
+                    </div>
+
+                    <button type="button" class="xp-row xp-rowbtn" data-act="files" aria-expanded="false" aria-controls="xp-files">
+                      <svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg>
+                      <span class="xp-row-main"><b>Files on this page <span class="rv-count">2</span></b><span>PDFs, slides, handouts</span></span>
+                      <svg class="ic xp-chev" aria-hidden="true"><use href="#i-chev"/></svg>
+                    </button>
+                    <ul class="xp-files" id="xp-files" hidden>
+                      <li><span>Cardiac output slides.pdf</span><i>2.2 MB</i><button type="button" class="xp-link" data-act="file">Download</button></li>
+                      <li><span>Pressure-volume loop handout.pdf</span><i>0.4 MB</i><button type="button" class="xp-link" data-act="file">Download</button></li>
+                    </ul>
+                  </div>
+
+                  <!-- On the course page -->
+                  <div class="xp-view xp-course">
+                    <div class="xp-hero">
+                      <p class="xp-eyebrow">On this page · 1 of 8</p>
+                      <p class="xp-title">4 · The cardiac cycle</p>
+                      <p class="xp-sub">Video · 31 min · 142 MB</p>
+                      <div class="xp-action">
+                        <button type="button" class="xp-btn" data-act="one"><span class="live-dot" aria-hidden="true"></span>Download · 142 MB</button>
+                        <p class="xp-busy" data-one="busy" hidden><span class="xp-fill xp-fill-run" aria-hidden="true"></span><span class="xp-busy-text">Starting…</span></p>
+                        <p class="xp-done" data-one="done" hidden><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Saved to Downloads › StreamSnag › PHYS201</span></p>
+                      </div>
+                    </div>
+                    <div class="xp-strip">
+                      <p class="xp-strip-head"><b>PHYS201</b><span>8 videos here</span></p>
+                      <p class="xp-cells" role="img" aria-label="8 videos on this page: 6 to get, 2 to check." data-say-label="strip"><i class="c-get here"></i><i class="c-get"></i><i class="c-get"></i><i class="c-check"></i><i class="c-get"></i><i class="c-get"></i><i class="c-get"></i><i class="c-check"></i></p>
+                      <ul class="xp-legend" aria-hidden="true" data-fill="legend"><li><i class="c-get"></i>6 to get</li><li><i class="c-check"></i>2 to check</li></ul>
+                      <div class="xp-bulk">
+                        <button type="button" class="xp-chip" data-act="open-sheet"><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg><span data-say="bulk-btn">Download the 6 missing…</span></button>
+                        <p class="xp-note" data-say="bulk">You review the list first.</p>
+                      </div>
+                    </div>
+                    <ul class="xp-list">
+                      <li><span>4 · The cardiac cycle</span><i>Video · 142 MB</i></li>
+                      <li><span>5 · Heart sounds and murmurs</span><i>Video · 110 MB</i></li>
+                      <li><span>6 · Cardiac output and what sets it</span><i>Video · 129 MB</i></li>
+                      <li class="is-flagged"><span>6 · Cardiac output and what sets it</span><i>Video · 129 MB</i><em class="rv-tag">Same as another one</em><small>A second copy of one listed here. "Download all" leaves it unticked: tick it there if you want it.</small></li>
+                      <li><span>7 · Blood pressure and its control</span><i>Video · 134 MB</i></li>
+                      <li><span>8 · Exercise and the circulation</span><i>Video · 151 MB</i></li>
+                      <li><span>9 · The microcirculation</span><i>Video · 122 MB</i></li>
+                      <li class="is-flagged"><span>Trailer: PHYS201</span><i>Video · 6 MB</i><em class="rv-tag">Looks like a preview or ad</em><small>Probably not a lecture. "Download all" leaves it unticked: tick it there if you want it.</small></li>
+                    </ul>
+                  </div>
+
+                  <p class="xp-dock" aria-hidden="true"><span>Activity <i data-say="activity">· idle</i></span><span>Flashcards</span><span>Study desk</span><span class="xp-dock-icon"><svg class="ic"><use href="#i-sliders"/></svg></span></p>
+
+                  <!-- "Download all" opens this sheet over the popup: what would be saved, under which names, before anything starts. -->
+                  <div class="xp-sheet" role="group" aria-labelledby="rv-title" tabindex="-1" hidden>
+                    <div class="rv-head">
+                      <div>
+                        <p class="rv-title" id="rv-title">Review before downloading</p>
+                        <p class="rv-sum" data-say="summary">6 videos selected · 2 need a look</p>
+                      </div>
+                      <button type="button" class="rv-close" data-act="close-sheet" aria-label="Close without downloading"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+                    </div>
+                    <div class="rv-body">
+                      <p class="rv-where"><svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg>Downloads › StreamSnag › PHYS201</p>
+                      <div class="rv-group" role="group" aria-labelledby="rv-ready-h">
+                        <p class="rv-group-h" id="rv-ready-h">Ready to download <span class="rv-count" data-say="ready-n">6</span></p>
+                        <label class="rv-item" data-cell="0"><input type="checkbox" data-mb="142" checked><span class="rv-name">04 The cardiac cycle.mp4</span><span class="rv-meta">142 MB</span></label>
+                        <label class="rv-item" data-cell="1"><input type="checkbox" data-mb="110" checked><span class="rv-name">05 Heart sounds and murmurs.mp4</span><span class="rv-meta">110 MB</span></label>
+                        <label class="rv-item" data-cell="2"><input type="checkbox" data-mb="129" checked><span class="rv-name">06 Cardiac output and what sets it.mp4</span><span class="rv-meta">129 MB</span></label>
+                        <label class="rv-item" data-cell="4"><input type="checkbox" data-mb="134" checked><span class="rv-name">07 Blood pressure and its control.mp4</span><span class="rv-meta">134 MB</span></label>
+                        <label class="rv-item" data-cell="5"><input type="checkbox" data-mb="151" checked><span class="rv-name">08 Exercise and the circulation.mp4</span><span class="rv-meta">151 MB</span></label>
+                        <label class="rv-item" data-cell="6"><input type="checkbox" data-mb="122" checked><span class="rv-name">09 The microcirculation.mp4</span><span class="rv-meta">122 MB</span></label>
+                      </div>
+                      <div class="rv-group" role="group" aria-labelledby="rv-check-h">
+                        <p class="rv-group-h" id="rv-check-h">Check these <span class="rv-count" data-say="check-n">2</span></p>
+                        <p class="rv-hint">Left out unless you tick them.</p>
+                        <label class="rv-item" data-cell="3"><input type="checkbox" data-mb="129"><span class="rv-name">06 Cardiac output and what sets it (2).mp4</span><span class="rv-meta"><span class="rv-tag">Same as another one</span> 27:00 · 129 MB</span><span class="rv-why">A second copy of one listed here. Not ticked: tick it if you want it too.</span></label>
+                        <label class="rv-item" data-cell="7"><input type="checkbox" data-mb="6"><span class="rv-name">Trailer PHYS201.mp4</span><span class="rv-meta"><span class="rv-tag">Looks like a preview or ad</span> 1:00 · 6 MB</span><span class="rv-why">Probably not a lecture. Not ticked: tick it if you want it too.</span></label>
+                      </div>
+                      <p class="rv-have" data-say="have" hidden></p>
+                    </div>
+                    <div class="rv-foot">
+                      <span class="rv-total" data-say="total">About 788 MB in all</span>
+                      <button type="button" class="xp-chip" data-act="close-sheet">Cancel</button>
+                      <button type="button" class="xp-btn" data-act="go">Download 6</button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="step-arrow" aria-hidden="true"><svg class="ic"><use href="#i-arrow"/></svg></div>
+
+          <!-- ============ What step 3 makes: the lecture as a document ============ -->
+          <div class="half half-study">
+            <p class="half-head"><span class="doc-name"><b>The lecture, as a document</b><span class="tag tag-pro">Pro</span></span><span class="doc-state"><span data-show="0 0b 1 1b 2">What step 3 makes</span><span data-show="3" hidden><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Made in the demo</span></span></p>
+            <article class="made made-read" id="demo-read" tabindex="-1" aria-label="Sample reading edition, shortened">
+              <p class="paper-kind">PHYS201 · Reading edition</p>
+              <h2 class="made-read-h">Cardiac output and what sets it</h2>
+              <p class="paper-meta"><span>27 min lecture</span><span><b>14 min read</b></span><span>3,194 words</span></p>
+              <p class="made-slide"><b>Slide 4</b>Preload and the Frank-Starling law</p>
+              <div class="para"><a class="cite" href="../sample/reading-edition.html#s2-p6" aria-label="08:47, open this paragraph in the sample reading edition">08:47</a><p>Within limits, the heart pumps out whatever volume is returned to it. So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis, and the curve rises steeply at first and then flattens off at high volumes.</p></div>
+              <div class="para"><a class="cite" href="../sample/reading-edition.html#s2-p7" aria-label="09:17, open this paragraph in the sample reading edition">09:17</a><p>A little bit of history, because I like it. Otto Frank was a German physiologist working on frog hearts in the eighteen nineties, and Ernest Starling was in London about twenty years later with his heart-lung preparation in dogs. They never worked together.</p></div>
+              <p class="made-more"><a class="link-arrow" href="../guides/read-a-lecture.html">Why you would read it instead <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+            </article>
+          </div>
+
+          <!-- ============ And then, if you want more ============ -->
+          <div class="more-row">
+            <p class="more-head"><b>And then, if you want more.</b> Neither is a required step. <a href="../how-it-works/#evening">See the whole evening, step by step</a>.</p>
+            <div class="more-grid">
+
+              <section class="more-a" aria-labelledby="more-a-title">
+                <div class="more-top">
+                  <h2 class="more-title" id="more-a-title">Have the slides? They line up with the lecture.</h2>
+                  <p class="more-sub">Every slide is labelled with the minute it was shown.</p>
+                  <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+                </div>
+                <div class="made made-sp">
+                  <header class="made-head"><span class="made-kind">Study page</span><span class="made-kind">Slide 4 of 9</span></header>
+                  <ul class="sp-mini" aria-label="Slides, each with the minute it was shown">
+                    <li><span class="n">4</span><span>Preload and the Frank-Starling law</span><span class="cite">08:07</span></li>
+                    <li><span class="n">5</span><span>Why the Frank-Starling mechanism works</span><span class="cite">11:02</span></li>
+                    <li><span class="n">6</span><span>Afterload</span><span class="cite">14:03</span></li>
+                  </ul>
+                  <p class="made-p">A PDF or PowerPoint deck is matched to the transcript, so the video, the slides and the text move together.</p>
+                  <p class="made-more"><a class="link-arrow" href="../sample/study-page.html">Open the sample study page <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+                </div>
+              </section>
+
+              <section class="more-b" aria-labelledby="more-b-title">
+                <div class="more-top">
+                  <h2 class="more-title" id="more-b-title">Have an AI account? Turn it into study material.</h2>
+                  <p class="more-sub">A study guide, a practice quiz and flashcards with Anki export. Every item points to its minute and slide.</p>
+                  <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-ai">Uses your AI</span><a class="more-cost" href="../ai-costs/">Runs on your own AI account, never paid to StreamSnag</a></p>
+                </div>
+                <div class="more-cards">
+                  <article class="made made-guide">
+                    <header class="made-head">
+                      <span class="made-kind">Study guide, key idea 2</span>
+                      <label class="cite cite-a" for="at-a">07:53 · slide 4</label>
+                    </header>
+                    <h3 class="made-q">How does a larger end-diastolic volume give a larger stroke volume without extra calcium?</h3>
+                    <blockquote class="said">
+                      <span class="said-label">In the lecturer's words</span>
+                      <p>“Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction.”</p>
+                    </blockquote>
+                  </article>
+
+                  <article class="made made-quiz">
+                    <header class="made-head">
+                      <span class="made-kind">Quiz, question 3</span>
+                      <label class="cite cite-b" for="at-b">14:04 · slide 6</label>
+                    </header>
+                    <h3 class="made-q made-q-sm" id="hq-title">Afterload rises and nothing else changes. What happens to stroke volume?</h3>
+                    <div class="opts" role="radiogroup" aria-labelledby="hq-title">
+                      <label class="opt"><input type="radio" name="hq" id="hq-a"><span class="opt-k">A</span><span>It rises, with a stronger stretch</span></label>
+                      <label class="opt"><input type="radio" name="hq" id="hq-b"><span class="opt-k">B</span><span>It falls, with more blood left behind</span></label>
+                      <label class="opt"><input type="radio" name="hq" id="hq-c"><span class="opt-k">C</span><span>It is unchanged, with a faster rate</span></label>
+                    </div>
+                    <div aria-live="polite">
+                      <p class="why why-a"><b>Not quite.</b> That describes more preload, and here filling has not changed.</p>
+                      <p class="why why-b"><b>Correct.</b> The ventricle empties less well against the higher pressure, so end-systolic volume rises.</p>
+                      <p class="why why-c"><b>Not quite.</b> Heart rate changes the output per minute, not the volume of one beat.</p>
+                    </div>
+                  </article>
+
+                  <article class="made made-card">
+                    <header class="made-head">
+                      <span class="made-kind">Flashcard, 6 of 9</span>
+                      <label class="cite cite-c" for="at-c">20:20 · slide 7</label>
+                    </header>
+                    <h3 class="made-q made-q-sm">What does more contractility do to the Frank-Starling curve?</h3>
+                    <details class="flip">
+                      <summary>Show answer</summary>
+                      <p>It lifts the ventricle onto a higher curve. More preload only moves it along the same one.</p>
+                    </details>
+                  </article>
+                </div>
+              </section>
+
+            </div>
+          </div>
+
+        </div>
+        <p class="demo-nojs">This demonstration needs JavaScript, which is switched off in your browser, so the picture stays on its first step. The three steps are these. <b>1. Download:</b> the popup finds the lecture that is playing and saves it, free. <b>2. Transcribe on this computer:</b> for a lecture with no captions, Pro turns the speech into text on your own machine. <b>3. Read the lecture:</b> Pro makes the document shown beside the popup, and opens it.</p>
+        <figcaption>This is a demonstration you can use, with an invented lecture on an invented course site. The popup is a copy drawn for this page, and nothing is really downloaded. <button type="button" class="demo-reset" data-act="reset" hidden>Start the demo again</button>
+          <details class="demo-about"><summary>More about this demonstration</summary><p>In the real thing, step 2 needs the small helper program and a one-time download for transcription; an hour of lecture took under a minute on our fast desktop, and an older laptop can need several minutes. Step 3 opens the reading edition in a tab of its own as soon as it is made; here it is the document beside the popup. The tag on a study card moves the lecture to its minute. The study material is shortened from <a href="../sample/study-guide.html">the sample study guide</a>, which AI wrote from the lecture's transcript and slides.</p></details></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="calm last" aria-labelledby="demo-next-title">
+    <div class="wrap">
+      <h2 id="demo-next-title">Then the rest of the evening.</h2>
+      <p class="last-say">Saving is free, and Pro takes your first lecture from start to finish, free, with no card.</p>
+      <p class="last-links"><a href="../how-it-works/">How it works, step by step</a></p>
+      <!-- PLACEHOLDER (install link): see the note in the header. -->
+      <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-about">
+        <a class="brand" href="../">
+          <svg class="mark" aria-hidden="true"><use href="#i-mark"/></svg>
+          <span>StreamSnag</span>
+        </a>
+        <p>Save your online lectures and actually study from them. Made by Spergel Health AI LLC, Florida, USA.</p>
+      </div>
+      <nav class="foot-col" aria-label="The product">
+        <h2>The product</h2>
+        <ul>
+          <li><a href="../how-it-works/">How an evening goes</a></li>
+          <li><a href="../how-it-works/#read">Read the lecture</a></li>
+          <li><a href="../#gallery">See what it makes</a></li>
+          <li><a href="../downloader/">Only the downloader</a></li>
+          <li><a href="../#pricing">Pricing</a></li>
+          <li><a href="../ai-costs/">What the AI costs</a></li>
+          <li><a href="../questions/">Questions</a></li>
+          <li><a href="../compare/">Compared with a well-known download helper</a></li>
+        </ul>
+      </nav>
+      <nav class="foot-col" aria-label="Guides">
+        <h2>Guides</h2>
+        <ul>
+          <li><a href="../guides/save-a-lecture.html">Download a lecture video</a></li>
+          <li><a href="../guides/download-a-whole-course.html">Download a whole course</a></li>
+          <li><a href="../guides/lecture-transcript.html">Transcribe a lecture</a></li>
+          <li><a href="../guides/read-a-lecture.html">Read a lecture instead of watching</a></li>
+          <li><a href="../guides/slides-with-lecture-recording.html">Sync slides with the recording</a></li>
+          <li><a href="../guides/lecture-to-flashcards.html">Lecture to flashcards</a></li>
+          <li><a href="../guides/lecture-to-study-guide.html">Study guide and practice quiz</a></li>
+          <li><a href="../guides/private-offline-lecture-tools.html">Private, offline lecture tools</a></li>
+        </ul>
+      </nav>
+      <nav class="foot-col" aria-label="Legal and contact">
+        <h2>Legal and contact</h2>
+        <ul>
+          <li><a href="../privacy/">Privacy</a></li>
+          <li><a href="../terms/">Terms and the Pro licence</a></li>
+          <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code of the free core (GPL-3.0)</a></li>
+          <li><a href="mailto:support@streamsnag.app">support@streamsnag.app</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-notes">
+      <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
+      <p>The product pictures on this site are drawings, and every sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

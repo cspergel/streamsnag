@@ -44,6 +44,18 @@
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.500h7l4 4V19a1.500 1.500 0 01-1.500 1.500h-9A1.500 1.500 0 016 19V4.500a1 1 0 011-1z"/><path d="M14 3.500V8h4M9 12.500h6M9 16h4"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M6.500 6h11M9 3.500h6"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.500h14M5 11h14M5 15.500h9"/></symbol>
+  <!-- The sample lecture's graphs: stroke volume against end-diastolic volume, and the wall of a ventricle. -->
+  <symbol id="g-starling" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 44 108 28 190 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-inotropy" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 62 108 50 190 47" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><path d="M26 102C50 30 100 16 190 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-laplace" viewBox="0 0 200 120"><circle cx="100" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="9" opacity=".85"/><path d="M100 60h37" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M100 60l-22-22M100 60l-22 22M100 60l-31 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 5" opacity=".6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h9m4 0h3M4 16h3m4 0h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
 </svg>
 
 <a class="skip" href="#main">Skip to content</a>
@@ -86,18 +98,21 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <article>
-    <header class="doc-head">
-      <div class="wrap">
+  <!-- Pass 6 (2026-11-11): one column, large type, a picture beside the steps, one "Good to know", one call to
+       action. The side column and the tags are gone: what they said is in the line under the title and at the end. -->
+  <article class="g">
+    <header class="g-top">
+      <div class="g-col">
         <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><a href="./">Guides</a><span aria-hidden="true">/</span><span>Download a lecture video</span></p>
         <h1>How to download a lecture video you are allowed to keep</h1>
-        <p class="lede">Lecture pages are built for watching, not for keeping. Here is a dependable way to save a lecture with its slides and captions, so you can study it offline and at your own speed.</p>
-        <p class="tags"><span class="tag tag-free">Everything in this guide is free</span><span class="tag tag-plain">No AI needed</span></p>
+        <p class="g-end">At the end you have the lecture in your own folder, with its slides and captions. Everything in this guide is free, and no AI is needed.</p>
       </div>
     </header>
 
-    <div class="wrap doc-grid">
+    <div class="g-col">
       <div class="prose">
+        <p>Lecture pages are built for watching, not for keeping. Here is a dependable way to save a lecture with its slides and captions, so you can study it offline and at your own speed.</p>
+
         <h2 id="allowed">First: are you allowed to?</h2>
         <p>Many courses let you keep recordings for your own study. Some do not. Check your course's terms, or ask. This guide is for lectures you have the right to keep.</p>
         <p>Some videos are protected by DRM. Those cannot be saved this way. StreamSnag detects them, says so, and does not try to get round the protection.</p>
@@ -118,6 +133,7 @@
           <li><div>
             <h3>Click the StreamSnag icon</h3>
             <p>The lecture is at the top, under <strong>On this page</strong>: its title, and one line that says what it is, how long and how big, for example “Video · 27 min · 129 MB”. Under that is one button.</p>
+            <figure class="g-pic g-pic-night"><img class="g-popup" src="../img/popup.png" width="600" height="896" loading="lazy" alt="The StreamSnag popup on a lecture page. On this page: Cardiac output and what sets it, a video of 27 minutes and 129 MB, with one button, Download, and under it the files on the page: PDFs, slides, handouts."></figure>
           </div></li>
           <li><div>
             <h3>Check the quality and save</h3>
@@ -126,6 +142,19 @@
           <li><div>
             <h3>Take the slides and the captions too</h3>
             <p><strong>Files on this page</strong> lists the PDFs and PowerPoint files the lesson links to. <strong>Save transcript</strong>, under the lecture's name, saves the lecture's own captions as text you can read and search. There is a <a href="lecture-transcript.html">separate guide to transcripts</a>.</p>
+            <figure class="g-pic">
+<!-- Pass 6: a drawing of the product, copied word for word from the old how-it-works/ evening or downloader/. -->
+<div class="mock" role="img" aria-label="Drawing of a course folder holding one lesson as three files: the video, the slides as a PDF, and a transcript made from the captions.">
+  <div class="win files">
+    <p class="files-path"><svg class="ic"><use href="#i-folder"/></svg>Lectures<span>/</span>PHYS201</p>
+    <ul>
+      <li><svg class="ic"><use href="#i-film"/></svg><span class="f-name">06 Cardiac output and what sets it<i>.mp4</i></span><span class="f-what">The lecture video</span><span class="f-size">129 MB</span></li>
+      <li><svg class="ic"><use href="#i-doc"/></svg><span class="f-name">06 Cardiac output slides<i>.pdf</i></span><span class="f-what">The slides linked on the lesson page</span><span class="f-size">9 slides</span></li>
+      <li><svg class="ic"><use href="#i-text"/></svg><span class="f-name">06 Cardiac output and what sets it<i>.md</i></span><span class="f-what">Transcript, from the captions</span><span class="f-size">27 min</span></li>
+    </ul>
+  </div>
+</div>
+            </figure>
           </div></li>
         </ol>
         <p>Downloads carry on when the popup closes. <strong>Activity</strong>, at the bottom of the popup, shows what is running, with the speed and the time left.</p>
@@ -143,7 +172,7 @@
         </ul>
         <p><strong>Windows:</strong> in the StreamSnag folder, double-click <code>Set up StreamSnag helper.cmd</code>. <strong>macOS and Linux:</strong> run <code>sh setup.sh</code> in that folder. Restart the browser, then press <strong>Check helper</strong> on the welcome page or in Settings, under Local helper.</p>
 
-        <h2 id="nothing">If nothing shows up</h2>
+        <h2 id="nothing">Good to know: if nothing shows up</h2>
         <ul class="facts">
           <li><strong>Press play, then open StreamSnag again.</strong> This fixes most cases.</li>
           <li><strong>Scan again.</strong> When nothing is listed the popup says “No video on this page.” and offers <strong>Scan again</strong>. It looks at the whole page again, and nothing reloads.</li>
@@ -158,43 +187,26 @@
         <p>If you want your own scheme, Settings has a file name template, a subfolder, and rules for specific sites. A rule such as <code>Courses/{course}/{number} - {name}</code> turns “009: Hypothesis tests” into <code>009 - Hypothesis tests.mp4</code> inside the course's folder.</p>
         <p>A finished download can also be converted: an MP3 of the sound for listening, or a smaller copy of the video.</p>
 
-        <div class="callout">
-          <h2>What to do next</h2>
-          <p>Saving is where the free part ends, and for many people that is all they need. If you want to study from the lecture, StreamSnag Pro can turn it into a <a href="../sample/reading-edition.html">document you read</a>, a <a href="../sample/study-page.html">study page</a> and a <a href="../sample/study-guide.html">study guide with a quiz and flashcards</a>. Pro is US$39.97 a year, US$4.99 a month, or US$99.95 once for life, and your first lecture is free. The study tools that use AI run on your own AI account: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key. None of that is paid to StreamSnag. Transcription and the reading edition need no AI.</p>
-        </div>
+        <h2 id="next">What to do next</h2>
+        <p>Saving is where the free part ends, and for many people that is all they need. If you want to study from the lecture, StreamSnag Pro can turn it into a <a href="../sample/reading-edition.html">document you read</a>, a <a href="../sample/study-page.html">study page</a> and a <a href="../sample/study-guide.html">study guide with a quiz and flashcards</a>. Pro is US$39.97 a year, US$4.99 a month, or US$99.95 once for life, and your first lecture is free. The study tools that use AI run on your own AI account: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key. None of that is paid to StreamSnag. Transcription and the reading edition need no AI.</p>
+        <!-- end of article -->
       </div>
-
-      <aside class="doc-side" aria-label="About this guide">
-        <nav class="toc" aria-label="In this guide">
-          <h2>In this guide</h2>
-          <ol>
-            <li><a href="#allowed">Are you allowed to?</a></li>
-            <li><a href="#need">What you need</a></li>
-            <li><a href="#steps">Save one lecture</a></li>
-            <li><a href="#course">A whole course</a></li>
-            <li><a href="#helper">The helper</a></li>
-            <li><a href="#nothing">If nothing shows up</a></li>
-            <li><a href="#names">Keep the files in order</a></li>
-          </ol>
-        </nav>
-        <div class="side-cta">
-          <h2>The tool in this guide</h2>
-          <p>StreamSnag, for Chrome, Edge and Brave. Downloading is free, with no limits and no account.</p>
-          <!-- PLACEHOLDER (install link): see the note in the header. -->
-          <a class="btn btn-sm btn-primary" href="../#install" data-install>Get StreamSnag</a>
-        </div>
-      </aside>
     </div>
-  </article>
 
-  <section class="wrap more-guides" aria-labelledby="more-title">
-    <h2 id="more-title">Keep going</h2>
-    <ul class="guide-cards">
-      <li><a href="lecture-transcript.html"><span class="tagline">Guide</span><b>How to get a transcript of a lecture</b><span>From the captions when there are some, and on your own computer when there are none.</span></a></li>
-      <li><a href="lecture-to-flashcards.html"><span class="tagline">Guide</span><b>How to turn a lecture into flashcards</b><span>The rules of a good card in plain words, then a way to make them from a lecture.</span></a></li>
-      <li><a href="../#gallery"><span class="tagline">Samples</span><b>See what it makes</b><span>Reading editions, study guides and study pages from two invented lectures.</span></a></li>
-    </ul>
-  </section>
+    <section class="g-cta" aria-labelledby="cta-title">
+      <div class="g-col">
+        <h2 id="cta-title">The tool in this guide</h2>
+        <p class="last-say">StreamSnag, for Chrome, Edge and Brave. Downloading is free, with no limits and no account.</p>
+        <!-- PLACEHOLDER (install link): see the note in the header. -->
+        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+        <nav class="g-next" aria-label="Keep going">
+          <a href="lecture-transcript.html">How to get a transcript of a lecture</a>
+          <a href="lecture-to-flashcards.html">How to turn a lecture into flashcards</a>
+          <a href="./#samples">See what it makes</a>
+        </nav>
+      </div>
+    </section>
+  </article>
 </main>
 
 <footer class="site-foot">

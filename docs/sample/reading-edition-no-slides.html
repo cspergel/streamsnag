@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-TXc6EWMAe2sHYiE3OW1aipkYADOuY+iSlXBD9fD8GZY=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-8BBGtVXcJRYlvDu7PEWWaPJ/JyuHdktWAPaWw1GILYU=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
@@ -11,8 +11,8 @@
 <title>Sample reading edition without slides: Cardiac output and what sets it | StreamSnag</title>
 <style>
 :root {
-  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
-  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #141816; --soft: #363d39; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #0e6b5e; --accent-ink: #0a4f45; --accent-tint: #d3ebe4; --accent-line: #93cbbd;
   --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Sitka Text", Georgia, serif;
   --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
@@ -26,12 +26,12 @@
 :root[data-size="4"] { --size: 23.5px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
-  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --accent: #5fd4c1; --accent-ink: #8fe3d4; --accent-tint: #123029; --accent-line: #26574f;
   --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
-  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --accent: #5fd4c1; --accent-ink: #8fe3d4; --accent-tint: #123029; --accent-line: #26574f;
   --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
   color-scheme: dark; }
 * { box-sizing: border-box; }
@@ -62,7 +62,7 @@ main { grid-area: main; min-width: 0; }
 .toc ol { list-style: none; margin: 0; padding: 0; }
 .toc ol a { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; padding: 6px 12px; margin-left: -12px; color: var(--soft); text-decoration: none; border-left: 2px solid transparent; border-radius: 0 6px 6px 0; }
 .toc ol a:hover { color: var(--ink); background: var(--accent-tint); }
-.toc ol a.on { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 600; }
+.toc ol a.on { color: var(--accent-ink); border-left-color: var(--accent); border-left-width: 3px; font-weight: 650; background: var(--accent-tint); border-radius: 0 6px 6px 0; }
 .toc .tm { flex: none; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--faint); font-weight: 400; }
 .tools { display: flex; gap: 8px; margin: 0 0 26px; flex-wrap: wrap; }
 .tools .size { display: flex; }
@@ -110,8 +110,8 @@ ol.said li::marker { font-family: var(--sans); font-size: .76em; font-weight: 65
 /* where the lecturer says that something matters: a quiet tint under the sentence, and a note under the paragraph's time */
 .key { color: inherit; background: var(--accent-tint); border-bottom: 1px solid var(--accent-line); border-radius: 3px; padding: .05em .16em; margin: 0 -.16em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .para.stress::before { content: "Lecturer’s emphasis"; position: absolute; left: 0; top: 1.5rem; width: calc(var(--gutter) - 1.1rem); font-family: var(--sans); font-size: .54rem; font-weight: 650; line-height: 1.22; letter-spacing: .02em; color: var(--accent-ink); }
-.t { font-size: .66rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .01em; color: var(--faint); text-decoration: none; line-height: 1; white-space: nowrap; justify-self: start; padding: .15rem 0; }
-a.t:hover, .para:target .t { color: var(--accent-ink); text-decoration: underline; }
+.t { font-size: .66rem; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: .01em; color: var(--accent-ink); text-decoration: none; line-height: 1; white-space: nowrap; justify-self: start; padding: .2rem .42rem; margin-left: -.42rem; background: var(--accent-tint); border-radius: 5px; }
+a.t:hover, .para:target .t { color: var(--paper); background: var(--accent); text-decoration: none; }
 .who { font-family: var(--sans); font-size: .82em; font-weight: 650; letter-spacing: .01em; }
 .unsure { color: var(--note-ink); }
 
@@ -156,8 +156,8 @@ details[open] > summary .sl-see::after { content: "Hide slide"; }
 @page { margin: 22mm 27mm; }
 @media print {
   :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
-  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
-  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #141816; --soft: #363d39; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #0e6b5e; --accent-ink: #0a4f45; --accent-tint: #d3ebe4; --accent-line: #93cbbd;
   --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
     --bg: #fff; --paper: #fff; --gutter: 3.6rem; color-scheme: light; }
   html, :root[data-size] { font-size: 11.5pt; }
@@ -182,9 +182,9 @@ details[open] > summary .sl-see::after { content: "Hide slide"; }
 }
 
 /* the reader bar: one lecture, five ways to study it */
-:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #1a1f1d; --rd-ink-2: #434a46; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #1d5c58; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; } }
-:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; }
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #141816; --rd-ink-2: #363d39; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #0e6b5e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; }
 .rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
 .rd-bar [hidden] { display: none !important; }
 .rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
@@ -234,7 +234,7 @@ html { scroll-padding-top: 4.4rem; }
 <li>14 min read</li>
 <li>3,194 words</li>
 </ul>
-<p class="how">From the lecture&#39;s captions. Hesitation sounds and doubled words were taken out by rule. Nothing is reworded. Headings list each part&#39;s most distinctive terms.</p>
+<p class="how">From the lecture&#39;s captions. Hesitation sounds and doubled words were taken out by rule. Nothing is reworded. Where a part&#39;s heading is a list of terms, they are its most distinctive ones.</p>
 
 </header>
 <nav class="toc" aria-label="Contents">
@@ -242,9 +242,9 @@ html { scroll-padding-top: 4.4rem; }
 <span class="label">Contents</span>
 <ol>
 <li><a href="#s1"><span class="tt">Cardiac output, heart rate</span><span class="tm">00:01</span></a></li>
-<li><a href="#s2"><span class="tt">Part 2 · 06:18</span><span class="tm">06:18</span></a></li>
+<li><a href="#s2"><span class="tt">Part 2</span><span class="tm">06:18</span></a></li>
 <li><a href="#s3"><span class="tt">Wall stress</span><span class="tm">14:03</span></a></li>
-<li><a href="#s4"><span class="tt">Part 4 · 20:41</span><span class="tm">20:41</span></a></li>
+<li><a href="#s4"><span class="tt">Part 4</span><span class="tm">20:41</span></a></li>
 </ol>
 <p class="left needs-js" id="left" aria-live="off"></p>
 <ul class="more">

@@ -44,6 +44,18 @@
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.500h7l4 4V19a1.500 1.500 0 01-1.500 1.500h-9A1.500 1.500 0 016 19V4.500a1 1 0 011-1z"/><path d="M14 3.500V8h4M9 12.500h6M9 16h4"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M6.500 6h11M9 3.500h6"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.500h14M5 11h14M5 15.500h9"/></symbol>
+  <!-- The sample lecture's graphs: stroke volume against end-diastolic volume, and the wall of a ventricle. -->
+  <symbol id="g-starling" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 44 108 28 190 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-inotropy" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 62 108 50 190 47" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><path d="M26 102C50 30 100 16 190 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-laplace" viewBox="0 0 200 120"><circle cx="100" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="9" opacity=".85"/><path d="M100 60h37" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M100 60l-22-22M100 60l-22 22M100 60l-31 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 5" opacity=".6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h9m4 0h3M4 16h3m4 0h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
 </svg>
 
 <a class="skip" href="#main">Skip to content</a>
@@ -86,18 +98,21 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <article>
-    <header class="doc-head">
-      <div class="wrap">
+  <!-- Pass 6 (2026-11-11): one column, large type, the study page drawn beside its step, one "Good to know", one
+       call to action. -->
+  <article class="g">
+    <header class="g-top">
+      <div class="g-col">
         <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><a href="./">Guides</a><span aria-hidden="true">/</span><span>Sync slides with the recording</span></p>
         <h1>How to sync lecture slides with the recording</h1>
-        <p class="lede">You have the slide deck and you have the recording, and they do not know about each other. Finding where slide 23 was explained means scrubbing through the video. Matching the two by hand takes an evening. This does it in a few seconds.</p>
-        <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+        <p class="g-end">At the end every slide carries the minute it was on screen, and the video, the slides and the transcript move together. Pro, with no AI account.</p>
       </div>
     </header>
 
-    <div class="wrap doc-grid">
+    <div class="g-col">
       <div class="prose">
+        <p>You have the slide deck and you have the recording, and they do not know about each other. Finding where slide 23 was explained means scrubbing through the video. Matching the two by hand takes an evening. This does it in a few seconds.</p>
+
         <h2 id="what">What a study page is</h2>
         <p>StreamSnag builds one page with three things side by side: the video, the list of slides, and the transcript. Every slide carries the minute it came up. While the video plays, the current slide and paragraph are marked. Click a slide or a minute and the video jumps there. The page is saved next to the lecture and works offline. There is <a href="../sample/study-page.html">a sample study page</a> you can open; it has no video, so choose a slide to see the transcript follow.</p>
 
@@ -125,13 +140,45 @@
           <li><div>
             <h3>Read the result line</h3>
             <p>When it is done it says how well the match went, for example “Matched 9 of 11 slides; 2 are marked as approximate”. Then open the study page.</p>
+            <figure class="g-pic g-pic-wide">
+<!-- Pass 6: a drawing of the product, copied word for word from the old how-it-works/ evening or downloader/. -->
+<div class="mock" role="img" aria-label="Drawing of the study page. On the left the video is at 08:25 with slide 4, Preload and the Frank-Starling law, and the list of slides below it. On the right, the transcript paragraph being spoken at 08:25 is highlighted.">
+  <div class="win sp">
+    <div class="sp-bar"><b>Cardiac output and what sets it</b><span>Slide 4 of 9</span></div>
+    <div class="sp-body">
+      <div class="sp-video">
+        <div class="frame">
+          <div class="slide slide-on">
+            <p class="slide-n">Slide 4</p>
+            <p class="slide-h">Preload and the Frank-Starling law</p>
+            <p class="slide-p">A larger EDV gives a larger stroke volume.</p>
+            <svg class="slide-g"><use href="#g-starling"/></svg>
+          </div>
+        </div>
+        <div class="sp-transport"><svg class="ic ic-fill"><use href="#i-play"/></svg><span class="rail"><span class="rail-fill rail-fill-static"></span></span><span class="cite cite-on">08:25</span></div>
+      </div>
+      <ul class="sp-slides">
+        <li><span class="n">3</span><span>Three determinants of stroke volume</span></li>
+        <li class="is-now"><span class="n">4</span><span>Preload and the Frank-Starling law</span></li>
+        <li><span class="n">5</span><span>Why the Frank-Starling mechanism works</span></li>
+        <li><span class="n">6</span><span>Afterload</span></li>
+      </ul>
+      <div class="sp-text">
+        <p><span class="cite">08:07</span><span>More blood in the ventricle at the end of filling means more stretch, means more preload.</span></p>
+        <p class="is-now"><span class="cite cite-on">08:25</span><span>If you increase the end-diastolic volume, the ventricle responds by ejecting a bigger stroke volume.</span></p>
+        <p><span class="cite">08:47</span><span>Within limits, the heart pumps out whatever volume is returned to it.</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+            </figure>
           </div></li>
         </ol>
 
         <h2 id="how">How the matching works</h2>
         <p>It compares the words on each slide with the words the lecturer says, in order, and finds where each slide's vocabulary turns up in the transcript. No AI is involved and nothing is uploaded. That also tells you where it will struggle: a slide with a title and a photograph has very little to match on.</p>
 
-        <h2 id="wrong">What can go wrong</h2>
+        <h2 id="wrong">Good to know</h2>
         <ul class="facts">
           <li><strong>Slides marked approximate.</strong> Where the match is unsure, the slide is placed between its neighbours and labelled as approximate. Treat its minute as a starting point.</li>
           <li><strong>A deck of pictures.</strong> Slides that are scans or images have no text to compare. The study page can still show the video and transcript together, without slide times.</li>
@@ -159,37 +206,24 @@
             <div><p>It is part of Pro, which is US$39.97 a year, US$4.99 a month, or US$99.95 once for life. Saving the lecture and its slides is free. This step needs no AI, so that is all it costs. The study tools that do use AI run on your own AI account, never paid to StreamSnag: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key.</p></div>
           </details>
         </div>
+        <!-- end of article -->
       </div>
-
-      <aside class="doc-side" aria-label="About this guide">
-        <nav class="toc" aria-label="In this guide">
-          <h2>In this guide</h2>
-          <ol>
-            <li><a href="#what">What a study page is</a></li>
-            <li><a href="#need">What you need</a></li>
-            <li><a href="#steps">The steps</a></li>
-            <li><a href="#how">How the matching works</a></li>
-            <li><a href="#wrong">What can go wrong</a></li>
-            <li><a href="#faq">Questions</a></li>
-          </ol>
-        </nav>
-        <div class="side-cta">
-          <h2>Where it sits in an evening</h2>
-          <p>The study page is step four of the walkthrough on the page about how it works.</p>
-          <a class="btn btn-sm btn-quiet" href="../how-it-works/#stop-page">See the study page step</a>
-        </div>
-      </aside>
     </div>
-  </article>
 
-  <section class="wrap more-guides" aria-labelledby="more-title">
-    <h2 id="more-title">Keep going</h2>
-    <ul class="guide-cards">
-      <li><a href="read-a-lecture.html"><span class="tagline">Guide</span><b>How to read a lecture instead of watching it</b><span>The same transcript as a document, with slide titles as its headings.</span></a></li>
-      <li><a href="lecture-to-study-guide.html"><span class="tagline">Guide</span><b>How to make a study guide and practice quiz</b><span>Every item points to its minute and slide, and opens the study page there.</span></a></li>
-      <li><a href="../sample/stats-study-page.html"><span class="tagline">Sample</span><b>A study page for a statistics lecture</b><span>Eleven slides, nine matched and two marked as approximate.</span></a></li>
-    </ul>
-  </section>
+    <section class="g-cta" aria-labelledby="cta-title">
+      <div class="g-col">
+        <h2 id="cta-title">Put the slides back in the lecture.</h2>
+        <p class="last-say">The study page is step four of the walkthrough on the page about how it works, and Pro takes your first lecture free, with no card.</p>
+        <!-- PLACEHOLDER (install link): see the note in the header. -->
+        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+        <nav class="g-next" aria-label="Keep going">
+          <a href="../how-it-works/#stop-page">See the study page step</a>
+          <a href="read-a-lecture.html">How to read a lecture instead of watching it</a>
+          <a href="../sample/stats-study-page.html">A study page for a statistics lecture</a>
+        </nav>
+      </div>
+    </section>
+  </article>
 </main>
 
 <footer class="site-foot">

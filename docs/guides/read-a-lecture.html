@@ -30,7 +30,7 @@
 <link rel="apple-touch-icon" href="../icon.png">
 <link rel="stylesheet" href="../site.css">
 <script src="../site.js"></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://streamsnag.app/guides/"},{"@type":"ListItem","position":3,"name":"Read a lecture","item":"https://streamsnag.app/guides/read-a-lecture.html"}]},{"@type":"HowTo","name":"Turn a lecture video into a document you can read","step":[{"@type":"HowToStep","position":1,"name":"Save the lecture","text":"Open the lecture page, press play, click the StreamSnag icon and press Download. The popup then says where the file went."},{"@type":"HowToStep","position":2,"name":"Get the words","text":"If the lecture has captions, they are its words, and there is nothing to do. If the popup says “No captions here”, press Transcribe on this computer. That needs the helper program and a one-time download."},{"@type":"HowToStep","position":3,"name":"Press Read the lecture","text":"The button is on a card headed Reading edition: “The lecture as an article you can read instead of watching. It opens as soon as it is made.” Without AI that takes a few seconds. The page opens in a tab of its own, and the popup says how long it is, for example “4 sections, about 14 minutes to read”."},{"@type":"HowToStep","position":4,"name":"Read","text":"The contents are on the left with the minute each part starts, and a line under them says how much reading is left. To come back later, the popup keeps a button for the saved page."}]},{"@type":"FAQPage","@id":"https://streamsnag.app/guides/read-a-lecture.html#faq","mainEntity":[{"@type":"Question","name":"Is a reading edition a summary of the lecture?","acceptedAnswer":{"@type":"Answer","text":"No. It is the whole lecture, in the lecturer's words, set out so it can be read. If you want the main points drawn out, that is the study guide, which is a separate step."}},{"@type":"Question","name":"Does it need an AI account or an internet connection?","acceptedAnswer":{"@type":"Answer","text":"Neither. It is made on your own computer from the transcript, by rule, and nothing is uploaded."}},{"@type":"Question","name":"How much time does reading save?","acceptedAnswer":{"@type":"Answer","text":"In our samples a 27-minute lecture was a 14-minute read."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"It is part of Pro, which is US$39.97 a year, US$4.99 a month, or US$99.95 once for life. This step needs no AI, so that is all it costs. The study tools that do use AI run on your own AI account, never paid to StreamSnag: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key."}}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://streamsnag.app/guides/"},{"@type":"ListItem","position":3,"name":"Read a lecture","item":"https://streamsnag.app/guides/read-a-lecture.html"}]},{"@type":"HowTo","name":"Turn a lecture video into a document you can read","step":[{"@type":"HowToStep","position":1,"name":"Save the lecture","text":"Open the lecture page, press play, click the StreamSnag icon and press Download. The popup then says where the file went."},{"@type":"HowToStep","position":2,"name":"Get the words","text":"If the lecture has captions, they are its words, and there is nothing to do. If the popup says “No captions here”, press Transcribe on this computer. That needs the helper program and a one-time download."},{"@type":"HowToStep","position":3,"name":"Press Read the lecture","text":"The button is on a card headed Reading edition: “The lecture as an article you can read instead of watching. It opens as soon as it is made.” Without AI that takes a few seconds, on your own computer. The page opens in a tab of its own, and the popup says how long it is, for example “4 sections, about 14 minutes to read”."},{"@type":"HowToStep","position":4,"name":"Read","text":"The contents are on the left with the minute each part starts, and a line under them says how much reading is left. To come back later, the popup keeps a button for the saved page."}]},{"@type":"FAQPage","@id":"https://streamsnag.app/guides/read-a-lecture.html#faq","mainEntity":[{"@type":"Question","name":"Does it need an AI account or an internet connection?","acceptedAnswer":{"@type":"Answer","text":"Neither. It is made on your own computer from the transcript, by rule, and nothing is uploaded."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"It is part of Pro, which is US$39.97 a year, US$4.99 a month, or US$99.95 once for life. This step needs no AI, so that is all it costs. The study tools that do use AI run on your own AI account, never paid to StreamSnag: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key."}}]}]}</script>
 </head>
 <body id="top">
 
@@ -86,21 +86,25 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <article>
-    <header class="doc-head">
-      <div class="wrap">
+  <!-- Pass 6 (2026-11-11): one column, large type, the real reading edition beside its steps, one "Good to know",
+       one call to action. Also holds what how-it-works/ said under "Read the lecture" (the 27-minute lecture as a
+       14-minute read, what it adds, its limits). -->
+  <article class="g">
+    <header class="g-top">
+      <div class="g-col">
         <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><a href="./">Guides</a><span aria-hidden="true">/</span><span>Read a lecture</span></p>
         <h1>How to read a lecture instead of watching it</h1>
-        <p class="lede">Most people read about twice as fast as a lecturer talks. If the lecture is written down properly, with headings and paragraphs, you can get through it in about half the time and slow down only where it gets hard.</p>
-        <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI account</span></p>
+        <p class="g-end">At the end you have the whole lecture as a document to read, in the lecturer's own words, with a minute beside every paragraph. Pro, with no AI account.</p>
       </div>
     </header>
 
-    <div class="wrap doc-grid">
+    <div class="g-col">
       <div class="prose">
+        <p>Most people read about twice as fast as a lecturer talks. If the lecture is written down properly, with headings and paragraphs, you can get through it in about half the time and slow down only where it gets hard. <strong>A 27-minute lecture is a 14-minute read:</strong> from the two samples on this site, 27 and 28 minutes of lecture, about 3,200 words and 14 minutes of reading each.</p>
+
         <h2 id="what">What you end up with</h2>
-        <p>StreamSnag calls it a reading edition. It is one page saved next to the video: a contents list, the lecture cut into headed parts, each part into paragraphs, and beside every paragraph the minute it was said. Click a minute and the video opens there. You can <a href="../sample/reading-edition.html">open a sample reading edition</a> to see one.</p>
-        <p>It is not a summary. It keeps what was taught: the lecturer's own words, examples and qualifications. Nothing is reworded. Hesitation sounds and doubled words are removed by rule, and that is all.</p>
+        <p>StreamSnag calls it a reading edition. It is one page saved next to the video: a contents list, the lecture cut into headed parts, each part into paragraphs, and beside every paragraph the minute it was said. You can <a href="../sample/reading-edition.html">open a sample reading edition</a> to see one.</p>
+        <p>It is not a summary. It keeps what was taught, in the lecturer's own words. Examples, asides and qualifications stay in. Nothing is reworded. Hesitation sounds and doubled words are removed by rule, and that is all. If you want the main points drawn out, that is the study guide, which is a separate step.</p>
         <p>Three things are added without any AI, and without changing a word:</p>
         <ul class="facts">
           <li><strong>Headings.</strong> From the slides when there are some. Without slides, a part is headed by its own most distinctive terms, such as “Wall stress”, when some stand out.</li>
@@ -108,13 +112,6 @@
           <li><strong>Spoken lists.</strong> A “first… second… third…” is set out as a numbered list.</li>
         </ul>
         <p>See <a href="../sample/reading-edition-no-slides.html">the same sample made without its slides</a>, and <a href="../sample/stats-reading-edition.html">a statistics lecture</a> with five spoken lists.</p>
-
-        <h2 id="need">What you need</h2>
-        <ul class="facts">
-          <li>StreamSnag Pro. Your first lecture is free, with no card.</li>
-          <li>The lecture saved on your computer.</li>
-          <li>Its words: captions if it has them, or a transcript made on your computer if it does not. See <a href="lecture-transcript.html">how to transcribe a lecture</a>.</li>
-        </ul>
 
         <h2 id="steps">The steps</h2>
         <ol class="how" data-howto="Turn a lecture video into a document you can read">
@@ -128,86 +125,65 @@
           </div></li>
           <li><div>
             <h3>Press Read the lecture</h3>
-            <p>The button is on a card headed Reading edition: “The lecture as an article you can read instead of watching. It opens as soon as it is made.” Without AI that takes a few seconds. The page opens in a tab of its own, and the popup says how long it is, for example “4 sections, about 14 minutes to read”.</p>
+            <p>The button is on a card headed Reading edition: “The lecture as an article you can read instead of watching. It opens as soon as it is made.” Without AI that takes a few seconds, on your own computer. The page opens in a tab of its own, and the popup says how long it is, for example “4 sections, about 14 minutes to read”.</p>
+            <figure class="g-pic"><img src="../img/read-cover.png" width="880" height="1100" loading="lazy" alt="The opening of the sample reading edition: Cardiac output and what sets it, a 27 minute lecture and a 14 minute read of 3,194 words, with a contents list of four sections and their times."></figure>
           </div></li>
           <li><div>
             <h3>Read</h3>
             <p>The contents are on the left with the minute each part starts, and a line under them says how much reading is left. To come back later, the popup keeps a button for the saved page.</p>
+            <figure class="g-pic g-pic-crop"><img src="../img/read-section.png" width="1280" height="1520" loading="lazy" alt="A section of the sample reading edition, Three determinants of stroke volume: the lecturer's own words in paragraphs, each with its time in the margin."></figure>
           </div></li>
         </ol>
 
         <h2 id="use">Reading it well</h2>
         <ul class="facts">
           <li><strong>Search it.</strong> Your browser's find box works on the whole lecture at once.</li>
-          <li><strong>Change the text or print it.</strong> Buttons at the top change the size, switch to a dark page and print.</li>
+          <li><strong>Change the text or print it.</strong> Buttons at the top change the size, switch to a dark page and print. It is laid out for paper as well as the screen.</li>
           <li><strong>Take it with you.</strong> It is a single file that works offline, so it can be copied to a phone or a tablet. A Markdown copy is saved beside it.</li>
           <li><strong>Go back to the lecturer.</strong> A paragraph's minute takes you to that moment. With a <a href="slides-with-lecture-recording.html">study page</a> next to it, the minute opens there, with the slide that was up.</li>
         </ul>
 
-        <h2 id="wrong">What can go wrong</h2>
+        <h2 id="wrong">Good to know</h2>
         <ul class="facts">
-          <li><strong>Wrong words.</strong> The page says what the captions or the transcript say, mistakes included. In our sample the captions wrote “ionotropic” for inotropic. The optional AI tidy corrects misheard terms against the slides.</li>
+          <li><strong>Most words right, not all.</strong> The page says what the captions or the transcript say, mistakes included. Speech models of this size misspell unusual drug and technical names. In our sample the captions wrote “ionotropic” for inotropic. The optional AI tidy corrects misheard terms against the slides.</li>
           <li><strong>Plain headings.</strong> Without slides, a part where no term stands out is headed by number and minute, such as “Part 3 · 12:40”. That is common when the lecturer is telling a story. In our sample made without slides, two of the four parts got a heading from their terms and two did not.</li>
           <li><strong>No emphasis marks or lists.</strong> Those are found in English lectures whose captions have punctuation.</li>
           <li><strong>Long paragraphs with no full stops.</strong> Some automatic captions have no punctuation. Paragraphs are then cut at pauses, and no sentence ends are invented.</li>
           <li><strong>Nothing to read.</strong> If the captions hold no words, it says so and makes nothing.</li>
         </ul>
 
-        <div class="callout callout-ai">
-          <h3>The optional extra: tidying with your own AI account</h3>
-          <p>If you have chosen an AI account in Settings, Read the lecture asks each time: “Tidy with AI” or “Make it without AI”. Tidying takes out false starts and repairs the punctuation. Each part is checked against the transcript, and a part that fails is shown as transcribed. It sends the transcript to your own AI account. With no AI account you are not asked. The setting is “Reading edition: tidy with AI”: Off, Ask each time or Always.</p>
-        </div>
+        <h2 id="tidy">The optional extra: tidying with your own AI account</h2>
+        <p>If you have chosen an AI account in Settings, Read the lecture asks each time: “Tidy with AI” or “Make it without AI”. Tidying takes out false starts and repairs the punctuation. It never summarises. Each part is checked against the transcript, and a part that fails is shown as transcribed. It sends the transcript to your own AI account. With no AI account you are not asked. The setting is “Reading edition: tidy with AI”: Off, Ask each time or Always.</p>
 
         <h2 id="faq">Questions</h2>
         <div class="faq-list">
           <details>
-            <summary>Is a reading edition a summary of the lecture?</summary>
-            <div><p>No. It is the whole lecture, in the lecturer's words, set out so it can be read. If you want the main points drawn out, that is the study guide, which is a separate step.</p></div>
-          </details>
-          <details>
             <summary>Does it need an AI account or an internet connection?</summary>
             <div><p>Neither. It is made on your own computer from the transcript, by rule, and nothing is uploaded.</p></div>
-          </details>
-          <details>
-            <summary>How much time does reading save?</summary>
-            <div><p>In our samples a 27-minute lecture was a 14-minute read.</p></div>
           </details>
           <details>
             <summary>Is it free?</summary>
             <div><p>It is part of Pro, which is US$39.97 a year, US$4.99 a month, or US$99.95 once for life. This step needs no AI, so that is all it costs. The study tools that do use AI run on your own AI account, never paid to StreamSnag: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key.</p></div>
           </details>
         </div>
+        <!-- end of article -->
       </div>
-
-      <aside class="doc-side" aria-label="About this guide">
-        <nav class="toc" aria-label="In this guide">
-          <h2>In this guide</h2>
-          <ol>
-            <li><a href="#what">What you end up with</a></li>
-            <li><a href="#need">What you need</a></li>
-            <li><a href="#steps">The steps</a></li>
-            <li><a href="#use">Reading it well</a></li>
-            <li><a href="#wrong">What can go wrong</a></li>
-            <li><a href="#faq">Questions</a></li>
-          </ol>
-        </nav>
-        <div class="side-cta">
-          <h2>See it first</h2>
-          <p>The home page has a working demonstration of these steps. A longer excerpt is on the page about how it works.</p>
-          <a class="btn btn-sm btn-quiet" href="../how-it-works/#read">Read the lecture: a longer excerpt</a>
-        </div>
-      </aside>
     </div>
-  </article>
 
-  <section class="wrap more-guides" aria-labelledby="more-title">
-    <h2 id="more-title">Keep going</h2>
-    <ul class="guide-cards">
-      <li><a href="lecture-transcript.html"><span class="tagline">Guide</span><b>How to transcribe a lecture on your own computer</b><span>The step before this one, for lectures with and without captions.</span></a></li>
-      <li><a href="slides-with-lecture-recording.html"><span class="tagline">Guide</span><b>How to sync lecture slides with the recording</b><span>So each minute in the reading edition opens the right slide.</span></a></li>
-      <li><a href="../sample/stats-reading-edition.html"><span class="tagline">Sample</span><b>A reading edition of a statistics lecture</b><span>28 minutes of invented lecture as a 14-minute read.</span></a></li>
-    </ul>
-  </section>
+    <section class="g-cta" aria-labelledby="cta-title">
+      <div class="g-col">
+        <h2 id="cta-title">Read tonight's lecture.</h2>
+        <p class="last-say">Saving is free, and Pro takes your first lecture from start to finish, free, with no card.</p>
+        <!-- PLACEHOLDER (install link): see the note in the header. -->
+        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+        <nav class="g-next" aria-label="Keep going">
+          <a href="lecture-transcript.html">How to transcribe a lecture on your own computer</a>
+          <a href="slides-with-lecture-recording.html">How to sync lecture slides with the recording</a>
+          <a href="../demo/">Try these steps in the demo</a>
+        </nav>
+      </div>
+    </section>
+  </article>
 </main>
 
 <footer class="site-foot">

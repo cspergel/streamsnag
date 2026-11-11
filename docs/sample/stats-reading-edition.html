@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-TXc6EWMAe2sHYiE3OW1aipkYADOuY+iSlXBD9fD8GZY=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-8BBGtVXcJRYlvDu7PEWWaPJ/JyuHdktWAPaWw1GILYU=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
@@ -11,8 +11,8 @@
 <title>Sample reading edition: From a sample to a claim: standard error, confidence intervals and p-values | StreamSnag</title>
 <style>
 :root {
-  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
-  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #141816; --soft: #363d39; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #0e6b5e; --accent-ink: #0a4f45; --accent-tint: #d3ebe4; --accent-line: #93cbbd;
   --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Sitka Text", Georgia, serif;
   --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
@@ -26,12 +26,12 @@
 :root[data-size="4"] { --size: 23.5px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
-  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --accent: #5fd4c1; --accent-ink: #8fe3d4; --accent-tint: #123029; --accent-line: #26574f;
   --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
-  --accent: #84cbc3; --accent-ink: #a3d9d2; --accent-tint: #1a2b29; --accent-line: #2c4b47;
+  --accent: #5fd4c1; --accent-ink: #8fe3d4; --accent-tint: #123029; --accent-line: #26574f;
   --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
   color-scheme: dark; }
 * { box-sizing: border-box; }
@@ -62,7 +62,7 @@ main { grid-area: main; min-width: 0; }
 .toc ol { list-style: none; margin: 0; padding: 0; }
 .toc ol a { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; padding: 6px 12px; margin-left: -12px; color: var(--soft); text-decoration: none; border-left: 2px solid transparent; border-radius: 0 6px 6px 0; }
 .toc ol a:hover { color: var(--ink); background: var(--accent-tint); }
-.toc ol a.on { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 600; }
+.toc ol a.on { color: var(--accent-ink); border-left-color: var(--accent); border-left-width: 3px; font-weight: 650; background: var(--accent-tint); border-radius: 0 6px 6px 0; }
 .toc .tm { flex: none; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--faint); font-weight: 400; }
 .tools { display: flex; gap: 8px; margin: 0 0 26px; flex-wrap: wrap; }
 .tools .size { display: flex; }
@@ -110,8 +110,8 @@ ol.said li::marker { font-family: var(--sans); font-size: .76em; font-weight: 65
 /* where the lecturer says that something matters: a quiet tint under the sentence, and a note under the paragraph's time */
 .key { color: inherit; background: var(--accent-tint); border-bottom: 1px solid var(--accent-line); border-radius: 3px; padding: .05em .16em; margin: 0 -.16em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .para.stress::before { content: "Lecturer’s emphasis"; position: absolute; left: 0; top: 1.5rem; width: calc(var(--gutter) - 1.1rem); font-family: var(--sans); font-size: .54rem; font-weight: 650; line-height: 1.22; letter-spacing: .02em; color: var(--accent-ink); }
-.t { font-size: .66rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .01em; color: var(--faint); text-decoration: none; line-height: 1; white-space: nowrap; justify-self: start; padding: .15rem 0; }
-a.t:hover, .para:target .t { color: var(--accent-ink); text-decoration: underline; }
+.t { font-size: .66rem; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: .01em; color: var(--accent-ink); text-decoration: none; line-height: 1; white-space: nowrap; justify-self: start; padding: .2rem .42rem; margin-left: -.42rem; background: var(--accent-tint); border-radius: 5px; }
+a.t:hover, .para:target .t { color: var(--paper); background: var(--accent); text-decoration: none; }
 .who { font-family: var(--sans); font-size: .82em; font-weight: 650; letter-spacing: .01em; }
 .unsure { color: var(--note-ink); }
 
@@ -156,8 +156,8 @@ details[open] > summary .sl-see::after { content: "Hide slide"; }
 @page { margin: 22mm 27mm; }
 @media print {
   :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
-  --bg: #f5f3ee; --paper: #fffefb; --ink: #1a1f1d; --soft: #434a46; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
-  --accent: #1d5c58; --accent-ink: #1a4f4b; --accent-tint: #e1eeeb; --accent-line: #b9d6d1;
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #141816; --soft: #363d39; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #0e6b5e; --accent-ink: #0a4f45; --accent-tint: #d3ebe4; --accent-line: #93cbbd;
   --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
     --bg: #fff; --paper: #fff; --gutter: 3.6rem; color-scheme: light; }
   html, :root[data-size] { font-size: 11.5pt; }
@@ -182,9 +182,9 @@ details[open] > summary .sl-see::after { content: "Hide slide"; }
 }
 
 /* the reader bar: one lecture, five ways to study it */
-:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #1a1f1d; --rd-ink-2: #434a46; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #1d5c58; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; } }
-:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; }
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #141816; --rd-ink-2: #363d39; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #0e6b5e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; }
 .rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
 .rd-bar [hidden] { display: none !important; }
 .rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
@@ -308,30 +308,29 @@ html { scroll-padding-top: 4.4rem; }
 <div class="para" id="s3-p2"><a class="t" href="stats-study-page.html#t=875&amp;slide=7">14:35</a><p><b class="who">Lecturer:</b> The fix was worked out by a man called William Gosset, who was a brewer at Guinness in Dublin, and who published under the name Student because the brewery did not want competitors to know they employed statisticians. So it is called Student&#39;s t distribution. It looks like the normal curve, but with fatter tails, and exactly how fat depends on the degrees of freedom, which for one sample is n minus one.</p></div>
 <div class="para" id="s3-p3"><a class="t" href="stats-study-page.html#t=911&amp;slide=7">15:11</a><p><b class="who">Lecturer:</b> Let&#39;s see what difference it makes. Suppose we had only surveyed sixteen students and happened to get the same mean and standard deviation. The standard error is now one point six over the square root of sixteen, so one point six over four, which is zero point four. Degrees of freedom, sixteen minus one, fifteen. And instead of one point nine six, the table gives us two point one three one. So the margin of error is two point one three one times zero point four, about zero point eight five.</p></div>
 <div class="para" id="s3-p4"><a class="t" href="stats-study-page.html#t=956&amp;slide=7">15:56</a><p><b class="who">Lecturer:</b> The interval runs from five point nine five to seven point six five. Much wider than before, partly because the sample is smaller, and partly because of that bigger multiplier. As the sample grows, t settles down towards the normal value. At thirty degrees of freedom the multiplier is two point zero four two. At a hundred it is one point nine eight four. So in practice, sorry, in practice people just use t all the time when sigma is unknown, which is always, and for large samples it makes no real difference.</p></div>
-<div class="para" id="s3-p5"><a class="t" href="stats-study-page.html#t=1007&amp;slide=7">16:47</a><p><b class="who">Lecturer:</b> Okay, second half of the story. So far we have estimated. Now we test. Suppose the university wellbeing leaflet says, our students get a healthy seven and a half hours of sleep a</p></div>
+<div class="para" id="s3-p5"><a class="t" href="stats-study-page.html#t=1007&amp;slide=7">16:47</a><p><b class="who">Lecturer:</b> Okay, second half of the story. So far we have estimated. Now we test. Suppose the university wellbeing leaflet says, our students get a healthy seven and a half hours of sleep a night.</p></div>
 <div class="slide" data-slide="8"><div class="row"><span class="sl-n">Slide 8</span><span class="sl-t">Hypothesis testing</span></div></div>
-<div class="para" id="s3-p6"><a class="t" href="stats-study-page.html#t=1023&amp;slide=8">17:03</a><p><b class="who">Lecturer:</b> Night. And you look at your six point eight and think. A hypothesis test is the formal version of.</p></div>
-<div class="para" id="s3-p7"><a class="t" href="stats-study-page.html#t=1034&amp;slide=8">17:14</a><div class="flow">
-<p><b class="who">Lecturer:</b> It goes in steps.</p>
-<ol class="said" start="1"><li>Step one, state the null hypothesis, the claim you are testing. Here, mu equals seven point five.</li><li>Step two, ask, if that were true, how surprising is my data? We measure surprise in standard errors. Our mean is six point eight, the claim is seven point five, the difference is minus zero point seven, and the standard error is zero point two.</li></ol>
+<div class="para" id="s3-p6"><a class="t" href="stats-study-page.html#t=1023&amp;slide=8">17:03</a><div class="flow">
+<p><b class="who">Lecturer:</b> And you look at your six point eight and think. A hypothesis test is the formal version of. It goes in steps.</p>
+<ol class="said" start="1"><li>Step one, state the null hypothesis, the claim you are testing. Here, mu equals seven point five.</li><li>Step two, ask, if that were true, how surprising is my data?</li></ol>
 </div></div>
-<div class="para" id="s3-p8"><a class="t" href="stats-study-page.html#t=1068&amp;slide=8">17:48</a><p><b class="who">Lecturer:</b> Minus zero point seven divided by zero point two is minus three point five. Our sample mean is three and a half standard errors below what the leaflet says. That number is the test statistic, here a z score.</p></div>
-<div class="para lf" id="s3-p9"><a class="t" href="stats-study-page.html#t=1088&amp;slide=8">18:08</a><div class="flow">
+<div class="para" id="s3-p7"><a class="t" href="stats-study-page.html#t=1052&amp;slide=8">17:32</a><p><b class="who">Lecturer:</b> We measure surprise in standard errors. Our mean is six point eight, the claim is seven point five, the difference is minus zero point seven, and the standard error is zero point two. Minus zero point seven divided by zero point two is minus three point five. Our sample mean is three and a half standard errors below what the leaflet says. That number is the test statistic, here a z score.</p></div>
+<div class="para lf" id="s3-p8"><a class="t" href="stats-study-page.html#t=1088&amp;slide=8">18:08</a><div class="flow">
 <ol class="said" start="3"><li><b class="who">Lecturer:</b> Step three, turn that into a probability. If the null were true, how often would a sample land three and a half standard errors away or further, in either direction? The answer is about zero point zero zero zero five. Five times in ten thousand. That probability is the p-value.</li><li>And step four, compare it with a threshold you chose in advance, called alpha, which by convention is zero point zero five.</li></ol>
 </div></div>
-<div class="para" id="s3-p10"><a class="t" href="stats-study-page.html#t=1123&amp;slide=8">18:43</a><p><b class="who">Lecturer:</b> Our p-value is far below that, so we reject the null hypothesis. The data are not compatible with seven and a half hours. Now try a different claim. Suppose the leaflet had said seven hours. Then the difference is six point eight minus seven, minus zero point two, divided by the standard error of zero point two, which is minus one. One standard error away.</p></div>
-<div class="para" id="s3-p11"><a class="t" href="stats-study-page.html#t=1157&amp;slide=8">19:17</a><p><b class="who">Lecturer:</b> The p-value for that is about zero point three two. That would happen about a third of the time just by the luck of the draw. So we do not reject. And notice the wording. We do not say we have proved that the mean is seven. We say we fail to reject.</p></div>
-<div class="para" id="s3-p12"><a class="t" href="stats-study-page.html#t=1185&amp;slide=8">19:45</a><p><b class="who">Lecturer:</b> Absence of evidence against is not evidence for. And here is something neat that ties the two halves together. Seven point five was outside our ninety-five percent confidence interval, and we rejected it. Seven was inside the interval, and we did not. That is not a coincidence. The ninety-five percent confidence interval is exactly the set of values that a test at the five percent level would not reject.</p></div>
-<div class="para" id="s3-p13"><a class="t" href="stats-study-page.html#t=1222&amp;slide=8">20:22</a><p><b class="who">Lecturer:</b> So the interval tells you everything the test does, and more, because it also tells you how big the effect might be. I want to spend five minutes on what a p-value is not, because it is the most misunderstood number in science. The definition, once more. The p-value is the probability of getting data at least as extreme as yours, if the null hypothesis is true. It starts from the assumption that the null is true.</p></div>
-<div class="para" id="s3-p14"><a class="t" href="stats-study-page.html#t=1267&amp;slide=8">21:07</a><p><b class="who">Lecturer:</b> So, misreading number one. The p-value is not the probability that the null hypothesis is true. A p-value of zero point zero three does not mean there is a three percent chance the leaflet is right. It is the probability of the data given the hypothesis, not the probability of the hypothesis given the data, and those are different things. The probability that you are in this lecture hall, given that you are a statistics student, is high. The probability that you are a statistics student,</p></div>
+<div class="para" id="s3-p9"><a class="t" href="stats-study-page.html#t=1123&amp;slide=8">18:43</a><p><b class="who">Lecturer:</b> Our p-value is far below that, so we reject the null hypothesis. The data are not compatible with seven and a half hours. Now try a different claim. Suppose the leaflet had said seven hours. Then the difference is six point eight minus seven, minus zero point two, divided by the standard error of zero point two, which is minus one. One standard error away.</p></div>
+<div class="para" id="s3-p10"><a class="t" href="stats-study-page.html#t=1157&amp;slide=8">19:17</a><p><b class="who">Lecturer:</b> The p-value for that is about zero point three two. That would happen about a third of the time just by the luck of the draw. So we do not reject. And notice the wording. We do not say we have proved that the mean is seven. We say we fail to reject.</p></div>
+<div class="para" id="s3-p11"><a class="t" href="stats-study-page.html#t=1185&amp;slide=8">19:45</a><p><b class="who">Lecturer:</b> Absence of evidence against is not evidence for. And here is something neat that ties the two halves together. Seven point five was outside our ninety-five percent confidence interval, and we rejected it. Seven was inside the interval, and we did not. That is not a coincidence. The ninety-five percent confidence interval is exactly the set of values that a test at the five percent level would not reject.</p></div>
+<div class="para" id="s3-p12"><a class="t" href="stats-study-page.html#t=1222&amp;slide=8">20:22</a><p><b class="who">Lecturer:</b> So the interval tells you everything the test does, and more, because it also tells you how big the effect might be. I want to spend five minutes on what a p-value is not, because it is the most misunderstood number in science. The definition, once more. The p-value is the probability of getting data at least as extreme as yours, if the null hypothesis is true. It starts from the assumption that the null is true.</p></div>
+<div class="para" id="s3-p13"><a class="t" href="stats-study-page.html#t=1267&amp;slide=8">21:07</a><p><b class="who">Lecturer:</b> So, misreading number one. The p-value is not the probability that the null hypothesis is true. A p-value of zero point zero three does not mean there is a three percent chance the leaflet is right. It is the probability of the data given the hypothesis, not the probability of the hypothesis given the data, and those are different things. The probability that you are in this lecture hall, given that you are a statistics student, is high. The probability that you are a statistics student, given that you are in this lecture hall, well, some of you are here for the heating.</p></div>
 </div>
 </section>
 <section class="sec" id="s4">
 <div class="sec-head"><h2>What a p-value is not</h2><span class="span">21:47–27:35</span></div>
 <div class="body">
-<div class="para" id="s4-p1"><a class="t" href="stats-study-page.html#t=1307&amp;slide=9">21:47</a><p><b class="who">Lecturer:</b> Given that you are in this lecture hall, well, some of you are here for the heating. Misreading number two. A small p-value does not mean a big or important effect. It is partly about the effect and partly about the sample size. Let me show you. Suppose we survey ten thousand students, and the mean comes out just zero point zero five hours below the claim.</p></div>
-<div class="para" id="s4-p2"><a class="t" href="stats-study-page.html#t=1340&amp;slide=9">22:20</a><p><b class="who">Lecturer:</b> Zero point zero five hours is three minutes. Nobody cares about three minutes of sleep. But the standard error with ten thousand people is one point six over a hundred, zero point zero one six. So the test statistic is zero point zero five over zero point zero one six, which is about three point one, and the p-value is about zero point zero zero two. Highly significant, and completely unimportant. So we separate statistical significance, which means unlikely to be chance, from practical significance, which means big enough to matter.</p></div>
-<div class="para" id="s4-p3"><a class="t" href="stats-study-page.html#t=1384&amp;slide=9">23:04</a><p><b class="who">Lecturer:</b> Always report the size of the effect and its confidence interval, not just the p-value. And misreading number three, a p-value above zero point zero five does not show there is no effect. It may just mean your sample was too small to see it.</p></div>
+<div class="para" id="s4-p1"><a class="t" href="stats-study-page.html#t=1316&amp;slide=9">21:56</a><p><b class="who">Lecturer:</b> Misreading number two. A small p-value does not mean a big or important effect. It is partly about the effect and partly about the sample size. Let me show you. Suppose we survey ten thousand students, and the mean comes out just zero point zero five hours below the claim. Zero point zero five hours is three minutes.</p></div>
+<div class="para" id="s4-p2"><a class="t" href="stats-study-page.html#t=1344&amp;slide=9">22:24</a><p><b class="who">Lecturer:</b> Nobody cares about three minutes of sleep. But the standard error with ten thousand people is one point six over a hundred, zero point zero one six. So the test statistic is zero point zero five over zero point zero one six, which is about three point one, and the p-value is about zero point zero zero two. Highly significant, and completely unimportant. So we separate statistical significance, which means unlikely to be chance, from practical significance, which means big enough to matter. Always report the size of the effect and its confidence interval, not just the p-value.</p></div>
+<div class="para" id="s4-p3"><a class="t" href="stats-study-page.html#t=1392&amp;slide=9">23:12</a><p><b class="who">Lecturer:</b> And misreading number three, a p-value above zero point zero five does not show there is no effect. It may just mean your sample was too small to see it.</p></div>
 <div class="slide" data-slide="10"><div class="row"><span class="sl-n">Slide 10</span><span class="sl-t">Two kinds of error, and many tests</span></div></div>
 <div class="para" id="s4-p4"><a class="t" href="stats-study-page.html#t=1410&amp;slide=10">23:30</a><p><b class="who">Lecturer:</b> Which brings us to the two ways a test can go wrong. A type one error is rejecting a null hypothesis that is actually true. A false alarm, a false positive. And the lovely thing is that you choose how often that happens. It is alpha. Set alpha at zero point zero five, and when the null is true you will raise a false alarm five percent of the time.</p></div>
 <div class="para stress" id="s4-p5"><a class="t" href="stats-study-page.html#t=1447&amp;slide=10">24:07</a><p><b class="who">Lecturer:</b> A type two error is the opposite, failing to reject a null that is false. A miss. Its probability is called beta, and one minus beta is the power of the test, the chance of detecting an effect that is really there. Studies usually aim for a power of eighty percent. <mark class="key">And the main thing you can do to get more power is, you have guessed it, a bigger sample.</mark></p></div>

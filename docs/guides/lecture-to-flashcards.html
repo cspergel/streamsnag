@@ -44,6 +44,18 @@
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.500h7l4 4V19a1.500 1.500 0 01-1.500 1.500h-9A1.500 1.500 0 016 19V4.500a1 1 0 011-1z"/><path d="M14 3.500V8h4M9 12.500h6M9 16h4"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M6.500 6h11M9 3.500h6"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.500h14M5 11h14M5 15.500h9"/></symbol>
+  <!-- The sample lecture's graphs: stroke volume against end-diastolic volume, and the wall of a ventricle. -->
+  <symbol id="g-starling" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 44 108 28 190 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-inotropy" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 62 108 50 190 47" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><path d="M26 102C50 30 100 16 190 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-laplace" viewBox="0 0 200 120"><circle cx="100" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="9" opacity=".85"/><path d="M100 60h37" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M100 60l-22-22M100 60l-22 22M100 60l-31 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 5" opacity=".6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h9m4 0h3M4 16h3m4 0h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
 </svg>
 
 <a class="skip" href="#main">Skip to content</a>
@@ -86,18 +98,21 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <article>
-    <header class="doc-head">
-      <div class="wrap">
+  <!-- Pass 6 (2026-11-11): one column, large type, the sheet and a review card drawn beside their steps, one
+       "Good to know", one call to action. -->
+  <article class="g">
+    <header class="g-top">
+      <div class="g-col">
         <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><a href="./">Guides</a><span aria-hidden="true">/</span><span>Lecture to flashcards</span></p>
         <h1>How to turn a lecture into flashcards</h1>
-        <p class="lede">Most flashcards fail because they are badly written, not because flashcards do not work. Here are the rules of a good card, a way to write them by hand, and how StreamSnag writes and checks them for you.</p>
-        <p class="tags"><span class="tag tag-plain">By hand: no AI</span><span class="tag tag-pro">Study pack: Pro</span><span class="tag tag-ai">Uses your AI</span></p>
+        <p class="g-end">At the end you have a set of cards worth reviewing, each pointing back to its minute, ready for StreamSnag's review or for Anki. By hand with no AI, or with a Pro study pack written by your own AI account.</p>
       </div>
     </header>
 
-    <div class="wrap doc-grid">
+    <div class="g-col">
       <div class="prose">
+        <p>Most flashcards fail because they are badly written, not because flashcards do not work. Here are the rules of a good card, a way to write them by hand, and how StreamSnag writes and checks them for you.</p>
+
         <h2 id="rules">The rules of a good card</h2>
         <p>The example cards here come from our <a href="../sample/study-guide.html#cards">sample study pack</a>, made from an invented lecture on cardiac output.</p>
         <ol class="how">
@@ -152,7 +167,7 @@
         </ol>
 
         <h2 id="hand">Doing it by hand</h2>
-        <p class="tags"><span class="tag tag-plain">No AI</span></p>
+        <p>No AI is needed for this.</p>
         <ol class="how" data-howto="Write flashcards from a lecture by hand">
           <li><div>
             <h3>Get the transcript</h3>
@@ -173,7 +188,6 @@
         </ol>
 
         <h2 id="pack">With a StreamSnag study pack</h2>
-        <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-ai">Uses your AI</span></p>
         <p>A study pack does the same job and applies the same rules. It is part of Pro, and it is written by your own AI account: a Claude or ChatGPT subscription you already have, or a pay-as-you-go key. The guide and quiz that come with the cards are covered in <a href="lecture-to-study-guide.html">how to make a study guide and practice quiz from a lecture</a>.</p>
         <ol class="how" data-howto="Make flashcards from a lecture with a study pack">
           <li><div>
@@ -187,6 +201,23 @@
           <li><div>
             <h3>Press Make study pack</h3>
             <p>It is the fourth step on the lecture's path, which “Show the path” opens. Before anything is sent, a sheet headed “Before the AI reads this lecture” shows what it will make, what it sends (the transcript, and the text and speaker notes of that lecture's slides, never slide pictures or the video), to which account, and roughly how much AI use the run will take. You choose which parts to make there, and the number of flashcards in Settings.</p>
+            <figure class="g-pic">
+<!-- Pass 6: a drawing of the product, copied word for word from the old how-it-works/ evening or downloader/. -->
+<div class="mock" role="img" aria-label="Drawing of the sheet shown before a study pack is made, headed Before the AI reads this lecture. It makes a study guide, deeper review sheets, a practice quiz and self-test, and flashcards. It sends the lecture's transcript, and the text and speaker notes of its slides, to Claude, your subscription; pictures of the slides are not sent. It is sent from this computer, because StreamSnag has no servers. In all it takes about 20 requests from your plan's allowance. The cost line says it counts toward your Claude plan's limits, and that AI use is billed by your own provider and is never part of StreamSnag's price.">
+  <div class="win sheet">
+    <p class="sheet-title">Before the AI reads this lecture</p>
+    <p class="sheet-sub">Exactly what happens, before anything is sent.</p>
+    <dl>
+      <div><dt>Makes</dt><dd><b>Study guide, Deeper review sheets, Practice quiz and self-test, Flashcards</b></dd></div>
+      <div><dt>Sends</dt><dd><b>This sends the lecture's transcript, and the text and speaker notes of its slides, to Claude (your subscription).</b> Pictures of the slides are not sent.</dd></div>
+      <div><dt>To</dt><dd><b>Claude (your subscription)</b> Sent from this computer. StreamSnag has no servers.</dd></div>
+      <div><dt>AI use</dt><dd><b>In all about 20 requests from your plan's allowance.</b></dd></div>
+      <div><dt>Cost</dt><dd><b>Counts toward your Claude plan's limits.</b> AI use is billed by your own provider and is never part of StreamSnag's price.</dd></div>
+    </dl>
+    <p class="sheet-btns"><span class="ui-btn">Not now</span><span class="ui-btn ui-btn-main">Make the study pack</span></p>
+  </div>
+</div>
+            </figure>
           </div></li>
           <li><div>
             <h3>Let it read, write and check</h3>
@@ -195,52 +226,57 @@
         </ol>
         <p>In the statistics sample, 17 cards were written and 9 were kept. Five were over the number asked for and three broke a rule.</p>
 
-        <div class="callout callout-ai">
-          <h3>What the AI costs</h3>
-          <p><strong>AI use is never part of the StreamSnag price, and is never paid to StreamSnag.</strong> With a Claude or ChatGPT subscription you already have, a pack costs nothing extra: the run counts toward your plan's limits, and a plan can run out part-way through a busy day. With a pay-as-you-go key, on our own runs a study pack for a 64-minute lecture took about 30 requests and cost about US$1.50 on Claude Sonnet and US$0.04 to 0.08 on DeepSeek Flash; a 28-minute lecture cost about US$0.80 on Claude Sonnet. Google Gemini has a free daily allowance and then charges your Google account. A free allowance can do part of a pack and may run out part-way.</p>
-        </div>
+        <h2 id="cost">What the AI costs</h2>
+        <p><strong>AI use is never part of the StreamSnag price, and is never paid to StreamSnag.</strong> With a Claude or ChatGPT subscription you already have, a pack costs nothing extra: the run counts toward your plan's limits, and a plan can run out part-way through a busy day. With a pay-as-you-go key, on our own runs a study pack for a 64-minute lecture took about 30 requests and cost about US$1.50 on Claude Sonnet and US$0.04 to 0.08 on DeepSeek Flash; a 28-minute lecture cost about US$0.80 on Claude Sonnet. Google Gemini has a free daily allowance and then charges your Google account. A free allowance can do part of a pack and may run out part-way. <a href="../ai-costs/">More on AI costs</a>.</p>
 
         <h2 id="review">Reviewing the cards</h2>
-        <p class="tags"><span class="tag tag-pro">Pro</span><span class="tag tag-plain">No AI</span></p>
-        <p>StreamSnag has its own review screen, opened by <strong>Flashcards</strong> at the foot of the popup. It shows what is due across all your lectures, a few new cards a day, and brings the cards you have seen back on their own days. Your progress stays on your computer.</p>
+        <p>Reviewing is part of Pro and uses no AI. StreamSnag has its own review screen, opened by <strong>Flashcards</strong> at the foot of the popup. It shows what is due across all your lectures, a few new cards a day, and brings the cards you have seen back on their own days. Your progress stays on your computer. The cards come back over the coming days, with the due cards from every lecture in one place.</p>
+        <figure class="g-pic">
+<!-- Pass 6: a drawing of the product, copied word for word from the old how-it-works/ evening or downloader/. -->
+<div class="mock" role="img" aria-label="Drawing of a review card from the sample lecture. Question: Frank-Starling curve: how does more contractility move the ventricle, compared with more preload? Answer: Onto a higher curve. It shows the lecturer's words, the source 20:20, slide 7, a Show me in the lecture button, and the choices Again, Hard, Good and Easy.">
+  <div class="win bigcard">
+    <p class="bigcard-src"><span>PHYS201 · Cardiac output and what sets it</span><span>Card 9 of 9</span></p>
+    <p class="bigcard-q">Frank-Starling curve: how does more contractility move the ventricle, compared with more preload?</p>
+    <p class="bigcard-a">Onto a higher curve</p>
+    <blockquote class="said">
+      <span class="said-label">In the lecturer's words</span>
+      <p>“More preload moves you along the same curve; more contractility moves you onto a higher curve.”</p>
+    </blockquote>
+    <p class="bigcard-foot"><span class="cite cite-on">20:20 · slide 7</span><span class="ui-btn">Show me in the lecture</span></p>
+    <ul class="grades">
+      <li><b>Again</b><span>1 min</span></li>
+      <li><b>Hard</b><span>6 min</span></li>
+      <li class="is-picked"><b>Good</b><span>10 min</span></li>
+      <li><b>Easy</b><span>4 days</span></li>
+    </ul>
+  </div>
+</div>
+        </figure>
         <p>Every card has a <strong>Show me in the lecture</strong> button that opens the video at that minute and slide. If you use Anki, each study pack also saves a flashcards file: in Anki choose File, then Import, and pick that file. Here is <a href="../sample/cardiac-flashcards.txt" download>the file from the sample</a>.</p>
 
-        <h2 id="watch">What to watch for</h2>
+        <h2 id="watch">Good to know</h2>
         <ul class="facts">
           <li><strong>AI-written cards can be wrong.</strong> The checks reduce mistakes. They do not remove them. Every card points to its minute, so check anything important against the lecture itself.</li>
           <li><strong>Check your course's rules.</strong> Some universities restrict putting lecture material into AI tools. Whether to do it on a given course is your choice and your responsibility. Writing the cards by hand needs no AI at all.</li>
         </ul>
+        <!-- end of article -->
       </div>
-
-      <aside class="doc-side" aria-label="About this guide">
-        <nav class="toc" aria-label="In this guide">
-          <h2>In this guide</h2>
-          <ol>
-            <li><a href="#rules">The rules of a good card</a></li>
-            <li><a href="#hand">Doing it by hand</a></li>
-            <li><a href="#pack">With a study pack</a></li>
-            <li><a href="#review">Reviewing the cards</a></li>
-            <li><a href="#watch">What to watch for</a></li>
-          </ol>
-        </nav>
-        <div class="side-cta">
-          <h2>The tool in this guide</h2>
-          <p>StreamSnag Pro: US$39.97 a year, US$4.99 a month, or US$99.95 once for life. Your first lecture is free, with no card. The study tools that use AI run on your own AI account: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key. None of that is paid to StreamSnag.</p>
-          <!-- PLACEHOLDER (install link): see the note in the header. -->
-          <a class="btn btn-sm btn-primary" href="../#install" data-install>Get StreamSnag</a>
-        </div>
-      </aside>
     </div>
-  </article>
 
-  <section class="wrap more-guides" aria-labelledby="more-title">
-    <h2 id="more-title">Keep going</h2>
-    <ul class="guide-cards">
-      <li><a href="save-a-lecture.html"><span class="tagline">Guide</span><b>How to save an online lecture</b><span>Press play first, then save the video with its slides and captions.</span></a></li>
-      <li><a href="lecture-transcript.html"><span class="tagline">Guide</span><b>How to get a transcript of a lecture</b><span>From the captions when there are some, and on your own computer when there are none.</span></a></li>
-      <li><a href="../sample/study-guide.html"><span class="tagline">Sample</span><b>Open a sample study guide</b><span>A whole guide with its quiz and flashcards, written by AI from an invented lecture.</span></a></li>
-    </ul>
-  </section>
+    <section class="g-cta" aria-labelledby="cta-title">
+      <div class="g-col">
+        <h2 id="cta-title">The tool in this guide</h2>
+        <p class="last-say">StreamSnag Pro: US$39.97 a year, US$4.99 a month, or US$99.95 once for life. Your first lecture is free, with no card. The study tools that use AI run on your own AI account: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key. None of that is paid to StreamSnag.</p>
+        <!-- PLACEHOLDER (install link): see the note in the header. -->
+        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+        <nav class="g-next" aria-label="Keep going">
+          <a href="save-a-lecture.html">How to save an online lecture</a>
+          <a href="lecture-transcript.html">How to get a transcript of a lecture</a>
+          <a href="../sample/study-guide.html">Open a sample study guide</a>
+        </nav>
+      </div>
+    </section>
+  </article>
 </main>
 
 <footer class="site-foot">

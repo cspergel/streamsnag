@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-eplTkrGgY8Wv+ju4tl8OUqjxM8Hh8c/DPRS/a0gaBlE=&#39;; style-src &#39;sha256-eeL8q96nH7PIu0dUadTZR3hza3Kd4R7SW3jQ9lheo4M=&#39;; media-src &#39;self&#39; file:; frame-src &#39;self&#39; file:; img-src &#39;self&#39;; connect-src &#39;none&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-eplTkrGgY8Wv+ju4tl8OUqjxM8Hh8c/DPRS/a0gaBlE=&#39;; style-src &#39;sha256-gQuWw0qG1rN8jb/HOdjSxc9lNVNXr08DjE4eF7XMv8s=&#39;; media-src &#39;self&#39; file:; frame-src &#39;self&#39; file:; img-src &#39;self&#39;; connect-src &#39;none&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
@@ -15,11 +15,14 @@
   /* The desk's paper and ink (lib/readerbar.js has the same for its bar); orange only marks where the lecture is now. */
   --bg: #f5f3ee; --surface: #fffefb; --text: #1a1f1d; --muted: #5c635e; --line: #dfdbd1;
   --accent: #b5420a; --now: #fbe8da; --now-line: #e8590c; --chip: #ebe8e0;
+  /* The number of the slide that is up: a chip dark enough for its numerals (white on #b5420a is 5.6 to 1). */
+  --num-now: #b5420a; --num-now-ink: #fff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #141716; --surface: #1b1f1d; --text: #ebe9e3; --muted: #959a95; --line: #2a2f2c;
     --accent: #f6905a; --now: #33211a; --now-line: #f0702a; --chip: #262b29;
+    --num-now: #f6905a; --num-now-ink: #1b1512;
   }
 }
 * { box-sizing: border-box; }
@@ -104,7 +107,7 @@ a.read { color: var(--accent); white-space: nowrap; }
 .thumb { grid-column: 3; grid-row: 2; justify-self: end; width: 54px; height: 38px; object-fit: cover; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
 .card.pic .stext { grid-column: 2; }
 .card.now { background: var(--now); box-shadow: inset 4px 0 0 var(--now-line); }
-.card.now .num { background: var(--now-line); color: #fff; }
+.card.now .num { background: var(--num-now); color: var(--num-now-ink); }
 .card.now .stitle { font-size: 16px; }
 .card.now .stext { display: block; color: var(--text); }
 .card.now .time { color: var(--accent); font-weight: 600; }
@@ -132,9 +135,9 @@ a.read { color: var(--accent); white-space: nowrap; }
 }
 
 /* the reader bar: one lecture, five ways to study it */
-:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #1a1f1d; --rd-ink-2: #434a46; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #1d5c58; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; } }
-:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #84cbc3; }
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #141816; --rd-ink-2: #363d39; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #0e6b5e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; }
 .rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
 .rd-bar [hidden] { display: none !important; }
 .rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }

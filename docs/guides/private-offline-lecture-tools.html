@@ -44,6 +44,18 @@
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.500h7l4 4V19a1.500 1.500 0 01-1.500 1.500h-9A1.500 1.500 0 016 19V4.500a1 1 0 011-1z"/><path d="M14 3.500V8h4M9 12.500h6M9 16h4"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M6.500 6h11M9 3.500h6"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.500h14M5 11h14M5 15.500h9"/></symbol>
+  <!-- The sample lecture's graphs: stroke volume against end-diastolic volume, and the wall of a ventricle. -->
+  <symbol id="g-starling" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 44 108 28 190 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-inotropy" viewBox="0 0 200 120"><path d="M26 8v94h168" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="M26 102C58 62 108 50 190 47" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".5"/><path d="M26 102C50 30 100 16 190 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="g-laplace" viewBox="0 0 200 120"><circle cx="100" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="9" opacity=".85"/><path d="M100 60h37" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M100 60l-22-22M100 60l-22 22M100 60l-31 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 5" opacity=".6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h9m4 0h3M4 16h3m4 0h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
 </svg>
 
 <a class="skip" href="#main">Skip to content</a>
@@ -86,18 +98,20 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <article>
-    <header class="doc-head">
-      <div class="wrap">
+  <!-- Pass 6 (2026-11-11): one column, large type, a picture beside the first step, one call to action. -->
+  <article class="g">
+    <header class="g-top">
+      <div class="g-col">
         <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><a href="./">Guides</a><span aria-hidden="true">/</span><span>Private and offline</span></p>
         <h1>Studying from lectures without uploading them</h1>
-        <p class="lede">Most transcription and note tools work by taking your recording onto their servers. A lecture can hold classmates' voices, unpublished slides and material your university does not want passed on. Here is what can be done with the recording never leaving your computer, and the one step where text does leave it.</p>
-        <p class="tags"><span class="tag tag-plain">No AI account for most of it</span></p>
+        <p class="g-end">At the end your lectures, their transcripts, reading editions and study pages are all on your own computer, and you know the one step that sends text. Mostly no AI account.</p>
       </div>
     </header>
 
-    <div class="wrap doc-grid">
+    <div class="g-col">
       <div class="prose">
+        <p>Most transcription and note tools work by taking your recording onto their servers. A lecture can hold classmates' voices, unpublished slides and material your university does not want passed on. Here is what can be done with the recording never leaving your computer, and the one step where text does leave it.</p>
+
         <h2 id="local">What runs entirely on your computer</h2>
         <ul class="facts">
           <li><strong>Saving the lecture.</strong> Your browser fetches the video from the course site, as it does when you watch. It goes to your own folders. Free.</li>
@@ -117,6 +131,19 @@
           <li><div>
             <h3>Save the lecture</h3>
             <p>Download it from the lecture page. From here on the internet is not needed.</p>
+            <figure class="g-pic">
+<!-- Pass 6: a drawing of the product, copied word for word from the old how-it-works/ evening or downloader/. -->
+<div class="mock" role="img" aria-label="Drawing of a course folder holding one lesson as three files: the video, the slides as a PDF, and a transcript made from the captions.">
+  <div class="win files">
+    <p class="files-path"><svg class="ic"><use href="#i-folder"/></svg>Lectures<span>/</span>PHYS201</p>
+    <ul>
+      <li><svg class="ic"><use href="#i-film"/></svg><span class="f-name">06 Cardiac output and what sets it<i>.mp4</i></span><span class="f-what">The lecture video</span><span class="f-size">129 MB</span></li>
+      <li><svg class="ic"><use href="#i-doc"/></svg><span class="f-name">06 Cardiac output slides<i>.pdf</i></span><span class="f-what">The slides linked on the lesson page</span><span class="f-size">9 slides</span></li>
+      <li><svg class="ic"><use href="#i-text"/></svg><span class="f-name">06 Cardiac output and what sets it<i>.md</i></span><span class="f-what">Transcript, from the captions</span><span class="f-size">27 min</span></li>
+    </ul>
+  </div>
+</div>
+            </figure>
           </div></li>
           <li><div>
             <h3>Transcribe it on this computer</h3>
@@ -143,7 +170,7 @@
           <li>Your browser's developer tools show the requests an extension makes. Transcribe a lecture with them open and see for yourself.</li>
         </ul>
 
-        <h2 id="limits">Honest limits</h2>
+        <h2 id="limits">Good to know: honest limits</h2>
         <ul class="facts">
           <li><strong>The course site still sees you.</strong> Saving a lecture is a download from that site, under your own login.</li>
           <li><strong>A Pro key is checked online.</strong> The check carries the key, not your lectures.</li>
@@ -170,37 +197,25 @@
             <div><p>The free downloader is. The Pro study tools are not, but their code is inside the extension where you can read it.</p></div>
           </details>
         </div>
+        <!-- end of article -->
       </div>
-
-      <aside class="doc-side" aria-label="About this guide">
-        <nav class="toc" aria-label="In this guide">
-          <h2>In this guide</h2>
-          <ol>
-            <li><a href="#local">What runs on your computer</a></li>
-            <li><a href="#sends">The one step that sends text</a></li>
-            <li><a href="#steps">Keeping a lecture offline</a></li>
-            <li><a href="#check">Checking for yourself</a></li>
-            <li><a href="#limits">Honest limits</a></li>
-            <li><a href="#faq">Questions</a></li>
-          </ol>
-        </nav>
-        <div class="side-cta">
-          <h2>The formal version</h2>
-          <p>The privacy page lists exactly what stays on your computer and the two things that leave it.</p>
-          <a class="btn btn-sm btn-quiet" href="../privacy/">Read the privacy page</a>
-        </div>
-      </aside>
     </div>
-  </article>
 
-  <section class="wrap more-guides" aria-labelledby="more-title">
-    <h2 id="more-title">Keep going</h2>
-    <ul class="guide-cards">
-      <li><a href="lecture-transcript.html"><span class="tagline">Guide</span><b>How to transcribe a lecture on your own computer</b><span>Setting up speech-to-text, and how accurate it is.</span></a></li>
-      <li><a href="read-a-lecture.html"><span class="tagline">Guide</span><b>How to read a lecture instead of watching it</b><span>The document you get from a transcript, with no AI account.</span></a></li>
-      <li><a href="../questions/"><span class="tagline">Questions</span><b>Short answers</b><span>Is it safe, what leaves my computer, and which AI accounts work.</span></a></li>
-    </ul>
-  </section>
+    <section class="g-cta" aria-labelledby="cta-title">
+      <div class="g-col">
+        <h2 id="cta-title">The formal version</h2>
+        <p class="last-say">The privacy page lists exactly what stays on your computer and the two things that leave it.</p>
+        <!-- PLACEHOLDER (install link): see the note in the header. -->
+        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+        <nav class="g-next" aria-label="Keep going">
+          <a href="../privacy/">Read the privacy page</a>
+          <a href="lecture-transcript.html">How to transcribe a lecture on your own computer</a>
+          <a href="read-a-lecture.html">How to read a lecture instead of watching it</a>
+          <a href="../questions/">Short answers</a>
+        </nav>
+      </div>
+    </section>
+  </article>
 </main>
 
 <footer class="site-foot">

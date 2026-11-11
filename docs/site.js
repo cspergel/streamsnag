@@ -85,6 +85,22 @@
   go();
   window.addEventListener('hashchange', go);
 })();
+// ==== Pass 6 (2026-11-11): old links into the demo. Kept in patch-pass6.py beside the site tooling. ====
+// Old links into the demo, which stood at the top of how-it-works/ until pass 6 and now has a page of its own.
+// Without JavaScript, how-it-works/#demo lands on the link that leads there.
+(function () {
+  var canonical = document.querySelector('link[rel="canonical"]');
+  var here = document.currentScript && document.currentScript.src;
+  if (!here || !canonical || canonical.getAttribute('href') !== 'https://streamsnag.app/how-it-works/') return;
+  var MOVED = { 'demo': 'demo/', 'demo-fig': 'demo/#demo-fig', 'demo-title': 'demo/', 'demo-read': 'demo/#demo-read' };
+  function go() {
+    var to = MOVED[decodeURIComponent(location.hash.slice(1))];
+    if (to) location.replace(new URL(to, here).href);
+  }
+  go();
+  window.addEventListener('hashchange', go);
+})();
+// ==== end of pass 6 ====
 
 // The menu on a phone or tablet is a <details>, so it opens without JavaScript. With it: choosing a link,
 // pressing Escape or clicking elsewhere closes it.

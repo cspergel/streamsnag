@@ -86,32 +86,23 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <article>
-    <header class="doc-head">
-      <div class="wrap">
-        <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Comparison</span></p>
-        <h1>StreamSnag compared with Video DownloadHelper</h1>
-        <p class="lede">The downloading most people use it for, free and with no limits. What costs money is what it doesn't do at all: turning a lecture into something you can study.</p>
-        <p class="doc-date">Checked against the other product's own public pages on <time datetime="2026-11-11">11 November 2026</time>.</p>
-      </div>
-    </header>
+  <!-- Pass 6 (2026-11-11): the dated table first, then short sections, in the home page's calm language. The
+       words of both tables, the sources and the notes are as they were; "What costs money" keeps its first two
+       sentences (the prices and AI costs it repeated are in the table's "What the paid plan is for" row and on
+       ai-costs/). "What this page compares" is now "How this was checked", beside the sources. -->
+  <section class="top cmp-top" aria-labelledby="cmp-title">
+    <div class="wrap">
+      <p class="crumbs how-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Comparison</span></p>
+      <h1 id="cmp-title">StreamSnag compared with Video DownloadHelper</h1>
+      <p class="top-say">The downloading most people use it for, free and with no limits. What costs money is what it doesn't do at all: turning a lecture into something you can study.</p>
+      <p class="doc-date">Checked against the other product's own public pages on <time datetime="2026-11-11">11 November 2026</time>.</p>
+    </div>
+  </section>
 
-    <div class="wrap doc-grid doc-grid-wide">
-      <div class="prose">
+  <section class="calm cmp-sec" id="table" aria-labelledby="table-title">
+    <div class="wrap calm-narrow">
+      <h2 id="table-title">Side by side.</h2>
         <!-- Rules for this page (planning/STATUS.md, ruling of 2026-11-11): only provable, dated claims; the other product's name may stand in this one page's title and main heading, in factual words, and nowhere else that reads as an advertisement (not the home page's title, not the description, not the store listing); do not claim StreamSnag does everything it does; re-check the table against their pages before each update. Last re-checked 2026-11-11: every quotation was found again; what changed is the dates of source 4 and source 5, the addresses of sources 1, 2, 5 and 6, and the row about where a paid licence works (new). No names of online study-note tools and no prices of theirs appear on this page. -->
-        <div class="narrow">
-          <h2 id="about">What this page compares</h2>
-          <p>People who look for a way to save lecture videos usually find Video DownloadHelper first. It is a browser extension for saving web video, and by its own account it has been “used by millions for almost 20 years”. StreamSnag is new, and it is built for one job: saving lectures and studying from them.</p>
-          <p>Everything said below about Video DownloadHelper comes from its own public pages, read on 11 November 2026, and each row names its source. Its own pages write the name two ways, Video DownloadHelper and Video Download Helper; this page uses the first. Where we could not confirm something there, we left it out. If a row is out of date, write to <a href="mailto:support@streamsnag.app">support@streamsnag.app</a> and we will correct it.</p>
-
-          <h2 id="short">The short version</h2>
-          <ul class="facts">
-            <li><strong>Choose Video DownloadHelper</strong> if you want to save video from many kinds of sites, if you use Firefox, or if you want nothing but the extension installed. It does things StreamSnag does not.</li>
-            <li><strong>Choose StreamSnag</strong> if the videos are lectures. Saving them is free with no limit on streams, and Pro turns a saved lecture into a document you can read, a study guide, a quiz and flashcards.</li>
-          </ul>
-        </div>
-
-        <h2 id="table">Side by side</h2>
         <table class="cmp">
           <caption>As the two products stood on 11 November 2026. Quotation marks show the other product's own words. Sources are listed under the table.</caption>
           <thead>
@@ -187,10 +178,23 @@
             </tr>
           </tbody>
         </table>
+    </div>
+  </section>
 
-        <div class="narrow">
-          <h2 id="not">What StreamSnag does not do</h2>
-          <p>We do not claim StreamSnag does everything Video DownloadHelper does. From the table above:</p>
+  <section class="calm cmp-sec" id="short" aria-labelledby="short-title">
+    <div class="wrap calm-narrow cmp-text">
+      <h2 id="short-title">The short version.</h2>
+      <ul class="facts">
+            <li><strong>Choose Video DownloadHelper</strong> if you want to save video from many kinds of sites, if you use Firefox, or if you want nothing but the extension installed. It does things StreamSnag does not.</li>
+            <li><strong>Choose StreamSnag</strong> if the videos are lectures. Saving them is free with no limit on streams, and Pro turns a saved lecture into a document you can read, a study guide, a quiz and flashcards.</li>
+          </ul>
+    </div>
+  </section>
+
+  <section class="calm cmp-sec" id="not" aria-labelledby="not-title">
+    <div class="wrap calm-narrow cmp-text">
+      <h2 id="not-title">What StreamSnag does not do.</h2>
+      <p>We do not claim StreamSnag does everything Video DownloadHelper does. From the table above:</p>
           <ul class="facts">
             <li>It does not run in Firefox.</li>
             <li>It does not download live broadcasts.</li>
@@ -198,15 +202,24 @@
             <li>It has not been tried on anything like as many sites, over anything like as many years. It is built for course and lecture pages.</li>
             <li>Its refund window is 7 days, which is shorter.</li>
           </ul>
+    </div>
+  </section>
 
-          <h2 id="costs">What costs money, in each</h2>
-          <p>In Video DownloadHelper, the thing you pay for is more downloading: the free version limits streams, and Premium removes the limit. In StreamSnag, downloading is never limited. What you pay for is the study side, which a downloader does not have: transcription on your own computer, the reading edition, the study page, the study pack and review cards. Pro is US$39.97 a year, US$4.99 a month, or US$99.95 once for life. The study pack also needs an AI account of your own. AI use is never part of the StreamSnag price and is never paid to StreamSnag. With a Claude or ChatGPT subscription you already have it costs nothing extra; with a pay-as-you-go key it was between a few cents and about US$1.50 a lecture on our own runs, depending on the provider. Transcription and the reading edition need no AI at all.</p>
+  <section class="calm cmp-sec" id="costs" aria-labelledby="costs-title">
+    <div class="wrap calm-narrow cmp-text">
+      <h2 id="costs-title">What costs money, in each.</h2>
+      <p>In Video DownloadHelper, the thing you pay for is more downloading: the free version limits streams, and Premium removes the limit. In StreamSnag, downloading is never limited. What you pay for is the study side, which a downloader does not have: transcription on your own computer, the reading edition, the study page, the study pack and review cards.</p>
           <p>If all you want is to save lecture videos, StreamSnag is free for that and you never need Pro.</p>
+          <p class="moment-link"><a href="../ai-costs/">What the AI parts cost</a></p>
+    </div>
+  </section>
 
-          <h2 id="study-tools">And compared with online study-note tools</h2>
-          <p>A downloader is one thing people compare StreamSnag with. The other is the kind of website or app that turns a recording into notes. This part describes that kind in general and names no product and no price of theirs: their plans differ and change, so check the one you are considering. We read the public plan pages of a few of them on 11 November 2026, and what follows is what those had in common.</p>
-        </div>
-
+  <section class="calm cmp-sec" id="study-tools" aria-labelledby="study-title">
+    <div class="wrap calm-narrow">
+      <div class="cmp-text">
+        <h2 id="study-title">And compared with online study-note tools.</h2>
+        <p>A downloader is one thing people compare StreamSnag with. The other is the kind of website or app that turns a recording into notes. This part describes that kind in general and names no product and no price of theirs: their plans differ and change, so check the one you are considering. We read the public plan pages of a few of them on 11 November 2026, and what follows is what those had in common.</p>
+      </div>
         <table class="two-ways">
           <caption class="vh">How online study-note tools usually work, and how StreamSnag works</caption>
           <thead>
@@ -240,12 +253,19 @@
             </tr>
           </tbody>
         </table>
+      <div class="cmp-text">
+        <p><strong>What those tools do better.</strong> There is nothing to install, many work on a phone, and the AI comes with the plan, so there is one bill and no account to set up. StreamSnag needs a computer with Chrome, Edge or Brave, a helper program for transcription, and an AI account of your own for the AI parts.</p>
+      </div>
+    </div>
+  </section>
 
-        <div class="narrow">
-          <p><strong>What those tools do better.</strong> There is nothing to install, many work on a phone, and the AI comes with the plan, so there is one bill and no account to set up. StreamSnag needs a computer with Chrome, Edge or Brave, a helper program for transcription, and an AI account of your own for the AI parts.</p>
-
-          <h2 id="sources">Sources</h2>
-          <p>All read on 11 November 2026.</p>
+  <section class="calm cmp-sec" id="about" aria-labelledby="about-title">
+    <div class="wrap calm-narrow cmp-text">
+      <h2 id="about-title">How this was checked.</h2>
+      <p>People who look for a way to save lecture videos usually find Video DownloadHelper first. It is a browser extension for saving web video, and by its own account it has been “used by millions for almost 20 years”. StreamSnag is new, and it is built for one job: saving lectures and studying from them.</p>
+          <p>Everything said on this page about Video DownloadHelper comes from its own public pages, read on 11 November 2026, and each row names its source. Its own pages write the name two ways, Video DownloadHelper and Video Download Helper; this page uses the first. Where we could not confirm something there, we left it out. If a row is out of date, write to <a href="mailto:support@streamsnag.app">support@streamsnag.app</a> and we will correct it.</p>
+      <h3 id="sources">Sources</h3>
+      <p>All read on 11 November 2026.</p>
           <ol class="sources">
             <li>Video DownloadHelper home page and its questions section: <a href="https://downloadhelper.net/" rel="noopener nofollow">downloadhelper.net</a></li>
             <li>Its Premium page: <a href="https://downloadhelper.net/premium" rel="noopener nofollow">downloadhelper.net/premium</a></li>
@@ -254,16 +274,18 @@
             <li>Its Chrome Web Store listing, version 10.7.1.2, updated 11 November 2026: <a href="https://chromewebstore.google.com/detail/video-download-helper/lmjnegcaeklhafolokijcfjliaokphfk" rel="noopener nofollow">chromewebstore.google.com/detail/video-download-helper/lmjnegcaeklhafolokijcfjliaokphfk</a></li>
             <li>Its privacy policy, last updated 1 June 2026: <a href="https://downloadhelper.net/privacy" rel="noopener nofollow">downloadhelper.net/privacy</a></li>
           </ol>
-          <p class="mn">Video DownloadHelper is the product of its own developer, and its name belongs to them. StreamSnag is not affiliated with it. Prices on this page are as each product showed them on the date above.</p>
-
-          <div class="callout">
-            <h2>See the part that is different</h2>
-            <p>The <a href="../#gallery">gallery</a> has real output from two invented lectures: a reading edition, a study guide, a quiz, flashcards and a study page for each.</p>
-          </div>
-        </div>
-      </div>
+      <p>Video DownloadHelper is the product of its own developer, and its name belongs to them. StreamSnag is not affiliated with it. Prices on this page are as each product showed them on the date above.</p>
     </div>
-  </article>
+  </section>
+
+  <section class="calm last" aria-labelledby="diff-title">
+    <div class="wrap">
+      <h2 id="diff-title">See the part that is different.</h2>
+      <p class="last-say"><a href="../guides/#samples">The samples</a> are real output from two invented lectures: a reading edition, a study guide, a quiz, flashcards and a study page for each.</p>
+      <!-- PLACEHOLDER (install link): see the note in the header. -->
+      <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+    </div>
+  </section>
 </main>
 
 <footer class="site-foot">

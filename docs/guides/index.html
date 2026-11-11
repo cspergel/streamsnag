@@ -86,26 +86,88 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <header class="doc-head">
-    <div class="wrap">
-      <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Guides</span></p>
-      <h1>Guides to saving and studying recorded lectures</h1>
-      <p class="lede">Eight short guides, in the order you meet the problems: keeping the lecture, getting its words, reading it, and turning it into something to review. Each one says which steps are free, which are Pro, and which use an AI account of your own.</p>
-    </div>
-  </header>
+  <!-- Pass 6 (2026-11-11): the eight guides as large rows, then every sample (#samples). The samples and their notes
+       stood on how-it-works/ ("See what it makes", with a "More detail" toggle) until this pass. -->
+  <article class="g">
+    <header class="g-top">
+      <div class="g-col">
+        <p class="crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Guides</span></p>
+        <h1>Guides to saving and studying recorded lectures</h1>
+        <p class="g-end">Eight short guides, in the order you meet the problems: keeping the lecture, getting its words, reading it, and turning it into something to review.</p>
+      </div>
+    </header>
 
-  <section class="wrap more-guides doc-grid doc-grid-wide" aria-label="The guides">
-    <ul class="guide-cards">
-      <li><a href="save-a-lecture.html"><span class="tagline">Free · No AI account</span><b>How to download a lecture video you are allowed to keep</b><span>Press play first, save the video with its slides and captions, and what to do when nothing shows up.</span></a></li>
-      <li><a href="download-a-whole-course.html"><span class="tagline">Free · No AI account</span><b>How to download all the lectures on a course page</b><span>Review the list before anything is saved: names, copies, previews, and what cannot be saved.</span></a></li>
-      <li><a href="lecture-transcript.html"><span class="tagline">Free from captions · Pro without them</span><b>How to transcribe a lecture on your own computer</b><span>From the captions when there are some, and by speech-to-text on your machine, with no minute limits, when there are none.</span></a></li>
-      <li><a href="read-a-lecture.html"><span class="tagline">Pro · No AI account</span><b>How to read a lecture instead of watching it</b><span>Turn the recording into a document that keeps what was taught, with headings, a contents list and a minute beside every paragraph.</span></a></li>
-      <li><a href="slides-with-lecture-recording.html"><span class="tagline">Pro · No AI account</span><b>How to sync lecture slides with the recording</b><span>Match a PDF or PowerPoint deck to what is said, so every slide has its minute.</span></a></li>
-      <li><a href="lecture-to-flashcards.html"><span class="tagline">By hand, or Pro with your own AI account</span><b>How to turn a lecture into flashcards</b><span>The rules of a good card in plain words, then two ways to make them, with Anki export.</span></a></li>
-      <li><a href="lecture-to-study-guide.html"><span class="tagline">Pro · Uses your AI</span><b>How to make a study guide and practice quiz from a lecture</b><span>What a study pack contains, what your AI account is charged, and how to check what it wrote.</span></a></li>
-      <li><a href="private-offline-lecture-tools.html"><span class="tagline">Mostly no AI account</span><b>Studying from lectures without uploading them</b><span>What runs entirely on your computer, and the one step that sends text.</span></a></li>
-    </ul>
-  </section>
+    <div class="g-col">
+      <section aria-label="The guides">
+        <ul class="gi-list">
+          <li><a href="save-a-lecture.html"><b>How to download a lecture video you are allowed to keep</b><span>Free, no AI account. Press play first, save the video with its slides and captions, and what to do when nothing shows up.</span></a></li>
+          <li><a href="download-a-whole-course.html"><b>How to download all the lectures on a course page</b><span>Free, no AI account. Review the list before anything is saved: names, copies, previews, and what cannot be saved.</span></a></li>
+          <li><a href="lecture-transcript.html"><b>How to transcribe a lecture on your own computer</b><span>Free from captions, Pro without them. From the captions when there are some, and by speech-to-text on your machine, with no minute limits, when there are none.</span></a></li>
+          <li><a href="read-a-lecture.html"><b>How to read a lecture instead of watching it</b><span>Pro, no AI account. Turn the recording into a document that keeps what was taught, with headings, a contents list and a minute beside every paragraph.</span></a></li>
+          <li><a href="slides-with-lecture-recording.html"><b>How to sync lecture slides with the recording</b><span>Pro, no AI account. Match a PDF or PowerPoint deck to what is said, so every slide has its minute.</span></a></li>
+          <li><a href="lecture-to-flashcards.html"><b>How to turn a lecture into flashcards</b><span>By hand, or Pro with your own AI account. The rules of a good card in plain words, then two ways to make them, with Anki export.</span></a></li>
+          <li><a href="lecture-to-study-guide.html"><b>How to make a study guide and practice quiz from a lecture</b><span>Pro, uses your AI. What a study pack contains, what your AI account is charged, and how to check what it wrote.</span></a></li>
+          <li><a href="private-offline-lecture-tools.html"><b>Studying from lectures without uploading them</b><span>Mostly no AI account. What runs entirely on your computer, and the one step that sends text.</span></a></li>
+        </ul>
+        <p class="gi-say">Each one says which steps are free, which are Pro, and which use an AI account of your own.</p>
+      </section>
+
+      <section class="gi-samples" id="samples" aria-labelledby="samples-title">
+        <h2 id="samples-title">See what it makes.</h2>
+        <p>Real output you can open, from two lectures we wrote for the purpose. Nothing here comes from anyone's course. Start with the reading edition.</p>
+        <div class="gi-thumbs">
+          <a href="../sample/reading-edition.html"><img src="../img/read-cover.png" width="880" height="1100" loading="lazy" alt="The opening of the sample reading edition: Cardiac output and what sets it, a 27 minute lecture and a 14 minute read of 3,194 words, with a contents list of four sections and their times."></a>
+          <a href="../sample/study-page.html"><img src="../img/sample-page.png" width="640" height="800" loading="lazy" alt="The sample study page: the list of slides above the transcript, each with its time."></a>
+          <a href="../sample/study-guide.html"><img src="../img/sample-guide.png" width="640" height="800" loading="lazy" alt="The sample study guide, open at its first key idea, with the lecturer's own words quoted and a worked example."></a>
+          <a href="../sample/study-guide.html#quiz"><img src="../img/sample-quiz.png" width="640" height="800" loading="lazy" alt="The sample practice quiz: a question with four answers to choose from."></a>
+        </div>
+
+        <article class="gi-lec lec-card" aria-labelledby="lec1-title">
+          <p class="lec-n">Lecture one · PHYS201, lecture 6</p>
+          <h3 id="lec1-title">Cardiac output and what sets it</h3>
+          <p class="lec-meta">An invented physiology lecture: 27 minutes, 9 slides, with captions.</p>
+          <ul class="outs">
+            <li class="out-read"><a href="../sample/reading-edition.html"><b>Reading edition · No AI used</b><span>The whole lecture as a document you read instead of watching: 3,194 words, a 14-minute read, with a time beside every paragraph.</span></a></li>
+            <li><a href="../sample/study-guide.html"><b>Study guide · Written by AI</b><span>5 key ideas, 2 review sheets, key figures, easily confused pairs, formulas and a glossary.</span></a></li>
+            <li><a href="../sample/study-guide.html#quiz"><b>Flashcards and quiz · Written by AI</b><span>9 flashcards and 8 questions, each with its minute, its slide and the lecturer's words.</span></a></li>
+            <li><a href="../sample/study-page.html"><b>Study page · No AI used</b><span>The slides lined up with the transcript. This sample has no video, so choose a slide or a time and watch the other side follow.</span></a></li>
+          </ul>
+          <p class="outs-also">The whole sample has 49 paragraphs in 4 parts, and its minutes open the sample study page, which has no video. <a href="../sample/reading-edition-no-slides.html">The same lecture made without its slides</a>: two of its four parts are headed by their own terms, two by number and minute. Also <a href="../sample/study-guide.html#cards">the flashcards</a> and the <a href="../sample/cardiac-flashcards.txt" download>Anki file</a>.</p>
+        </article>
+
+        <article class="gi-lec lec-card" aria-labelledby="lec2-title">
+          <p class="lec-n">Lecture two · Statistics for the life sciences, lecture 9</p>
+          <h3 id="lec2-title">From a sample to a claim: standard error, confidence intervals and p-values</h3>
+          <p class="lec-meta">An invented statistics lecture: 28 minutes, 11 slides, with captions.</p>
+          <ul class="outs">
+            <li class="out-read"><a href="../sample/stats-reading-edition.html"><b>Reading edition · No AI used</b><span>3,183 words, a 14-minute read, with two sentences marked as the lecturer's emphasis and five spoken lists set out as lists.</span></a></li>
+            <li><a href="../sample/stats-study-guide.html"><b>Study guide · Written by AI</b><span>5 key ideas, 2 review sheets, key figures, easily confused pairs, formulas and a glossary.</span></a></li>
+            <li><a href="../sample/stats-study-guide.html#quiz"><b>Flashcards and quiz · Written by AI</b><span>9 flashcards and 8 questions, each with its minute, its slide and the lecturer's words.</span></a></li>
+            <li><a href="../sample/stats-study-page.html"><b>Study page · No AI used</b><span>The slides lined up with the transcript: 9 of the 11 slides matched to what is said, and 2 marked as approximate. This sample has no video.</span></a></li>
+          </ul>
+          <p class="outs-also">Also <a href="../sample/stats-study-guide.html#cards">the flashcards</a> and the <a href="../sample/stats-flashcards.txt" download>Anki file</a>.</p>
+        </article>
+
+        <div class="gi-notes">
+          <p><b>Which parts AI wrote.</b> The study guides, quizzes and flashcards were written by AI from each lecture's captions and slide text, then checked against them. They can still be wrong, and each guide says so on its first screen. The reading editions and study pages were made without AI, by the current version of StreamSnag.</p>
+          <p><b>What the second pack took.</b> The statistics pack was 20 AI requests in 1 minute 31 seconds and cost US$0.80 on Claude Sonnet. Of 65 statements pulled from the lecture, 61 passed the quote check. Of 17 flashcards written, 9 were kept.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="g-cta" aria-labelledby="cta-title">
+      <div class="g-col">
+        <h2 id="cta-title">Start with tonight's lecture.</h2>
+        <p class="last-say">Saving is free, and Pro takes your first lecture from start to finish, free, with no card.</p>
+        <!-- PLACEHOLDER (install link): see the note in the header. -->
+        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+        <nav class="g-next" aria-label="Keep going">
+          <a href="../how-it-works/">How it works, step by step</a>
+          <a href="../demo/">Try the demo</a>
+        </nav>
+      </div>
+    </section>
+  </article>
 </main>
 
 <footer class="site-foot">

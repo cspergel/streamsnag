@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<!-- This site loads nothing from other hosts: no CDN, hosted fonts, analytics, cookies or trackers. The policy below enforces it. Its two typefaces, Newsreader and Figtree (SIL Open Font License, licence texts in fonts/), are served from this site. The only scripts are site.js (the light and dark switch, the menu, old links to sections that now have pages of their own, the gentle reveal of the big pictures, and the short silent film on the home page, which comes from this site too) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <title>Download all the lecture videos on a course page | StreamSnag</title>
 <meta name="description" content="Save every lecture on a course page in one go: review the list first, fix the file names, leave out copies and previews, and see what cannot be saved. Free.">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141716" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="no-referrer">
 <link rel="canonical" href="https://streamsnag.app/guides/download-a-whole-course.html">
 <meta property="og:type" content="article">
@@ -26,8 +26,12 @@
 <meta name="twitter:description" content="Save every lecture on a course page in one go: review the list first, fix the file names, leave out copies and previews, and see what cannot be saved. Free.">
 <meta name="twitter:image" content="https://streamsnag.app/img/og.png">
 <meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
-<link rel="icon" type="image/png" href="../icon.png">
-<link rel="apple-touch-icon" href="../icon.png">
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<link rel="preload" href="../fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../site.css">
 <script src="../site.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://streamsnag.app/guides/"},{"@type":"ListItem","position":3,"name":"Download a whole course","item":"https://streamsnag.app/guides/download-a-whole-course.html"}]},{"@type":"HowTo","name":"Download all the lectures on a course page","step":[{"@type":"HowToStep","position":1,"name":"Open the page and let the videos load","text":"Many players only fetch their video once it starts. Scroll through the page so the players appear, and press play on any that stay blank. Lecture files the page links to directly are listed as well, up to 150 of them."},{"@type":"HowToStep","position":2,"name":"Click the StreamSnag icon and press the button under the first lecture","text":"The first lecture on the page is in front, under “On this page”. Below it, the button says how many videos there are, for example “Download all (6)”. On a page with eight or more, a row of small squares shows each video, with a line such as “13 saved”, “21 to get” and “4 to check”, and the button reads “Download the 21 missing…”. Either way the line beside it says “You review the list first.” Nothing starts yet. It opens a sheet called Review before downloading."},{"@type":"HowToStep","position":3,"name":"Read the three groups","text":"Ready to download has the lectures, ticked, each with the exact file name it will get. Check these holds what you probably do not want, each with its reason, such as “Same as another one” or “Looks like a preview or ad”, and what to do: “Not ticked: tick it if you want it too.” They are “Left out unless you tick them.” Can't be downloaded lists the rest, with the reason."},{"@type":"HowToStep","position":4,"name":"Fix the names and the folder","text":"The pencil beside a name lets you change it. When several lectures have no number in their name, Options offers “Number them in page order (01, 02, …)”. The folder is shown at the top. If the page links to slides or handouts, tick “Also download 3 files (PDFs, slides)”, with your own count, to take them too."},{"@type":"HowToStep","position":5,"name":"Press Download","text":"The button says how many will be saved, for example “Download 8”, and the sheet says how much that comes to. Downloads run two at a time unless you change it, and carry on after the popup closes. The popup says how it is going, for example “Downloading 8 · 6 waiting their turn”, and Activity, at the bottom, shows each one with its speed and the time left."}]},{"@type":"FAQPage","@id":"https://streamsnag.app/guides/download-a-whole-course.html#faq","mainEntity":[{"@type":"Question","name":"Is there a limit on how many lectures I can download?","acceptedAnswer":{"@type":"Answer","text":"No. There is no count, no waiting time and no paid tier for downloading. The limit is your disk."}},{"@type":"Question","name":"How many download at the same time?","acceptedAnswer":{"@type":"Answer","text":"Two, unless you change it. The number is under Downloads at once in Settings, on the Downloads tab, and goes from 1 to 6. A lower number is kinder to a slow connection."}},{"@type":"Question","name":"Where do the files go?","acceptedAnswer":{"@type":"Answer","text":"Into the folder shown at the top of the review sheet, inside your browser's Downloads folder. With the helper program installed you can choose any folder on your computer."}}]}]}</script>
@@ -43,6 +47,11 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="10.5" width="12" height="9" rx="2"/><path d="M8.500 10.500V8a3.500 3.500 0 017 0v2.500"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.500 6l-6 6 6 6"/></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M9.500 6l6 6-6 6"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M18.500 12a6.500 6.500 0 11-2-4.700M18.500 4.500v4h-4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3.500h6.500L18 8v12.500H7z"/><path d="M13.500 3.500V8H18"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
   <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
@@ -129,33 +138,7 @@
           <li><div>
             <h3>Read the three groups</h3>
             <p>Ready to download has the lectures, ticked, each with the exact file name it will get. Check these holds what you probably do not want, each with its reason, such as “Same as another one” or “Looks like a preview or ad”, and what to do: “Not ticked: tick it if you want it too.” They are “Left out unless you tick them.” Can't be downloaded lists the rest, with the reason.</p>
-            <figure class="g-pic g-pic-night">
-<!-- Pass 6: a drawing of the product, copied word for word from the old how-it-works/ evening or downloader/. -->
-<div class="xpop dl-review" role="img" aria-label="Drawing of the review step on a course page. Review before downloading: 6 videos selected, 2 need a look, saved to Downloads, StreamSnag, PHYS201. Ready to download: six lectures in course order, from 04 The cardiac cycle to 09 The microcirculation, all ticked. Check these, left out unless you tick them: a second copy of lecture 6, tagged Same as another one, and a one-minute trailer, tagged Looks like a preview or ad. About 788 MB in all, with the buttons Cancel and Download 6.">
-  <div class="xp-sheet">
-    <div class="rv-head"><div><p class="rv-title">Review before downloading</p><p class="rv-sum">6 videos selected · 2 need a look</p></div></div>
-    <div class="rv-body">
-      <p class="rv-where"><svg class="ic"><use href="#i-folder"/></svg>Downloads › StreamSnag › PHYS201</p>
-      <div class="rv-group">
-        <p class="rv-group-h">Ready to download <span class="rv-count">6</span></p>
-        <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">04 The cardiac cycle.mp4</span><span class="rv-meta">142 MB</span></p>
-        <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">05 Heart sounds and murmurs.mp4</span><span class="rv-meta">110 MB</span></p>
-        <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">06 Cardiac output and what sets it.mp4</span><span class="rv-meta">129 MB</span></p>
-        <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">07 Blood pressure and its control.mp4</span><span class="rv-meta">134 MB</span></p>
-        <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">08 Exercise and the circulation.mp4</span><span class="rv-meta">151 MB</span></p>
-        <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">09 The microcirculation.mp4</span><span class="rv-meta">122 MB</span></p>
-      </div>
-      <div class="rv-group">
-        <p class="rv-group-h">Check these <span class="rv-count">2</span></p>
-        <p class="rv-hint">Left out unless you tick them.</p>
-        <p class="rv-item"><i class="dl-tick"></i><span class="rv-name">06 Cardiac output and what sets it (2).mp4</span><span class="rv-meta"><span class="rv-tag">Same as another one</span> 27:00 · 129 MB</span></p>
-        <p class="rv-item"><i class="dl-tick"></i><span class="rv-name">Trailer PHYS201.mp4</span><span class="rv-meta"><span class="rv-tag">Looks like a preview or ad</span> 1:00 · 6 MB</span></p>
-      </div>
-    </div>
-    <div class="rv-foot"><span class="rv-total">About 788 MB in all</span><span class="xp-chip">Cancel</span><span class="xp-btn">Download 6</span></div>
-  </div>
-</div>
-            </figure>
+            <figure class="g-pic g-pic-shot"><span class="bubble g-bubble"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/review-1x.avif 400w, ../img/shots/review-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/review-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/review-1x.webp" width="400" height="600" alt="The review sheet on a course page: Review before downloading, 5 videos selected, 1 needs a look. Ready to download: lectures 4, 5, 7, 8 and 9 in course order, ticked, each with its length and size. Check these, left out unless you tick them: the trailer, tagged Looks like a preview or ad. 1 already in your folders: skipped. About 659 MB in all, Cancel, Download 5." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/review-dark-1x.avif 400w, ../img/shots/review-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/review-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/review-dark-1x.webp" width="400" height="600" alt="The review sheet on a course page: Review before downloading, 5 videos selected, 1 needs a look. Ready to download: lectures 4, 5, 7, 8 and 9 in course order, ticked, each with its length and size. Check these, left out unless you tick them: the trailer, tagged Looks like a preview or ad. 1 already in your folders: skipped. About 659 MB in all, Cancel, Download 5." loading="lazy" decoding="async"></picture></span></figure>
           </div></li>
           <li><div>
             <h3>Fix the names and the folder</h3>
@@ -252,9 +235,10 @@
           <li><a href="../guides/private-offline-lecture-tools.html">Private, offline lecture tools</a></li>
         </ul>
       </nav>
-      <nav class="foot-col" aria-label="Legal and contact">
-        <h2>Legal and contact</h2>
+      <nav class="foot-col" aria-label="Company">
+        <h2>Company</h2>
         <ul>
+          <li class="foot-co">Spergel Health AI LLC<br>Florida, USA</li>
           <li><a href="../privacy/">Privacy</a></li>
           <li><a href="../terms/">Terms and the Pro licence</a></li>
           <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code of the free core (GPL-3.0)</a></li>
@@ -264,7 +248,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are drawings, and every sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself; the demo and a few diagrams are drawings. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

@@ -1,5 +1,5 @@
-// StreamSnag website: the light and dark switch. Nothing else runs on this site, and nothing is sent
-// anywhere. The page follows the system setting until the button is used; the choice is then kept in
+// StreamSnag website: the light and dark switch, the menu, old links, and (pass 7) the gentle reveal of the big
+// pictures. Nothing is sent anywhere. The page follows the system setting until the button is used; the choice is then kept in
 // this browser only. Choosing the same theme as the system goes back to following the system.
 (function () {
   var root = document.documentElement;
@@ -121,4 +121,93 @@
       if (menu.hasAttribute('open') && !menu.contains(e.target)) menu.removeAttribute('open');
     });
   });
+})();
+
+// ==== Pass 7 (2026-11-11): the big pictures come up gently as they scroll into view. Kept in patch-js-p7.py. ====
+// Only with JavaScript and only when the reader has not asked for less motion; without either everything is simply there.
+(function () {
+  if (!('IntersectionObserver' in window) || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var root = document.documentElement;
+  root.classList.add('rv');
+  document.addEventListener('DOMContentLoaded', function () {
+    var items = document.querySelectorAll('.reveal');
+    var seen = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i += 1) {
+        if (entries[i].isIntersecting) {
+          entries[i].target.classList.add('is-in');
+          seen.unobserve(entries[i].target);
+        }
+      }
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+    for (var i = 0; i < items.length; i += 1) seen.observe(items[i]);
+    // Printing, or a jump to the end: show everything.
+    window.addEventListener('beforeprint', function () { root.classList.remove('rv'); });
+  });
+})();
+
+// The home page's first picture can play a 10-second silent film of the real popup saving the lecture and the
+// reading edition opening (img/film/, made from the same screenshots). Only on a wide screen, only when the reader
+// has not asked for less motion, only while it is in view, and with a button to pause it. Without JavaScript, or
+// before it plays, the still picture underneath is the same scene.
+(function () {
+  if (!window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+  // After the page has loaded and settled, so the film never competes with the first paint.
+  window.addEventListener('load', function () { setTimeout(start, 1200); });
+  function start() {
+    var stage = document.querySelector('[data-film]');
+    if (!stage || !window.matchMedia('(min-width: 760px)').matches) return;
+    var root = document.documentElement;
+    var base = stage.getAttribute('data-film');
+    var video = document.createElement('video');
+    video.className = 'film';
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.setAttribute('aria-hidden', 'true');
+    video.setAttribute('tabindex', '-1');
+    var dark = function () {
+      var t = root.getAttribute('data-theme');
+      return t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    };
+    var load = function () {
+      var name = base + (dark() ? '-dark' : '');
+      video.innerHTML = '';
+      [['webm', 'video/webm'], ['mp4', 'video/mp4']].forEach(function (s) {
+        var src = document.createElement('source');
+        src.src = name + '.' + s[0];
+        src.type = s[1];
+        video.appendChild(src);
+      });
+      stage.classList.remove('is-playing');
+      video.load();
+    };
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'film-btn';
+    var paused = false;
+    var label = function () {
+      button.textContent = paused ? 'Play' : 'Pause';
+      button.setAttribute('aria-label', paused ? 'Play the short film of StreamSnag' : 'Pause the short film of StreamSnag');
+    };
+    label();
+    button.addEventListener('click', function () {
+      paused = !paused;
+      if (paused) video.pause(); else video.play().catch(function () {});
+      label();
+    });
+    video.addEventListener('playing', function () { stage.classList.add('is-playing'); });
+    stage.appendChild(video);
+    stage.appendChild(button);
+    load();
+    var inView = false;
+    new IntersectionObserver(function (entries) {
+      inView = entries[0].isIntersecting;
+      if (inView && !paused) video.play().catch(function () {}); else video.pause();
+    }, { threshold: 0.25 }).observe(stage);
+    var again = function () { load(); if (inView && !paused) video.play().catch(function () {}); };
+    new MutationObserver(again).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+    var system = window.matchMedia('(prefers-color-scheme: dark)');
+    if (system.addEventListener) system.addEventListener('change', again);
+  }
 })();

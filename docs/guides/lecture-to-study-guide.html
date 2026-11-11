@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<!-- This site loads nothing from other hosts: no CDN, hosted fonts, analytics, cookies or trackers. The policy below enforces it. Its two typefaces, Newsreader and Figtree (SIL Open Font License, licence texts in fonts/), are served from this site. The only scripts are site.js (the light and dark switch, the menu, old links to sections that now have pages of their own, the gentle reveal of the big pictures, and the short silent film on the home page, which comes from this site too) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <title>Study guide and practice quiz from a lecture | StreamSnag</title>
 <meta name="description" content="Turn a recorded lecture into a study guide and a practice quiz that point back to the minute and slide. What it needs, what your own AI account costs, limits.">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141716" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="no-referrer">
 <link rel="canonical" href="https://streamsnag.app/guides/lecture-to-study-guide.html">
 <meta property="og:type" content="article">
@@ -26,8 +26,12 @@
 <meta name="twitter:description" content="Turn a recorded lecture into a study guide and a practice quiz that point back to the minute and slide. What it needs, what your own AI account costs, limits.">
 <meta name="twitter:image" content="https://streamsnag.app/img/og.png">
 <meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
-<link rel="icon" type="image/png" href="../icon.png">
-<link rel="apple-touch-icon" href="../icon.png">
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<link rel="preload" href="../fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../site.css">
 <script src="../site.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://streamsnag.app/guides/"},{"@type":"ListItem","position":3,"name":"Study guide and practice quiz","item":"https://streamsnag.app/guides/lecture-to-study-guide.html"}]},{"@type":"HowTo","name":"Make a study guide and practice quiz from a lecture","step":[{"@type":"HowToStep","position":1,"name":"Save the lecture and get its transcript","text":"The pack is written from the transcript and the text on the slides, so it needs both steps before it on the lecture's path. Slides are optional but make the guide better."},{"@type":"HowToStep","position":2,"name":"Choose an AI account","text":"Open Settings. On the AI tab, pick the provider and sign in or paste a key. AI stays off until you do this."},{"@type":"HowToStep","position":3,"name":"Press Make study pack","text":"It is the fourth step on the lecture's path, which “Show the path” opens. Before anything is sent, a sheet headed “Before the AI reads this lecture” shows what it makes, what it sends, to which account, and roughly how much AI use it takes. You can leave out parts you do not want, and that changes how much AI use the run takes. The button at the bottom is “Make the study pack”; “Not now” sends nothing."},{"@type":"HowToStep","position":4,"name":"Let it run","text":"It takes one to three minutes and carries on if you close the popup. It reads the lecture, writes the guide, writes the cards and questions, then checks every card against the lecture and saves the result next to the video."},{"@type":"HowToStep","position":5,"name":"Open the guide and do the quiz","text":"Answer the self-test from memory first. The practice quiz gives new cases to try the ideas on, tells you why each wrong option is wrong, and keeps a score."}]},{"@type":"FAQPage","@id":"https://streamsnag.app/guides/lecture-to-study-guide.html#faq","mainEntity":[{"@type":"Question","name":"Is the AI included in StreamSnag Pro?","acceptedAnswer":{"@type":"Answer","text":"No. Pro is US$39.97 a year, US$4.99 a month, or US$99.95 once for life for the study tools. The AI that writes the pack is your own account, never StreamSnag's: nothing extra with a Claude or ChatGPT subscription you already have, or a few cents to about US$1.50 a lecture with a pay-as-you-go key."}},{"@type":"Question","name":"What is sent to the AI provider?","acceptedAnswer":{"@type":"Answer","text":"The transcript of that lecture and the text on its slides, with the speaker notes when the slides are a PowerPoint file. Pictures of slides and the video are never sent. You see this before each run."}},{"@type":"Question","name":"Does it work without slides?","acceptedAnswer":{"@type":"Answer","text":"Yes. It then cites minutes only, and there are no key figures."}}]}]}</script>
@@ -43,6 +47,11 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="10.5" width="12" height="9" rx="2"/><path d="M8.500 10.500V8a3.500 3.500 0 017 0v2.500"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.500 6l-6 6 6 6"/></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M9.500 6l6 6-6 6"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M18.500 12a6.500 6.500 0 11-2-4.700M18.500 4.500v4h-4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3.500h6.500L18 8v12.500H7z"/><path d="M13.500 3.500V8H18"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
   <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
@@ -114,7 +123,7 @@
 
         <h2 id="what">What a study pack contains</h2>
         <p>StreamSnag calls the whole thing a study pack. The guide opens with the big picture and what you should be able to do afterwards. Then come the key ideas, each as a question with an explanation and the lecturer's own words. After that: review sheets for the hardest topics, key figures from the slides, easily confused pairs, formulas and numbers, a self-test, a practice quiz with every wrong option explained, and a glossary. Flashcards come with it and have <a href="lecture-to-flashcards.html">a guide of their own</a>.</p>
-        <figure class="g-pic g-pic-crop"><img src="../img/sample-guide.png" width="640" height="800" loading="lazy" alt="The sample study guide, open at its first key idea, with the lecturer's own words quoted and a worked example."></figure>
+        <figure class="g-pic g-pic-frame"><span class="frame g-win"><span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Cardiac output and what sets it.guide.html</span></span><span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/guide-1x.avif 1280w, ../img/shots/guide-2x.avif 2560w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-1x.webp 1280w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><img src="../img/shots/guide-1x.webp" width="1280" height="860" alt="The sample study guide, open at its first key idea, with the lecturer's own words quoted, each with its minute and slide." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/guide-dark-1x.avif 1280w, ../img/shots/guide-dark-2x.avif 2560w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-dark-1x.webp 1280w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><img src="../img/shots/guide-dark-1x.webp" width="1280" height="860" alt="The sample study guide, open at its first key idea, with the lecturer's own words quoted, each with its minute and slide." loading="lazy" decoding="async"></picture></span></span></figure>
         <p>Every item names the minute and the slide it came from. <a href="../sample/study-guide.html">Open a sample study guide</a> to see all of it; AI wrote it from an invented lecture.</p>
 
         <h2 id="ai">It runs on your own AI account</h2>
@@ -158,7 +167,7 @@
           <li><div>
             <h3>Open the guide and do the quiz</h3>
             <p>Answer the self-test from memory first. The practice quiz gives new cases to try the ideas on, tells you why each wrong option is wrong, and keeps a score.</p>
-            <figure class="g-pic g-pic-crop"><img src="../img/sample-quiz.png" width="640" height="800" loading="lazy" alt="The sample practice quiz: a question with four answers to choose from."></figure>
+            <figure class="g-pic g-pic-frame"><span class="frame g-win"><span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Cardiac output and what sets it.guide.html</span></span><span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/quiz-1x.avif 1280w, ../img/shots/quiz-2x.avif 2560w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/quiz-1x.webp 1280w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><img src="../img/shots/quiz-1x.webp" width="1280" height="860" alt="The sample practice quiz: a question with four answers to choose from." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/quiz-dark-1x.avif 1280w, ../img/shots/quiz-dark-2x.avif 2560w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/quiz-dark-1x.webp 1280w" sizes="(min-width: 964px) 900px, calc(100vw - 32px)"><img src="../img/shots/quiz-dark-1x.webp" width="1280" height="860" alt="The sample practice quiz: a question with four answers to choose from." loading="lazy" decoding="async"></picture></span></span></figure>
           </div></li>
         </ol>
 
@@ -246,9 +255,10 @@
           <li><a href="../guides/private-offline-lecture-tools.html">Private, offline lecture tools</a></li>
         </ul>
       </nav>
-      <nav class="foot-col" aria-label="Legal and contact">
-        <h2>Legal and contact</h2>
+      <nav class="foot-col" aria-label="Company">
+        <h2>Company</h2>
         <ul>
+          <li class="foot-co">Spergel Health AI LLC<br>Florida, USA</li>
           <li><a href="../privacy/">Privacy</a></li>
           <li><a href="../terms/">Terms and the Pro licence</a></li>
           <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code of the free core (GPL-3.0)</a></li>
@@ -258,7 +268,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are drawings, and every sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself; the demo and a few diagrams are drawings. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<!-- This site loads nothing from other hosts: no CDN, hosted fonts, analytics, cookies or trackers. The policy below enforces it. Its two typefaces, Newsreader and Figtree (SIL Open Font License, licence texts in fonts/), are served from this site. The only scripts are site.js (the light and dark switch, the menu, old links to sections that now have pages of their own, the gentle reveal of the big pictures, and the short silent film on the home page, which comes from this site too) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <title>Free video downloader for lectures and courses | StreamSnag</title>
 <meta name="description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141716" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="no-referrer">
 <link rel="canonical" href="https://streamsnag.app/downloader/">
 <meta property="og:type" content="website">
@@ -26,8 +26,12 @@
 <meta name="twitter:description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
 <meta name="twitter:image" content="https://streamsnag.app/img/og.png">
 <meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
-<link rel="icon" type="image/png" href="../icon.png">
-<link rel="apple-touch-icon" href="../icon.png">
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<link rel="preload" href="../fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../site.css">
 <script src="../site.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"The downloader","item":"https://streamsnag.app/downloader/"}]}]}</script>
@@ -43,6 +47,11 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="10.5" width="12" height="9" rx="2"/><path d="M8.500 10.500V8a3.500 3.500 0 017 0v2.500"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.500 6l-6 6 6 6"/></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M9.500 6l6 6-6 6"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M18.500 12a6.500 6.500 0 11-2-4.700M18.500 4.500v4h-4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3.500h6.500L18 8v12.500H7z"/><path d="M13.500 3.500V8H18"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
   <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
@@ -115,26 +124,19 @@
       </div>
       <p class="top-price">Unlimited video downloads, free forever. No ads, no account, and nothing held back to sell you Pro.</p>
 
-      <!-- The one picture: a lecture page in the browser with the StreamSnag popup open over it. The page is drawn
-           in HTML (the invented lecture PHYS201, lecture 6); the popup is the product's own screenshot. -->
-      <figure class="dl-pic">
-        <div class="dl-stage">
-          <div class="dl-browser" role="img" aria-label="A lecture page in the browser, course.example: PHYS201, lecture 6, Cardiac output and what sets it. The recording is paused at 08:47 on a slide called Preload and the Frank-Starling law, and under it the page links the slides as a PDF and a handout.">
-            <div class="dl-bar"><span class="dl-dots"><i></i><i></i><i></i></span><span class="dl-url">course.example/phys201/lecture-6</span><span class="dl-icon"><svg class="mark mark-sm"><use href="#i-mark"/></svg></span></div>
-            <div class="dl-page">
-              <p class="dl-course">PHYS201 · Lecture 6</p>
-              <p class="dl-title">Cardiac output and what sets it</p>
-              <div class="pic-video">
-                <div class="pic-slide">
-                  <p class="pic-slide-h">Preload and the Frank-Starling law</p>
-                  <svg class="pic-graph"><use href="#g-starling"/></svg>
-                </div>
-                <div class="pic-bar"><svg class="ic ic-fill"><use href="#i-play"/></svg><span class="pic-rail"><i></i></span><span class="pic-time">08:47</span></div>
-              </div>
-              <p class="dl-files"><span><svg class="ic"><use href="#i-doc"/></svg>Slides (PDF)</span><span><svg class="ic"><use href="#i-doc"/></svg>Handout</span></p>
+      <!-- The one picture (pass 7): the lecture page of the invented course PHYS201 in a browser, with the real StreamSnag
+           popup open on it, before anything is pressed. The frame is drawn by the site; what is inside it are screenshots. -->
+      <figure class="pic hero-pic dl-pic">
+        <div class="hero-stage">
+          <div class="frame hero-browser">
+            <div class="frame-bar" aria-hidden="true">
+              <span class="frame-nav"><svg class="ic"><use href="#i-back"/></svg><svg class="ic"><use href="#i-fwd"/></svg><svg class="ic"><use href="#i-redo"/></svg></span>
+              <span class="frame-url">course.example/phys201/lecture-6</span>
+              <span class="frame-ext is-open"><svg class="mark"><use href="#i-mark"/></svg></span>
             </div>
+            <div class="frame-view"><picture class="shot"><source type="image/avif" srcset="../img/shots/lecture-1x.avif 1280w, ../img/shots/lecture-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/lecture-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="../img/shots/lecture-1x.webp" width="1280" height="760" alt="A lecture page in the browser, course.example: PHYS201, lecture 6, Cardiac output and what sets it. The recording is paused at 8:47 on a slide called Preload and the Frank-Starling law." fetchpriority="high" decoding="async"></picture></div>
           </div>
-          <img class="dl-popup" src="../img/popup.png" width="600" height="896" alt="The StreamSnag popup open on that page. On this page: Cardiac output and what sets it, a video of 27 minutes and 129 MB, with one button, Download, and under it the files on the page: PDFs, slides, handouts.">
+          <div class="bubble hero-pop"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/popup-lecture-1x.avif 400w, ../img/shots/popup-lecture-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-lecture-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-lecture-1x.webp" width="400" height="475" alt="The StreamSnag popup on a lecture page. On this page: Cardiac output and what sets it, Video, 27 min, 129 MB, with one button, Download, 129 MB, and under it captions and the files on the page: PDFs, slides, handouts." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/popup-lecture-dark-1x.avif 400w, ../img/shots/popup-lecture-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-lecture-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-lecture-dark-1x.webp" width="400" height="475" alt="The StreamSnag popup on a lecture page. On this page: Cardiac output and what sets it, Video, 27 min, 129 MB, with one button, Download, 129 MB, and under it captions and the files on the page: PDFs, slides, handouts." loading="lazy" decoding="async"></picture></div>
         </div>
       </figure>
     </div>
@@ -156,32 +158,9 @@
           <li><h3>Captions as a transcript</h3><p>A video's existing captions saved as text you can read and search, with times.</p></li>
           <li><h3>Converting</h3><p>An MP3 of the sound, or a smaller copy of the video.</p></li>
         </ul>
-        <!-- A drawing of the review step, in the popup's own words (REPLICA-STRINGS.md, the course page). -->
+        <!-- The review step on a course page, as the real popup shows it (pass 7: a screenshot). -->
         <div class="dl-review-pic">
-          <div class="xpop dl-review" role="img" aria-label="Drawing of the review step on a course page. Review before downloading: 6 videos selected, 2 need a look, saved to Downloads, StreamSnag, PHYS201. Ready to download: six lectures in course order, from 04 The cardiac cycle to 09 The microcirculation, all ticked. Check these, left out unless you tick them: a second copy of lecture 6, tagged Same as another one, and a one-minute trailer, tagged Looks like a preview or ad. About 788 MB in all, with the buttons Cancel and Download 6.">
-            <div class="xp-sheet">
-              <div class="rv-head"><div><p class="rv-title">Review before downloading</p><p class="rv-sum">6 videos selected · 2 need a look</p></div></div>
-              <div class="rv-body">
-                <p class="rv-where"><svg class="ic"><use href="#i-folder"/></svg>Downloads › StreamSnag › PHYS201</p>
-                <div class="rv-group">
-                  <p class="rv-group-h">Ready to download <span class="rv-count">6</span></p>
-                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">04 The cardiac cycle.mp4</span><span class="rv-meta">142 MB</span></p>
-                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">05 Heart sounds and murmurs.mp4</span><span class="rv-meta">110 MB</span></p>
-                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">06 Cardiac output and what sets it.mp4</span><span class="rv-meta">129 MB</span></p>
-                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">07 Blood pressure and its control.mp4</span><span class="rv-meta">134 MB</span></p>
-                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">08 Exercise and the circulation.mp4</span><span class="rv-meta">151 MB</span></p>
-                  <p class="rv-item"><i class="dl-tick is-on"></i><span class="rv-name">09 The microcirculation.mp4</span><span class="rv-meta">122 MB</span></p>
-                </div>
-                <div class="rv-group">
-                  <p class="rv-group-h">Check these <span class="rv-count">2</span></p>
-                  <p class="rv-hint">Left out unless you tick them.</p>
-                  <p class="rv-item"><i class="dl-tick"></i><span class="rv-name">06 Cardiac output and what sets it (2).mp4</span><span class="rv-meta"><span class="rv-tag">Same as another one</span> 27:00 · 129 MB</span></p>
-                  <p class="rv-item"><i class="dl-tick"></i><span class="rv-name">Trailer PHYS201.mp4</span><span class="rv-meta"><span class="rv-tag">Looks like a preview or ad</span> 1:00 · 6 MB</span></p>
-                </div>
-              </div>
-              <div class="rv-foot"><span class="rv-total">About 788 MB in all</span><span class="xp-chip">Cancel</span><span class="xp-btn">Download 6</span></div>
-            </div>
-          </div>
+          <span class="bubble dl-review-shot"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/review-1x.avif 400w, ../img/shots/review-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/review-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/review-1x.webp" width="400" height="600" alt="The review sheet on a course page: Review before downloading, 5 videos selected, 1 needs a look. Ready to download: lectures 4, 5, 7, 8 and 9 in course order, ticked, each with its length and size. Check these, left out unless you tick them: the trailer, tagged Looks like a preview or ad. 1 already in your folders: skipped. About 659 MB in all, Cancel, Download 5." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/review-dark-1x.avif 400w, ../img/shots/review-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/review-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/review-dark-1x.webp" width="400" height="600" alt="The review sheet on a course page: Review before downloading, 5 videos selected, 1 needs a look. Ready to download: lectures 4, 5, 7, 8 and 9 in course order, ticked, each with its length and size. Check these, left out unless you tick them: the trailer, tagged Looks like a preview or ad. 1 already in your folders: skipped. About 659 MB in all, Cancel, Download 5." loading="lazy" decoding="async"></picture></span>
         </div>
       </div>
     </div>
@@ -310,9 +289,10 @@
           <li><a href="../guides/private-offline-lecture-tools.html">Private, offline lecture tools</a></li>
         </ul>
       </nav>
-      <nav class="foot-col" aria-label="Legal and contact">
-        <h2>Legal and contact</h2>
+      <nav class="foot-col" aria-label="Company">
+        <h2>Company</h2>
         <ul>
+          <li class="foot-co">Spergel Health AI LLC<br>Florida, USA</li>
           <li><a href="../privacy/">Privacy</a></li>
           <li><a href="../terms/">Terms and the Pro licence</a></li>
           <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code of the free core (GPL-3.0)</a></li>
@@ -322,7 +302,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are drawings, and every sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself; the demo and a few diagrams are drawings. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

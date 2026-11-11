@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This site loads nothing from other hosts: no CDN, web fonts, analytics, cookies or trackers. The policy below enforces it. The only scripts are site.js (the light and dark switch, the menu, and old links to sections that now have pages of their own) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<!-- This site loads nothing from other hosts: no CDN, hosted fonts, analytics, cookies or trackers. The policy below enforces it. Its two typefaces, Newsreader and Figtree (SIL Open Font License, licence texts in fonts/), are served from this site. The only scripts are site.js (the light and dark switch, the menu, old links to sections that now have pages of their own, the gentle reveal of the big pictures, and the short silent film on the home page, which comes from this site too) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <title>Save and study lectures: a free video downloader | StreamSnag</title>
 <meta name="description" content="A free video downloader for online lectures in Chrome, Edge and Brave, with no limits. With Pro, StreamSnag transcribes each lecture so you can read and study it.">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141716" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="no-referrer">
 <link rel="canonical" href="https://streamsnag.app/">
 <meta property="og:type" content="website">
@@ -26,8 +26,12 @@
 <meta name="twitter:description" content="A free video downloader for online lectures in Chrome, Edge and Brave, with no limits. With Pro, StreamSnag transcribes each lecture so you can read and study it.">
 <meta name="twitter:image" content="https://streamsnag.app/img/og.png">
 <meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preload" href="fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="site.css">
 <script src="site.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://streamsnag.app/#organization","name":"Spergel Health AI LLC","url":"https://streamsnag.app/","email":"support@streamsnag.app","logo":"https://streamsnag.app/icon.png","address":{"@type":"PostalAddress","addressRegion":"FL","addressCountry":"US"}},{"@type":"WebSite","@id":"https://streamsnag.app/#website","url":"https://streamsnag.app/","name":"StreamSnag","description":"A free video downloader for online lectures in Chrome, Edge and Brave, with no limits. With Pro, StreamSnag transcribes each lecture so you can read and study it.","inLanguage":"en","publisher":{"@id":"https://streamsnag.app/#organization"}},{"@type":"SoftwareApplication","@id":"https://streamsnag.app/#app","name":"StreamSnag","url":"https://streamsnag.app/","description":"A browser extension that saves online lectures and turns them into a document to read, a study page with the slides, a study guide, a practice quiz and flashcards. It runs on your own computer.","applicationCategory":"BrowserApplication","applicationSubCategory":"Browser extension for Chrome, Edge and Brave","operatingSystem":"Windows, macOS, Linux","browserRequirements":"Requires Chrome, Edge or Brave on a computer","publisher":{"@id":"https://streamsnag.app/#organization"},"offers":[{"@type":"Offer","name":"Free downloader","price":"0","priceCurrency":"USD","description":"Unlimited video downloads, free forever. Open source, no ads, no nagging."},{"@type":"Offer","name":"Pro, yearly","price":"39.97","priceCurrency":"USD","description":"US$39.97 a year. Everything in Free, and the study tools. The AI parts run on your own AI account: nothing extra on a Claude or ChatGPT subscription you already have."},{"@type":"Offer","name":"Pro, monthly","price":"4.99","priceCurrency":"USD","description":"US$4.99 a month. Everything in Free, and the study tools. The AI parts run on your own AI account: nothing extra on a Claude or ChatGPT subscription you already have."},{"@type":"Offer","name":"Pro, once for life","price":"99.95","priceCurrency":"USD","description":"US$99.95 once. Everything in Free, and the study tools. The AI parts run on your own AI account: nothing extra on a Claude or ChatGPT subscription you already have."}]},{"@type":"FAQPage","@id":"https://streamsnag.app/#faq","mainEntity":[{"@type":"Question","name":"What is StreamSnag?","acceptedAnswer":{"@type":"Answer","text":"A browser extension that saves the lecture you are watching and, with Pro, turns it into something to read and study. It runs in Chrome, Edge and Brave on a computer, not in Firefox and not on phones."}},{"@type":"Question","name":"Is downloading really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The downloader is free forever and open source, and nothing is held back to sell you Pro. No limits, no ads, no nagging, no account. What the free downloader does."}},{"@type":"Question","name":"What does Pro cost, and what does the AI cost?","acceptedAnswer":{"@type":"Answer","text":"Pro is US$39.97 a year, US$4.99 a month, or US$99.95 once for life. The first lecture is free from start to finish, with no card. The study tools that use AI run on your own AI account. With a Claude or ChatGPT subscription you already have there is no extra charge. With a pay-as-you-go key it was between a few cents and about US$1.50 a lecture on our own runs. Either way it is between you and your AI provider, and never paid to StreamSnag. What the AI costs, measured."}},{"@type":"Question","name":"What leaves my computer?","acceptedAnswer":{"@type":"Answer","text":"Two things, and only when you start them: The text you choose to send to your AI provider: a lecture's transcript and the text on its slides, with the speaker notes when the slides are a PowerPoint file. Slide pictures and the video are never sent. Your Pro key, when it is checked with our payment provider. Downloads come straight from the site you are on to your own folders. The privacy page says exactly what stays and what leaves."}}]}]}</script>
@@ -43,6 +47,11 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.500M5.300 5.300l1.800 1.800M16.900 16.900l1.800 1.800M5.300 18.700l1.800-1.800M16.900 7.100l1.800-1.800"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="10.5" width="12" height="9" rx="2"/><path d="M8.500 10.500V8a3.500 3.500 0 017 0v2.500"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.500 6l-6 6 6 6"/></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M9.500 6l6 6-6 6"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M18.500 12a6.500 6.500 0 11-2-4.700M18.500 4.500v4h-4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3.500h6.500L18 8v12.500H7z"/><path d="M13.500 3.500V8H18"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 019.500 4a7 7 0 1010.500 10.500z"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7A1.5 1.5 0 015 5.500h4l2 2.500h8a1.500 1.500 0 011.500 1.500V17a1.500 1.500 0 01-1.500 1.500H5A1.500 1.500 0 013.500 17z"/></symbol>
   <symbol id="i-film" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
@@ -101,17 +110,17 @@
 
   <!-- The home page is calm on purpose (pass 4, 2026-11-11): a few large things, one idea to a screen.
        A headline, one sentence and one button; one picture; then three moments, each with one large picture of
-       the product: saving a lecture (free), the lecture transcribed and set out as a document to read (Pro, the
-       one the page makes the most of), and the study material (Pro, with the reader's own AI). Then two prices,
-       four questions and the button again. Everything else lives on how-it-works/ (with the working demo),
-       ai-costs/, downloader/ and questions/.
+       the product. Pass 7 (2026-11-11): the pictures are screenshots of the real extension, taken on the invented
+       lecture PHYS201 (scratchpad real/capture.mjs), and the transcription moment comes straight after the first
+       picture, before the free downloading one (the owner asked for transcription higher on the page).
+       Everything else lives on how-it-works/ (with the working demo), ai-costs/, downloader/ and questions/.
        Old links into sections that moved (#evening, #read, #downloader, #more-than, #plans, #ai-cost, #contact)
        are sent on by site.js, and each id is kept here on or around a link that leads to the new page, for a
-       browser without JavaScript. The styles are in pass4.css beside the site tooling (the end of site.css). -->
+       browser without JavaScript. The styles are in pass4.css and pass7.css beside the site tooling. -->
   <section class="top" aria-labelledby="hero-title">
     <div class="wrap">
       <h1 id="hero-title"><span class="h1-line">Save your online lectures</span> <span class="h1-line">and actually study from them.</span></h1>
-      <p class="top-say">A browser extension that saves the lecture you are watching and turns it into something you can read and study.</p>
+      <p class="top-say">A browser extension that saves the lecture you are watching and, with Pro, transcribes it into something you can read and study.</p>
       <div class="top-act">
         <!-- PLACEHOLDER (install link): replace href="#install" on every [data-install] link with the real install address. -->
         <a class="btn btn-go btn-lg" href="#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
@@ -119,32 +128,46 @@
       </div>
       <p class="top-price">Unlimited video downloads, free forever. Pro from US$39.97 a year.</p>
 
-      <!-- The one picture of the first screen: a lecture recording on the left, the same lecture as a document on
-           the right. Made in HTML from the demo's own content (the invented lecture PHYS201, lecture 6). The
-           working demo is on how-it-works/. -->
-      <figure class="pic">
-        <div class="pic-stage">
-          <div class="pic-video" role="img" aria-label="A lecture recording, paused at 08:47 on a slide called Preload and the Frank-Starling law, with a graph of stroke volume against end-diastolic volume.">
-            <div class="pic-slide">
-              <p class="pic-slide-h">Preload and the Frank-Starling law</p>
-              <svg class="pic-graph"><use href="#g-starling"/></svg>
+      <!-- The one picture of the first screen: the lecture page of the invented course PHYS201 in a browser, and the
+           real StreamSnag popup open on it after "Download", offering the reading edition next. The frame is drawn
+           by the site; what is inside it is a screenshot. -->
+      <figure class="pic hero-pic">
+        <div class="hero-stage" data-film="img/film/hero">
+          <div class="frame hero-browser">
+            <div class="frame-bar" aria-hidden="true">
+              <span class="frame-nav"><svg class="ic"><use href="#i-back"/></svg><svg class="ic"><use href="#i-fwd"/></svg><svg class="ic"><use href="#i-redo"/></svg></span>
+              <span class="frame-url">course.example/phys201/lecture-6</span>
+              <span class="frame-ext is-open"><svg class="mark"><use href="#i-mark"/></svg></span>
             </div>
-            <div class="pic-bar"><svg class="ic ic-fill"><use href="#i-play"/></svg><span class="pic-rail"><i></i></span><span class="pic-time">08:47</span></div>
+            <div class="frame-view"><picture class="shot"><source type="image/avif" srcset="img/shots/lecture-1x.avif 1280w, img/shots/lecture-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/lecture-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/lecture-1x.webp" width="1280" height="760" alt="The lecture page of an invented course, PHYS201, lecture 6: Cardiac output and what sets it, with its video paused at 8:47 on the slide Preload and the Frank-Starling law." fetchpriority="high" decoding="async"></picture></div>
           </div>
-          <div class="pic-doc" id="home-doc" role="group" aria-label="The same lecture as a reading edition, shortened">
-            <p class="pic-kind">Reading edition</p>
-            <p class="pic-title">Cardiac output and what sets it</p>
-            <p class="pic-meta"><span>27 min lecture</span><span>14 min read</span></p>
-            <div class="pic-para"><span class="cite">08:47</span><p>Within limits, the heart pumps out whatever volume is returned to it. So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis, and the curve rises steeply at first and then flattens off at high volumes.</p></div>
-            <div class="pic-para"><span class="cite">09:17</span><p>A little bit of history, because I like it. Otto Frank was a German physiologist working on frog hearts in the eighteen nineties, and Ernest Starling was in London about twenty years later with his heart-lung preparation in dogs. They never worked together.</p></div>
-          </div>
+          <div class="bubble hero-pop"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/popup-saved-1x.avif 400w, img/shots/popup-saved-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-saved-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-saved-1x.webp" width="400" height="600" alt="The StreamSnag popup on that page after Download: Cardiac output and what sets it, Video, 27 min, 129 MB, saved to Downloads, StreamSnag. Next step: Reading edition, the lecture as an article you can read instead of watching, with the button Read the lecture." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/popup-saved-dark-1x.avif 400w, img/shots/popup-saved-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-saved-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-saved-dark-1x.webp" width="400" height="600" alt="The StreamSnag popup on that page after Download: Cardiac output and what sets it, Video, 27 min, 129 MB, saved to Downloads, StreamSnag. Next step: Reading edition, the lecture as an article you can read instead of watching, with the button Read the lecture." loading="lazy" decoding="async"></picture></div>
         </div>
-        <figcaption id="evening">From an invented lecture. <a href="demo/">Try the demo</a></figcaption>
+        <figcaption id="evening">StreamSnag itself, on an invented lecture. <a href="demo/">Try the demo</a></figcaption>
       </figure>
     </div>
   </section>
 
-  <!-- ============ One: save it, free ============ -->
+  <!-- ============ The lecture as a document. The one the page makes the most of, straight after the first picture. ============ -->
+  <section class="moment moment-read" id="gallery" aria-labelledby="read-title">
+    <div class="wrap">
+      <div class="read-words reveal" id="read">
+        <h2 id="read-title">StreamSnag transcribes the lecture for you.</h2>
+        <p>Pro turns the speech into text and sets it out as a document you can read, with headings, a contents list and a time beside every paragraph.</p>
+        <p class="read-strong">No minute limits.</p>
+        <p class="read-links"><a href="sample/reading-edition.html">Open the sample</a> <a href="how-it-works/#read">Why read a lecture</a></p>
+      </div>
+      <a class="read-pics reveal" href="sample/reading-edition.html" aria-label="Open the sample reading edition">
+        <span class="frame read-win">
+          <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Cardiac output and what sets it.read.html</span></span>
+          <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/read-1x.avif 1280w, img/shots/read-2x.avif 2560w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-1x.webp 1280w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><img src="img/shots/read-1x.webp" width="1280" height="860" alt="The reading edition StreamSnag made from the lecture: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture, a 14 minute read, 3,194 words, the contents list of four sections with their times, and the lecturer's own words in paragraphs, each with its time beside it." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/read-dark-1x.avif 1280w, img/shots/read-dark-2x.avif 2560w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-dark-1x.webp 1280w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><img src="img/shots/read-dark-1x.webp" width="1280" height="860" alt="The reading edition StreamSnag made from the lecture: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture, a 14 minute read, 3,194 words, the contents list of four sections with their times, and the lecturer's own words in paragraphs, each with its time beside it." loading="lazy" decoding="async"></picture></span>
+        </span>
+        <span class="phone read-phone"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/read-phone-1x.avif 390w, img/shots/read-phone-2x.avif 780w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-phone-1x.webp 390w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><img src="img/shots/read-phone-1x.webp" width="390" height="844" alt="The same reading edition on a narrow screen: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture and a 14 minute read." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/read-phone-dark-1x.avif 390w, img/shots/read-phone-dark-2x.avif 780w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-phone-dark-1x.webp 390w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><img src="img/shots/read-phone-dark-1x.webp" width="390" height="844" alt="The same reading edition on a narrow screen: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture and a 14 minute read." loading="lazy" decoding="async"></picture></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ Save it, free ============ -->
   <section class="moment moment-save" id="claims" aria-labelledby="save-title">
     <div class="wrap moment-row">
       <div class="moment-words">
@@ -152,40 +175,30 @@
         <p>The video goes to your own folders, with the slides and files on its page. No ads, no account.</p>
         <p class="moment-link" id="downloader"><a href="downloader/">What the free video downloader does</a></p>
       </div>
-      <div class="moment-pic">
-        <img class="shot-popup" src="img/popup.png" width="600" height="896" loading="lazy" alt="The StreamSnag popup on a lecture page. On this page: Cardiac output and what sets it, a video of 27 minutes and 129 MB, with one button, Download, and under it the files on the page: PDFs, slides, handouts.">
+      <div class="moment-pic save-stage reveal">
+        <div class="bubble save-review"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/review-1x.avif 400w, img/shots/review-2x.avif 800w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/review-1x.webp 400w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><img src="img/shots/review-1x.webp" width="400" height="600" alt="The review sheet before a course page is downloaded: Review before downloading, 5 videos selected, 1 needs a look, ready to download lectures 4, 5, 7, 8 and 9, and under Check these the trailer, left out unless you tick it. About 659 MB in all, Download 5." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/review-dark-1x.avif 400w, img/shots/review-dark-2x.avif 800w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/review-dark-1x.webp 400w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><img src="img/shots/review-dark-1x.webp" width="400" height="600" alt="The review sheet before a course page is downloaded: Review before downloading, 5 videos selected, 1 needs a look, ready to download lectures 4, 5, 7, 8 and 9, and under Check these the trailer, left out unless you tick it. About 659 MB in all, Download 5." loading="lazy" decoding="async"></picture></div>
+        <div class="bubble save-pop"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/popup-lecture-1x.avif 400w, img/shots/popup-lecture-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-lecture-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-lecture-1x.webp" width="400" height="475" alt="The StreamSnag popup on a lecture page. On this page: Cardiac output and what sets it, Video, 27 min, 129 MB, with the button Download, 129 MB, and under it captions and the files on the page: PDFs, slides, handouts." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/popup-lecture-dark-1x.avif 400w, img/shots/popup-lecture-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-lecture-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-lecture-dark-1x.webp" width="400" height="475" alt="The StreamSnag popup on a lecture page. On this page: Cardiac output and what sets it, Video, 27 min, 129 MB, with the button Download, 129 MB, and under it captions and the files on the page: PDFs, slides, handouts." loading="lazy" decoding="async"></picture></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ Two: the lecture as a document. The one the page makes the most of. ============ -->
-  <section class="moment moment-read" id="gallery" aria-labelledby="read-title">
-    <div class="wrap">
-      <div class="read-words" id="read">
-        <h2 id="read-title">StreamSnag transcribes the lecture for you.</h2>
-        <p>Pro turns the speech into text and sets it out as a document you can read, with headings, a contents list and a time beside every paragraph.</p>
-        <p class="read-strong">No minute limits.</p>
-        <p class="read-links"><a href="sample/reading-edition.html">Open the sample</a> <a href="how-it-works/#read">Why read a lecture</a></p>
-      </div>
-      <a class="read-sheets" href="sample/reading-edition.html" aria-label="Open the sample reading edition">
-        <img class="sheet sheet-cover" src="img/read-cover.png" width="880" height="1100" loading="lazy" alt="The opening of the sample reading edition: Cardiac output and what sets it, a 27 minute lecture and a 14 minute read of 3,194 words, with a contents list of four sections and their times.">
-        <img class="sheet sheet-section" src="img/read-section.png" width="1280" height="1520" loading="lazy" alt="A section of the sample reading edition, Three determinants of stroke volume: the lecturer's own words in paragraphs, each with its time in the margin.">
-      </a>
-    </div>
-  </section>
-
-  <!-- ============ Three: study material, with the reader's own AI ============ -->
+  <!-- ============ Study material, with the reader's own AI ============ -->
   <section class="moment moment-study" aria-labelledby="study-title">
-    <div class="wrap moment-row moment-row-flip">
-      <div class="moment-words">
+    <div class="wrap">
+      <div class="study-words reveal">
         <h2 id="study-title">Then study it.</h2>
         <p>With your own AI account, Pro writes a study guide, a practice quiz and flashcards. Your slides stay in step with the recording.</p>
         <p class="moment-link"><a href="sample/study-guide.html">Open the sample study guide</a></p>
       </div>
-      <div class="moment-pic fan">
-        <a href="sample/study-page.html"><img class="sheet" src="img/sample-page.png" width="640" height="800" loading="lazy" alt="The sample study page: the list of slides above the transcript, each with its time."></a>
-        <a href="sample/study-guide.html"><img class="sheet" src="img/sample-guide.png" width="640" height="800" loading="lazy" alt="The sample study guide, open at its first key idea, with the lecturer's own words quoted and a worked example."></a>
-        <a href="sample/study-guide.html#quiz"><img class="sheet" src="img/sample-quiz.png" width="640" height="800" loading="lazy" alt="The sample practice quiz: a question with four answers to choose from."></a>
+      <div class="study-pics reveal">
+        <a class="frame study-win" href="sample/study-page.html">
+          <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Cardiac output and what sets it.study.html</span></span>
+          <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/study-1x.avif 1280w, img/shots/study-2x.avif 2560w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-1x.webp 1280w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><img src="img/shots/study-1x.webp" width="1280" height="860" alt="The study page StreamSnag made: the lecture's video at 8:47, the slide shown then, Preload and the Frank-Starling law, the list of slides with the minute each was shown, and the transcript under the video." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/study-dark-1x.avif 1280w, img/shots/study-dark-2x.avif 2560w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-dark-1x.webp 1280w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><img src="img/shots/study-dark-1x.webp" width="1280" height="860" alt="The study page StreamSnag made: the lecture's video at 8:47, the slide shown then, Preload and the Frank-Starling law, the list of slides with the minute each was shown, and the transcript under the video." loading="lazy" decoding="async"></picture></span>
+        </a>
+        <a class="frame guide-win" href="sample/study-guide.html">
+          <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Cardiac output and what sets it.guide.html</span></span>
+          <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/guide-1x.avif 1280w, img/shots/guide-2x.avif 2560w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/guide-1x.webp 1280w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><img src="img/shots/guide-1x.webp" width="1280" height="860" alt="The sample study guide, open at its first key idea, with the lecturer's own words quoted, each with its minute and slide." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/guide-dark-1x.avif 1280w, img/shots/guide-dark-2x.avif 2560w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/guide-dark-1x.webp 1280w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><img src="img/shots/guide-dark-1x.webp" width="1280" height="860" alt="The sample study guide, open at its first key idea, with the lecturer's own words quoted, each with its minute and slide." loading="lazy" decoding="async"></picture></span>
+        </a>
       </div>
     </div>
   </section>
@@ -327,9 +340,10 @@
           <li><a href="guides/private-offline-lecture-tools.html">Private, offline lecture tools</a></li>
         </ul>
       </nav>
-      <nav class="foot-col" aria-label="Legal and contact">
-        <h2>Legal and contact</h2>
+      <nav class="foot-col" aria-label="Company">
+        <h2>Company</h2>
         <ul>
+          <li class="foot-co">Spergel Health AI LLC<br>Florida, USA</li>
           <li><a href="privacy/">Privacy</a></li>
           <li><a href="terms/">Terms and the Pro licence</a></li>
           <li><a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code of the free core (GPL-3.0)</a></li>
@@ -339,7 +353,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are drawings, and every sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself; the demo and a few diagrams are drawings. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

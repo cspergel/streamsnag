@@ -1584,6 +1584,28 @@ a { text-decoration-thickness: .06em; text-underline-offset: .22em; }
   .hero-browser { display: none; }
   .hero-pop { position: static; width: min(100%, 360px); margin-inline: auto; }
 }
+/* Pass 12: the whole popup was a wall of controls on a phone's first screen. A phone sees only the essential top of
+   a real popup (.crop-ph: from --cy, --ch tall, in the 400 px wide capture's own pixels), and where the popup goes on
+   below, it ends in a soft fade into the page (.fade-ph, which leaves room for the popup's shadow at its sides).
+   The home page shows the popup before saving on a phone (.pop-narrow) and after saving on a wider screen (.pop-wide);
+   each is only fetched where it shows (the shot macro's narrow and wide). */
+.crop-dl { --ch: 256; }                 /* down to "Download · 129 MB" and "Not the right video?" */
+.crop-saved { --ch: 232; }              /* down to "Saved to Downloads › StreamSnag · Show file" */
+.crop-course { --cy: 300; --ch: 150; }  /* the course: Unit 1, its 11 squares and "Download the 6 missing…" */
+.pop-narrow { display: none; }
+.dm-fade { display: contents; }
+@media (max-width: 759px) {
+  .pop-narrow { display: block; }
+  .pop-wide { display: none; }
+  .hero-pop.crop-ph { aspect-ratio: 400 / var(--ch); }
+  .hero-pop.crop-ph .shot { margin-top: calc(var(--cy, 0) * -100% / 400); }
+  .hero-stage.fade-ph { padding: 6px 16px 0; margin: -6px -16px 0; }
+  .fade-ph {
+    -webkit-mask-image: linear-gradient(to bottom, #000 var(--fade-from, 80%), transparent);
+    mask-image: linear-gradient(to bottom, #000 var(--fade-from, 80%), transparent);
+  }
+  .fade-saved { --fade-from: 84%; }
+}
 
 /* The short film over the first picture (site.js adds it on a wide screen when motion is welcome). It is filmed
    from the scene at 1160 x 620 with the pair at 4%, so it is moved by the same 6% as the still, and its edges fade
@@ -1751,7 +1773,7 @@ a { text-decoration-thickness: .06em; text-underline-offset: .22em; }
 .dl-review-pic { display: grid; place-items: center; padding: clamp(24px, 4vw, 48px); border-radius: var(--r-xl); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); }
 .dl-review-shot { width: min(100%, 360px); }
 .dl-pic .hero-stage { aspect-ratio: 1160 / 620; }
-@media (max-width: 759px) { .dl-pic .hero-stage { aspect-ratio: 358 / 430; } }
+@media (max-width: 759px) { .dl-pic .hero-stage { aspect-ratio: auto; } } /* pass 12: as tall as its cropped popup */
 
 /* The samples' pictures are screenshots now, wider than the old portrait crops. */
 .thumbs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -2005,15 +2027,17 @@ mark.hl {
 @media (max-width: 639px) {
   .dm-top { padding-top: 22px; padding-bottom: 18px; }
   .dm-top .top-say { margin-top: 6px; }
-  .dm-pic { aspect-ratio: auto; height: 420px; }
-  .dm-pic-pop { display: grid; place-items: center; }
+  /* Pass 12: 270 px (420 until then), so the step's sentence and Back and Next are above a phone browser's own bar. */
+  .dm-pic { aspect-ratio: auto; height: 270px; }
+  .dm-pic-pop { display: flex; align-items: center; justify-content: center; margin-inline: -18px; }
   .dm-browser { display: none; }
-  .dm-pop { position: static; width: min(280px, 80%); }
+  .dm-fade { display: block; width: min(100%, 396px); padding: 6px 18px 0; }
+  .dm-pop { position: static; width: 100%; aspect-ratio: 400 / var(--ch); }
   .dm-pic-doc .dm-doc { width: 100%; }
   .dm-step:has(.dm-phone) .dm-doc { display: none; }
-  .dm-phone { display: block; width: 190px; max-height: 420px; }
+  .dm-phone { display: block; width: 190px; max-height: 270px; }
   /* The guide, too small to read whole on a phone: its left part, larger (the contents list and the first idea). */
-  #step-4 .dm-doc .frame-view { height: 340px; overflow: hidden; }
+  #step-4 .dm-doc .frame-view { height: 226px; overflow: hidden; }
   #step-4 .dm-doc .shot img { width: 210%; max-width: none; margin-left: -12%; }
   .dm-say { margin-top: 16px; font-size: 1.125rem; gap: 6px 8px; }
   .dm-ctrl { gap: 12px; margin-top: 14px; }

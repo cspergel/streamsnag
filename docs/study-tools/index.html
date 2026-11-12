@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- This site loads nothing from other hosts: no CDN, hosted fonts, analytics, cookies or trackers. The policy below enforces it. Its two typefaces, Newsreader and Figtree (SIL Open Font License, licence texts in fonts/), are served from this site. The only scripts are site.js (the light and dark switch, the menu, old links to sections that now have pages of their own, the gentle reveal of the big pictures, and the short silent film on the home page, which comes from this site too) and, on the page "How it works", demo.js (the demonstration at its top). Neither sends anything anywhere. -->
+<!-- This site loads nothing from other hosts: no CDN, hosted fonts, analytics, cookies or trackers. The policy below enforces it. Its two typefaces, Newsreader and Figtree (SIL Open Font License, licence texts in fonts/), are served from this site. The only scripts are site.js (the light and dark switch, the menu, old links to sections that now have pages of their own, the gentle reveal of the big pictures, and the short silent film on the home page, which comes from this site too) and nothing else. It sends nothing anywhere. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
-<title>Study tools: from a lecture to a study pack | StreamSnag</title>
+<title>Study tools: from a video lecture to a study pack | StreamSnag</title>
 <meta name="description" content="One lecture, step by step: its transcript, a reading edition, a study page with the slides in step, a study pack, daily review, and a library of your own videos.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f5f3ee" media="(prefers-color-scheme: light)">
@@ -14,7 +14,7 @@
 <link rel="canonical" href="https://streamsnag.app/study-tools/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="StreamSnag">
-<meta property="og:title" content="Study tools: from a lecture to a study pack">
+<meta property="og:title" content="Study tools: from a video lecture to a study pack">
 <meta property="og:description" content="One lecture, step by step: its transcript, a reading edition, a study page with the slides in step, a study pack, daily review, and a library of your own videos.">
 <meta property="og:url" content="https://streamsnag.app/study-tools/">
 <meta property="og:image" content="https://streamsnag.app/img/og.png">
@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Study tools: from a lecture to a study pack">
+<meta name="twitter:title" content="Study tools: from a video lecture to a study pack">
 <meta name="twitter:description" content="One lecture, step by step: its transcript, a reading edition, a study page with the slides in step, a study pack, daily review, and a library of your own videos.">
 <meta name="twitter:image" content="https://streamsnag.app/img/og.png">
 <meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
@@ -113,7 +113,7 @@
        per step (scratchpad law/capture-law.mjs, the real extension in a throwaway profile), then the library: the
        study desk's shelves and "Add a video" / "Add a folder". Which parts are Pro, and that the AI parts run on the
        reader's own AI account, is said at the top and again at each step. Styles in pass9.css; the one animation
-       (the pack styles) in pass9.js. -->
+       (the pack styles) in pass9.js. Pass 10: the flow in one glance under "One lecture" (pass10.css, pass10.js). -->
   <section class="top st-top" aria-labelledby="st-title">
     <div class="wrap">
       <p class="crumbs how-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Study tools</span></p>
@@ -161,6 +161,23 @@
         <p>Every picture below is StreamSnag itself, on one invented lecture: a 23-minute first-year law class with nine slides.</p>
         <p class="st-lecture">LAW101, lecture 4: Offer and acceptance. <a href="../sample/law-reading-edition.html">Open its samples</a></p>
       </div>
+
+      <!-- Pass 10 (2026-11-12): the whole flow in one glance. The lecture card is drawn by the site (the lecture's own
+           course, number, title and length); the five pictures are the captures below, small. With JavaScript and
+           motion allowed, pass10.js plays it once as it comes into view (about four seconds), and Replay plays it
+           again; otherwise it is the finished row. -->
+      <figure class="fl" aria-labelledby="fl-cap">
+        <ol class="fl-row">
+          <li class="fl-item"><span class="fl-card" aria-hidden="true"><span class="fl-card-k">LAW101 · lecture 4</span><span class="fl-card-t">Offer and acceptance</span><span class="fl-card-m">23-minute video</span></span><span class="fl-l">The video lecture</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot"><source type="image/avif" srcset="../img/shots/transcript-law-1x.avif 1000w, ../img/shots/transcript-law-2x.avif 2000w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/transcript-law-1x.webp 1000w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/transcript-law-1x.webp" width="1000" height="620" alt="The transcript, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Transcript</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/read-law-1x.avif 1280w, ../img/shots/read-law-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/read-law-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/read-law-1x.webp" width="1280" height="860" alt="The reading edition, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/read-law-dark-1x.avif 1280w, ../img/shots/read-law-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/read-law-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/read-law-dark-1x.webp" width="1280" height="860" alt="The reading edition, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Reading edition</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/study-law-1x.avif 1280w, ../img/shots/study-law-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/study-law-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/study-law-1x.webp" width="1280" height="860" alt="The study page, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/study-law-dark-1x.avif 1280w, ../img/shots/study-law-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/study-law-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/study-law-dark-1x.webp" width="1280" height="860" alt="The study page, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Study page</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/guide-law-1x.avif 1280w, ../img/shots/guide-law-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-law-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/guide-law-1x.webp" width="1280" height="860" alt="The study guide, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/guide-law-dark-1x.avif 1280w, ../img/shots/guide-law-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-law-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/guide-law-dark-1x.webp" width="1280" height="860" alt="The study guide, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Study pack</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/desk-review-1x.avif 1280w, ../img/shots/desk-review-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/desk-review-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/desk-review-1x.webp" width="1280" height="760" alt="The study desk's Review, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/desk-review-dark-1x.avif 1280w, ../img/shots/desk-review-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/desk-review-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/desk-review-dark-1x.webp" width="1280" height="760" alt="The study desk's Review, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Cards due today</span></li>
+        </ol>
+        <figcaption id="fl-cap" class="fl-cap">One lecture, all the way through. <button type="button" class="fl-again" hidden>Replay</button></figcaption>
+      </figure>
+
 
       <ol class="st-flow">
         <li class="st-step" id="transcript">
@@ -407,7 +424,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are screenshots of StreamSnag itself; the demo and a few diagrams are drawings, and the desk and still-life scenes at the top or foot of a few pages are illustrations made with an AI image model. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself; a few diagrams are drawings, and the desk and still-life scenes at the top or foot of a few pages are illustrations made with an AI image model. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

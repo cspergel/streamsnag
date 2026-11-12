@@ -3353,3 +3353,108 @@ mark.hl {
 .st-samples a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; color: var(--ink); text-decoration-color: var(--line-strong); }
 .st-samples a:hover { text-decoration-color: currentColor; }
 /* ==== end of pass 9 ==== */
+
+/* ==== Pass 10 (2026-11-12): the demo, one step at a time, and the study tools flow. Kept in pass10.css beside the
+   site tooling (patch-p10.py appends it). ==== */
+
+/* ---------- /demo/: one large picture, one sentence, one button ---------- */
+.dm-top { padding-bottom: clamp(20px, 3vw, 36px); }
+.dm-top .top-say { margin-top: 12px; color: var(--ink-3); }
+.dm { padding: 0 0 var(--section); }
+.dm .wrap { max-width: 1040px; }
+.dm-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(48px, 7vw, 88px); }
+.dm-fig { margin: 0; }
+.dm-pic { position: relative; aspect-ratio: 1040 / 560; }
+.dm-pic-doc { display: grid; place-items: center; }
+.dm-browser { position: absolute; left: 0; top: 0; width: 78%; }
+.dm-pop { position: absolute; right: 0; top: 7%; width: 30%; }
+.dm-doc { width: 74%; }
+.dm-phone { display: none; }
+.dm-say { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 10px; margin-top: clamp(22px, 3vw, 34px); font: 500 clamp(1.25rem, 2.2vw, 1.6rem)/1.3 var(--font-display); letter-spacing: -.01em; color: var(--ink); text-align: center; text-wrap: balance; }
+.dm-say .tag { margin-left: 0; font-size: .78rem; }
+.dm-n { display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line-strong); font: 600 .9rem/1 var(--font-ui); color: var(--ink-2); }
+.dm-ctrl { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: clamp(20px, 2.6vw, 28px); }
+.dm-ctrl[hidden], .dm-ctrl [hidden] { display: none; }
+.dm-ctrl .btn { width: auto; min-width: 7.5em; flex: none; margin: 0; }
+.dm-back:disabled { visibility: hidden; }
+.dm-count { min-width: 4em; font: 600 .9375rem/1 var(--font-ui); color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: center; }
+.dm-end { display: grid; justify-items: center; gap: 14px; margin-top: clamp(28px, 4vw, 44px); text-align: center; }
+.dm-end .btn { width: auto; }
+.dm-note { max-width: 30em; font-size: var(--t-s); color: var(--ink-3); }
+.dm-more { margin-top: clamp(28px, 4vw, 40px); font-size: var(--t-s); color: var(--ink-3); text-align: center; }
+.dm-more a { display: inline-block; padding: 10px 0; color: var(--ink-2); font-weight: 600; text-decoration-color: var(--line-strong); }
+.dm-more a:hover { text-decoration-color: currentColor; }
+
+/* With JavaScript (pass10.js adds .is-js): one step at a time, and the button only at the end. */
+.dm.is-js .dm-steps { display: block; }
+.dm.is-js .dm-step:not(.is-on) { display: none; }
+.dm.is-js .dm-n { display: none; }
+.dm.is-js:not(.is-last) .dm-end { display: none; }
+.dm.is-js.is-last .dm-more { margin-top: 18px; }
+@media (prefers-reduced-motion: no-preference) {
+  .dm.is-js.is-moved .dm-step.is-on { animation: dm-in .32s var(--ease-out) both; }
+}
+@keyframes dm-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* A phone: the popup alone for the first two steps, the phone reading edition for the third. */
+@media (max-width: 639px) {
+  .dm-top { padding-top: 22px; padding-bottom: 18px; }
+  .dm-top .top-say { margin-top: 6px; }
+  .dm-pic { aspect-ratio: auto; height: 420px; }
+  .dm-pic-pop { display: grid; place-items: center; }
+  .dm-browser { display: none; }
+  .dm-pop { position: static; width: min(280px, 80%); }
+  .dm-pic-doc .dm-doc { width: 100%; }
+  .dm-step:has(.dm-phone) .dm-doc { display: none; }
+  .dm-phone { display: block; width: 190px; max-height: 420px; }
+  /* The guide, too small to read whole on a phone: its left part, larger (the contents list and the first idea). */
+  #step-4 .dm-doc .frame-view { height: 340px; overflow: hidden; }
+  #step-4 .dm-doc .shot img { width: 210%; max-width: none; margin-left: -12%; }
+  .dm-say { margin-top: 16px; font-size: 1.125rem; gap: 6px 8px; }
+  .dm-ctrl { gap: 12px; margin-top: 14px; }
+}
+
+/* ---------- /study-tools/: the whole flow in one glance ---------- */
+.fl { max-width: 1200px; margin: 0 auto clamp(40px, 5vw, 64px); }
+.fl-row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(12px, 1.8vw, 22px); }
+.fl-item { position: relative; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.fl-item + .fl-item::before {
+  content: ""; position: absolute; top: calc(50% - 14px); left: calc(-1 * clamp(12px, 1.8vw, 22px)); width: clamp(12px, 1.8vw, 22px); height: 1px;
+  background: var(--line-strong);
+}
+.fl-th, .fl-card { display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--r-md); background: var(--frame); box-shadow: var(--sh-2, 0 1px 2px rgba(20, 24, 22, .08)), 0 0 0 1px var(--frame-line); }
+.fl-th .shot { height: 100%; }
+/* Each picture's top-left part, larger, so a thumbnail still reads as what it is. */
+.fl-th .shot img { width: 170%; max-width: none; height: auto; }
+:root[data-theme="dark"] .fl-item:nth-child(2) .fl-th .shot img { filter: brightness(.8); } /* the transcript has no dark capture */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fl-item:nth-child(2) .fl-th .shot img { filter: brightness(.8); } }
+.fl-card { display: grid; align-content: center; gap: 4px; padding: 10px 12px; background: var(--surface); }
+.fl-card-k { font: 650 .66rem/1.2 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.fl-card-t { font: 600 clamp(.9rem, 1.3vw, 1.05rem)/1.2 var(--font-display); color: var(--ink); }
+.fl-card-m { font: 500 .75rem/1.2 var(--font-ui); color: var(--ink-3); }
+.fl-l { font: 600 .8125rem/1.25 var(--font-ui); color: var(--ink-2); text-align: center; }
+.fl-item:last-child .fl-l { color: var(--green); }
+.fl-cap { margin-top: 14px; font-size: var(--t-s); color: var(--ink-3); text-align: center; }
+.fl-again { margin-left: 6px; padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; cursor: pointer; }
+.fl-again:hover { text-decoration-color: currentColor; }
+@media (max-width: 759px) {
+  .fl-row { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 18px; }
+  .fl-item:nth-child(4)::before { display: none; }
+  .fl-card { padding: 8px 9px; gap: 2px; }
+  .fl-card-k { display: none; }
+  .fl-card-t { font-size: .9rem; }
+  .fl-card-m { font-size: .7rem; }
+  .fl-l { font-size: .75rem; }
+}
+.fl-item:nth-child(1) { --i: 0; } .fl-item:nth-child(2) { --i: 1; } .fl-item:nth-child(3) { --i: 2; }
+.fl-item:nth-child(4) { --i: 3; } .fl-item:nth-child(5) { --i: 4; } .fl-item:nth-child(6) { --i: 5; }
+/* About four seconds, once, with JavaScript (pass10.js adds .fl-js) and only when motion is welcome: the lecture
+   card first, then each step slides into the row after it. Otherwise the finished row. */
+@media (prefers-reduced-motion: no-preference) {
+  .fl-js .fl-item { opacity: 0; }
+  .fl-js.is-play .fl-item { opacity: 1; animation: fl-in .55s var(--ease-out) both; animation-delay: calc(.2s + var(--i) * .62s); }
+  .fl-js.is-play .fl-item:last-child .fl-th { animation: fl-due .9s var(--ease-out) 3.9s both; }
+}
+@keyframes fl-in { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
+@keyframes fl-due { from { box-shadow: 0 0 0 1px var(--frame-line); } 50% { box-shadow: 0 0 0 3px var(--hl); } to { box-shadow: 0 0 0 1px var(--frame-line); } }
+@media print { .dm.is-js .dm-step:not(.is-on) { display: block; } .dm-ctrl { display: none; } }

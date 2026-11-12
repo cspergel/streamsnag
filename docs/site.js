@@ -263,3 +263,79 @@
     window.addEventListener('beforeprint', function () { fig.classList.remove('ps-js'); });
   });
 })();
+
+// ==== Pass 10 (2026-11-12): the demo, one step at a time, and the study tools flow. Kept in pass10.js beside the
+// site tooling (patch-p10.py appends it). Without JavaScript the demo is a list of its four steps, and the flow is
+// its finished row. ====
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    var dm = document.querySelector('.dm');
+    if (!dm) return;
+    var steps = [].slice.call(dm.querySelectorAll('.dm-step'));
+    var ctrl = dm.querySelector('.dm-ctrl');
+    var back = dm.querySelector('.dm-back');
+    var next = dm.querySelector('.dm-next');
+    var restart = dm.querySelector('.dm-restart');
+    var at = dm.querySelector('.dm-at');
+    var live = dm.querySelector('.dm-live');
+    var n = steps.length;
+    var i = 0;
+    var show = function (to, moved) {
+      var focused = ctrl.contains(document.activeElement);
+      i = Math.max(0, Math.min(n - 1, to));
+      steps.forEach(function (s, k) { s.classList.toggle('is-on', k === i); });
+      dm.classList.toggle('is-last', i === n - 1);
+      dm.classList.toggle('is-moved', !!moved);
+      back.disabled = i === 0;
+      next.hidden = i === n - 1;
+      restart.hidden = i !== n - 1;
+      at.textContent = String(i + 1);
+      if (moved) {
+        var say = steps[i].querySelector('.dm-say');
+        var words = say ? say.textContent.replace(/^\s*\d+\s*/, '').replace(/\s+/g, ' ').trim() : '';
+        live.textContent = 'Step ' + (i + 1) + ' of ' + n + ': ' + words;
+      }
+      // Focus stays on the controls: when the button pressed goes away, the one beside it takes the focus.
+      if (focused && (document.activeElement.hidden || document.activeElement.disabled || !ctrl.contains(document.activeElement))) {
+        (i === n - 1 ? restart : next).focus();
+      }
+    };
+    dm.classList.add('is-js');
+    ctrl.hidden = false;
+    back.addEventListener('click', function () { show(i - 1, true); });
+    next.addEventListener('click', function () { show(i + 1, true); });
+    restart.addEventListener('click', function () { show(0, true); next.focus(); });
+    ctrl.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); show(i + 1, true); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); show(i - 1, true); }
+      else if (e.key === 'Home') { e.preventDefault(); show(0, true); }
+      else if (e.key === 'End') { e.preventDefault(); show(n - 1, true); }
+    });
+    show(0, false);
+    window.addEventListener('beforeprint', function () { dm.classList.remove('is-js'); });
+    window.addEventListener('afterprint', function () { dm.classList.add('is-js'); });
+  });
+})();
+(function () {
+  if (!('IntersectionObserver' in window) || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.addEventListener('DOMContentLoaded', function () {
+    var fig = document.querySelector('.fl');
+    if (!fig) return;
+    var again = fig.querySelector('.fl-again');
+    var items = fig.querySelectorAll('.fl-item');
+    var last = items[items.length - 1];
+    fig.classList.add('fl-js');
+    var play = function () {
+      fig.classList.remove('is-play');
+      void fig.offsetWidth; // restart the animations
+      fig.classList.add('is-play');
+    };
+    last.addEventListener('animationend', function () { if (again) again.hidden = false; });
+    if (again) again.addEventListener('click', play);
+    var seen = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { play(); seen.disconnect(); }
+    }, { threshold: 0.5 });
+    seen.observe(fig.querySelector('.fl-row'));
+    window.addEventListener('beforeprint', function () { fig.classList.remove('fl-js'); });
+  });
+})();

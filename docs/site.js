@@ -211,3 +211,55 @@
     if (system.addEventListener) system.addEventListener('change', again);
   }
 })();
+
+// ==== Pass 8 (2026-11-11): the green band's "what was said, what you read" plays once as it scrolls into view,
+// and Replay plays it again. Kept in pass8.js beside the site tooling (patch-p8.py appends it). Without JavaScript,
+// or when the reader has asked for less motion, it is simply the finished state. ====
+(function () {
+  if (!('IntersectionObserver' in window) || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.addEventListener('DOMContentLoaded', function () {
+    var fig = document.querySelector('.tx');
+    if (!fig) return;
+    var again = fig.querySelector('.tx-again');
+    var last = fig.querySelector('.tx-para p');
+    fig.classList.add('tx-on');
+    var play = function () {
+      fig.classList.remove('is-play');
+      void fig.offsetWidth; // restart the animations
+      fig.classList.add('is-play');
+    };
+    last.addEventListener('animationend', function () { if (again) again.hidden = false; });
+    if (again) again.addEventListener('click', play);
+    var seen = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { play(); seen.disconnect(); }
+    }, { threshold: 0.6 });
+    seen.observe(fig.querySelector('.tx-card'));
+    window.addEventListener('beforeprint', function () { fig.classList.remove('tx-on'); });
+  });
+})();
+
+// ==== Pass 9 (2026-11-12): on the study tools page, the pack styles piece plays once as it scrolls into view (a style
+// is chosen, then what the pack makes appears), and Replay plays it again. Kept in pass9.js beside the site tooling
+// (patch-p9.py appends it). Without JavaScript, or when the reader has asked for less motion, it is the finished state. ====
+(function () {
+  if (!('IntersectionObserver' in window) || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.addEventListener('DOMContentLoaded', function () {
+    var fig = document.querySelector('.ps');
+    if (!fig) return;
+    var again = fig.querySelector('.ps-again');
+    var last = fig.querySelector('.ps-count');
+    fig.classList.add('ps-js');
+    var play = function () {
+      fig.classList.remove('is-play');
+      void fig.offsetWidth; // restart the animations
+      fig.classList.add('is-play');
+    };
+    last.addEventListener('animationend', function () { if (again) again.hidden = false; });
+    if (again) again.addEventListener('click', play);
+    var seen = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { play(); seen.disconnect(); }
+    }, { threshold: 0.6 });
+    seen.observe(fig.querySelector('.ps-card'));
+    window.addEventListener('beforeprint', function () { fig.classList.remove('ps-js'); });
+  });
+})();

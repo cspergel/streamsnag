@@ -3161,3 +3161,195 @@ a { text-decoration-thickness: .06em; text-underline-offset: .22em; }
 
 @media print { .site-head { position: static; backdrop-filter: none; } .shot-d { display: none !important; } .shot-l { display: block !important; } }
 /* ==== end of pass 7 ==== */
+
+/* ==== Pass 8 (2026-11-11): owned art and one small piece of motion. Kept in pass8.css beside the site tooling
+   (patch-p8.py appends it). ==== */
+
+/* ---------- The green band: what was said, and what you read ---------- */
+.tx { max-width: 960px; margin: clamp(40px, 5vw, 64px) auto 0; }
+.tx-card {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.3fr); align-items: center;
+  gap: clamp(16px, 2.6vw, 32px); padding: clamp(18px, 2.8vw, 32px);
+  border-radius: var(--r-xl); background: var(--surface); color: var(--ink); text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .08), 0 30px 60px -28px rgba(0, 0, 0, .5);
+}
+.tx-label { margin: 0 0 12px; font: 600 .72rem/1.2 var(--font-ui); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+.tx-said { align-self: stretch; padding: 16px 18px 18px; border-radius: var(--r-md); background: var(--tint); }
+.tx-lines { margin: 0; padding: 0; list-style: none; }
+.tx-lines li { font: 500 .94rem/1.6 var(--font-ui); color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tx-arrow { width: 26px; height: 26px; fill: none; stroke: var(--line-strong); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tx-h { margin: 0 0 10px; font: 540 clamp(1.2rem, 1.9vw, 1.45rem)/1.2 var(--font-display); letter-spacing: -.01em; color: var(--ink); }
+.tx-para { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+.tx-t { margin-top: 3px; padding: 2px 8px; border-radius: 999px; font: 600 .74rem/1.4 var(--font-min); color: var(--free-ink); background: var(--free-bg); }
+.tx-para p { margin: 0; font: 400 1.05rem/1.55 var(--font-display); color: var(--ink-2); }
+.tx-para b { font-family: var(--font-ui); font-size: .88em; font-weight: 650; color: var(--ink); }
+.tx-cap { margin-top: 16px; font-size: var(--t-s); line-height: 1.5; text-align: center; color: color-mix(in srgb, var(--on-field) 78%, var(--field)); }
+.tx-again { margin-left: 6px; padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: var(--on-field); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--on-field) 45%, transparent); text-underline-offset: 3px; cursor: pointer; }
+.tx-again:hover { text-decoration-color: currentColor; }
+.tx-lines li:nth-child(2) { --i: 1; } .tx-lines li:nth-child(3) { --i: 2; } .tx-lines li:nth-child(4) { --i: 3; } .tx-lines li:nth-child(5) { --i: 4; }
+.tx-lines li { --i: 0; }
+.tx + .read-pics { margin-top: clamp(32px, 4vw, 52px); }
+@media (max-width: 759px) {
+  .tx-card { grid-template-columns: minmax(0, 1fr); }
+  .tx-arrow { justify-self: center; transform: rotate(90deg); width: 22px; height: 22px; }
+  .tx-lines li { font-size: .9rem; }
+}
+
+/* The motion: only with JavaScript (site.js adds .tx-on) and only when the reader has not asked for less motion.
+   About five seconds: the captions run in line by line, the arrow draws, then the heading, the time and the paragraph set. */
+@media (prefers-reduced-motion: no-preference) {
+  .tx-on .tx-lines li, .tx-on .tx-h, .tx-on .tx-t, .tx-on .tx-para p { opacity: 0; }
+  .tx-on .tx-arrow path { stroke-dasharray: 40; stroke-dashoffset: 40; }
+  .tx-on.is-play .tx-lines li { opacity: 1; animation: tx-run .56s linear both; animation-delay: calc(.25s + var(--i) * .52s); }
+  .tx-on.is-play .tx-arrow path { stroke-dashoffset: 0; animation: tx-draw .5s var(--ease-out) 2.95s both; }
+  .tx-on.is-play .tx-h { opacity: 1; animation: tx-set .7s var(--ease-out) 3.3s both; }
+  .tx-on.is-play .tx-t { opacity: 1; animation: tx-tag .5s var(--ease-out) 3.65s both; }
+  .tx-on.is-play .tx-para p { opacity: 1; animation: tx-set .9s var(--ease-out) 3.8s both; }
+}
+@keyframes tx-run { from { opacity: 1; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
+@keyframes tx-draw { from { stroke-dashoffset: 40; } to { stroke-dashoffset: 0; } }
+@keyframes tx-set { from { opacity: 0; transform: translateY(8px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes tx-tag { from { opacity: 0; transform: scale(.86); } to { opacity: 1; transform: none; } }
+
+/* ---------- The closing screen: the site's one piece of brand art ---------- */
+.art { display: block; }
+.art img { display: block; width: 100%; height: auto; }
+.art-desk { max-width: 1040px; margin: 0 auto clamp(40px, 6vw, 72px); }
+.art-desk img { aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r-xl); box-shadow: var(--sh-3); }
+:root[data-theme="dark"] .art-desk img { filter: brightness(.86) saturate(.92); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .art-desk img { filter: brightness(.86) saturate(.92); } }
+@media (max-width: 759px) { .art-desk img { aspect-ratio: 4 / 3; object-position: 72% 50%; } }
+@media print { .art { display: none; } }
+/* ==== end of pass 8 ==== */
+
+/* ==== Pass 9 (2026-11-12): one bright accent, the study tools page, art in the headers. Kept in pass9.css beside the
+   site tooling (patch-p9.py appends it). ==== */
+
+/* ---------- The highlighter: one bright accent, used sparingly ----------
+   Yellow is only ever a highlight behind dark ink (never yellow text on a light page): #141816 on #ffe45c is about
+   15:1, and on the dark theme's #e6cb44 about 11:1. Orange stays for actions, green for what was taught. */
+:root { --hl: #ffe45c; --hl-ink: #141816; --hl-soft: #fff3a8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --hl: #e6cb44; --hl-ink: #141816; --hl-soft: #5a5122; } }
+:root[data-theme="dark"] { --hl: #e6cb44; --hl-ink: #141816; --hl-soft: #5a5122; }
+
+mark.hl {
+  padding: 0 .12em; margin: 0 -.04em;
+  color: var(--hl-ink); background-color: var(--hl);
+  border-radius: .14em .22em .12em .24em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+::selection { background: var(--hl); color: var(--hl-ink); }
+@media (forced-colors: active) { mark.hl { background: Mark; color: MarkText; forced-color-adjust: none; } }
+@media print { mark.hl { background: none; text-decoration: underline; } }
+
+/* ---------- Art at the head of a page ---------- */
+.art-head { max-width: 1040px; margin: clamp(30px, 4vw, 52px) auto 0; }
+.art-head img { aspect-ratio: 21 / 8; object-fit: cover; border-radius: var(--r-xl); box-shadow: var(--sh-2); }
+.art-head.at-right img { object-position: 70% 55%; }
+.art-head.at-mid img { object-position: 50% 60%; }
+:root[data-theme="dark"] .art-head img { filter: brightness(.84) saturate(.92); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .art-head img { filter: brightness(.84) saturate(.92); } }
+@media (max-width: 759px) { .art-head img { aspect-ratio: 16 / 9; } }
+.g-top .art-head { margin: clamp(24px, 3vw, 36px) 0 0; max-width: none; }
+@media print { .art-head { display: none; } }
+
+/* ---------- Study tools ---------- */
+.st-top { padding-bottom: clamp(48px, 6vw, 80px); }
+.st-top .top-say { max-width: 36em; }
+.st-plain {
+  max-width: 50rem; margin: 0 auto; padding: clamp(20px, 2.6vw, 30px) clamp(20px, 3vw, 36px);
+  border-radius: var(--r-xl); background: var(--surface); box-shadow: var(--sh-1);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px clamp(18px, 3vw, 36px);
+}
+.st-plain > div { min-width: 0; }
+.st-plain h2 { font: 650 .78rem/1.2 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.st-plain p { margin-top: 8px; font-size: var(--t-s); line-height: 1.5; color: var(--ink-2); }
+.st-plain p b { color: var(--ink); }
+@media (max-width: 759px) { .st-plain { grid-template-columns: minmax(0, 1fr); } }
+
+.st-sec { padding: var(--section) 0 0; }
+.st-sec:last-of-type { padding-bottom: var(--section); }
+.st-head { max-width: 1200px; margin: 0 auto clamp(28px, 4vw, 48px); }
+.st-head h2 { font: 560 clamp(1.9rem, 3.8vw, 3rem)/1.08 var(--font-display); letter-spacing: -0.013em; text-wrap: balance; max-width: 22ch; }
+.st-head p { max-width: 34em; margin-top: 14px; font-size: var(--t); line-height: 1.5; color: var(--ink-2); }
+.st-lecture { margin-top: 12px; font-size: var(--t-s); color: var(--ink-3); }
+.st-lecture a { color: var(--ink-2); font-weight: 600; text-decoration-color: var(--line-strong); }
+
+.st-flow { list-style: none; margin: 0 auto; padding: 0; max-width: 1200px; counter-reset: st; }
+.st-step {
+  counter-increment: st;
+  display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 9fr); align-items: center;
+  gap: 28px clamp(28px, 5vw, 72px); padding: clamp(36px, 5vw, 64px) 0;
+  border-top: 1px solid var(--line);
+}
+.st-step:first-child { border-top: 0; padding-top: 0; }
+.st-step:nth-child(even) { grid-template-columns: minmax(0, 9fr) minmax(0, 4fr); }
+.st-step:nth-child(even) .st-words { order: 2; }
+.st-words { min-width: 0; }
+.st-n { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 600 .8125rem/1 var(--font-ui); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.st-n::before { content: counter(st, decimal-leading-zero); margin-right: 4px; font-family: var(--font-min); color: var(--ink-3); }
+.st-words h3 { margin-top: 14px; font: 560 clamp(1.6rem, 3vw, 2.35rem)/1.08 var(--font-display); letter-spacing: -0.013em; text-wrap: balance; }
+.st-words > p { max-width: 27em; margin-top: 14px; font-size: var(--t); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.st-words .st-link { margin-top: 12px; }
+.st-pic { min-width: 0; }
+.st-pic .frame { width: 100%; }
+.st-pic .bubble { max-width: 420px; margin-inline: auto; }
+.st-pic-pop { display: grid; justify-items: center; padding: clamp(18px, 3vw, 36px); border-radius: var(--r-xl); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); }
+@media (max-width: 859px) {
+  .st-step, .st-step:nth-child(even) { grid-template-columns: minmax(0, 1fr); }
+  .st-step:nth-child(even) .st-words { order: 0; }
+}
+
+/* The lecturer's emphasis, as the reading edition marks it, drawn beside the screenshot. */
+.st-said {
+  position: relative; max-width: 30rem; margin: -18px 0 0 auto; z-index: 2;
+  padding: 16px 20px 18px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-3);
+}
+.st-said p { font: 400 1.0625rem/1.55 var(--font-display); color: var(--ink-2); }
+.st-said .st-said-l { margin-bottom: 8px; font: 650 .72rem/1.2 var(--font-ui); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+.st-said .st-t { margin-right: 8px; padding: 2px 8px; border-radius: 999px; font: 600 .74rem/1.4 var(--font-min); color: var(--free-ink); background: var(--free-bg); vertical-align: 2px; }
+@media (max-width: 859px) { .st-said { margin: 14px 0 0; } }
+
+/* ---------- The pack styles, played once: a style is chosen, and what the pack makes appears ---------- */
+.ps { margin: 0; }
+.ps-card { padding: clamp(18px, 2.6vw, 28px); border-radius: var(--r-xl); background: var(--surface); box-shadow: var(--sh-3); }
+.ps-label { font: 650 .72rem/1.2 var(--font-ui); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+.ps-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ps-chip {
+  position: relative; display: inline-flex; align-items: center; min-height: 34px; padding: 0 14px;
+  border-radius: 999px; font: 600 .875rem/1 var(--font-ui); color: var(--ink-2);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+.ps-chip.ps-on { color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+.ps-chip.ps-on span { background: linear-gradient(var(--hl), var(--hl)) 0 50% / 100% 100% no-repeat; color: var(--hl-ink); padding: 2px 4px; margin: 0 -4px; border-radius: 3px; }
+.ps-own { font-size: var(--t-s); color: var(--ink-3); margin-top: 10px; }
+.ps-parts { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; }
+.ps-parts li { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 9px 12px; border-radius: var(--r-md); background: var(--tint); font: 500 .9375rem/1.3 var(--font-ui); color: var(--ink); }
+.ps-parts svg { flex: none; width: 18px; height: 18px; fill: none; stroke: var(--green); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.ps-count { margin-top: 16px; font-size: var(--t-s); color: var(--ink-2); }
+.ps-cap { margin-top: 14px; font-size: var(--t-s); line-height: 1.5; color: var(--ink-3); }
+.ps-again { margin-left: 6px; padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; cursor: pointer; }
+.ps-again:hover { text-decoration-color: currentColor; }
+@media (max-width: 479px) { .ps-parts { grid-template-columns: minmax(0, 1fr); } }
+.ps-parts li:nth-child(1) { --i: 0; } .ps-parts li:nth-child(2) { --i: 1; } .ps-parts li:nth-child(3) { --i: 2; } .ps-parts li:nth-child(4) { --i: 3; }
+.ps-parts li:nth-child(5) { --i: 4; } .ps-parts li:nth-child(6) { --i: 5; } .ps-parts li:nth-child(7) { --i: 6; } .ps-parts li:nth-child(8) { --i: 7; }
+/* About four seconds, with JavaScript (site.js adds .ps-js) and only when motion is welcome: the style is chosen, its
+   highlight is drawn, then the parts of the pack come in one by one and the count settles. */
+@media (prefers-reduced-motion: no-preference) {
+  .ps-js .ps-chip.ps-on { box-shadow: inset 0 0 0 1px var(--line-strong); color: var(--ink-2); }
+  .ps-js .ps-chip.ps-on span { background-size: 0% 100%; color: inherit; }
+  .ps-js .ps-parts li, .ps-js .ps-count { opacity: 0; }
+  .ps-js.is-play .ps-chip.ps-on { animation: ps-press .45s var(--ease-out) .7s both; }
+  .ps-js.is-play .ps-chip.ps-on span { animation: ps-mark .55s var(--ease-out) 1s both; }
+  .ps-js.is-play .ps-parts li { opacity: 1; animation: ps-in .5s var(--ease-out) both; animation-delay: calc(1.6s + var(--i) * .22s); }
+  .ps-js.is-play .ps-count { opacity: 1; animation: ps-in .6s var(--ease-out) 3.5s both; }
+}
+@keyframes ps-press { from { box-shadow: inset 0 0 0 1px var(--line-strong); transform: scale(1); } 40% { transform: scale(.96); } to { box-shadow: inset 0 0 0 2px var(--ink); color: var(--ink); transform: none; } }
+@keyframes ps-mark { from { background-size: 0% 100%; } to { background-size: 100% 100%; color: var(--hl-ink); } }
+@keyframes ps-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.st-cost { max-width: 50rem; margin: clamp(32px, 4vw, 48px) auto 0; font-size: var(--t-s); line-height: 1.55; color: var(--ink-3); text-align: center; }
+.st-samples { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 26px; margin-top: 18px; }
+.st-samples a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; color: var(--ink); text-decoration-color: var(--line-strong); }
+.st-samples a:hover { text-decoration-color: currentColor; }
+/* ==== end of pass 9 ==== */

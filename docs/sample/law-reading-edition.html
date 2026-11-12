@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-8BBGtVXcJRYlvDu7PEWWaPJ/JyuHdktWAPaWw1GILYU=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../icon.png">
+<meta name="generator" content="StreamSnag reading edition">
+<title>Sample reading edition: Offer and acceptance | StreamSnag</title>
+<style>
+:root {
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #141816; --soft: #363d39; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #0e6b5e; --accent-ink: #0a4f45; --accent-tint: #d3ebe4; --accent-line: #93cbbd;
+  --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Sitka Text", Georgia, serif;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --size: 19px; --gutter: 4.4rem;
+  color-scheme: light;
+}
+:root[data-size="0"] { --size: 16px; }
+:root[data-size="1"] { --size: 17.5px; }
+:root[data-size="2"] { --size: 19px; }
+:root[data-size="3"] { --size: 21px; }
+:root[data-size="4"] { --size: 23.5px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
+  --accent: #5fd4c1; --accent-ink: #8fe3d4; --accent-tint: #123029; --accent-line: #26574f;
+  --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #141716; --paper: #1b1f1d; --ink: #e6e4de; --soft: #bfc2bc; --muted: #959a95; --faint: #8f9590; --line: #2a2f2c; --line-strong: #3c423e;
+  --accent: #5fd4c1; --accent-ink: #8fe3d4; --accent-tint: #123029; --accent-line: #26574f;
+  --note: #262112; --note-line: #5e4f26; --note-ink: #dcbb6a;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { font-size: var(--size); scroll-behavior: smooth; scroll-padding-top: 2.2rem; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--serif); line-height: 1.72; text-rendering: optimizeLegibility; font-kerning: normal; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--paper); color: var(--accent-ink); padding: .5rem 1rem; z-index: 7; }
+.skip:focus { left: 1rem; top: 1rem; }
+a { color: var(--accent-ink); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3, .toc, .eyebrow, .meta, .how, .notice, .t, button, summary, .label, .span, .slide, .asis, .foot, .fixes { font-family: var(--sans); }
+
+/* how far through the lecture the reader is */
+.bar { position: fixed; left: 0; right: 0; top: 0; height: 3px; z-index: 6; pointer-events: none; }
+#progress { height: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+html:not(.js) .bar, html:not(.js) .needs-js { display: none; }
+
+/* The title comes first in the page (and on a phone); on a wide window the contents sit beside it. */
+.page { display: grid; grid-template-columns: 232px minmax(0, 36.4rem); grid-template-rows: auto 1fr; grid-template-areas: "toc cover" "toc main"; column-gap: 3.6rem; justify-content: center; max-width: 68rem; margin: 0 auto; padding: 3.6rem 1.5rem 7rem; }
+.cover { grid-area: cover; }
+.toc { grid-area: toc; }
+main { grid-area: main; min-width: 0; }
+
+/* contents and the reader's own settings */
+.toc { position: sticky; top: 2.2rem; align-self: start; font-size: 14px; line-height: 1.4; max-height: calc(100vh - 4.4rem); overflow: auto; padding-right: 6px; }
+.toc .label { display: block; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin: 0 0 10px; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc ol a { display: flex; gap: 10px; justify-content: space-between; align-items: baseline; padding: 6px 12px; margin-left: -12px; color: var(--soft); text-decoration: none; border-left: 2px solid transparent; border-radius: 0 6px 6px 0; }
+.toc ol a:hover { color: var(--ink); background: var(--accent-tint); }
+.toc ol a.on { color: var(--accent-ink); border-left-color: var(--accent); border-left-width: 3px; font-weight: 650; background: var(--accent-tint); border-radius: 0 6px 6px 0; }
+.toc .tm { flex: none; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--faint); font-weight: 400; }
+.tools { display: flex; gap: 8px; margin: 0 0 26px; flex-wrap: wrap; }
+.tools .size { display: flex; }
+.tools .size button:first-child { border-radius: 8px 0 0 8px; }
+.tools .size button:last-child { border-radius: 0 8px 8px 0; margin-left: -1px; }
+button { font-size: 13.5px; font-weight: 600; color: var(--soft); background: var(--paper); border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 12px; cursor: pointer; line-height: 1.2; }
+button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-ink); position: relative; }
+button:disabled { opacity: .45; cursor: default; }
+.left { margin: 18px 0 0; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.more { list-style: none; margin: 18px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); font-size: 13px; }
+.more li { margin: 0 0 6px; }
+
+/* cover */
+.cover { margin: 0 0 3.2rem; }
+.eyebrow { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 650; }
+h1 { font-size: 2.05rem; line-height: 1.16; letter-spacing: -.02em; font-weight: 650; margin: .35rem 0 .95rem; text-wrap: balance; overflow-wrap: break-word; }
+.meta { display: flex; flex-wrap: wrap; gap: .35rem .45rem; margin: 0 0 .9rem; padding: 0; list-style: none; font-size: .72rem; color: var(--soft); }
+.meta li { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: .16rem .68rem; }
+.how { font-size: .74rem; line-height: 1.5; color: var(--muted); margin: 0; }
+.notice { margin: 1.3rem 0 0; padding: .85rem 1.05rem .9rem; border: 1px solid var(--note-line); border-left-width: 3px; background: var(--note); border-radius: 8px; font-size: .76rem; line-height: 1.58; color: var(--soft); }
+.notice strong { color: var(--note-ink); }
+.notice p { margin: 0 0 .45rem; }
+.notice p:last-of-type { margin-bottom: 0; }
+.notice button { margin-top: .7rem; }
+
+/* sections */
+.sec { margin: 0 0 3.2rem; }
+.sec-head { display: flex; flex-wrap: wrap; gap: .2rem 1rem; align-items: baseline; justify-content: space-between; margin: 0 0 1.25rem; padding-top: 1.3rem; border-top: 1px solid var(--line-strong); }
+h2 { flex: 1 1 14rem; font-size: 1.32rem; line-height: 1.26; letter-spacing: -.01em; font-weight: 650; margin: 0; text-wrap: balance; overflow-wrap: break-word; }
+.span { flex: none; font-size: .68rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.swap { flex: none; font-size: .68rem; font-weight: 600; padding: .2rem .55rem; border-radius: 999px; background: none; }
+.asis { display: inline-block; margin: -.4rem 0 1.1rem var(--gutter); padding: .22rem .7rem; font-size: .68rem; line-height: 1.5; color: var(--note-ink); background: var(--note); border: 1px dashed var(--note-line); border-radius: 999px; }
+h3 { margin: 1.9rem 0 .7rem var(--gutter); font-size: 1rem; line-height: 1.35; font-weight: 650; text-wrap: balance; }
+
+/* the text: real paragraphs, with the minute they were said in the margin */
+.para { display: grid; grid-template-columns: var(--gutter) minmax(0, 1fr); align-items: baseline; position: relative; }
+.para p { margin: 0 0 1.08em; overflow-wrap: break-word; }
+.flow { min-width: 0; }
+
+/* points the lecturer counts off ("First… Second…"), set out as a list: every word is still there */
+ol.said { margin: 0 0 1.08em; padding: 0 0 0 1.5em; }
+ol.said li { margin: 0 0 .42em; padding-left: .3em; overflow-wrap: break-word; }
+ol.said li::marker { font-family: var(--sans); font-size: .76em; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--accent-ink); }
+
+/* where the lecturer says that something matters: a quiet tint under the sentence, and a note under the paragraph's time */
+.key { color: inherit; background: var(--accent-tint); border-bottom: 1px solid var(--accent-line); border-radius: 3px; padding: .05em .16em; margin: 0 -.16em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.para.stress::before { content: "Lecturer’s emphasis"; position: absolute; left: 0; top: 1.5rem; width: calc(var(--gutter) - 1.1rem); font-family: var(--sans); font-size: .54rem; font-weight: 650; line-height: 1.22; letter-spacing: .02em; color: var(--accent-ink); }
+.t { font-size: .66rem; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: .01em; color: var(--accent-ink); text-decoration: none; line-height: 1; white-space: nowrap; justify-self: start; padding: .2rem .42rem; margin-left: -.42rem; background: var(--accent-tint); border-radius: 5px; }
+a.t:hover, .para:target .t { color: var(--paper); background: var(--accent); text-decoration: none; }
+.who { font-family: var(--sans); font-size: .82em; font-weight: 650; letter-spacing: .01em; }
+.unsure { color: var(--note-ink); }
+
+/* where the slide changes */
+.slide { margin: 1.7rem 0 1.15rem var(--gutter); padding-top: .65rem; border-top: 1px solid var(--line); font-size: .7rem; line-height: 1.45; color: var(--soft); }
+.slide .row, .slide summary { display: flex; gap: .65rem; align-items: baseline; }
+.slide summary { cursor: pointer; list-style: none; }
+.slide summary::-webkit-details-marker { display: none; }
+.sl-n { flex: none; font-weight: 700; font-size: .62rem; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-ink); }
+.sl-t { min-width: 0; overflow-wrap: break-word; }
+.sl-see { flex: none; margin-left: auto; color: var(--accent-ink); font-weight: 600; text-decoration: underline; text-underline-offset: .18em; }
+.sl-see::after { content: "Show slide"; }
+details[open] > summary .sl-see::after { content: "Hide slide"; }
+.slide img { display: block; width: 100%; height: auto; margin: .75rem 0 .2rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.sec .body > .slide:first-child { margin-top: 0; }
+
+.fixes { font-size: .78rem; line-height: 1.55; color: var(--soft); }
+.fixes h2 { font-size: 1rem; }
+.fixes p { margin: 0 0 .6rem; }
+.fixes ul { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 2rem; }
+.fixes li { margin: 0 0 .3rem; break-inside: avoid; }
+.fixes .was { font-style: italic; color: var(--muted); }
+.foot { font-size: .7rem; color: var(--muted); border-top: 1px solid var(--line-strong); padding-top: 1.1rem; line-height: 1.55; }
+
+@media (max-width: 60rem) {
+  :root { --gutter: 0rem; }
+  .page { display: block; padding: 1.4rem 1.15rem 4.5rem; max-width: 37rem; }
+  .toc { position: static; max-height: none; margin: 0 0 2.4rem; padding: 14px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+  .tools { margin-bottom: 16px; }
+  .cover { margin-bottom: 1.6rem; }
+  h1 { font-size: 1.62rem; }
+  h2 { font-size: 1.18rem; }
+  /* No margin to put the minute in: it sits at the start of the paragraph's first line. */
+  .para { display: block; }
+  .t { float: left; margin: .52em .6em 0 0; padding: 0; }
+  .para.lf .t { float: none; display: block; margin: 0 0 .35em; }
+  /* ...and none for the note: it stands in small capitals over its paragraph. */
+  .para.stress::before { position: static; display: block; width: auto; margin: 0 0 .1rem; font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; }
+  .fixes ul { columns: 1; }
+}
+
+@page { margin: 22mm 27mm; }
+@media print {
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+  --bg: #f5f3ee; --paper: #fffefb; --ink: #141816; --soft: #363d39; --muted: #5c635e; --faint: #616863; --line: #dfdbd1; --line-strong: #c8c3b7;
+  --accent: #0e6b5e; --accent-ink: #0a4f45; --accent-tint: #d3ebe4; --accent-line: #93cbbd;
+  --note: #fbf4e1; --note-line: #dcc48a; --note-ink: #7a5a12;
+    --bg: #fff; --paper: #fff; --gutter: 3.6rem; color-scheme: light; }
+  html, :root[data-size] { font-size: 11.5pt; }
+  body { background: #fff; }
+  .page { display: block; max-width: none; padding: 0; }
+  .bar, .toc, .needs-js, .skip, .swap, .sl-see { display: none !important; }
+  .cover { margin-bottom: 1.6rem; }
+  .sec { margin-bottom: 1.5rem; }
+  .sec-head { break-after: avoid; break-inside: avoid; }
+  h2, h3, .slide, .asis { break-after: avoid; }
+  .slide { break-inside: avoid; }
+  .slide img { width: auto; max-width: 100%; max-height: 8cm; margin-left: auto; margin-right: auto; }
+  .para { display: grid; }
+  .para p { orphans: 3; widows: 3; }
+  .t { float: none; margin: 0; color: #555; }
+  .para.lf .t { margin: 0; }
+  ol.said li { break-inside: avoid; }
+  .key { background: none; }
+  .para.stress::before { position: absolute; display: block; left: 0; top: 1.3rem; width: calc(var(--gutter) - .7rem); margin: 0; font-size: .52rem; letter-spacing: .02em; text-transform: none; color: #555; }
+  .notice { background: none; }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* the reader bar: one lecture, five ways to study it */
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #141816; --rd-ink-2: #363d39; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #0e6b5e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; }
+.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.rd-bar [hidden] { display: none !important; }
+.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
+.rd-bar .rd-modes { display: flex; flex: none; gap: 2px; max-width: 100%; padding: 3px; border-radius: 9px; background: var(--rd-sunk); }
+.rd-bar .rd-modes a, .rd-bar .rd-modes span { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 6px; color: var(--rd-ink-2); font: inherit; text-decoration: none; white-space: nowrap; }
+.rd-bar .rd-modes a:hover { color: var(--rd-ink); text-decoration: none; }
+.rd-bar .rd-modes [aria-current] { background: var(--rd-surface); color: var(--rd-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rd-rule-2); }
+.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
+.rd-bar .rd-back::before { content: ""; width: 6px; height: 6px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-left: 2px; }
+.rd-bar .rd-back:hover { border-color: var(--rd-ink-3); color: var(--rd-ink); }
+.rd-bar .rd-hint { flex: 1 0 100%; font-size: 12.5px; color: var(--rd-ink-3); }
+.rd-bar :focus-visible { outline: 2px solid var(--rd-source); outline-offset: 2px; border-radius: 6px; }
+html { scroll-padding-top: 4.4rem; }
+.rd-bar ~ .page .toc { top: calc(48px + 1.4rem); max-height: calc(100vh - 48px - 2.8rem); }
+@media (max-width: 560px) { .rd-bar { padding: 6px 10px; } .rd-bar .rd-modes a, .rd-bar .rd-modes span { padding: 0 9px; } }
+@media print { .rd-bar { display: none; } }
+
+.ssb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 8px 16px; background: #14181d; color: #c9ced6; font: 400 13px/1.45 "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; position: relative; z-index: 5; }
+.ssb a { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-color: #6b7380; text-underline-offset: .2em; white-space: nowrap; }
+.ssb a:hover { text-decoration-color: #fff; }
+.ssb a:focus-visible { outline: 2px solid #ff8a4c; outline-offset: 2px; border-radius: 3px; }
+.ssb .ssb-home { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; }
+.ssb svg { width: 20px; height: 20px; flex: none; }
+.ssb .ssb-what { flex: 1 1 320px; min-width: 0; }
+.ssb .ssb-what b { color: #fff; font-weight: 650; }
+.ssb .ssb-links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.ssb [aria-current] { text-decoration: none; color: #c9ced6; font-weight: 400; }
+@media print { .ssb { display: none; } }
+</style>
+</head>
+<body>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample reading edition.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. The times open the sample study page, which has no video.</span><span class="ssb-links"><a href="law-reading-edition.html" aria-current="page">Reading edition</a><a href="law-study-guide.html">Study guide</a><a href="law-study-page.html">Study page</a><a href="../#gallery">All samples</a></span></div>
+<div class="bar" aria-hidden="true"><div id="progress"></div></div>
+<a class="skip" href="#main">Skip to the text</a>
+<nav class="rd-bar" id="top" aria-label="This lecture" data-current="read" data-file="offer-and-acceptance">
+<button type="button" class="rd-back" hidden>Back to desk</button>
+<span class="rd-title">Offer and acceptance</span>
+<span class="rd-modes"><a data-mode="watch" href="law-study-page.html#t=0">Watch</a><span data-mode="read" aria-current="page">Read</span><a data-mode="guide" href="law-study-guide.html">Guide</a></span>
+<span class="rd-hint" role="status" hidden></span>
+</nav>
+<div class="page">
+<header class="cover">
+<div class="eyebrow">LAW101 · Reading edition</div>
+<h1>Offer and acceptance</h1>
+<ul class="meta">
+<li>23 min lecture</li>
+<li>12 min read</li>
+<li>2,706 words</li>
+</ul>
+<p class="how">From the lecture&#39;s captions. Hesitation sounds and doubled words were taken out by rule. Nothing is reworded.</p>
+
+</header>
+<nav class="toc" aria-label="Contents">
+<div class="tools needs-js"><div class="size" role="group" aria-label="Text size"><button type="button" id="smaller" aria-label="Smaller text">A−</button><button type="button" id="larger" aria-label="Larger text">A+</button></div><button type="button" id="theme">Dark</button><button type="button" id="print">Print</button></div>
+<span class="label">Contents</span>
+<ol>
+<li><a href="#s1"><span class="tt">Offer and acceptance</span><span class="tm">00:01</span></a></li>
+<li><a href="#s2"><span class="tt">Unilateral offers: Carlill v Carbolic Smoke Ball Co (1893)</span><span class="tm">07:50</span></a></li>
+<li><a href="#s3"><span class="tt">Communicating acceptance</span><span class="tm">15:15</span></a></li>
+<li><a href="#s4"><span class="tt">Part 4</span><span class="tm">19:15</span></a></li>
+</ol>
+<p class="left needs-js" id="left" aria-live="off"></p>
+<ul class="more">
+<li><a href="law-study-page.html">Study page: video, slides and transcript</a></li>
+<li><a href="law-study-guide.html">Study guide</a></li>
+</ul>
+</nav>
+<main id="main">
+<section class="sec" id="s1">
+<div class="sec-head"><h2>Offer and acceptance</h2><span class="span">00:01–07:47</span></div>
+<div class="body">
+<div class="para" id="s1-p1"><a class="t" href="law-study-page.html#t=1&amp;slide=1">00:01</a><p><b class="who">Lecturer:</b> Okay, good morning, let&#39;s get going. Can the people at the back hear me? Wave if you can&#39;t. Right, nobody is waving, which either means you can hear me or you have given up already. Two quick notices. The tutorial problem for week five is now on the course page, and the reading for today is chapter three of the textbook, the part on agreement.</p></div>
+<div class="para" id="s1-p2"><a class="t" href="law-study-page.html#t=34&amp;slide=1">00:34</a><p><b class="who">Lecturer:</b> If you have not done it, do it tonight, because the tutorial assumes you have. So. Last week we asked what a contract is, and the short answer was that it is an agreement the law will enforce. Today we take the first half of that seriously. How does the law decide that two people have actually agreed? And the tool it uses, for almost every case you will meet this year, is a pair of ideas: offer and acceptance.</p></div>
+<div class="para" id="s1-p3"><a class="t" href="law-study-page.html#t=74&amp;slide=1">01:14</a><p><b class="who">Lecturer:</b> One side makes an offer, the other side accepts it, and at the moment of acceptance, not a second before, there is a contract.</p></div>
+<div class="slide" data-slide="2"><div class="row"><span class="sl-n">Slide 2</span><span class="sl-t">Agreement is judged objectively</span></div></div>
+<div class="para" id="s1-p4"><a class="t" href="law-study-page.html#t=89&amp;slide=2">01:29</a><p><b class="who">Lecturer:</b> Before we get to the rules, one idea sits underneath all of them. The law judges agreement objectively. It does not ask what was really going on inside your head. It asks what a reasonable person, watching what you said and did, would have understood you to mean. Courts have said this for a very long time, and Smith v Hughes in 1871 is the case usually given for it.</p></div>
+<div class="para" id="s1-p5"><a class="t" href="law-study-page.html#t=126&amp;slide=2">02:06</a><p><b class="who">Lecturer:</b> Why do it that way? Because nobody can see inside anybody else&#39;s head. If I could get out of a deal by saying, well, I said yes, but secretly I meant no, no contract would be safe. So, if you behave in a way that would lead a reasonable person to think you were agreeing, and the other side relies on that, you are held to it. Keep that in your mind for the rest of the hour. Almost every puzzle today comes back to the question, how would this look to a reasonable person standing outside?</p></div>
+<div class="slide" data-slide="3"><div class="row"><span class="sl-n">Slide 3</span><span class="sl-t">Offer or invitation to treat?</span></div></div>
+<div class="para" id="s1-p6"><a class="t" href="law-study-page.html#t=178&amp;slide=3">02:58</a><p><b class="who">Lecturer:</b> So, what is an offer? An offer is a statement of the terms on which you are willing to be bound, made with the intention that it becomes binding as soon as the other person accepts. The test is that last part. Has this person finished negotiating? If all the other side has to do is say yes, and a contract is made, then it is an offer.</p></div>
+<div class="para" id="s1-p7"><a class="t" href="law-study-page.html#t=212&amp;slide=3">03:32</a><p><b class="who">Lecturer:</b> And the thing an offer has to be told apart from is called an invitation to treat. An invitation to treat is an invitation to make an offer. It is an opening move. It says, I might be interested, come and talk to me. It is not a promise to deal with anyone who turns up. And a great deal of the case law in this area is the courts sorting statements into one box or the other.</p></div>
+<div class="slide" data-slide="4"><div class="row"><span class="sl-n">Slide 4</span><span class="sl-t">Invitations to treat: the usual examples</span></div></div>
+<div class="para" id="s1-p8"><a class="t" href="law-study-page.html#t=255&amp;slide=4">04:15</a><div class="flow">
+<p><b class="who">Lecturer:</b> Let&#39;s go through the usual examples, because these are the classic ones and you will see them again and again.</p>
+<ol class="said" start="1"><li>First, goods on display in a shop.</li><li>Second, advertisements.</li><li>Third, auctions.</li></ol>
+</div></div>
+<div class="para" id="s1-p9"><a class="t" href="law-study-page.html#t=273&amp;slide=4">04:33</a><p><b class="who">Lecturer:</b> Goods on display first. In Pharmaceutical Society of Great Britain v Boots, in 1953, the question was about one of the first self-service chemists. The customer takes the medicine off the shelf and carries it to the till, where a pharmacist is standing. The law said that certain medicines could only be sold under a pharmacist&#39;s supervision, so it mattered where the sale took place. The Court of Appeal held that the display on the shelf was only an invitation to treat. The customer makes the offer, at the till, and the shop accepts it there, under the pharmacist&#39;s eye.</p></div>
+<div class="para" id="s1-p10"><a class="t" href="law-study-page.html#t=324&amp;slide=4">05:24</a><p><b class="who">Lecturer:</b> So no offence. There is a good practical reason for that. If the display were the offer, then picking a box up would be acceptance, and you could not change your mind and put it back. And the shop could not refuse to sell to you. Treating the display as an invitation keeps both sides free until the till.</p></div>
+<div class="para" id="s1-p11"><a class="t" href="law-study-page.html#t=356&amp;slide=4">05:56</a><p><b class="who">Lecturer:</b> The same idea was applied to a shop window in Fisher v Bell, in 1961. A shopkeeper had a flick knife in his window with a price ticket on it, and he was charged under a statute that made it an offence to offer such knives for sale. He was acquitted. In the law of contract, putting goods in the window is an invitation to treat, not an offer, and Parliament had used the word offer. Parliament changed the statute afterwards, which tells you something about how the judges read it.</p></div>
+<div class="para stress" id="s1-p12"><a class="t" href="law-study-page.html#t=401&amp;slide=4">06:41</a><p><b class="who">Lecturer:</b> Advertisements next. The general rule is that an advertisement is an invitation to treat as well. In Partridge v Crittenden, in 1968, a man placed an advert in a magazine for some wild birds, and he was charged with offering them for sale. Again, no offence. An advert in a magazine is an invitation to treat. <mark class="key">And the reason the court gave is the one you should remember: if an advert were an offer, the seller would be bound to sell to every single person who replied, and he only had so many birds.</mark></p></div>
+<div class="para" id="s1-p13"><a class="t" href="law-study-page.html#t=446&amp;slide=4">07:26</a><p><b class="who">Lecturer:</b> And auctions. When the auctioneer asks for bids, that is an invitation to treat. Each bid is an offer. And the auctioneer accepts one of them by bringing the hammer down. Until the hammer falls, a bidder can withdraw the bid.</p></div>
+</div>
+</section>
+<section class="sec" id="s2">
+<div class="sec-head"><h2>Unilateral offers: Carlill v Carbolic Smoke Ball Co (1893)</h2><span class="span">07:50–15:10</span></div>
+<div class="body">
+<div class="para" id="s2-p1"><a class="t" href="law-study-page.html#t=470&amp;slide=5">07:50</a><p><b class="who">Student:</b> Sorry, so is an advert never an offer?</p></div>
+<div class="para" id="s2-p2"><a class="t" href="law-study-page.html#t=475&amp;slide=5">07:55</a><p><b class="who">Lecturer:</b> Good question, and no, not never. That is exactly where we go next. The rule about adverts is only a starting point, and the most famous contract case of all is about an advert that was an offer.</p></div>
+<div class="para" id="s2-p3"><a class="t" href="law-study-page.html#t=498&amp;slide=5">08:18</a><p><b class="who">Lecturer:</b> Carlill v Carbolic Smoke Ball Company, 1893. If you remember one case from this course, it will probably be this one. The company sold a device, a smoke ball, that you were meant to sniff to prevent influenza. And it ran an advertisement saying it would pay one hundred pounds to anyone who used the ball three times a day for two weeks, as directed, and still caught influenza. And to show it was serious, the advert said the company had deposited a thousand pounds with its bank for the purpose.</p></div>
+<div class="para" id="s2-p4"><a class="t" href="law-study-page.html#t=542&amp;slide=5">09:02</a><p><b class="who">Lecturer:</b> Mrs Carlill bought one. She used it as directed. She caught influenza. She asked for her hundred pounds, and the company said, in effect, we never made you a promise, that was only an advertisement. The Court of Appeal disagreed. It held that this advert was an offer, made to the whole world, which anyone could accept by doing what it asked.</p></div>
+<div class="para" id="s2-p5"><a class="t" href="law-study-page.html#t=575&amp;slide=5">09:35</a><p><b class="who">Lecturer:</b> Now, the company ran a whole list of arguments, and the court&#39;s answers to them are what you need. The company said the advert was just a sales puff, not meant seriously. The court said, look at the deposit: you told people you had put a thousand pounds in the bank to back the promise. A reasonable reader would take that seriously. The company said you cannot make an offer to the whole world. The court said you can, and it is accepted by whoever does the thing asked.</p></div>
+<div class="para" id="s2-p6"><a class="t" href="law-study-page.html#t=615&amp;slide=5">10:15</a><p><b class="who">Lecturer:</b> And the company said, she never told us she was accepting. The court said that in an offer of this kind, the offeror has, by its own words, done away with the need to be told. Doing what was asked is the acceptance.</p></div>
+<div class="para" id="s2-p7"><a class="t" href="law-study-page.html#t=638&amp;slide=5">10:38</a><p><b class="who">Lecturer:</b> An offer like that is called a unilateral offer. Only one side makes a promise: if you do this, I will pay you. The other side promises nothing. They just perform. Rewards for lost pets are the everyday example. Compare that with the ordinary bilateral contract, where there are promises on both sides: I promise to sell, you promise to pay.</p></div>
+<div class="para stress" id="s2-p8"><a class="t" href="law-study-page.html#t=671&amp;slide=5">11:11</a><p><b class="who">Lecturer:</b> <mark class="key">And this will be on the exam, I am telling you now.</mark> Every year a problem question has an advertisement in it, and every year some people write, adverts are invitations to treat, end of story. That will lose you marks. The right answer works through it: the general rule, then whether this advert is like Carlill. Is it clear and definite? Does it ask for an act rather than for a reply?</p></div>
+<div class="para" id="s2-p9"><a class="t" href="law-study-page.html#t=707&amp;slide=5">11:47</a><p><b class="who">Lecturer:</b> Is there anything, like the deposit, that shows it was meant to be taken seriously? That is the answer the marker is looking for.</p></div>
+<div class="slide" data-slide="6"><div class="row"><span class="sl-n">Slide 6</span><span class="sl-t">Acceptance must mirror the offer</span></div></div>
+<div class="para" id="s2-p10"><a class="t" href="law-study-page.html#t=722&amp;slide=6">12:02</a><p><b class="who">Lecturer:</b> Right. So someone has made an offer. What counts as accepting it? The basic rule is that acceptance has to match the offer exactly. People call this the mirror image rule. The acceptance is a mirror of the offer.</p></div>
+<div class="para" id="s2-p11"><a class="t" href="law-study-page.html#t=743&amp;slide=6">12:23</a><p><b class="who">Lecturer:</b> Yes, on exactly those terms. If you reply with different terms, that is not an acceptance at all. It is a counter-offer. And a counter-offer does two things. It is a new offer, which the other side can now accept or reject. And it kills the original offer.</p></div>
+<div class="para" id="s2-p12"><a class="t" href="law-study-page.html#t=769&amp;slide=6">12:49</a><p><b class="who">Lecturer:</b> You cannot go back to it. The case is Hyde v Wrench, 1840. Wrench offered to sell his farm to Hyde for a thousand pounds. Hyde replied offering nine hundred and fifty. Wrench said no. So Hyde then wrote, fine, I accept the thousand.</p></div>
+<div class="para" id="s2-p13"><a class="t" href="law-study-page.html#t=794&amp;slide=6">13:14</a><p><b class="who">Lecturer:</b> And the court held there was no contract. The offer of a thousand had died when Hyde made his counter-offer, and there was nothing left for him to accept. But be careful with that, because not every reply that is not a plain yes is a counter-offer. In Stevenson v McLean, in 1880, the buyer replied to an offer to sell iron by asking whether he could take delivery over a few months. That was held to be only a request for information. It did not reject anything, so the offer was still there to be accepted.</p></div>
+<div class="para" id="s2-p14"><a class="t" href="law-study-page.html#t=841&amp;slide=6">14:01</a><p><b class="who">Lecturer:</b> So the question is always, did this reply turn the offer down and put new terms in its place, or was it just asking? And in business, the mirror image rule leads to something called the battle of the forms. Each company sends its own standard printed terms, the buyer on its order form, the seller on its acknowledgement, and the two sets never match. In Butler Machine Tool v Ex-Cell-O, in 1979, the Court of Appeal mostly went with what is called the last shot. The last set of terms sent, and then acted on, usually wins. On those facts, the sellers had signed and returned the buyer&#39;s own tear-off slip, so the contract was on the buyer&#39;s terms.</p></div>
+<div class="para" id="s2-p15"><a class="t" href="law-study-page.html#t=899&amp;slide=6">14:59</a><p><b class="who">Lecturer:</b> You do not need the detail for this week. Just know the phrase, and that it comes straight out of the mirror image rule.</p></div>
+</div>
+</section>
+<section class="sec" id="s3">
+<div class="sec-head"><h2>Communicating acceptance</h2><span class="span">15:15–19:15</span></div>
+<div class="body">
+<div class="para" id="s3-p1"><a class="t" href="law-study-page.html#t=915&amp;slide=7">15:15</a><p><b class="who">Lecturer:</b> Next. An acceptance generally has to be communicated. It is not enough to decide, privately, that you accept. The offeror has to be told. And the flip side of that is that silence is not acceptance.</p></div>
+<div class="para" id="s3-p2"><a class="t" href="law-study-page.html#t=935&amp;slide=7">15:35</a><p><b class="who">Lecturer:</b> The case is Felthouse v Bindley, 1862, which is a lovely case about a horse. An uncle was negotiating to buy his nephew&#39;s horse. He wrote to the nephew saying, more or less, if I hear nothing more about it, I will consider the horse mine at that price. The nephew never replied. He did tell the auctioneer who was selling his stock to keep the horse back, but the auctioneer sold it by mistake. And the uncle sued the auctioneer, saying the horse was already his.</p></div>
+<div class="para" id="s3-p3"><a class="t" href="law-study-page.html#t=977&amp;slide=7">16:17</a><p><b class="who">Lecturer:</b> The court said no. The nephew had never communicated an acceptance to the uncle, and you cannot make somebody&#39;s silence into a yes just by saying so in your offer. There is a sensible policy there as well. Nobody should be able to force a contract on you by writing, if you do not reply, you have agreed. Think about what unsolicited post would turn into.</p></div>
+<div class="para" id="s3-p4"><a class="t" href="law-study-page.html#t=1013&amp;slide=7">16:53</a><p><b class="who">Lecturer:</b> Now, when is acceptance communicated? With instant ways of talking, face to face, by telephone, the courts said in Entores v Miles Far East, 1955, that the acceptance counts when it is received. That case was about telex, which is a kind of very old instant message, and the point was where the contract was made. It was made where the acceptance arrived, in London.</p></div>
+<div class="para" id="s3-p5"><a class="t" href="law-study-page.html#t=1047&amp;slide=7">17:27</a><p><b class="who">Lecturer:</b> But there is one big exception, and it is the postal rule. Where it is reasonable to accept by post, the acceptance is complete as soon as the letter is posted, not when it arrives. That comes from Adams v Lindsell, in 1818. And it means the contract can exist even if the letter is delayed, or even if it is lost and never arrives at all, which is what happened in Household Fire Insurance v Grant, 1879. So why on earth would the law do that? Well, someone has to carry the risk of the post, and the courts put it on the person who made the offer, because they chose to start the deal in a way that invited a reply by post.</p></div>
+<div class="para" id="s3-p6"><a class="t" href="law-study-page.html#t=1107&amp;slide=7">18:27</a><p><b class="who">Lecturer:</b> And they can protect themselves. If the offer says, I must actually receive your acceptance in writing, then the postal rule does not apply. That was Holwell Securities v Hughes, 1974.</p></div>
+<div class="para" id="s3-p7"><a class="t" href="law-study-page.html#t=1125&amp;slide=7">18:45</a><p><b class="who">Student:</b> Does the postal rule work for email?</p></div>
+<div class="para" id="s3-p8"><a class="t" href="law-study-page.html#t=1130&amp;slide=7">18:50</a><p><b class="who">Lecturer:</b> That is the question everybody asks, and the honest answer is that it has never been settled cleanly by an appellate court in England. Most writers think email is closer to the instantaneous cases than to the post, so acceptance would count when it arrives, but you should say that it is uncertain, and argue it, rather than state it as a rule.</p></div>
+</div>
+</section>
+<section class="sec" id="s4">
+<div class="sec-head"><h2>Part 4 · 19:15</h2><span class="span">19:15–23:21</span></div>
+<div class="body">
+<div class="slide" data-slide="8"><div class="row"><span class="sl-n">Slide 8</span><span class="sl-t">How an offer ends</span></div></div>
+<div class="para" id="s4-p1"><a class="t" href="law-study-page.html#t=1164&amp;slide=8">19:24</a><div class="flow">
+<p><b class="who">Lecturer:</b> Last topic before we sum up. An offer can come to an end before anyone accepts it, and then there is nothing to accept. There are four ways an offer can end.</p>
+<ol class="said" start="1"><li>First, revocation: the offeror withdraws it.</li><li>Second, rejection, which includes a counter-offer, as in Hyde v Wrench.</li><li>Third, lapse of time: an offer does not stay open forever, it ends at the time it gives, or after a reasonable time if it gives none.</li></ol>
+</div></div>
+<div class="para lf" id="s4-p2"><a class="t" href="law-study-page.html#t=1202&amp;slide=8">20:02</a><div class="flow">
+<ol class="said" start="4"><li><b class="who">Lecturer:</b> And fourth, the death of a party, in some cases.</li></ol>
+<p>Revocation is the one with the traps. An offeror can revoke at any time before acceptance, even if they said they would keep the offer open, unless the other side paid something to keep it open. But the revocation only works once it is communicated. And here the postal rule does not help the offeror.</p>
+</div></div>
+<div class="para" id="s4-p3"><a class="t" href="law-study-page.html#t=1238&amp;slide=8">20:38</a><p><b class="who">Lecturer:</b> In Byrne v Van Tienhoven, in 1880, a company posted an offer. Then it posted a letter revoking the offer. Meanwhile, the buyers received the offer and accepted it at once, by telegram. The revocation letter arrived later. The court held there was a contract. A revocation counts only when it actually reaches the other side, and by then the offer had been accepted.</p></div>
+<div class="para" id="s4-p4"><a class="t" href="law-study-page.html#t=1273&amp;slide=8">21:13</a><p><b class="who">Lecturer:</b> And the revocation does not have to come from the offeror personally. In Dickinson v Dodds, in 1876, Dodds offered to sell some houses to Dickinson, and said the offer was open until a Friday. Before Friday, Dodds sold the houses to someone else, and Dickinson heard about it from another person, who was reliable. The court held that Dickinson knew the offer had been withdrawn just as surely as if Dodds had told him himself, so it was too late for him to accept.</p></div>
+<div class="slide" data-slide="9"><div class="row"><span class="sl-n">Slide 9</span><span class="sl-t">Is there a contract? Four questions</span></div></div>
+<div class="para" id="s4-p5"><a class="t" href="law-study-page.html#t=1316&amp;slide=9">21:56</a><p><b class="who">Lecturer:</b> Okay. Let&#39;s pull it together, because I want you to leave with a method rather than a list of cases. When you get a problem question about whether there is a contract, ask four things, in this order.</p></div>
+<div class="para lf" id="s4-p6"><a class="t" href="law-study-page.html#t=1336&amp;slide=9">22:16</a><div class="flow">
+<ol class="said" start="1"><li><b class="who">Lecturer:</b> First, was there an offer, or only an invitation to treat? Think shop displays, adverts and auctions, and remember Carlill.</li><li>Second, was there an acceptance that mirrors the offer, or was it a counter-offer, or just a request for information?</li><li>Third, was the acceptance communicated, and if so, when? Here you need silence, the instantaneous cases, and the postal rule with its exceptions.</li><li>And fourth, was the offer still open when it was accepted, or had it been revoked, rejected or lapsed?</li></ol>
+</div></div>
+<div class="para" id="s4-p7"><a class="t" href="law-study-page.html#t=1375&amp;slide=9">22:55</a><p><b class="who">Lecturer:</b> If you work through those four in order, and you apply the objective test as you go, you will get most problem questions in this part of the course right. Next week, consideration, which is the other half of what makes a promise binding. Read chapter four for that. Okay, thanks everyone, see you in the tutorials.</p></div>
+</div>
+</section>
+<footer class="foot">Made on your computer by StreamSnag from this lecture's captions. It says what the captions say, mistakes included.</footer>
+</main>
+</div>
+<script type="application/json" id="read-data">{"id":"fc584a4489d4ca42","minutes":12,"sections":[]}</script>
+<script>(function () {
+  'use strict';
+  var root = document.documentElement;
+  root.classList.add('js');
+  var data = { id: '', minutes: 0, sections: [] };
+  try {
+    var parsed = JSON.parse(document.getElementById('read-data').textContent);
+    if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sections)) data = parsed;
+  } catch (e) { /* the page still works as a document */ }
+  var key = 'streamsnag-read:' + String(data.id || '');
+  var SIZES = 5;
+  var state = { theme: '', size: 2, plain: {}, at: '' };
+  try {
+    var saved = JSON.parse(localStorage.getItem(key) || 'null');
+    if (saved && typeof saved === 'object') {
+      if (saved.theme === 'dark' || saved.theme === 'light') state.theme = saved.theme;
+      if (typeof saved.size === 'number' && saved.size >= 0 && saved.size < SIZES) state.size = Math.floor(saved.size);
+      if (saved.plain && typeof saved.plain === 'object') Object.keys(saved.plain).forEach(function (id) { if (saved.plain[id] === true) state.plain[id] = true; });
+      if (typeof saved.at === 'string' && /^[a-z0-9-]{1,40}$/.test(saved.at)) state.at = saved.at;
+    }
+  } catch (e) { /* private window, or storage switched off */ }
+  function save() {
+    try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) { /* not remembered, that is all */ }
+  }
+  function $(sel, el) { return (el || document).querySelector(sel); }
+  function $$(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
+  function make(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  // Theme: follows the computer unless the reader chose one.
+  var themeButton = $('#theme');
+  function isDark() {
+    if (state.theme) return state.theme === 'dark';
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function showTheme() {
+    if (state.theme) root.setAttribute('data-theme', state.theme); else root.removeAttribute('data-theme');
+    if (themeButton) themeButton.textContent = isDark() ? 'Light' : 'Dark';
+  }
+  if (themeButton) themeButton.addEventListener('click', function () { state.theme = isDark() ? 'light' : 'dark'; save(); showTheme(); });
+  showTheme();
+  // The computer switching to dark in the evening changes what the button offers.
+  var scheme = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  if (scheme && scheme.addEventListener) scheme.addEventListener('change', showTheme);
+
+  // Text size.
+  var smaller = $('#smaller');
+  var larger = $('#larger');
+  function showSize() {
+    root.setAttribute('data-size', String(state.size));
+    if (smaller) smaller.disabled = state.size <= 0;
+    if (larger) larger.disabled = state.size >= SIZES - 1;
+  }
+  function resize(by) {
+    var keep = current();
+    state.size = Math.max(0, Math.min(SIZES - 1, state.size + by));
+    save();
+    showSize();
+    if (keep) keep.scrollIntoView({ block: 'start' }); // the paragraph being read stays where it was
+  }
+  if (smaller) smaller.addEventListener('click', function () { resize(-1); });
+  if (larger) larger.addEventListener('click', function () { resize(1); });
+  showSize();
+  var printButton = $('#print');
+  if (printButton) printButton.addEventListener('click', function () { window.print(); });
+
+  // "Show as transcribed": a section's untidied text is in the page's data; it is put on the page as plain text.
+  // Only a link to the study page or the video next to this file is ever made.
+  function safeHref(h) {
+    return typeof h === 'string' && h.indexOf(':') < 0 && h.indexOf('/') < 0 && h.indexOf('\\') < 0 && /#t=\d{1,6}(&slide=\d{1,4})?$/.test(h);
+  }
+  var kept = {}; // the tidied paragraphs of a section while its transcribed text is shown
+  // How a transcribed paragraph is set out (a sentence the lecturer stresses, points counted off as a list): used
+  // only when its pieces, read in order, are the paragraph's own text word for word.
+  function layOf(p) {
+    if (!Array.isArray(p.lay) || !p.lay.length) return null;
+    var said = [];
+    var ok = p.lay.every(function (b) {
+      var groups = b && Array.isArray(b.li) ? b.li : b && Array.isArray(b.p) ? [b.p] : null;
+      return !!groups && groups.length > 0 && groups.every(function (runs) {
+        return Array.isArray(runs) && runs.length > 0 && runs.every(function (r) {
+          if (!Array.isArray(r) || typeof r[0] !== 'string') return false;
+          said.push(r[0]);
+          return true;
+        });
+      });
+    });
+    return ok && said.join(' ') === p.text ? p.lay : null;
+  }
+  function fill(el, runs) {
+    var stressed = false;
+    runs.forEach(function (r, i) {
+      if (i) el.appendChild(document.createTextNode(' '));
+      el.appendChild(r[1] ? make('mark', 'key', r[0]) : document.createTextNode(r[0]));
+      if (r[1]) stressed = true;
+    });
+    return stressed;
+  }
+  function plainNodes(sec) {
+    var out = [];
+    (Array.isArray(sec.paras) ? sec.paras : []).forEach(function (p, i) {
+      if (!p || typeof p.text !== 'string') return;
+      if (p.slide && typeof p.slide.n === 'number') {
+        var picture = document.querySelector('details.slide[data-slide="' + Math.floor(p.slide.n) + '"]');
+        var holder = kept[sec.id] ? kept[sec.id].filter(function (n) { return n.nodeType === 1 && n.getAttribute('data-slide') === String(Math.floor(p.slide.n)); })[0] : null;
+        var mark;
+        if (holder || picture) mark = (holder || picture).cloneNode(true);
+        else {
+          mark = make('div', 'slide');
+          var row = make('div', 'row');
+          row.appendChild(make('span', 'sl-n', 'Slide ' + Math.floor(p.slide.n)));
+          if (typeof p.slide.title === 'string' && p.slide.title) row.appendChild(make('span', 'sl-t', p.slide.title));
+          mark.appendChild(row);
+        }
+        out.push(mark);
+      }
+      var box = make('div', 'para');
+      box.id = sec.id + '-q' + (i + 1);
+      var ok = safeHref(p.href);
+      var t = make(ok ? 'a' : 'span', 't', typeof p.t === 'string' ? p.t : '');
+      if (ok) t.setAttribute('href', p.href);
+      box.appendChild(t);
+      var who = function (el) {
+        if (typeof p.who === 'string' && p.who) {
+          el.appendChild(make('b', 'who', p.who + ':'));
+          el.appendChild(document.createTextNode(' '));
+        }
+        return el;
+      };
+      var lay = layOf(p);
+      if (!lay) {
+        var text = who(make('p'));
+        text.appendChild(document.createTextNode(p.text));
+        box.appendChild(text);
+      } else if (lay.length === 1 && lay[0].p) {
+        var one = who(make('p'));
+        if (fill(one, lay[0].p)) box.className = 'para stress';
+        box.appendChild(one);
+      } else {
+        var flow = make('div', 'flow');
+        var stress = false;
+        lay.forEach(function (b, bi) {
+          if (!b.li) {
+            var para = bi === 0 ? who(make('p')) : make('p');
+            if (fill(para, b.p)) stress = true;
+            flow.appendChild(para);
+            return;
+          }
+          var ol = make('ol', 'said');
+          ol.setAttribute('start', String(Math.max(1, Math.floor(Number(b.ol)) || 1)));
+          b.li.forEach(function (runs, k) {
+            var li = bi === 0 && k === 0 ? who(make('li')) : make('li');
+            if (fill(li, runs)) stress = true;
+            ol.appendChild(li);
+          });
+          flow.appendChild(ol);
+        });
+        box.className = 'para' + (stress ? ' stress' : '') + (lay[0].li ? ' lf' : '');
+        box.appendChild(flow);
+      }
+      out.push(box);
+    });
+    return out;
+  }
+  var allButton = $('#all-plain');
+  function showAll() {
+    if (!allButton) return;
+    var every = data.sections.length > 0 && data.sections.every(function (s) { return state.plain[s.id]; });
+    allButton.textContent = every ? 'Show the tidied text' : 'Show all as transcribed';
+    allButton.setAttribute('aria-pressed', String(every));
+  }
+  function swap(sec, plain) {
+    var el = document.getElementById(sec.id);
+    var body = el && $('.body', el);
+    if (!body) return;
+    var showing = !!kept[sec.id];
+    if (plain !== showing) {
+      if (plain) {
+        kept[sec.id] = $$(':scope > *', body);
+        var nodes = plainNodes(sec);
+        while (body.firstChild) body.removeChild(body.firstChild);
+        nodes.forEach(function (n) { body.appendChild(n); });
+      } else {
+        while (body.firstChild) body.removeChild(body.firstChild);
+        kept[sec.id].forEach(function (n) { body.appendChild(n); });
+        delete kept[sec.id];
+      }
+    }
+    el.classList.toggle('plain', plain);
+    var h = $('h2', el);
+    if (h && typeof sec.heading === 'string' && typeof sec.tidyHeading === 'string') h.textContent = plain ? sec.heading : sec.tidyHeading;
+    var b = $('.swap', el);
+    if (b) {
+      b.textContent = plain ? 'Show tidied' : 'Show as transcribed';
+      b.setAttribute('aria-pressed', String(plain));
+    }
+  }
+  function choose(sec, plain) {
+    if (plain) state.plain[sec.id] = true; else delete state.plain[sec.id];
+    swap(sec, plain);
+  }
+  data.sections.forEach(function (sec) {
+    if (!sec || typeof sec.id !== 'string' || !/^s\d{1,4}$/.test(sec.id)) return;
+    var el = document.getElementById(sec.id);
+    var b = el && $('.swap', el);
+    if (b) b.addEventListener('click', function () { choose(sec, !state.plain[sec.id]); save(); showAll(); measure(); });
+    if (state.plain[sec.id]) swap(sec, true);
+  });
+  if (allButton) allButton.addEventListener('click', function () {
+    var every = data.sections.every(function (s) { return state.plain[s.id]; });
+    var keep = current();
+    var id = keep ? keep.id.split('-')[0] : '';
+    data.sections.forEach(function (sec) { choose(sec, !every); });
+    save();
+    showAll();
+    var back = id && document.getElementById(id);
+    if (back) back.scrollIntoView({ block: 'start' });
+    measure();
+  });
+  showAll();
+
+  // Where the reader is: the bar at the top, the time left, and the place to come back to.
+  var bar = $('#progress');
+  var left = $('#left');
+  function current() {
+    var list = $$('.para');
+    for (var i = 0; i < list.length; i++) if (list[i].getBoundingClientRect().bottom > 90) return list[i];
+    return null;
+  }
+  var lastSaved = '';
+  function measure() {
+    var room = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    var done = Math.max(0, Math.min(1, window.scrollY / room));
+    if (bar) bar.style.transform = 'scaleX(' + done.toFixed(4) + ')';
+    if (left) {
+      var mins = Math.round((Number(data.minutes) || 0) * (1 - done));
+      left.textContent = done >= 0.995 ? 'You have reached the end.' : mins < 1 ? 'Less than a minute left' : 'About ' + mins + ' min left';
+    }
+    var at = current();
+    if (at && at.id && at.id !== lastSaved) {
+      lastSaved = at.id;
+      state.at = window.scrollY < 40 ? '' : at.id;
+      save();
+    }
+  }
+  var waiting = false;
+  function onScroll() {
+    if (waiting) return;
+    waiting = true;
+    (window.requestAnimationFrame || window.setTimeout)(function () { waiting = false; measure(); });
+  }
+  // Back where the reader stopped (unless the address names a place itself).
+  if (!location.hash && state.at) {
+    var there = document.getElementById(state.at) || document.getElementById(state.at.split('-')[0]);
+    if (there) {
+      root.style.scrollBehavior = 'auto';
+      there.scrollIntoView({ block: 'start' });
+      root.style.scrollBehavior = '';
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  measure();
+
+  // Contents: show which part is being read.
+  var links = $$('.toc ol a');
+  if ('IntersectionObserver' in window && links.length) {
+    var byId = {};
+    links.forEach(function (a) { byId[(a.getAttribute('href') || '').slice(1)] = a; });
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove('on'); });
+        var a = byId[en.target.id];
+        if (a) a.classList.add('on');
+      });
+    }, { rootMargin: '-8% 0px -80% 0px' });
+    Object.keys(byId).forEach(function (id) { var t = document.getElementById(id); if (t) seen.observe(t); });
+  }
+})();
+;(function readerScript() {
+  var bar = document.querySelector('.rd-bar');
+  if (!bar) return;
+  var IDS = ['watch', 'read', 'guide', 'quiz', 'cards'];
+  var FILES = { watch: ['study', '#t=0', 'Watch'], read: ['read', '#top', 'Read'], guide: ['guide', '', 'Guide'], quiz: ['guide', '#quiz', 'Quiz'], cards: ['guide', '#cards', 'Cards'] };
+  var q;
+  try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  var modes = bar.querySelector('.rd-modes');
+  var current = bar.getAttribute('data-current');
+  var file = bar.getAttribute('data-file') || '';
+  var find = function (id) { return modes.querySelector('[data-mode="' + id + '"]'); };
+  (q.get('has') || '').split(',').forEach(function (id) {
+    // This page's own sections are known to it; the rest is what the desk says is there now.
+    if (IDS.indexOf(id) < 0 || !file || find(id) || !FILES[current] || FILES[id][0] === FILES[current][0]) return;
+    var a = document.createElement('a');
+    a.setAttribute('data-mode', id);
+    a.setAttribute('href', file + '.' + FILES[id][0] + '.html' + FILES[id][1]);
+    a.textContent = FILES[id][2];
+    var next = null;
+    for (var i = IDS.indexOf(id) + 1; i < IDS.length && !next; i++) next = find(IDS[i]);
+    modes.insertBefore(a, next);
+  });
+
+  // "Quiz" asked for from outside (the desk, a page made before this guide): the questions begin at the self-test when there is one.
+  if (current === 'guide' && location.hash === '#quiz' && document.getElementById('self-test')) location.replace('#self-test');
+  function mark() {
+    if (current !== 'guide') return;
+    var id = location.hash.slice(1);
+    var on = id === 'cards' ? 'cards' : id === 'quiz' || id === 'self-test' ? 'quiz' : 'guide';
+    if (!find(on)) on = 'guide';
+    IDS.forEach(function (m) {
+      var el = find(m);
+      if (!el) return;
+      if (m === on) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+    });
+  }
+  mark();
+  addEventListener('hashchange', mark);
+
+  if (q.get('desk') !== '1') return;
+  var back = bar.querySelector('.rd-back');
+  var hint = bar.querySelector('.rd-hint');
+  back.hidden = false;
+  back.addEventListener('click', function () {
+    window.close();
+    // Still here: the browser only lets a page close a tab that has shown nothing else.
+    setTimeout(function () {
+      hint.textContent = 'Close this tab to go back to your desk.';
+      hint.hidden = false;
+    }, 350);
+  });
+  var folder = function (p) { return p.slice(0, p.lastIndexOf('/') + 1); };
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var raw = a.getAttribute('href') || '';
+    if (!raw) return;
+    if (raw.charAt(0) === '#') {
+      // A place on this page.
+      if (raw.length > 1) {
+        e.preventDefault();
+        location.replace(raw);
+      }
+      return;
+    }
+    var to;
+    try { to = new URL(raw, location.href); } catch (err) { return; }
+    // Only this lecture's own pages, in this folder.
+    if (to.protocol !== location.protocol || folder(to.pathname) !== folder(location.pathname) || !/\.(study|read|guide)(%20\(\d+\))?\.html$/i.test(to.pathname)) return;
+    to.search = location.search;
+    e.preventDefault();
+    // A mode takes this page's place (the tab can still be closed to go back); a minute in the lecture is a step you can come back from.
+    if (a.hasAttribute('data-mode')) location.replace(to.href);
+    else location.assign(to.href);
+  });
+})();</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-8BBGtVXcJRYlvDu7PEWWaPJ/JyuHdktWAPaWw1GILYU=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src data: &#39;self&#39;; style-src &#39;sha256-hooQOvgu3ZtXkNgWwNxCFZHrcLye/d23TMmNfYupfFQ=&#39;; script-src &#39;sha256-nu/hbjgVliKIMKrOcbIUEbmp/lsFHtHvqsqX0RKbd6E=&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
@@ -185,14 +185,14 @@ details[open] > summary .sl-see::after { content: "Hide slide"; }
 :root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #141816; --rd-ink-2: #363d39; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #0e6b5e; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; } }
 :root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; }
-.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Figtree", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
 .rd-bar [hidden] { display: none !important; }
-.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
+.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 17px/1.25 "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
 .rd-bar .rd-modes { display: flex; flex: none; gap: 2px; max-width: 100%; padding: 3px; border-radius: 9px; background: var(--rd-sunk); }
 .rd-bar .rd-modes a, .rd-bar .rd-modes span { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 6px; color: var(--rd-ink-2); font: inherit; text-decoration: none; white-space: nowrap; }
 .rd-bar .rd-modes a:hover { color: var(--rd-ink); text-decoration: none; }
 .rd-bar .rd-modes [aria-current] { background: var(--rd-surface); color: var(--rd-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rd-rule-2); }
-.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
+.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Figtree", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
 .rd-bar .rd-back::before { content: ""; width: 6px; height: 6px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-left: 2px; }
 .rd-bar .rd-back:hover { border-color: var(--rd-ink-3); color: var(--rd-ink); }
 .rd-bar .rd-hint { flex: 1 0 100%; font-size: 12.5px; color: var(--rd-ink-3); }
@@ -216,13 +216,13 @@ html { scroll-padding-top: 4.4rem; }
 </style>
 </head>
 <body>
-<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample reading edition.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. The times open the sample study page, which has no video.</span><span class="ssb-links"><a href="reading-edition.html" aria-current="page">Reading edition</a><a href="reading-edition-no-slides.html">The same without slides</a><a href="study-guide.html">Study guide</a><a href="study-page.html">Study page</a><a href="../#gallery">All samples</a></span></div>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample reading edition.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. The times open the sample study page, which has no video.</span><span class="ssb-links"><a href="reading-edition.html" aria-current="page">Reading edition</a><a href="reading-edition-no-slides.html">The same without slides</a><a href="study-page.html">Study page</a><a href="../#gallery">All samples</a></span></div>
 <div class="bar" aria-hidden="true"><div id="progress"></div></div>
 <a class="skip" href="#main">Skip to the text</a>
 <nav class="rd-bar" id="top" aria-label="This lecture" data-current="read" data-file="cardiac-output">
 <button type="button" class="rd-back" hidden>Back to desk</button>
 <span class="rd-title">Cardiac output and what sets it</span>
-<span class="rd-modes"><a data-mode="watch" href="study-page.html#t=0">Watch</a><span data-mode="read" aria-current="page">Read</span><a data-mode="guide" href="study-guide.html">Guide</a></span>
+<span class="rd-modes"><a data-mode="watch" href="study-page.html#t=0">Watch</a><span data-mode="read" aria-current="page">Read</span></span>
 <span class="rd-hint" role="status" hidden></span>
 </nav>
 <div class="page">
@@ -249,7 +249,6 @@ html { scroll-padding-top: 4.4rem; }
 <p class="left needs-js" id="left" aria-live="off"></p>
 <ul class="more">
 <li><a href="study-page.html">Study page: video, slides and transcript</a></li>
-<li><a href="study-guide.html">Study guide</a></li>
 </ul>
 </nav>
 <main id="main">

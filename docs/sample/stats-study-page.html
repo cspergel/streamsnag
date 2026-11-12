@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-eplTkrGgY8Wv+ju4tl8OUqjxM8Hh8c/DPRS/a0gaBlE=&#39;; style-src &#39;sha256-gQuWw0qG1rN8jb/HOdjSxc9lNVNXr08DjE4eF7XMv8s=&#39;; media-src &#39;self&#39; file:; frame-src &#39;self&#39; file:; img-src &#39;self&#39;; connect-src &#39;none&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-eplTkrGgY8Wv+ju4tl8OUqjxM8Hh8c/DPRS/a0gaBlE=&#39;; style-src &#39;sha256-q6hiT7uWlfK2CFzH0FwkA3UEfH18KrKL9xkapMym6Cc=&#39;; media-src &#39;self&#39; file:; frame-src &#39;self&#39; file:; img-src &#39;self&#39;; connect-src &#39;none&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
@@ -138,14 +138,14 @@ a.read { color: var(--accent); white-space: nowrap; }
 :root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #141816; --rd-ink-2: #363d39; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #0e6b5e; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; } }
 :root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; }
-.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Figtree", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
 .rd-bar [hidden] { display: none !important; }
-.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 17px/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
+.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 17px/1.25 "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
 .rd-bar .rd-modes { display: flex; flex: none; gap: 2px; max-width: 100%; padding: 3px; border-radius: 9px; background: var(--rd-sunk); }
 .rd-bar .rd-modes a, .rd-bar .rd-modes span { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 6px; color: var(--rd-ink-2); font: inherit; text-decoration: none; white-space: nowrap; }
 .rd-bar .rd-modes a:hover { color: var(--rd-ink); text-decoration: none; }
 .rd-bar .rd-modes [aria-current] { background: var(--rd-surface); color: var(--rd-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rd-rule-2); }
-.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
+.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Figtree", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
 .rd-bar .rd-back::before { content: ""; width: 6px; height: 6px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-left: 2px; }
 .rd-bar .rd-back:hover { border-color: var(--rd-ink-3); color: var(--rd-ink); }
 .rd-bar .rd-hint { flex: 1 0 100%; font-size: 12.5px; color: var(--rd-ink-3); }
@@ -169,7 +169,7 @@ html { scroll-padding-top: 4.4rem; }
 </style>
 </head>
 <body>
-<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample study page.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. This sample has no video: choose a slide or a time to see the slides and the transcript move together.</span><span class="ssb-links"><a href="stats-reading-edition.html">Reading edition</a><a href="stats-study-guide.html">Study guide</a><a href="stats-study-page.html" aria-current="page">Study page</a><a href="../#gallery">All samples</a></span></div>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample study page.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. This sample has no video: choose a slide or a time to see the slides and the transcript move together.</span><span class="ssb-links"><a href="stats-reading-edition.html">Reading edition</a><a href="stats-study-page.html" aria-current="page">Study page</a><a href="../#gallery">All samples</a></span></div>
 <nav class="rd-bar" id="top" aria-label="This lecture" data-current="watch" data-file="">
 <button type="button" class="rd-back" hidden>Back to desk</button>
 <span class="rd-title">From a sample to a claim: standard error, confidence intervals and p-values</span>

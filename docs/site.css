@@ -1330,10 +1330,9 @@ main > .prelaunch { padding: 7px 16px; font-size: .8125rem; line-height: 1.4; bo
    One readable column, large type: a title and one line on what you will have at the end; numbered steps, each
    with one picture where there is a true one; plain sections; one "Good to know"; questions that open one at a
    time; one call to action. No side column, no tags, no boxes round the text. */
-/* The column is 46rem of reading, starting at the same left edge as the header and every other page. */
-.g-col { width: min(100% - 2 * var(--gutter), 1280px); margin-inline: auto; padding-right: max(0px, min(100% - 2 * var(--gutter), 1280px) - 46rem); }
-.g-cta .g-col { padding-right: 0; }
-.g-cta .g-col > * { max-width: 46rem; margin-inline: auto; }
+/* The column is 46rem of reading, in the middle of the page (owner, 2026-11-12: starting at the header's left
+   edge it left the right half of a wide screen empty, and the page read as pushed to one side). */
+.g-col { width: min(100% - 2 * var(--gutter), 46rem); margin-inline: auto; }
 .g-top { padding: clamp(36px, 6vw, 84px) 0 clamp(8px, 2vw, 20px); }
 .g-top .crumbs { margin-bottom: clamp(18px, 2.4vw, 28px); }
 .g-top h1 { font: 560 clamp(2.15rem, 5.2vw, 3.7rem)/1.05 var(--font-display); letter-spacing: -0.016em; text-wrap: balance; overflow-wrap: break-word; }
@@ -2087,3 +2086,20 @@ mark.hl {
 @keyframes fl-in { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
 @keyframes fl-due { from { box-shadow: 0 0 0 1px var(--frame-line); } 50% { box-shadow: 0 0 0 3px var(--hl); } to { box-shadow: 0 0 0 1px var(--frame-line); } }
 @media print { .dm.is-js .dm-step:not(.is-on) { display: block; } .dm-ctrl { display: none; } }
+
+/* ---------- Pass 13: the 1.6 study material, shown large (study-tools/, home) ---------- */
+.p13-wide { display: block; }
+.p13-narrow { display: none; }
+.st-whole { margin: 14px 0 0; }
+.st-whole a { display: inline-flex; align-items: center; gap: 14px; color: var(--ink-2); font: 600 var(--t-s)/1.3 var(--font-ui); text-decoration: none; }
+.st-whole a:hover span { text-decoration: underline; }
+.st-whole .shot img { width: 190px; height: auto; border-radius: var(--r-sm, 6px); box-shadow: 0 0 0 1px var(--line); }
+.st-plain.st-two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: clamp(28px, 4vw, 48px); }
+@media (max-width: 759px) {
+  .p13-wide { display: none; }
+  .p13-narrow { display: block; }
+  /* a phone's own picture in a frame: the frame is as tall as the picture, not 16:9 */
+  .st-pic .frame:has(.p13-narrow) { aspect-ratio: auto; }
+  .st-plain.st-two { grid-template-columns: minmax(0, 1fr); }
+  .st-whole .shot img { width: 140px; }
+}

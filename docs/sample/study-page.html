@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-Xy+dExYprUCuZcnKZT6C0iAIIDbks3dSGiRH3CsVdPQ=&#39;; style-src &#39;sha256-37k3BnoVYWcHTldtZR85/BTjscZy040pKcAQxpm0sME=&#39;; media-src &#39;self&#39; file:; frame-src &#39;self&#39; file:; img-src &#39;self&#39;; connect-src &#39;none&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-eplTkrGgY8Wv+ju4tl8OUqjxM8Hh8c/DPRS/a0gaBlE=&#39;; style-src &#39;sha256-q6hiT7uWlfK2CFzH0FwkA3UEfH18KrKL9xkapMym6Cc=&#39;; media-src &#39;self&#39; file:; frame-src &#39;self&#39; file:; img-src &#39;self&#39;; connect-src &#39;none&#39;; object-src &#39;none&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
@@ -12,13 +12,17 @@
 <style>
 :root {
   color-scheme: light dark;
-  --bg: #f4f3ef; --surface: #ffffff; --text: #1d1c1a; --muted: #6a675f; --line: #e3e0d8;
-  --accent: #b8480b; --now: #fbe9da; --now-line: #e8590c; --chip: #ecebe6;
+  /* The desk's paper and ink (lib/readerbar.js has the same for its bar); orange only marks where the lecture is now. */
+  --bg: #f5f3ee; --surface: #fffefb; --text: #1a1f1d; --muted: #5c635e; --line: #dfdbd1;
+  --accent: #b5420a; --now: #fbe8da; --now-line: #e8590c; --chip: #ebe8e0;
+  /* The number of the slide that is up: a chip dark enough for its numerals (white on #b5420a is 5.6 to 1). */
+  --num-now: #b5420a; --num-now-ink: #fff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #151413; --surface: #1d1c1a; --text: #eceae5; --muted: #a39f96; --line: #32302c;
-    --accent: #f59a5c; --now: #38261a; --now-line: #f0763a; --chip: #2a2825;
+    --bg: #141716; --surface: #1b1f1d; --text: #ebe9e3; --muted: #959a95; --line: #2a2f2c;
+    --accent: #f6905a; --now: #33211a; --now-line: #f0702a; --chip: #262b29;
+    --num-now: #f6905a; --num-now-ink: #1b1512;
   }
 }
 * { box-sizing: border-box; }
@@ -31,6 +35,12 @@ button { cursor: pointer; }
 .top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; padding: 12px 22px; border-bottom: 1px solid var(--line); }
 h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650; line-height: 1.3; overflow-wrap: anywhere; }
 .meta { color: var(--muted); font-size: 13px; }
+a.read { color: var(--accent); white-space: nowrap; }
+/* Under the reader bar, which already names the lecture and offers "Read": the heading stays for screen readers, the line keeps what the bar does not say. */
+.rd-bar + .top { padding-top: 7px; padding-bottom: 7px; }
+.rd-bar + .top h1 { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.rd-bar + .top .meta:not(.read) { flex: 1 1 auto; }
+.rd-bar:has([data-mode="read"]) + .top a.read { display: none; }
 .check { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; white-space: nowrap; }
 .app { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "stage slides" "words slides"; }
 .no-slides .app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "words"; }
@@ -59,7 +69,34 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
 #where { flex: 1; min-width: 120px; text-align: center; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .viewer { flex: none; aspect-ratio: 16 / 9; max-height: 46%; border-bottom: 1px solid var(--line); background: var(--chip); }
 .viewer iframe { display: block; width: 100%; height: 100%; border: 0; }
+/* A PowerPoint slide, laid out here from its words and pictures: a sheet with the proportions of a slide that grows when there is more on it. */
+.viewer.deck { flex: 0 1 auto; aspect-ratio: auto; min-height: 150px; max-height: 58%; overflow-y: auto; padding: 14px; }
+.sheet { display: flex; flex-direction: column; aspect-ratio: 16 / 9; max-width: 760px; margin: 0 auto; padding: 20px 24px 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 10px 24px -18px rgba(0, 0, 0, .35); }
+.sh-num { font-size: 11.5px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.sh-title { margin: 3px 0 0; font-size: 21px; font-weight: 650; line-height: 1.25; overflow-wrap: anywhere; text-wrap: balance; }
+.sheet.bare { justify-content: center; }
+.sheet.bare .sh-title { font-size: 26px; }
+.sh-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 22px; align-items: start; margin-top: 14px; }
+.sh-text { min-width: 0; }
+.outline { margin: 0; padding: 0; list-style: none; }
+.outline li { position: relative; margin: 0 0 7px; padding-left: 17px; font-size: 14.5px; line-height: 1.45; overflow-wrap: anywhere; }
+.outline li::before { content: ""; position: absolute; left: 3px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--now-line); }
+.sh-table { width: 100%; margin: 0 0 9px; border-collapse: collapse; font-size: 13.5px; line-height: 1.4; }
+.sh-table td { padding: 5px 9px; border: 1px solid var(--line); text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.sh-table tr:first-child td { background: var(--chip); font-weight: 600; }
+.sh-pics { display: grid; gap: 8px; min-width: 0; }
+.sh-pics.many { grid-template-columns: 1fr 1fr; }
+.sh-pics img { display: block; width: 100%; max-height: 320px; object-fit: contain; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.sh-more { margin: 12px 0 0; color: var(--muted); font-size: 12.5px; }
+.lnotes { flex: none; border-bottom: 1px solid var(--line); }
+.lnotes summary { padding: 8px 14px; color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+.lnotes summary:hover, .lnotes[open] summary { color: var(--text); }
+.lnotes-text { max-height: 24vh; overflow-y: auto; margin: 0 14px 12px; padding: 2px 0 2px 14px; border-left: 3px solid var(--now-line); }
+.lnotes-text p { margin: 0 0 7px; font: 15px/1.55 ui-serif, Georgia, Cambria, "Iowan Old Style", "Palatino Linotype", serif; overflow-wrap: anywhere; }
+.lnotes-text p:last-child { margin-bottom: 0; }
 .list { flex: 1; min-height: 0; overflow-y: auto; margin: 0; padding: 8px; list-style: none; }
+/* Under a laid-out slide and its open notes the list keeps room for a card or two: the slide above scrolls instead. */
+.viewer.deck ~ .list { min-height: 132px; }
 .card { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 2px 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 9px; background: none; text-align: left; }
 .card:hover { background: var(--chip); }
 .num { grid-row: 1 / span 2; align-self: start; margin-top: 1px; height: 22px; border-radius: 6px; background: var(--chip); color: var(--muted); font-size: 12px; font-weight: 600; line-height: 22px; text-align: center; font-variant-numeric: tabular-nums; }
@@ -67,8 +104,10 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
 .time { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
 .about { display: block; font-size: 11px; font-style: italic; }
 .stext { grid-column: 2 / span 2; color: var(--muted); font-size: 13px; line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.thumb { grid-column: 3; grid-row: 2; justify-self: end; width: 54px; height: 38px; object-fit: cover; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
+.card.pic .stext { grid-column: 2; }
 .card.now { background: var(--now); box-shadow: inset 4px 0 0 var(--now-line); }
-.card.now .num { background: var(--now-line); color: #fff; }
+.card.now .num { background: var(--num-now); color: var(--num-now-ink); }
 .card.now .stitle { font-size: 16px; }
 .card.now .stext { display: block; color: var(--text); }
 .card.now .time { color: var(--accent); font-weight: 600; }
@@ -81,23 +120,40 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
   .slides { flex: none; border-left: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .bar { padding: 7px 10px; }
   .viewer { max-height: 28vh; }
-  .list { flex: none; max-height: 21vh; }
+  .viewer.deck { max-height: 44vh; padding: 10px; }
+  .sheet { aspect-ratio: auto; padding: 16px 18px 18px; }
+  .lnotes-text { max-height: 30vh; }
+  .list, .viewer.deck ~ .list { flex: none; min-height: 0; max-height: 21vh; }
   .words { flex: 1 1 0; min-height: 240px; margin-top: 0; padding: 0 14px 40px; border-top: 0; }
   .para { padding-left: 62px; }
 }
 @media print {
   body { height: auto; display: block; }
-  .stage, .bar, .viewer, .check { display: none; }
+  .stage, .bar, .viewer, .lnotes, .thumb, .check { display: none; }
   .app { display: block; }
   .words, .list { overflow: visible; max-height: none; }
 }
 
-.sample { flex: none; display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; padding: 9px 22px; border-bottom: 1px solid var(--line); background: var(--chip); font-size: 13px; line-height: 1.45; }
-.sample b { font-weight: 650; }
-.sample span { flex: 1 1 320px; color: var(--muted); }
-.sample a { color: var(--accent); font-weight: 600; white-space: nowrap; }
-@media (max-width: 899px) { .sample { padding: 8px 14px; } }
-@media print { .sample { display: none; } }
+/* the reader bar: one lecture, five ways to study it */
+:root { --rd-paper: #f5f3ee; --rd-surface: #fffefb; --rd-sunk: #ebe8e0; --rd-ink: #141816; --rd-ink-2: #363d39; --rd-ink-3: #5c635e; --rd-rule: #dfdbd1; --rd-rule-2: #c8c3b7; --rd-source: #0e6b5e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; } }
+:root[data-theme="dark"] { --rd-paper: #141716; --rd-surface: #222725; --rd-sunk: #0f1211; --rd-ink: #ebe9e3; --rd-ink-2: #bfc2bc; --rd-ink-3: #959a95; --rd-rule: #2a2f2c; --rd-rule-2: #3c423e; --rd-source: #5fd4c1; }
+.rd-bar { position: sticky; top: 0; z-index: 5; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-height: 48px; padding: 7px 16px; border-bottom: 1px solid var(--rd-rule); background: var(--rd-paper); color: var(--rd-ink); font: 500 13px/1.2 "Figtree", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.rd-bar [hidden] { display: none !important; }
+.rd-bar .rd-title { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 17px/1.25 "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; letter-spacing: 0; color: var(--rd-ink); }
+.rd-bar .rd-modes { display: flex; flex: none; gap: 2px; max-width: 100%; padding: 3px; border-radius: 9px; background: var(--rd-sunk); }
+.rd-bar .rd-modes a, .rd-bar .rd-modes span { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 6px; color: var(--rd-ink-2); font: inherit; text-decoration: none; white-space: nowrap; }
+.rd-bar .rd-modes a:hover { color: var(--rd-ink); text-decoration: none; }
+.rd-bar .rd-modes [aria-current] { background: var(--rd-surface); color: var(--rd-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rd-rule-2); }
+.rd-bar .rd-back { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; margin: 0; padding: 0 10px 0 8px; border: 1px solid var(--rd-rule-2); border-radius: 6px; background: var(--rd-surface); color: var(--rd-ink-2); font: 600 12.5px/1 "Figtree", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; cursor: pointer; }
+.rd-bar .rd-back::before { content: ""; width: 6px; height: 6px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-left: 2px; }
+.rd-bar .rd-back:hover { border-color: var(--rd-ink-3); color: var(--rd-ink); }
+.rd-bar .rd-hint { flex: 1 0 100%; font-size: 12.5px; color: var(--rd-ink-3); }
+.rd-bar :focus-visible { outline: 2px solid var(--rd-source); outline-offset: 2px; border-radius: 6px; }
+html { scroll-padding-top: 4.4rem; }
+.rd-bar ~ .page .toc { top: calc(48px + 1.4rem); max-height: calc(100vh - 48px - 2.8rem); }
+@media (max-width: 560px) { .rd-bar { padding: 6px 10px; } .rd-bar .rd-modes a, .rd-bar .rd-modes span { padding: 0 9px; } }
+@media print { .rd-bar { display: none; } }
 
 .ssb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 8px 16px; background: #14181d; color: #c9ced6; font: 400 13px/1.45 "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif; position: relative; z-index: 5; }
 .ssb a { color: #fff; font-weight: 600; text-decoration: underline; text-decoration-color: #6b7380; text-underline-offset: .2em; white-space: nowrap; }
@@ -113,7 +169,13 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
 </style>
 </head>
 <body>
-<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample study page.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. This sample has no video: choose a slide or a time to see the slides and the transcript move together.</span><span class="ssb-links"><a href="reading-edition.html">Reading edition</a><a href="reading-edition-no-slides.html">The same without slides</a><a href="study-guide.html">Study guide</a><a href="study-page.html" aria-current="page">Study page</a><a href="../#gallery">All samples</a></span></div>
+<div class="ssb" role="region" aria-label="About this sample"><a class="ssb-home" href="../#gallery"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8590c"/><path d="M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M10 23.5h12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>StreamSnag</a><span class="ssb-what"><b>Sample study page.</b> Made by StreamSnag from an invented lecture, written for this purpose and not taken from any real course. No AI was used on this page. This sample has no video: choose a slide or a time to see the slides and the transcript move together.</span><span class="ssb-links"><a href="reading-edition.html">Reading edition</a><a href="reading-edition-no-slides.html">The same without slides</a><a href="study-page.html" aria-current="page">Study page</a><a href="../#gallery">All samples</a></span></div>
+<nav class="rd-bar" id="top" aria-label="This lecture" data-current="watch" data-file="">
+<button type="button" class="rd-back" hidden>Back to desk</button>
+<span class="rd-title">Cardiac output and what sets it</span>
+<span class="rd-modes"><span data-mode="watch" aria-current="page">Watch</span></span>
+<span class="rd-hint" role="status" hidden></span>
+</nav>
 <header class="top">
 <h1 id="title">Cardiac output and what sets it</h1>
 <span class="meta" id="meta">9 slides · 1 about here · 27:29</span>
@@ -133,6 +195,7 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
 <label class="check" id="show-pdf-label" hidden><input type="checkbox" id="show-pdf"> Show the slide</label>
 </div>
 <div class="viewer" id="viewer" hidden></div>
+<details class="lnotes" id="notes" hidden><summary>Lecturer&#39;s notes</summary><div class="lnotes-text" id="notes-text"></div></details>
 <ol class="list" id="slide-list"></ol>
 </section>
 <section class="words" id="words" aria-label="Transcript">
@@ -143,8 +206,8 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
 </section>
 </main>
 <noscript><p class="note">This page needs JavaScript to line the slides up with the video.</p></noscript>
-<script type="application/json" id="study-data">{"title":"Cardiac output and what sets it","videos":[],"videoKnown":false,"pdf":"","total":1649.1,"note":"","slides":[{"n":1,"title":"Cardiac output and what sets it","text":"Cardiovascular physiology, lecture 6. Last time: the cardiac cycle.\nToday: how much blood the heart pumps, and why.\nProblem set 3 due Friday 17:00.","start":0,"end":87.024,"approx":true},{"n":2,"title":"Cardiac output = heart rate × stroke volume","text":"CO = HR × SV.\nAt rest: 70 beats/min × 70 mL ≈ 5 L/min.\nStroke volume SV = EDV − ESV = 120 mL − 50 mL = 70 mL.\nEjection fraction EF = SV / EDV ≈ 58 %.\nNormal EF \u003e 55 %;\nreduced EF \u003c 40 %.","start":87.024,"end":378.696,"approx":false},{"n":3,"title":"Three determinants of stroke volume","text":"1. Preload: stretch of the ventricle before contraction.\n2. Afterload: load the ventricle ejects against.\n3. Contractility (inotropy): strength of contraction at a given preload and afterload.\nPositive inotropic and negative inotropic drugs.","start":378.696,"end":487.304,"approx":false},{"n":4,"title":"Preload and the Frank-Starling law","text":"Preload ≈ end-diastolic volume (EDV) or end-diastolic pressure.\nFrank-Starling law of the heart: a larger EDV gives a larger stroke volume.\nFigure: Frank-Starling curve.\nx axis: end-diastolic volume (mL).\ny axis: stroke volume (mL).\nThe curve rises steeply, then flattens.\nIntrinsic regulation: no nerves or hormones needed.","start":487.304,"end":662.663,"approx":false},{"n":5,"title":"Why the Frank-Starling mechanism works","text":"1. Filament overlap: sarcomere length 1.8 μm at rest → 2.2 μm optimum.\n2. Length-dependent activation: stretch increases the calcium sensitivity of troponin C (calcium released is unchanged).\nFunction: matches the output of the right and left ventricles beat by beat.","start":662.663,"end":843.232,"approx":false},{"n":6,"title":"Afterload","text":"Afterload: the load the ventricle must overcome to eject.\nLeft ventricle: aortic pressure (aortic valve opens at ≈ 80 mmHg).\n↑ Afterload → ↓ stroke volume, ↑ end-systolic volume.\nLaw of Laplace: wall stress σ = P × r / 2h.\nChronic high afterload (hypertension, aortic stenosis) → left ventricular hypertrophy.","start":843.232,"end":1076.529,"approx":false},{"n":7,"title":"Contractility (inotropy)","text":"Strength of contraction at a given preload and afterload.\nMechanism: more calcium available to the filaments.\nSympathetic: noradrenaline → β1 receptor → cAMP → protein kinase A → L-type Ca²⁺ channels.\nPositive inotropic agents: noradrenaline, adrenaline, dobutamine, digoxin.\nNegative inotropic agents: beta blockers, verapamil.\nShifts the Frank-Starling curve up and to the left.","start":1076.529,"end":1241.912,"approx":false},{"n":8,"title":"The pressure-volume loop","text":"Diagram: left ventricular pressure-volume loop.\nx axis: volume (mL), 50 to 120.\ny axis: pressure (mmHg), up to 120.\nPhases: filling, isovolumetric contraction, ejection, isovolumetric relaxation.\nWidth = stroke volume.\nArea = stroke work.\nESPVR: end-systolic pressure-volume relationship;\nslope = contractility.\n↑ preload: wider.\n↑ afterload: taller, narrower.\n↑ contractility: wider, lower ESV.","start":1241.912,"end":1452.855,"approx":false},{"n":9,"title":"Putting it together: exercise and heart failure","text":"Exercise: CO 5 → 20 L/min.\nHR 70 → 180;\nSV 70 → 110-120 mL.\nSympathetic drive, muscle pump, vasodilation.\nHeart failure with reduced ejection fraction: ↓ contractility, flat curve;\nfluid retention raises preload;\npulmonary congestion;\ndiuretics lower preload.\nNext lecture: control of blood pressure (baroreceptor reflex).","start":1452.855,"end":1649.1,"approx":false}],"paras":[{"t":1.5,"who":"Lecturer","text":"Okay, um, good morning everybody. Can you hear me at the back? Good. So, before we start, two quick bits of housekeeping. The problem set on the cardiac cycle is due this Friday at five, not Thursday as it says on the course page, and, uh, the practical groups for next week are posted outside the lab.","slide":0},{"t":30.743,"who":"Lecturer","text":"Right. So last time we went through the cardiac cycle, the valves opening and closing, the pressures in the chambers. Today is really the pay-off for all of that. Today's question is very simple to ask: how much blood does the heart pump, and what decides that number? That number is the cardiac output, and by the end of the hour I want you to be able to look at a patient, or a graph, and say which of three or four knobs has been turned.","slide":0},{"t":76.124,"who":"Lecturer","text":"So let's define it. Cardiac output is the volume of blood one ventricle pumps per minute. One ventricle, not both.","slide":0},{"t":87.024,"who":"Lecturer","text":"And you get it by multiplying two things: heart rate times stroke volume. Heart rate is beats per minute, stroke volume is the volume ejected in a single beat. So for a typical resting adult, heart rate about seventy beats per minute, stroke volume about seventy millilitres, and seventy times seventy is four thousand nine hundred millilitres per minute, so roughly five litres per minute. Five litres a minute at rest. And, um, your total blood volume is also about five litres, so a nice way to remember it is that at rest your whole blood volume goes round about once a minute.","slide":1},{"t":138.064,"who":"Lecturer","text":"Now, where does the stroke volume come from? At the end of filling, the end of diastole, the left ventricle holds about a hundred and twenty millilitres. We call that the end-diastolic volume, EDV. After it has contracted there are still about fifty millilitres left behind. That is the end-systolic volume, ESV.","slide":1},{"t":165.454,"who":"Lecturer","text":"The heart never empties completely. So the stroke volume is just the difference: end-diastolic volume minus end-systolic volume, a hundred and twenty minus fifty, which gives you our seventy millilitres. And from those same numbers you get the ejection fraction, which you will hear on the wards every single day. The ejection fraction is the stroke volume divided by the end-diastolic volume. So seventy over a hundred and twenty, which is about fifty-eight percent.","slide":1},{"t":203.232,"who":"Lecturer","text":"A normal ejection fraction is somewhere above fifty-five percent. Once you are below about forty percent we call it reduced, and that matters, because it is how we classify heart failure. I'll come back to that at the end.","slide":1},{"t":224.883,"who":"Lecturer","text":"Let me do one quick calculation with you, because the numbers can fool you. Imagine a patient with a heart rate of a hundred, an end-diastolic volume of a hundred and fifty millilitres, and an end-systolic volume of a hundred. So what is the stroke volume? A hundred and fifty minus a hundred, fifty millilitres. Cardiac output?","slide":1},{"t":253.277,"who":"Lecturer","text":"Fifty times a hundred, five thousand, so five litres a minute. That looks completely normal. But now the ejection fraction: fifty over a hundred and fifty, thirty-three percent. That is a badly failing ventricle. It is big, it is emptying poorly, and it is only keeping its output up by beating faster.","slide":1},{"t":279.588,"who":"Lecturer","text":"So the lesson is that a normal cardiac output at rest does not mean a normal heart. You have to look at how the output is being achieved.","slide":1},{"t":296.373,"who":"Lecturer","text":"And, um, the opposite case, just as an aside. A trained endurance athlete might have a resting heart rate of forty-five. Do they have a low cardiac output? No. Their ventricle is bigger and their stroke volume at rest is more like a hundred and ten millilitres, and forty-five times a hundred and ten is, again, about five litres a minute.","slide":1},{"t":327.27,"who":"Lecturer","text":"Same output, completely different way of getting there. I had a cyclist in the practical class two years ago with a resting rate of thirty-eight, and the ECG machine kept flagging him as abnormal, which he was very proud of. So I'll say this once now and again at the end: anything that changes cardiac output has to do it either by changing heart rate or by changing stroke volume. There is no third way. Heart rate we did last week with the pacemaker cells and the autonomic nervous system, so today is nearly all about stroke volume.","slide":1},{"t":378.696,"who":"Lecturer","text":"Okay. So what sets stroke volume? Three things, and you need to know these three cold. Preload, afterload, and contractility. Preload is how much the ventricle is stretched just before it contracts.","slide":2},{"t":396.301,"who":"Lecturer","text":"Afterload is the load it has to push against to get the blood out. And contractility is how strongly the muscle contracts for a given stretch and a given load. The other word for contractility is inotropy, and you'll see that on the slide, positive ionotropic and negative ionotropic drugs.","slide":2},{"t":421.264,"who":"Lecturer","text":"The way I think about it, and this is just an analogy, is throwing a ball. Preload is how far back you pull your arm. Afterload is how heavy the ball is. And contractility is how strong your arm is. You can throw further by pulling back more, by picking a lighter ball, or by going to the gym.","slide":2},{"t":451.441,"who":"Lecturer","text":"Three different things. Um, and the reason I labour this is that every year in the exam about a third of you mix up preload and contractility, so we are going to go slowly through each one.","slide":2},{"t":471.83,"who":"Lecturer","text":"So, preload first. Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction. Now we can't measure the stretch on a muscle cell in a patient,","slide":2},{"t":487.304,"who":"Lecturer","text":"so in practice we use the end-diastolic volume, or sometimes the end-diastolic pressure, as a stand-in for preload. More blood in the ventricle at the end of filling means more stretch, means more preload.","slide":3},{"t":505.606,"who":"Lecturer","text":"And here is the key relationship, which is the graph on this slide. If you increase the end-diastolic volume, the ventricle responds by ejecting a bigger stroke volume. The more it is filled, the more it pumps out. That is the Frank Sterling law of the heart. Within limits, the heart pumps out whatever volume is returned to it.","slide":3},{"t":533.569,"who":"Lecturer","text":"So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis, and the curve rises steeply at first and then flattens off at high volumes. It flattens because you cannot stretch the muscle indefinitely and keep getting more force.","slide":3},{"t":557.847,"who":"Lecturer","text":"A little bit of history, because I like it. Otto Frank was a German physiologist working on frog hearts in the eighteen nineties, and Ernest Starling was in London about twenty years later with his heart-lung preparation in dogs. They never worked together. Starling, by the way, is also the person who came up with the word hormone. Anyway, none of that is examinable, I just think you should know these were real people.","slide":3},{"t":594.6,"who":"Lecturer","text":"Let me give you a number to hang on to. Say venous return goes up, you lie down and put your legs up, and end-diastolic volume goes from a hundred and twenty to a hundred and forty millilitres. If the end-systolic volume stays at about fifty, the stroke volume goes from seventy to ninety millilitres on the very next beats. Nothing nervous, no hormones, it is a property of the muscle itself. That is why we call it intrinsic regulation.","slide":3},{"t":633.093,"who":"Student","text":"Sorry, can I ask, is preload just the same thing as venous return then?","slide":3},{"t":641.625,"who":"Lecturer","text":"Good question, and no, not quite, and people do blur them. Venous return is a flow: it is the volume of blood coming back to the heart per minute. Preload is the stretch that results in the ventricle at the end of","slide":3},{"t":662.663,"who":"Lecturer","text":"filling. So venous return is one of the things that determines preload, but they are not the same. For example, if the heart rate is very fast there is less time to fill, so preload falls even though venous return hasn't changed. Does that make sense? Okay.","slide":4},{"t":691.153,"who":"Lecturer","text":"So why does stretching the muscle make it contract harder? Two reasons, and the second one is the more important. The first one you met in skeletal muscle: the overlap of the filaments. In the resting heart the sarcomeres are quite short, about one point eight micrometres, which is shorter than the optimum. As you stretch them towards about two point two micrometres the actin and myosin overlap better, so more cross-bridges can form.","slide":4},{"t":727.752,"who":"Lecturer","text":"But the bigger effect is the second one. When the sarcomere is stretched, troponin C becomes more sensitive to calcium. Same amount of calcium released, but more force produced. We call that length-dependent activation. So, to be clear, in the Frank Sterling mechanism the amount of calcium does not change. What changes is how sensitive the filaments are to it.","slide":4},{"t":759.592,"who":"Lecturer","text":"Hold on to that sentence, because it is exactly what separates this from contractility, which we get to in a few minutes. And what is all this for? The most important job of this mechanism is to keep the outputs of the two ventricles matched. Think about it. The right and left ventricle are in series.","slide":4},{"t":788.128,"who":"Lecturer","text":"If the right ventricle pumped even one millilitre more per beat than the left, then at seventy beats a minute that is seventy millilitres every minute piling up in your lungs, and in a quarter of an hour you would have about a litre of extra blood in the pulmonary circulation. That can't be allowed to happen. So what stops it? If the right side pumps a bit more, more blood returns to the left ventricle, its end-diastolic volume goes up, and by Frank Sterling its stroke volume goes up on the next beat. Beat by beat, automatically, the two sides are kept equal.","slide":4},{"t":843.232,"who":"Lecturer","text":"Right, afterload. Afterload is the load the ventricle has to overcome in order to eject blood. For the left ventricle the simplest way to think of it is the pressure in the aorta. The aortic valve will not open until the pressure in the ventricle is higher than the pressure in the aorta, which in diastole is about eighty millimetres of mercury. So the ventricle spends the first part of every contraction just building up pressure, without moving any blood at all.","slide":5},{"t":882.82,"who":"Lecturer","text":"The higher the aortic pressure, the more of the contraction is spent building pressure, and the less is left over for ejecting. So here is the rule, and this one I will definitely examine. If afterload goes up, and preload and contractility stay the same, stroke volume goes down. The ventricle cannot empty as well against the higher pressure, so more blood is left behind, the end-systolic volume goes up. Afterload up, stroke volume down, end-systolic volume up.","slide":5},{"t":922.615,"who":"Lecturer","text":"Now, strictly speaking, afterload is not the pressure itself, it is the stress in the wall of the ventricle during ejection, and for that we use the law of Laplace. Wall stress equals pressure times radius, divided by two times the wall thickness. So pressure times radius over two h. Three things follow from that. Higher pressure, more wall stress.","slide":5},{"t":952.872,"who":"Lecturer","text":"A bigger, dilated ventricle, bigger radius, more wall stress for the same pressure, which is one reason a dilated failing heart is in trouble. And a thicker wall means less stress, because the load is shared across more muscle.","slide":5},{"t":973.381,"who":"Lecturer","text":"And that last point explains something you will see clinically. In a patient with long-standing high blood pressure, or with a narrowed aortic valve, aortic stenosis, the left ventricle faces a high afterload for years. And what does it do? The wall gets thicker. Left ventricular hypertrophy. By Laplace, the thicker wall brings the wall stress back towards normal. So hypertrophy is a compensation for high afterload.","slide":5},{"t":1006.157,"who":"Lecturer","text":"It comes at a price, a thick ventricle is stiff and fills badly, but that's for the pathology course.","slide":5},{"t":1016.801,"who":"Student","text":"[inaudible] the right ventricle?","slide":5},{"t":1020.649,"who":"Lecturer","text":"The question, for those who didn't hear, was whether the same thing applies to the right ventricle. Yes, the same idea, different numbers. The afterload for the right ventricle is the pressure in the pulmonary artery, and that is much lower, about twenty-five millimetres of mercury in systole compared with a hundred and twenty in the aorta. And that is why the wall of the right ventricle is so much thinner than the left. It simply never has to generate much pressure.","slide":5},{"t":1060.371,"who":"Lecturer","text":"It also means the right ventricle copes badly if its afterload suddenly rises, as in a large pulmonary embolism, because it has no reserve of muscle.","slide":5},{"t":1076.529,"who":"Lecturer","text":"Third knob, contractility, or inotropy. Contractility is the strength of contraction at a given preload and a given afterload. That phrase at the end is the whole point. If the ventricle pumps more because you filled it more, that is not a change in contractility, that is Frank Sterling. A change in contractility means that for the same end-diastolic volume, you get a bigger stroke volume.","slide":6},{"t":1110.433,"who":"Lecturer","text":"And the mechanism is different. Contractility goes up when more calcium is made available to the filaments inside the cell. The classic example is the sympathetic nervous system. Noradrenaline binds to beta one receptors on the ventricular muscle cells. That raises cyclic AMP, which activates protein kinase A, and protein kinase A phosphorylates the L-type calcium channels so more calcium comes in with each action potential.","slide":6},{"t":1143.14,"who":"Lecturer","text":"More calcium in means more calcium released from the sarcoplasmic reticulum, means more cross-bridges, means a stronger contraction. Anything that does that we call a positive ionotropic agent. Noradrenaline, adrenaline, and drugs like dobutamine and digoxin. And, uh, there are negative ones as well. Beta blockers block that beta one receptor, and calcium channel blockers like verapamil reduce the calcium coming in, so both of them reduce contractility.","slide":6},{"t":1178.12,"who":"Lecturer","text":"That is useful when you want the heart to do less work, after a heart attack for instance.","slide":6},{"t":1189.065,"who":"Lecturer","text":"So what does a positive ionotropic agent do to the graph? It does not move you along the curve. It gives you a whole new curve, shifted upwards and to the left. At any end-diastolic volume you pick, the stroke volume is higher. The ventricle empties more completely, so the end-systolic volume falls, and the ejection fraction goes up.","slide":6},{"t":1218.332,"who":"Lecturer","text":"Compare that to preload: more preload moves you along the same curve; more contractility moves you onto a higher curve. If you remember one thing from today, remember that distinction. Along the curve is preload, a new curve is contractility.","slide":6},{"t":1241.912,"who":"Lecturer","text":"Okay, now the diagram that pulls all of this together, the pressure-volume loop of the left ventricle. Volume on the x axis, pressure on the y axis, and one heartbeat is one trip anticlockwise round the loop. Let's walk round it. Start at the bottom left corner. The mitral valve has just opened, the ventricle holds its fifty millilitres, and it fills along the bottom of the loop, volume going up to a hundred and twenty, pressure staying low. That bottom right corner is the end-diastolic volume.","slide":7},{"t":1285.865,"who":"Lecturer","text":"That is your preload.","slide":7},{"t":1290.495,"who":"Lecturer","text":"Then the ventricle starts to contract, the mitral valve closes, and for a moment both valves are closed. So pressure shoots straight up with no change in volume. A vertical line. That is isovolumetric contraction. When the pressure reaches the aortic pressure, about eighty, the aortic valve opens, top right corner, and ejection begins. Pressure carries on rising to a peak of about a hundred and twenty millimetres of mercury while the volume falls, across the top of the loop, back to fifty.","slide":7},{"t":1331.126,"who":"Lecturer","text":"Then the aortic valve closes, top left corner, and the pressure drops straight down with both valves closed again. Isovolumetric relaxation. And you are back where you started.","slide":7},{"t":1346.049,"who":"Lecturer","text":"Two things to read off the loop. The width of the loop is the stroke volume, a hundred and twenty minus fifty. And the area inside the loop is the stroke work, the work the ventricle does in one beat. There is one more line people draw on this diagram. If you take the top left corner, the end-systolic point, from several loops at different filling volumes, those points fall on a straight line.","slide":7},{"t":1382.947,"who":"Lecturer","text":"It is called the end-systolic pressure-volume relationship. The slope of that line is a measure of contractility. A steeper line means a more strongly contracting ventricle, and a positive ionotropic agent makes it steeper. You don't need to draw it in the exam, but you need to know that its slope means contractility.","slide":7},{"t":1409.591,"who":"Lecturer","text":"Now turn each knob. Increase preload: the ventricle fills more, the bottom right corner moves to the right, the loop gets wider, stroke volume up. Increase afterload: the aortic valve opens later, at a higher pressure, so the loop gets taller and narrower. It stops ejecting sooner, the end-systolic volume is higher, stroke volume down. Increase contractility: the ventricle empties further, the left side of the loop moves to the left, end-systolic volume is lower, the loop is wider, stroke volume up. I strongly suggest you draw those three loops yourselves tonight","slide":7},{"t":1452.855,"who":"Lecturer","text":"without looking. If you can draw them, you understand this lecture.","slide":8},{"t":1463.249,"who":"Lecturer","text":"Let's finish by putting it together with two situations. First, exercise. In hard exercise a healthy young adult can take cardiac output from five up to about twenty litres per minute, a fourfold increase. How? Heart rate goes from seventy up to maybe a hundred and eighty, and stroke volume goes from seventy to around a hundred and ten or a hundred and twenty millilitres.","slide":8},{"t":1495.347,"who":"Lecturer","text":"And every knob is involved. Sympathetic drive raises heart rate and contractility. The skeletal muscles squeeze the veins and push blood back to the heart, so venous return and preload go up. And the arterioles in the working muscle dilate, so the resistance the heart pumps against falls, which stops afterload from rising much even though more blood is being pumped. Second, heart failure, the kind with a reduced ejection fraction.","slide":8},{"t":1531.243,"who":"Lecturer","text":"Here the basic problem is that contractility is down. The muscle is damaged, say after a heart attack. So the patient is on a lower, flatter curve: for any filling volume, the stroke volume is less than normal. The body compensates the only way it can. The kidneys hold on to salt and water, blood volume goes up, preload goes up, and that moves the patient along their poor curve to get a bit more stroke volume back.","slide":8},{"t":1570.915,"who":"Lecturer","text":"But the curve is flat, so they don't gain much, and the cost of all that extra filling pressure is that fluid backs up into the lungs. That is why these patients are breathless, and why we give them diuretics. Not to make the heart stronger, but to take the preload back down.","slide":8},{"t":1597.993,"who":"Lecturer","text":"So, to sum up. Cardiac output is heart rate times stroke volume, about five litres a minute at rest. Stroke volume is set by preload, afterload and contractility. More preload, more stroke volume, by the Frank Sterling mechanism, which works by stretch and calcium sensitivity. More afterload, less stroke volume.","slide":8},{"t":1624.436,"who":"Lecturer","text":"More contractility, more stroke volume at the same filling, and that works by more calcium. And the pressure-volume loop shows you all three on one picture. Next time we look at how blood pressure is controlled, so please read the chapter on the baroreceptor reflex. Thanks, see you Thursday.","slide":8}]}</script>
-<script>(function studyScript(parseHash) {
+<script type="application/json" id="study-data">{"title":"Cardiac output and what sets it","videos":[],"videoKnown":false,"pdf":"","total":1649.1,"note":"","slides":[{"n":1,"title":"Cardiac output and what sets it","text":"Cardiovascular physiology, lecture 6. Last time: the cardiac cycle.\nToday: how much blood the heart pumps, and why.\nProblem set 3 due Friday 17:00.","start":0,"end":87.024,"approx":true},{"n":2,"title":"Cardiac output = heart rate × stroke volume","text":"CO = HR × SV.\nAt rest: 70 beats/min × 70 mL ≈ 5 L/min.\nStroke volume SV = EDV − ESV = 120 mL − 50 mL = 70 mL.\nEjection fraction EF = SV / EDV ≈ 58 %.\nNormal EF \u003e 55 %;\nreduced EF \u003c 40 %.","start":87.024,"end":378.696,"approx":false},{"n":3,"title":"Three determinants of stroke volume","text":"1. Preload: stretch of the ventricle before contraction.\n2. Afterload: load the ventricle ejects against.\n3. Contractility (inotropy): strength of contraction at a given preload and afterload.\nPositive inotropic and negative inotropic drugs.","start":378.696,"end":487.304,"approx":false},{"n":4,"title":"Preload and the Frank-Starling law","text":"Preload ≈ end-diastolic volume (EDV) or end-diastolic pressure.\nFrank-Starling law of the heart: a larger EDV gives a larger stroke volume.\nFigure: Frank-Starling curve.\nx axis: end-diastolic volume (mL).\ny axis: stroke volume (mL).\nThe curve rises steeply, then flattens.\nIntrinsic regulation: no nerves or hormones needed.","start":487.304,"end":662.663,"approx":false},{"n":5,"title":"Why the Frank-Starling mechanism works","text":"1. Filament overlap: sarcomere length 1.8 μm at rest → 2.2 μm optimum.\n2. Length-dependent activation: stretch increases the calcium sensitivity of troponin C (calcium released is unchanged).\nFunction: matches the output of the right and left ventricles beat by beat.","start":662.663,"end":843.232,"approx":false},{"n":6,"title":"Afterload","text":"Afterload: the load the ventricle must overcome to eject.\nLeft ventricle: aortic pressure (aortic valve opens at ≈ 80 mmHg).\n↑ Afterload → ↓ stroke volume, ↑ end-systolic volume.\nLaw of Laplace: wall stress σ = P × r / 2h.\nChronic high afterload (hypertension, aortic stenosis) → left ventricular hypertrophy.","start":843.232,"end":1076.529,"approx":false},{"n":7,"title":"Contractility (inotropy)","text":"Strength of contraction at a given preload and afterload.\nMechanism: more calcium available to the filaments.\nSympathetic: noradrenaline → β1 receptor → cAMP → protein kinase A → L-type Ca²⁺ channels.\nPositive inotropic agents: noradrenaline, adrenaline, dobutamine, digoxin.\nNegative inotropic agents: beta blockers, verapamil.\nShifts the Frank-Starling curve up and to the left.","start":1076.529,"end":1241.912,"approx":false},{"n":8,"title":"The pressure-volume loop","text":"Diagram: left ventricular pressure-volume loop.\nx axis: volume (mL), 50 to 120.\ny axis: pressure (mmHg), up to 120.\nPhases: filling, isovolumetric contraction, ejection, isovolumetric relaxation.\nWidth = stroke volume.\nArea = stroke work.\nESPVR: end-systolic pressure-volume relationship;\nslope = contractility.\n↑ preload: wider.\n↑ afterload: taller, narrower.\n↑ contractility: wider, lower ESV.","start":1241.912,"end":1452.855,"approx":false},{"n":9,"title":"Putting it together: exercise and heart failure","text":"Exercise: CO 5 → 20 L/min.\nHR 70 → 180;\nSV 70 → 110-120 mL.\nSympathetic drive, muscle pump, vasodilation.\nHeart failure with reduced ejection fraction: ↓ contractility, flat curve;\nfluid retention raises preload;\npulmonary congestion;\ndiuretics lower preload.\nNext lecture: control of blood pressure (baroreceptor reflex).","start":1452.855,"end":1649.1,"approx":false}],"paras":[{"t":1.5,"who":"Lecturer","text":"Okay, um, good morning everybody. Can you hear me at the back? Good. So, before we start, two quick bits of housekeeping. The problem set on the cardiac cycle is due this Friday at five, not Thursday as it says on the course page, and, uh, the practical groups for next week are posted outside the lab.","slide":0},{"t":30.743,"who":"Lecturer","text":"Right. So last time we went through the cardiac cycle, the valves opening and closing, the pressures in the chambers. Today is really the pay-off for all of that. Today's question is very simple to ask: how much blood does the heart pump, and what decides that number? That number is the cardiac output, and by the end of the hour I want you to be able to look at a patient, or a graph, and say which of three or four knobs has been turned.","slide":0},{"t":76.124,"who":"Lecturer","text":"So let's define it. Cardiac output is the volume of blood one ventricle pumps per minute. One ventricle, not both.","slide":0},{"t":87.024,"who":"Lecturer","text":"And you get it by multiplying two things: heart rate times stroke volume. Heart rate is beats per minute, stroke volume is the volume ejected in a single beat. So for a typical resting adult, heart rate about seventy beats per minute, stroke volume about seventy millilitres, and seventy times seventy is four thousand nine hundred millilitres per minute, so roughly five litres per minute. Five litres a minute at rest. And, um, your total blood volume is also about five litres, so a nice way to remember it is that at rest your whole blood volume goes round about once a minute.","slide":1},{"t":138.064,"who":"Lecturer","text":"Now, where does the stroke volume come from? At the end of filling, the end of diastole, the left ventricle holds about a hundred and twenty millilitres. We call that the end-diastolic volume, EDV. After it has contracted there are still about fifty millilitres left behind. That is the end-systolic volume, ESV.","slide":1},{"t":165.454,"who":"Lecturer","text":"The heart never empties completely. So the stroke volume is just the difference: end-diastolic volume minus end-systolic volume, a hundred and twenty minus fifty, which gives you our seventy millilitres. And from those same numbers you get the ejection fraction, which you will hear on the wards every single day. The ejection fraction is the stroke volume divided by the end-diastolic volume. So seventy over a hundred and twenty, which is about fifty-eight percent.","slide":1},{"t":203.232,"who":"Lecturer","text":"A normal ejection fraction is somewhere above fifty-five percent. Once you are below about forty percent we call it reduced, and that matters, because it is how we classify heart failure. I'll come back to that at the end.","slide":1},{"t":224.883,"who":"Lecturer","text":"Let me do one quick calculation with you, because the numbers can fool you. Imagine a patient with a heart rate of a hundred, an end-diastolic volume of a hundred and fifty millilitres, and an end-systolic volume of a hundred. So what is the stroke volume? A hundred and fifty minus a hundred, fifty millilitres. Cardiac output?","slide":1},{"t":253.277,"who":"Lecturer","text":"Fifty times a hundred, five thousand, so five litres a minute. That looks completely normal. But now the ejection fraction: fifty over a hundred and fifty, thirty-three percent. That is a badly failing ventricle. It is big, it is emptying poorly, and it is only keeping its output up by beating faster.","slide":1},{"t":279.588,"who":"Lecturer","text":"So the lesson is that a normal cardiac output at rest does not mean a normal heart. You have to look at how the output is being achieved.","slide":1},{"t":296.373,"who":"Lecturer","text":"And, um, the opposite case, just as an aside. A trained endurance athlete might have a resting heart rate of forty-five. Do they have a low cardiac output? No. Their ventricle is bigger and their stroke volume at rest is more like a hundred and ten millilitres, and forty-five times a hundred and ten is, again, about five litres a minute.","slide":1},{"t":327.27,"who":"Lecturer","text":"Same output, completely different way of getting there. I had a cyclist in the practical class two years ago with a resting rate of thirty-eight, and the ECG machine kept flagging him as abnormal, which he was very proud of. So I'll say this once now and again at the end: anything that changes cardiac output has to do it either by changing heart rate or by changing stroke volume. There is no third way. Heart rate we did last week with the pacemaker cells and the autonomic nervous system, so today is nearly all about stroke volume.","slide":1},{"t":378.696,"who":"Lecturer","text":"Okay. So what sets stroke volume? Three things, and you need to know these three cold. Preload, afterload, and contractility. Preload is how much the ventricle is stretched just before it contracts.","slide":2},{"t":396.301,"who":"Lecturer","text":"Afterload is the load it has to push against to get the blood out. And contractility is how strongly the muscle contracts for a given stretch and a given load. The other word for contractility is inotropy, and you'll see that on the slide, positive ionotropic and negative ionotropic drugs.","slide":2},{"t":421.264,"who":"Lecturer","text":"The way I think about it, and this is just an analogy, is throwing a ball. Preload is how far back you pull your arm. Afterload is how heavy the ball is. And contractility is how strong your arm is. You can throw further by pulling back more, by picking a lighter ball, or by going to the gym.","slide":2},{"t":451.441,"who":"Lecturer","text":"Three different things. Um, and the reason I labour this is that every year in the exam about a third of you mix up preload and contractility, so we are going to go slowly through each one.","slide":2},{"t":471.83,"who":"Lecturer","text":"So, preload first. Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction. Now we can't measure the stretch on a muscle cell in a patient,","slide":2},{"t":487.304,"who":"Lecturer","text":"so in practice we use the end-diastolic volume, or sometimes the end-diastolic pressure, as a stand-in for preload. More blood in the ventricle at the end of filling means more stretch, means more preload.","slide":3},{"t":505.606,"who":"Lecturer","text":"And here is the key relationship, which is the graph on this slide. If you increase the end-diastolic volume, the ventricle responds by ejecting a bigger stroke volume. The more it is filled, the more it pumps out. That is the Frank Sterling law of the heart. Within limits, the heart pumps out whatever volume is returned to it.","slide":3},{"t":533.569,"who":"Lecturer","text":"So on the graph you have end-diastolic volume along the x axis, stroke volume up the y axis, and the curve rises steeply at first and then flattens off at high volumes. It flattens because you cannot stretch the muscle indefinitely and keep getting more force.","slide":3},{"t":557.847,"who":"Lecturer","text":"A little bit of history, because I like it. Otto Frank was a German physiologist working on frog hearts in the eighteen nineties, and Ernest Starling was in London about twenty years later with his heart-lung preparation in dogs. They never worked together. Starling, by the way, is also the person who came up with the word hormone. Anyway, none of that is examinable, I just think you should know these were real people.","slide":3},{"t":594.6,"who":"Lecturer","text":"Let me give you a number to hang on to. Say venous return goes up, you lie down and put your legs up, and end-diastolic volume goes from a hundred and twenty to a hundred and forty millilitres. If the end-systolic volume stays at about fifty, the stroke volume goes from seventy to ninety millilitres on the very next beats. Nothing nervous, no hormones, it is a property of the muscle itself. That is why we call it intrinsic regulation.","slide":3},{"t":633.093,"who":"Student","text":"Sorry, can I ask, is preload just the same thing as venous return then?","slide":3},{"t":641.625,"who":"Lecturer","text":"Good question, and no, not quite, and people do blur them. Venous return is a flow: it is the volume of blood coming back to the heart per minute. Preload is the stretch that results in the ventricle at the end of","slide":3},{"t":662.663,"who":"Lecturer","text":"filling. So venous return is one of the things that determines preload, but they are not the same. For example, if the heart rate is very fast there is less time to fill, so preload falls even though venous return hasn't changed. Does that make sense? Okay.","slide":4},{"t":691.153,"who":"Lecturer","text":"So why does stretching the muscle make it contract harder? Two reasons, and the second one is the more important. The first one you met in skeletal muscle: the overlap of the filaments. In the resting heart the sarcomeres are quite short, about one point eight micrometres, which is shorter than the optimum. As you stretch them towards about two point two micrometres the actin and myosin overlap better, so more cross-bridges can form.","slide":4},{"t":727.752,"who":"Lecturer","text":"But the bigger effect is the second one. When the sarcomere is stretched, troponin C becomes more sensitive to calcium. Same amount of calcium released, but more force produced. We call that length-dependent activation. So, to be clear, in the Frank Sterling mechanism the amount of calcium does not change. What changes is how sensitive the filaments are to it.","slide":4},{"t":759.592,"who":"Lecturer","text":"Hold on to that sentence, because it is exactly what separates this from contractility, which we get to in a few minutes. And what is all this for? The most important job of this mechanism is to keep the outputs of the two ventricles matched. Think about it. The right and left ventricle are in series.","slide":4},{"t":788.128,"who":"Lecturer","text":"If the right ventricle pumped even one millilitre more per beat than the left, then at seventy beats a minute that is seventy millilitres every minute piling up in your lungs, and in a quarter of an hour you would have about a litre of extra blood in the pulmonary circulation. That can't be allowed to happen. So what stops it? If the right side pumps a bit more, more blood returns to the left ventricle, its end-diastolic volume goes up, and by Frank Sterling its stroke volume goes up on the next beat. Beat by beat, automatically, the two sides are kept equal.","slide":4},{"t":843.232,"who":"Lecturer","text":"Right, afterload. Afterload is the load the ventricle has to overcome in order to eject blood. For the left ventricle the simplest way to think of it is the pressure in the aorta. The aortic valve will not open until the pressure in the ventricle is higher than the pressure in the aorta, which in diastole is about eighty millimetres of mercury. So the ventricle spends the first part of every contraction just building up pressure, without moving any blood at all.","slide":5},{"t":882.82,"who":"Lecturer","text":"The higher the aortic pressure, the more of the contraction is spent building pressure, and the less is left over for ejecting. So here is the rule, and this one I will definitely examine. If afterload goes up, and preload and contractility stay the same, stroke volume goes down. The ventricle cannot empty as well against the higher pressure, so more blood is left behind, the end-systolic volume goes up. Afterload up, stroke volume down, end-systolic volume up.","slide":5},{"t":922.615,"who":"Lecturer","text":"Now, strictly speaking, afterload is not the pressure itself, it is the stress in the wall of the ventricle during ejection, and for that we use the law of Laplace. Wall stress equals pressure times radius, divided by two times the wall thickness. So pressure times radius over two h. Three things follow from that. Higher pressure, more wall stress.","slide":5},{"t":952.872,"who":"Lecturer","text":"A bigger, dilated ventricle, bigger radius, more wall stress for the same pressure, which is one reason a dilated failing heart is in trouble. And a thicker wall means less stress, because the load is shared across more muscle.","slide":5},{"t":973.381,"who":"Lecturer","text":"And that last point explains something you will see clinically. In a patient with long-standing high blood pressure, or with a narrowed aortic valve, aortic stenosis, the left ventricle faces a high afterload for years. And what does it do? The wall gets thicker. Left ventricular hypertrophy. By Laplace, the thicker wall brings the wall stress back towards normal. So hypertrophy is a compensation for high afterload.","slide":5},{"t":1006.157,"who":"Lecturer","text":"It comes at a price, a thick ventricle is stiff and fills badly, but that's for the pathology course.","slide":5},{"t":1016.801,"who":"Student","text":"[inaudible] the right ventricle?","slide":5},{"t":1020.649,"who":"Lecturer","text":"The question, for those who didn't hear, was whether the same thing applies to the right ventricle. Yes, the same idea, different numbers. The afterload for the right ventricle is the pressure in the pulmonary artery, and that is much lower, about twenty-five millimetres of mercury in systole compared with a hundred and twenty in the aorta. And that is why the wall of the right ventricle is so much thinner than the left. It simply never has to generate much pressure.","slide":5},{"t":1060.371,"who":"Lecturer","text":"It also means the right ventricle copes badly if its afterload suddenly rises, as in a large pulmonary embolism, because it has no reserve of muscle.","slide":5},{"t":1076.529,"who":"Lecturer","text":"Third knob, contractility, or inotropy. Contractility is the strength of contraction at a given preload and a given afterload. That phrase at the end is the whole point. If the ventricle pumps more because you filled it more, that is not a change in contractility, that is Frank Sterling. A change in contractility means that for the same end-diastolic volume, you get a bigger stroke volume.","slide":6},{"t":1110.433,"who":"Lecturer","text":"And the mechanism is different. Contractility goes up when more calcium is made available to the filaments inside the cell. The classic example is the sympathetic nervous system. Noradrenaline binds to beta one receptors on the ventricular muscle cells. That raises cyclic AMP, which activates protein kinase A, and protein kinase A phosphorylates the L-type calcium channels so more calcium comes in with each action potential.","slide":6},{"t":1143.14,"who":"Lecturer","text":"More calcium in means more calcium released from the sarcoplasmic reticulum, means more cross-bridges, means a stronger contraction. Anything that does that we call a positive ionotropic agent. Noradrenaline, adrenaline, and drugs like dobutamine and digoxin. And, uh, there are negative ones as well. Beta blockers block that beta one receptor, and calcium channel blockers like verapamil reduce the calcium coming in, so both of them reduce contractility.","slide":6},{"t":1178.12,"who":"Lecturer","text":"That is useful when you want the heart to do less work, after a heart attack for instance.","slide":6},{"t":1189.065,"who":"Lecturer","text":"So what does a positive ionotropic agent do to the graph? It does not move you along the curve. It gives you a whole new curve, shifted upwards and to the left. At any end-diastolic volume you pick, the stroke volume is higher. The ventricle empties more completely, so the end-systolic volume falls, and the ejection fraction goes up.","slide":6},{"t":1218.332,"who":"Lecturer","text":"Compare that to preload: more preload moves you along the same curve; more contractility moves you onto a higher curve. If you remember one thing from today, remember that distinction. Along the curve is preload, a new curve is contractility.","slide":6},{"t":1241.912,"who":"Lecturer","text":"Okay, now the diagram that pulls all of this together, the pressure-volume loop of the left ventricle. Volume on the x axis, pressure on the y axis, and one heartbeat is one trip anticlockwise round the loop. Let's walk round it. Start at the bottom left corner. The mitral valve has just opened, the ventricle holds its fifty millilitres, and it fills along the bottom of the loop, volume going up to a hundred and twenty, pressure staying low. That bottom right corner is the end-diastolic volume.","slide":7},{"t":1285.865,"who":"Lecturer","text":"That is your preload.","slide":7},{"t":1290.495,"who":"Lecturer","text":"Then the ventricle starts to contract, the mitral valve closes, and for a moment both valves are closed. So pressure shoots straight up with no change in volume. A vertical line. That is isovolumetric contraction. When the pressure reaches the aortic pressure, about eighty, the aortic valve opens, top right corner, and ejection begins. Pressure carries on rising to a peak of about a hundred and twenty millimetres of mercury while the volume falls, across the top of the loop, back to fifty.","slide":7},{"t":1331.126,"who":"Lecturer","text":"Then the aortic valve closes, top left corner, and the pressure drops straight down with both valves closed again. Isovolumetric relaxation. And you are back where you started.","slide":7},{"t":1346.049,"who":"Lecturer","text":"Two things to read off the loop. The width of the loop is the stroke volume, a hundred and twenty minus fifty. And the area inside the loop is the stroke work, the work the ventricle does in one beat. There is one more line people draw on this diagram. If you take the top left corner, the end-systolic point, from several loops at different filling volumes, those points fall on a straight line.","slide":7},{"t":1382.947,"who":"Lecturer","text":"It is called the end-systolic pressure-volume relationship. The slope of that line is a measure of contractility. A steeper line means a more strongly contracting ventricle, and a positive ionotropic agent makes it steeper. You don't need to draw it in the exam, but you need to know that its slope means contractility.","slide":7},{"t":1409.591,"who":"Lecturer","text":"Now turn each knob. Increase preload: the ventricle fills more, the bottom right corner moves to the right, the loop gets wider, stroke volume up. Increase afterload: the aortic valve opens later, at a higher pressure, so the loop gets taller and narrower. It stops ejecting sooner, the end-systolic volume is higher, stroke volume down. Increase contractility: the ventricle empties further, the left side of the loop moves to the left, end-systolic volume is lower, the loop is wider, stroke volume up. I strongly suggest you draw those three loops yourselves tonight","slide":7},{"t":1452.855,"who":"Lecturer","text":"without looking. If you can draw them, you understand this lecture.","slide":8},{"t":1463.249,"who":"Lecturer","text":"Let's finish by putting it together with two situations. First, exercise. In hard exercise a healthy young adult can take cardiac output from five up to about twenty litres per minute, a fourfold increase. How? Heart rate goes from seventy up to maybe a hundred and eighty, and stroke volume goes from seventy to around a hundred and ten or a hundred and twenty millilitres.","slide":8},{"t":1495.347,"who":"Lecturer","text":"And every knob is involved. Sympathetic drive raises heart rate and contractility. The skeletal muscles squeeze the veins and push blood back to the heart, so venous return and preload go up. And the arterioles in the working muscle dilate, so the resistance the heart pumps against falls, which stops afterload from rising much even though more blood is being pumped. Second, heart failure, the kind with a reduced ejection fraction.","slide":8},{"t":1531.243,"who":"Lecturer","text":"Here the basic problem is that contractility is down. The muscle is damaged, say after a heart attack. So the patient is on a lower, flatter curve: for any filling volume, the stroke volume is less than normal. The body compensates the only way it can. The kidneys hold on to salt and water, blood volume goes up, preload goes up, and that moves the patient along their poor curve to get a bit more stroke volume back.","slide":8},{"t":1570.915,"who":"Lecturer","text":"But the curve is flat, so they don't gain much, and the cost of all that extra filling pressure is that fluid backs up into the lungs. That is why these patients are breathless, and why we give them diuretics. Not to make the heart stronger, but to take the preload back down.","slide":8},{"t":1597.993,"who":"Lecturer","text":"So, to sum up. Cardiac output is heart rate times stroke volume, about five litres a minute at rest. Stroke volume is set by preload, afterload and contractility. More preload, more stroke volume, by the Frank Sterling mechanism, which works by stretch and calcium sensitivity. More afterload, less stroke volume.","slide":8},{"t":1624.436,"who":"Lecturer","text":"More contractility, more stroke volume at the same filling, and that works by more calcium. And the pressure-volume loop shows you all three on one picture. Next time we look at how blood pressure is controlled, so please read the chapter on the baroreceptor reflex. Thanks, see you Thursday.","slide":8}],"bar":{"base":"","has":{"read":false,"guide":false,"quiz":false,"cards":false}}}</script>
+<script>(function studyScript(parseHash, outline) {
   const data = JSON.parse(document.getElementById('study-data').textContent);
   const $ = (id) => document.getElementById(id);
   const make = (tag, cls, text) => {
@@ -169,6 +232,17 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const narrow = window.matchMedia('(max-width: 899px)');
 
+  // A picture from a PowerPoint slide: only ever one of the page's own data: pictures (the page's policy
+  // allows no other kind either).
+  const picture = (src, cls, alt) => {
+    const img = make('img', cls);
+    img.alt = alt;
+    img.decoding = 'async';
+    if (/^data:image\/(?:png|jpeg|gif|webp);base64,/.test(src)) img.src = src;
+    return img;
+  };
+  const picsOf = (s) => (Array.isArray(s.pics) ? s.pics.filter((p) => typeof p === 'string') : []);
+
   // ---- the slide cards
   const cards = slides.map((s, i) => {
     const card = make('button', 'card');
@@ -176,7 +250,14 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
     const time = make('span', 'time', stamp(s.start));
     if (s.approx) time.append(make('span', 'about', 'about here'));
     card.append(make('span', 'num', String(s.n)), make('span', 'stitle', s.title), time);
-    if (s.text) card.append(make('span', 'stext', s.text));
+    // (The cells of a table's row, which a PowerPoint slide's text keeps apart with tabs, are set apart here too.)
+    if (s.text) card.append(make('span', 'stext', s.text.replace(/\t+/g, ' \xb7 ')));
+    if (picsOf(s).length) {
+      const thumb = picture(picsOf(s)[0], 'thumb', '');
+      thumb.loading = 'lazy';
+      card.classList.add('pic');
+      card.append(thumb);
+    }
     card.title = `Go to ${stamp(s.start)}`;
     card.addEventListener('click', () => pick(i));
     const li = make('li');
@@ -275,7 +356,60 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
       frame = next;
     }, frame ? 250 : 0);
   }
-  if (data.pdf && slides.length) {
+  // ---- a PowerPoint slide cannot be shown as a page: its title, its words as an outline and its pictures, laid out here
+  const deck = !data.pdf && data.deck === true;
+  function showSheet() {
+    if (!deck || !showPdf.checked || state.slide < 0) return;
+    const s = slides[state.slide];
+    const sheet = make('article', 'sheet');
+    sheet.append(make('span', 'sh-num', `Slide ${s.n}`), make('h3', 'sh-title', s.title));
+    const body = make('div', 'sh-body');
+    const blocks = outline(s.text);
+    if (blocks.length) {
+      const text = make('div', 'sh-text');
+      for (const block of blocks) {
+        if (block.rows) {
+          const table = make('table', 'sh-table');
+          for (const cells of block.rows) {
+            const tr = make('tr');
+            for (const cell of cells) tr.append(make('td', '', cell));
+            table.append(tr);
+          }
+          text.append(table);
+        } else {
+          const list = make('ul', 'outline');
+          for (const line of block.lines) list.append(make('li', '', line));
+          text.append(list);
+        }
+      }
+      body.append(text);
+    }
+    const pics = picsOf(s);
+    if (pics.length) {
+      const box = make('div', pics.length > 1 ? 'sh-pics many' : 'sh-pics');
+      pics.forEach((src, i) => box.append(picture(src, '', pics.length > 1 ? `Picture ${i + 1} on slide ${s.n}` : `Picture on slide ${s.n}`)));
+      body.append(box);
+    }
+    if (body.childNodes.length) sheet.append(body);
+    else sheet.classList.add('bare'); // a title and nothing else: set as a title slide
+    if (s.more > 0) {
+      sheet.append(make('p', 'sh-more', `${s.more === 1 ? 'One picture on this slide is' : `${s.more} pictures on this slide are`} not shown here, to keep this page small.${data.pptx ? ` ${s.more === 1 ? 'It is' : 'They are'} in "${data.pptx}", next to this page.` : ''}`));
+    }
+    viewer.replaceChildren(sheet);
+    viewer.scrollTop = 0;
+  }
+  // ---- the lecturer's notes for the slide that is up (closed until you open them; they stay as you left them)
+  const notes = $('notes');
+  function showNotes() {
+    const text = state.slide >= 0 && typeof slides[state.slide].notes === 'string' ? slides[state.slide].notes : '';
+    notes.hidden = !text;
+    const box = $('notes-text');
+    box.replaceChildren();
+    for (const line of text.split('\n')) if (line) box.append(make('p', '', line));
+    box.scrollTop = 0;
+  }
+  if ((data.pdf || deck) && slides.length) {
+    if (deck) viewer.classList.add('deck');
     showPdf.checked = !narrow.matches;
     $('show-pdf-label').hidden = false;
     viewer.hidden = !showPdf.checked;
@@ -283,6 +417,7 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
     const apply = () => {
       viewer.hidden = !showPdf.checked;
       showPage();
+      showSheet();
     };
     showPdf.addEventListener('change', () => {
       chosen = true;
@@ -312,12 +447,15 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
       if (cards[s]) {
         cards[s].classList.add('now');
         cards[s].setAttribute('aria-current', 'true');
-        $('where').textContent = `Slide ${slides[s].n} of ${slides.length} \xb7 ${slides[s].approx ? 'about ' : ''}${stamp(slides[s].start)}`;
+        // "of 11": a PowerPoint deck's slides keep their own numbers, and a hidden one that was left out leaves a gap.
+        $('where').textContent = `Slide ${slides[s].n} of ${Math.max(slides.length, Number(slides[slides.length - 1].n) || 0)} \xb7 ${slides[s].approx ? 'about ' : ''}${stamp(slides[s].start)}`;
         keepInView(list, cards[s]);
       }
       $('prev').disabled = s <= 0;
       $('next').disabled = s < 0 || s >= slides.length - 1;
       showPage();
+      showSheet();
+      showNotes();
     }
     const p = paraAt(t);
     if (p !== state.para) {
@@ -367,7 +505,7 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
   document.addEventListener('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     const tag = e.target && e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'VIDEO') return; // the player has its own keys
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'VIDEO' || tag === 'SUMMARY') return; // the player has its own keys, and so do the notes
     if (e.key === 'ArrowRight' && slides.length) { step(1); e.preventDefault(); }
     else if (e.key === 'ArrowLeft' && slides.length) { step(-1); e.preventDefault(); }
     else if (e.key === ' ' && tag !== 'BUTTON' && state.playable) {
@@ -427,6 +565,104 @@ h1 { flex: 1 1 320px; min-width: 0; margin: 0; font-size: 18px; font-weight: 650
     if (key === 'slide' && /^\d{1,4}$/.test(value) && Number(value) > 0) slide = Number(value);
   }
   return t === null && slide === null ? null : { t, slide };
-});</script>
+}, function outlineOf(text) {
+  const out = [];
+  let rows = [];
+  const flush = () => {
+    if (rows.length > 1) out.push({ rows });
+    else if (rows.length) out.push({ lines: [rows[0].filter(Boolean).join(' · ')] });
+    rows = [];
+  };
+  for (const line of String(text == null ? '' : text).split('\n')) {
+    if (!line.trim()) continue;
+    if (line.indexOf('\t') >= 0) {
+      rows.push(line.split('\t').map((cell) => cell.trim()));
+      continue;
+    }
+    flush();
+    const last = out[out.length - 1];
+    if (last && last.lines) last.lines.push(line.trim());
+    else out.push({ lines: [line.trim()] });
+  }
+  flush();
+  return out;
+});
+;(function readerScript() {
+  var bar = document.querySelector('.rd-bar');
+  if (!bar) return;
+  var IDS = ['watch', 'read', 'guide', 'quiz', 'cards'];
+  var FILES = { watch: ['study', '#t=0', 'Watch'], read: ['read', '#top', 'Read'], guide: ['guide', '', 'Guide'], quiz: ['guide', '#quiz', 'Quiz'], cards: ['guide', '#cards', 'Cards'] };
+  var q;
+  try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  var modes = bar.querySelector('.rd-modes');
+  var current = bar.getAttribute('data-current');
+  var file = bar.getAttribute('data-file') || '';
+  var find = function (id) { return modes.querySelector('[data-mode="' + id + '"]'); };
+  (q.get('has') || '').split(',').forEach(function (id) {
+    // This page's own sections are known to it; the rest is what the desk says is there now.
+    if (IDS.indexOf(id) < 0 || !file || find(id) || !FILES[current] || FILES[id][0] === FILES[current][0]) return;
+    var a = document.createElement('a');
+    a.setAttribute('data-mode', id);
+    a.setAttribute('href', file + '.' + FILES[id][0] + '.html' + FILES[id][1]);
+    a.textContent = FILES[id][2];
+    var next = null;
+    for (var i = IDS.indexOf(id) + 1; i < IDS.length && !next; i++) next = find(IDS[i]);
+    modes.insertBefore(a, next);
+  });
+
+  // "Quiz" asked for from outside (the desk, a page made before this guide): the questions begin at the self-test when there is one.
+  if (current === 'guide' && location.hash === '#quiz' && document.getElementById('self-test')) location.replace('#self-test');
+  function mark() {
+    if (current !== 'guide') return;
+    var id = location.hash.slice(1);
+    var on = id === 'cards' ? 'cards' : id === 'quiz' || id === 'self-test' ? 'quiz' : 'guide';
+    if (!find(on)) on = 'guide';
+    IDS.forEach(function (m) {
+      var el = find(m);
+      if (!el) return;
+      if (m === on) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+    });
+  }
+  mark();
+  addEventListener('hashchange', mark);
+
+  if (q.get('desk') !== '1') return;
+  var back = bar.querySelector('.rd-back');
+  var hint = bar.querySelector('.rd-hint');
+  back.hidden = false;
+  back.addEventListener('click', function () {
+    window.close();
+    // Still here: the browser only lets a page close a tab that has shown nothing else.
+    setTimeout(function () {
+      hint.textContent = 'Close this tab to go back to your desk.';
+      hint.hidden = false;
+    }, 350);
+  });
+  var folder = function (p) { return p.slice(0, p.lastIndexOf('/') + 1); };
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var raw = a.getAttribute('href') || '';
+    if (!raw) return;
+    if (raw.charAt(0) === '#') {
+      // A place on this page.
+      if (raw.length > 1) {
+        e.preventDefault();
+        location.replace(raw);
+      }
+      return;
+    }
+    var to;
+    try { to = new URL(raw, location.href); } catch (err) { return; }
+    // Only this lecture's own pages, in this folder.
+    if (to.protocol !== location.protocol || folder(to.pathname) !== folder(location.pathname) || !/\.(study|read|guide)(%20\(\d+\))?\.html$/i.test(to.pathname)) return;
+    to.search = location.search;
+    e.preventDefault();
+    // A mode takes this page's place (the tab can still be closed to go back); a minute in the lecture is a step you can come back from.
+    if (a.hasAttribute('data-mode')) location.replace(to.href);
+    else location.assign(to.href);
+  });
+})();</script>
 </body>
 </html>

@@ -2103,3 +2103,39 @@ mark.hl {
   .st-plain.st-two { grid-template-columns: minmax(0, 1fr); }
   .st-whole .shot img { width: 140px; }
 }
+
+/* ---------- Pass 16: a whole item of a pack in a frame (study-tools/, the cardiac worked example and sequence) ---------- */
+/* The frame is as tall as its picture, not 16:9, so the item's minutes and slides are not cut off. */
+.st-pic .frame.frame-whole { aspect-ratio: auto; }
+
+/* ---------------------------------------------------------------- pass 16: the page as paper (2026-11-12, option A "Paper and lamp")
+   A fine warm paper grain on every page, and behind the hero a pool of lighter paper like a desk lamp, with a little
+   butter-yellow warmth top right and green low left. CSS only: an SVG noise tile as a data: image (the policy allows
+   img-src data:), nothing fetched. Text sits on cards and panels; the faintest text on the bare page keeps AA. */
+:root {
+  --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .25 0 0 0 0 .16 0 0 0 .4 -.19'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+  --tex-lamp: rgba(255, 254, 250, .85);
+  --tex-glow-1: rgba(14, 107, 94, .06);
+  --tex-glow-2: rgba(255, 212, 102, .18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .92 0 0 0 0 .91 0 0 0 0 .89 0 0 0 .26 -.124'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+    --tex-lamp: rgba(235, 233, 227, .035);
+    --tex-glow-1: rgba(95, 212, 193, .055);
+    --tex-glow-2: rgba(199, 154, 53, .06);
+  }
+}
+:root[data-theme="dark"] {
+  --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .92 0 0 0 0 .91 0 0 0 0 .89 0 0 0 .26 -.124'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+  --tex-lamp: rgba(235, 233, 227, .035);
+  --tex-glow-1: rgba(95, 212, 193, .055);
+  --tex-glow-2: rgba(199, 154, 53, .06);
+}
+body { background: var(--tex-grain) 0 0 / 220px 220px, var(--bg); }
+.top {
+  background:
+    radial-gradient(ellipse min(820px, 110vw) 460px at 50% 34%, var(--tex-lamp), transparent 70%),
+    radial-gradient(ellipse min(560px, 90vw) 380px at 84% 8%, var(--tex-glow-2), transparent 70%),
+    radial-gradient(ellipse min(560px, 90vw) 380px at 12% 70%, var(--tex-glow-1), transparent 70%);
+}

@@ -399,3 +399,79 @@
     window.addEventListener('afterprint', function () { for (var j = 0; j < tabs.length; j += 1) if (tabs[j].getAttribute('aria-selected') === 'true') show(j, false); });
   }
 })();
+
+// ==== Pass 18 (2026-11-12): "See it in 15 seconds", the paper-cut film under the home page's first picture. Kept in
+// pass18.js beside the site tooling (patch-p18.cjs appends it). Nothing of the film is fetched until the band is in
+// view; then the cut for this width (the phone cut below 760 px) plays, muted and looping, and it pauses when the band
+// leaves. Pause and Play are one button under it. When the reader has asked for less motion, or to save data, it never
+// starts by itself: the still stays, with Play. Without JavaScript the still is all there is. Nothing is sent anywhere. ====
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    var view = document.querySelector('[data-paper-film]');
+    if (!view || !window.matchMedia || !('IntersectionObserver' in window)) return;
+    var fig = view.closest('figure');
+    var button = fig && fig.querySelector('.see-btn');
+    if (!button) return;
+    var base = view.getAttribute('data-paper-film');
+    var phone = window.matchMedia('(max-width: 759px)');
+    var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches || !!(navigator.connection && navigator.connection.saveData);
+    var wanted = !calm; // the reader's wish: the film plays while it is in view
+    var shown = 0; // how much of the film is on the screen, 0 to 1
+    var video = null;
+    var cut = '';
+    var label = function () {
+      button.textContent = wanted ? 'Pause' : 'Play';
+      button.setAttribute('aria-label', (wanted ? 'Pause' : 'Play') + ' the 15-second film, which is silent');
+    };
+    var make = function () {
+      video = document.createElement('video');
+      video.className = 'see-video';
+      video.muted = true;
+      video.defaultMuted = true;
+      video.setAttribute('muted', '');
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.preload = 'none';
+      video.setAttribute('disablepictureinpicture', '');
+      video.setAttribute('aria-hidden', 'true'); // the still underneath carries the film's description
+      video.tabIndex = -1;
+      video.addEventListener('playing', function () { view.classList.add('is-playing'); });
+      view.appendChild(video);
+    };
+    var choose = function () {
+      var want = base + (phone.matches ? '-phone' : '-wide') + '.mp4';
+      if (want === cut) return;
+      cut = want;
+      view.classList.remove('is-playing');
+      var still = view.querySelector('img');
+      if (still && still.currentSrc) video.poster = still.currentSrc; // the same picture, already here
+      video.src = want;
+    };
+    var play = function () {
+      if (!video) make();
+      choose();
+      var p = video.play();
+      if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError') { wanted = false; label(); } });
+    };
+    var sync = function () {
+      if (wanted && shown >= 0.35) play();
+      else if (video && (!wanted || shown === 0)) video.pause();
+    };
+    button.addEventListener('click', function () {
+      wanted = !wanted;
+      label();
+      if (wanted) play(); else if (video) video.pause();
+    });
+    new IntersectionObserver(function (entries) {
+      var e = entries[entries.length - 1];
+      shown = e.isIntersecting ? e.intersectionRatio : 0;
+      // With less motion asked for, a film the reader started stops for good once it is scrolled away.
+      if (shown === 0 && calm && wanted) { wanted = false; label(); }
+      sync();
+    }, { threshold: [0, 0.35] }).observe(view);
+    if (phone.addEventListener) phone.addEventListener('change', function () { if (video) { choose(); sync(); } });
+    label();
+    button.hidden = false;
+  });
+})();

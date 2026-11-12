@@ -151,6 +151,33 @@
     </div>
   </section>
 
+  <!-- ============ Pass 18 (2026-11-12): "See it in 15 seconds", a short paper-cut film right under the first picture. ============
+       A student stuck on a lecture clicks StreamSnag; the lecture slides out as film and becomes the study guide, cheat
+       sheet and flashcards of the sample cardiac lecture, and a flashcard's 05:56 takes the lecture back to that moment.
+       Silent, 15.5 seconds, made outside the site and not changed here (make-film-media.py puts it in media/, with its
+       stills). The still is plain HTML: without JavaScript, or with reduced motion, it is what shows (with reduced motion,
+       a Play button too). site.js fetches the film only when the band is in view (the phone cut below 760 px), plays it
+       muted and pauses it when the band leaves. Styles and script in pass18.css and pass18.js beside the site tooling. -->
+  <section class="see" id="see" aria-labelledby="see-title">
+    <div class="wrap">
+      <h2 id="see-title">See it in 15 seconds.</h2>
+      <figure class="see-fig">
+        <div class="see-card">
+          <div class="see-view" data-paper-film="media/paper-film">
+            <picture>
+              <source media="(max-width: 759px)" type="image/avif" srcset="media/paper-film-phone-1x.avif 432w, media/paper-film-phone-2x.avif 864w" sizes="calc(100vw - 44px)" width="432" height="540">
+              <source media="(max-width: 759px)" type="image/webp" srcset="media/paper-film-phone-1x.webp 432w" sizes="calc(100vw - 44px)" width="432" height="540">
+              <source type="image/avif" srcset="media/paper-film-wide-1x.avif 960w, media/paper-film-wide-2x.avif 1920w" sizes="(min-width: 1024px) 944px, calc(100vw - 48px)">
+              <source type="image/webp" srcset="media/paper-film-wide-1x.webp 960w" sizes="(min-width: 1024px) 944px, calc(100vw - 48px)">
+              <img src="media/paper-film-wide-1x.webp" width="960" height="540" alt="A silent, 15-second paper-cut film. A student stuck on a lecture clicks StreamSnag, the lecture turns into a study guide, a cheat sheet and flashcards, and tapping 05:56 on a flashcard takes the lecture back to that moment: every note, linked to the moment it was said." loading="lazy" decoding="async">
+            </picture>
+          </div>
+        </div>
+        <figcaption class="see-cap">The study guide, cheat sheet and flashcards are StreamSnag's own, from our sample lecture. <button type="button" class="see-btn" hidden>Pause</button></figcaption>
+      </figure>
+    </div>
+  </section>
+
   <!-- ============ The lecture as a document. The one the page makes the most of, straight after the first picture. ============ -->
   <section class="moment moment-read" id="gallery" aria-labelledby="read-title">
     <div class="wrap">

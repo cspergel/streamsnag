@@ -2139,3 +2139,39 @@ body { background: var(--tex-grain) 0 0 / 220px 220px, var(--bg); }
     radial-gradient(ellipse min(560px, 90vw) 380px at 84% 8%, var(--tex-glow-2), transparent 70%),
     radial-gradient(ellipse min(560px, 90vw) 380px at 12% 70%, var(--tex-glow-1), transparent 70%);
 }
+
+/* ---------------------------------------------------------------- pass 18: "See it in 15 seconds" (2026-11-12)
+   The home page's short paper-cut film, right under the first picture: a heading, the film in a paper card (16:9, a
+   phone 4:5, its own cut), one line under it with Pause or Play. The still is a <picture>; site.js lays the film over
+   it once the band is in view and fades it in when it plays. Without JavaScript, or with reduced motion, the still
+   stays. */
+/* It follows on from the first screen, so it adds little space above: the first screen's own foot (--section) is
+   the gap, about 92 px on a wide screen and 64 on a phone. */
+.see { padding: clamp(8px, 1.2vw, 16px) 0 var(--section); text-align: center; }
+.see h2 { font: 560 clamp(1.9rem, 3.8vw, 3rem)/1.08 var(--font-display); letter-spacing: -0.013em; text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+.see-fig { max-width: 960px; margin: clamp(24px, 3vw, 36px) auto 0; }
+.see-card { padding: 8px; border-radius: var(--r-xl); background: var(--paper); box-shadow: var(--sh-3); }
+.see-view { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: calc(var(--r-xl) - 8px); background: #efe4d1; }
+.see-view img, .see-video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+.see-video { opacity: 0; transition: opacity .6s var(--ease-out); pointer-events: none; }
+.see-view.is-playing .see-video { opacity: 1; }
+.see-cap { max-width: 48em; margin: 16px auto 0; font-size: var(--t-s); line-height: 1.5; color: var(--ink-3); text-wrap: balance; }
+.see-btn {
+  display: inline-flex; align-items: center; min-height: 44px; margin-left: 10px; padding: 0 18px; vertical-align: middle;
+  border: 1px solid var(--line-strong); border-radius: var(--r-pill);
+  background: var(--surface); color: var(--ink-2); font: 600 .875rem/1 var(--font-ui); cursor: pointer;
+}
+.see-btn:hover { color: var(--ink); border-color: var(--ink-3); }
+.see-btn[hidden] { display: none; }
+@media (max-width: 759px) {
+  .see-card { padding: 6px; }
+  .see-view { aspect-ratio: 4 / 5; border-radius: calc(var(--r-xl) - 6px); }
+}
+@media (prefers-reduced-motion: reduce) { .see-video { transition: none; } }
+/* The film is light paper: on the dark page it is dimmed a little, like the brand art. */
+:root[data-theme="dark"] .see-view { background: #2a2720; }
+:root[data-theme="dark"] .see-view img, :root[data-theme="dark"] .see-video { filter: brightness(.86) saturate(.92); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .see-view { background: #2a2720; }
+  :root:not([data-theme="light"]) .see-view img, :root:not([data-theme="light"]) .see-video { filter: brightness(.86) saturate(.92); }
+}

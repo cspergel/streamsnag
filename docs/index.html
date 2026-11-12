@@ -87,20 +87,18 @@
       <svg class="ic i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
     </button>
     <!-- PLACEHOLDER (install link): every link with data-install points at #install until the store listing or download exists. Replace the href of all [data-install] links with the real install address. -->
-    <a class="btn btn-quiet btn-sm" href="#install" data-install>Get StreamSnag</a>
+    <a class="btn btn-quiet btn-sm" href="demo/">Try the demo</a>
     <!-- On a phone or tablet the links above are folded into this one button. It works without JavaScript. -->
     <details class="menu">
       <summary>Menu</summary>
       <nav class="menu-list" aria-label="Site, as a menu">
         <a href="how-it-works/">How it works</a>
         <a href="study-tools/">Study tools</a>
-        <a href="#gallery">Samples</a>
         <a href="downloader/">The downloader</a>
         <a href="#pricing">Pricing</a>
-        <a href="ai-costs/">What the AI costs</a>
         <a href="guides/">Guides</a>
         <a href="questions/">Questions</a>
-        <button class="menu-theme" type="button" data-theme-toggle>Light or dark</button>
+        <button class="menu-theme" type="button" data-theme-toggle data-theme-name>Dark theme</button>
       </nav>
     </details>
   </div>
@@ -124,8 +122,8 @@
       <p class="top-say">A browser extension that saves the lecture you are watching and, with Pro, transcribes it into something you can read and study.</p>
       <div class="top-act">
         <!-- PLACEHOLDER (install link): replace href="#install" on every [data-install] link with the real install address. -->
-        <a class="btn btn-go btn-lg" href="#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
-        <a class="plain-link" href="#gallery">See what it makes</a>
+        <a class="btn btn-go btn-lg" href="demo/">Try the demo</a>
+        <a class="btn btn-soon" href="#install">Coming soon to Chrome, Edge and Brave</a>
       </div>
       <p class="top-price">Unlimited video downloads, free forever. Pro from US$39.97 a year.</p>
 
@@ -140,11 +138,11 @@
               <span class="frame-url">course.example/phys201/lecture-6</span>
               <span class="frame-ext is-open"><svg class="mark"><use href="#i-mark"/></svg></span>
             </div>
-            <div class="frame-view"><picture class="shot"><source type="image/avif" srcset="img/shots/lecture-1x.avif 1280w, img/shots/lecture-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/lecture-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/lecture-1x.webp" width="1280" height="760" alt="The lecture page of an invented course, PHYS201, lecture 6: Cardiac output and what sets it, with its video paused at 8:47 on the slide Preload and the Frank-Starling law." fetchpriority="high" decoding="async"></picture></div>
+            <div class="frame-view"><picture class="shot"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/lecture-1x.avif 1280w, img/shots/lecture-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/lecture-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/lecture-1x.webp" width="1280" height="760" alt="The lecture page of an invented course, PHYS201, lecture 6: Cardiac output and what sets it, with its video paused at 8:47 on the slide Preload and the Frank-Starling law." fetchpriority="high" decoding="async"></picture></div>
           </div>
           <div class="bubble hero-pop"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/popup-saved-1x.avif 400w, img/shots/popup-saved-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-saved-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-saved-1x.webp" width="400" height="600" alt="The StreamSnag popup on that page after Download: Cardiac output and what sets it, Video, 27 min, 129 MB, saved to Downloads, StreamSnag. Next step: Reading edition, the lecture as an article you can read instead of watching, with the button Read the lecture." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/popup-saved-dark-1x.avif 400w, img/shots/popup-saved-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-saved-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-saved-dark-1x.webp" width="400" height="600" alt="The StreamSnag popup on that page after Download: Cardiac output and what sets it, Video, 27 min, 129 MB, saved to Downloads, StreamSnag. Next step: Reading edition, the lecture as an article you can read instead of watching, with the button Read the lecture." loading="lazy" decoding="async"></picture></div>
         </div>
-        <figcaption id="evening">StreamSnag itself, on an invented lecture. <a href="demo/">Try the demo</a></figcaption>
+        <figcaption id="evening">StreamSnag itself, on an invented lecture. <a href="how-it-works/">How it works</a></figcaption>
       </figure>
     </div>
   </section>
@@ -202,8 +200,8 @@
         <p class="moment-link" id="downloader"><a href="downloader/">What the free video downloader does</a></p>
       </div>
       <div class="moment-pic save-stage reveal">
-        <div class="bubble save-review"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/review-course-law-1x.avif 400w, img/shots/review-course-law-2x.avif 800w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/review-course-law-1x.webp 400w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><img src="img/shots/review-course-law-1x.webp" width="400" height="600" alt="The review sheet before a course page is downloaded: Review before downloading, 6 videos selected, 1 needs a look, ready to download lectures 5 to 10 of LAW101 in course order, each with its length and size. About 584 MB in all, Cancel, Download 6." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/review-course-law-dark-1x.avif 400w, img/shots/review-course-law-dark-2x.avif 800w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/review-course-law-dark-1x.webp 400w" sizes="(min-width: 394px) 330px, calc(100vw - 32px)"><img src="img/shots/review-course-law-dark-1x.webp" width="400" height="600" alt="The review sheet before a course page is downloaded: Review before downloading, 6 videos selected, 1 needs a look, ready to download lectures 5 to 10 of LAW101 in course order, each with its length and size. About 584 MB in all, Cancel, Download 6." loading="lazy" decoding="async"></picture></div>
-        <div class="bubble save-pop"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/popup-course-law-top-1x.avif 400w, img/shots/popup-course-law-top-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-course-law-top-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-course-law-top-1x.webp" width="400" height="450" alt="The StreamSnag popup on the course page of an invented course, LAW101, Unit 1: making a contract. A row of squares for its 11 videos: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/popup-course-law-top-dark-1x.avif 400w, img/shots/popup-course-law-top-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-course-law-top-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-course-law-top-dark-1x.webp" width="400" height="450" alt="The StreamSnag popup on the course page of an invented course, LAW101, Unit 1: making a contract. A row of squares for its 11 videos: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." loading="lazy" decoding="async"></picture></div>
+        <div class="bubble save-review"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/review-course-law-1x.avif 400w, img/shots/review-course-law-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/review-course-law-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/review-course-law-1x.webp" width="400" height="600" alt="The review sheet before a course page is downloaded: Review before downloading, 6 videos selected, 1 needs a look, ready to download lectures 5 to 10 of LAW101 in course order, each with its length and size. About 584 MB in all, Cancel, Download 6." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/review-course-law-dark-1x.avif 400w, img/shots/review-course-law-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/review-course-law-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/review-course-law-dark-1x.webp" width="400" height="600" alt="The review sheet before a course page is downloaded: Review before downloading, 6 videos selected, 1 needs a look, ready to download lectures 5 to 10 of LAW101 in course order, each with its length and size. About 584 MB in all, Cancel, Download 6." loading="lazy" decoding="async"></picture></div>
+        <div class="bubble save-pop"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/popup-course-law-top-1x.avif 400w, img/shots/popup-course-law-top-2x.avif 800w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-course-law-top-1x.webp 400w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="img/shots/popup-course-law-top-1x.webp" width="400" height="450" alt="The StreamSnag popup on the course page of an invented course, LAW101, Unit 1: making a contract. A row of squares for its 11 videos: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/popup-course-law-top-dark-1x.avif 400w, img/shots/popup-course-law-top-dark-2x.avif 800w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-course-law-top-dark-1x.webp 400w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="img/shots/popup-course-law-top-dark-1x.webp" width="400" height="450" alt="The StreamSnag popup on the course page of an invented course, LAW101, Unit 1: making a contract. A row of squares for its 11 videos: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." loading="lazy" decoding="async"></picture></div>
       </div>
     </div>
   </section>
@@ -216,15 +214,46 @@
         <p>With your own AI account, Pro writes a study guide, a practice quiz and flashcards. Your slides stay in step with the recording.</p>
         <p class="moment-link"><a href="study-tools/">The study tools, step by step</a></p>
       </div>
-      <div class="study-pics reveal">
-        <a class="frame study-win" href="sample/law-study-page.html">
-          <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Offer and acceptance.study.html</span></span>
-          <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/study-law-1x.avif 1280w, img/shots/study-law-2x.avif 2560w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-law-1x.webp 1280w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><img src="img/shots/study-law-1x.webp" width="1280" height="860" alt="The study page StreamSnag made from an invented law lecture, Offer and acceptance: the video at 9:00 on the slide Unilateral offers: Carlill v Carbolic Smoke Ball Co (1893), the transcript under it, and the list of slides with the minute each came up." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/study-law-dark-1x.avif 1280w, img/shots/study-law-dark-2x.avif 2560w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-law-dark-1x.webp 1280w" sizes="(min-width: 894px) 830px, calc(100vw - 32px)"><img src="img/shots/study-law-dark-1x.webp" width="1280" height="860" alt="The study page StreamSnag made from an invented law lecture, Offer and acceptance: the video at 9:00 on the slide Unilateral offers: Carlill v Carbolic Smoke Ball Co (1893), the transcript under it, and the list of slides with the minute each came up." loading="lazy" decoding="async"></picture></span>
-        </a>
-        <a class="frame guide-win" href="sample/stats-study-guide.html">
-          <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>From a sample to a claim.guide.html</span></span>
-          <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/stats-guide-1x.avif 1280w, img/shots/stats-guide-2x.avif 2560w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/stats-guide-1x.webp 1280w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><img src="img/shots/stats-guide-1x.webp" width="1280" height="860" alt="The study guide of an invented statistics lecture, open at its first key idea, Why does the sample mean vary between samples, with the lecturer's own words quoted, an example, and a short explanation marked as beyond the lecture." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/stats-guide-dark-1x.avif 1280w, img/shots/stats-guide-dark-2x.avif 2560w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/stats-guide-dark-1x.webp 1280w" sizes="(min-width: 684px) 620px, calc(100vw - 32px)"><img src="img/shots/stats-guide-dark-1x.webp" width="1280" height="860" alt="The study guide of an invented statistics lecture, open at its first key idea, Why does the sample mean vary between samples, with the lecturer's own words quoted, an example, and a short explanation marked as beyond the lecture." loading="lazy" decoding="async"></picture></span>
-        </a>
+      <!-- Pass 11 (2026-11-12): three tabs switching one large picture, all from one invented lecture (LAW101,
+           lecture 4). A wide screen sees the page as StreamSnag made it on a computer, a phone the same page at
+           phone width (real/phone-p11.mjs). Without JavaScript the three are simply one under another; site.js makes
+           them tabs (arrow keys move between them). -->
+      <div class="stt" data-tabs>
+        <div class="stt-tabs" hidden>
+          <button type="button" class="stt-tab" data-for="stt-read">Reading edition</button>
+          <button type="button" class="stt-tab" data-for="stt-page">Study page</button>
+          <button type="button" class="stt-tab" data-for="stt-pack">Study pack</button>
+        </div>
+        <figure class="stt-panel" id="stt-read">
+          <a class="stt-pic" href="sample/law-reading-edition.html">
+            <span class="frame stt-wide">
+              <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Offer and acceptance.read.html</span></span>
+              <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/read-law-1x.avif 1280w, img/shots/read-law-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-law-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/read-law-1x.webp" width="1280" height="860" alt="The reading edition StreamSnag made from an invented law lecture: LAW101, reading edition, Offer and acceptance, a 23 minute lecture, a 12 minute read, 2,706 words, a contents list of four parts with their times, and the first part in paragraphs, each with its time." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/read-law-dark-1x.avif 1280w, img/shots/read-law-dark-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-law-dark-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/read-law-dark-1x.webp" width="1280" height="860" alt="The reading edition StreamSnag made from an invented law lecture: LAW101, reading edition, Offer and acceptance, a 23 minute lecture, a 12 minute read, 2,706 words, a contents list of four parts with their times, and the first part in paragraphs, each with its time." loading="lazy" decoding="async"></picture></span>
+            </span>
+            <span class="phone stt-narrow"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/read-law-phone-1x.avif 390w, img/shots/read-law-phone-2x.avif 780w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-law-phone-1x.webp 390w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><img src="img/shots/read-law-phone-1x.webp" width="390" height="844" alt="The same reading edition at phone width: LAW101, reading edition, Offer and acceptance, a 23 minute lecture, a 12 minute read, 2,706 words, and its contents list." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/read-law-phone-dark-1x.avif 390w, img/shots/read-law-phone-dark-2x.avif 780w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-law-phone-dark-1x.webp 390w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><img src="img/shots/read-law-phone-dark-1x.webp" width="390" height="844" alt="The same reading edition at phone width: LAW101, reading edition, Offer and acceptance, a 23 minute lecture, a 12 minute read, 2,706 words, and its contents list." loading="lazy" decoding="async"></picture></span>
+          </a>
+          <figcaption class="stt-cap"><b>Reading edition.</b> Pro, with no AI. The lecture set out to read, with headings, a contents list and the minute beside every paragraph. No word is changed. <a href="sample/law-reading-edition.html">Open the sample</a></figcaption>
+        </figure>
+        <figure class="stt-panel" id="stt-page">
+          <a class="stt-pic" href="sample/law-study-page.html">
+            <span class="frame stt-wide">
+              <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Offer and acceptance.study.html</span></span>
+              <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/study-law-1x.avif 1280w, img/shots/study-law-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-law-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/study-law-1x.webp" width="1280" height="860" alt="The study page StreamSnag made from the same lecture: the video at 9:00 on the slide Unilateral offers: Carlill v Carbolic Smoke Ball Co (1893), the transcript under it, and the list of slides with the minute each came up." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/study-law-dark-1x.avif 1280w, img/shots/study-law-dark-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-law-dark-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/study-law-dark-1x.webp" width="1280" height="860" alt="The study page StreamSnag made from the same lecture: the video at 9:00 on the slide Unilateral offers: Carlill v Carbolic Smoke Ball Co (1893), the transcript under it, and the list of slides with the minute each came up." loading="lazy" decoding="async"></picture></span>
+            </span>
+            <span class="phone stt-narrow"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/study-law-phone-1x.avif 390w, img/shots/study-law-phone-2x.avif 780w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-law-phone-1x.webp 390w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><img src="img/shots/study-law-phone-1x.webp" width="390" height="684" alt="The same study page at phone width: Offer and acceptance, 9 slides, slide 1 of 9 with Previous and Next, the list of slides with their minutes, and the transcript under it." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/study-law-phone-dark-1x.avif 390w, img/shots/study-law-phone-dark-2x.avif 780w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/study-law-phone-dark-1x.webp 390w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><img src="img/shots/study-law-phone-dark-1x.webp" width="390" height="684" alt="The same study page at phone width: Offer and acceptance, 9 slides, slide 1 of 9 with Previous and Next, the list of slides with their minutes, and the transcript under it." loading="lazy" decoding="async"></picture></span>
+          </a>
+          <figcaption class="stt-cap"><b>Study page.</b> Pro, with no AI. The video, the slides and the transcript side by side, following along as it plays. <a href="sample/law-study-page.html">Open the sample</a></figcaption>
+        </figure>
+        <figure class="stt-panel" id="stt-pack">
+          <a class="stt-pic" href="sample/law-study-guide.html">
+            <span class="frame stt-wide">
+              <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Offer and acceptance.guide.html</span></span>
+              <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/guide-law-1x.avif 1280w, img/shots/guide-law-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/guide-law-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/guide-law-1x.webp" width="1280" height="860" alt="The study guide your AI wrote for the same lecture, at its first key idea: Why does the law judge agreement by outward words and conduct rather than inner meaning?, with its minute and slide, an explanation, the lecturer's words quoted and an example." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/guide-law-dark-1x.avif 1280w, img/shots/guide-law-dark-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/guide-law-dark-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/guide-law-dark-1x.webp" width="1280" height="860" alt="The study guide your AI wrote for the same lecture, at its first key idea: Why does the law judge agreement by outward words and conduct rather than inner meaning?, with its minute and slide, an explanation, the lecturer's words quoted and an example." loading="lazy" decoding="async"></picture></span>
+            </span>
+            <span class="phone stt-narrow"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/guide-law-phone-1x.avif 390w, img/shots/guide-law-phone-2x.avif 780w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/guide-law-phone-1x.webp 390w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><img src="img/shots/guide-law-phone-1x.webp" width="390" height="774" alt="The same study guide at phone width, at its first key idea, with its minute and slide and the explanation under it." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/guide-law-phone-dark-1x.avif 390w, img/shots/guide-law-phone-dark-2x.avif 780w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/guide-law-phone-dark-1x.webp 390w" sizes="(min-width: 364px) 300px, calc(100vw - 32px)"><img src="img/shots/guide-law-phone-dark-1x.webp" width="390" height="774" alt="The same study guide at phone width, at its first key idea, with its minute and slide and the explanation under it." loading="lazy" decoding="async"></picture></span>
+          </a>
+          <figcaption class="stt-cap"><b>Study pack.</b> Pro, written by your own AI account. A study guide, a practice quiz and flashcards, every point leading back to its minute. <a href="sample/law-study-guide.html">Open the sample</a></figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -235,6 +264,7 @@
       <div class="calm-head">
         <h2 id="pricing-title">Video downloads are free. Studying is US$39.97&nbsp;a&nbsp;year.</h2>
         <p>Try Pro on one whole lecture first, with no card.</p>
+        <p class="trust"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>No account with us. No tracking. Your lectures stay on your computer.</p>
       </div>
 
       <!-- Two plain cards. seo.mjs reads the four offers from here: each price is marked data-offer and
@@ -251,7 +281,8 @@
             <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>PDFs and PowerPoint files on the page</li>
           </ul>
           <!-- PLACEHOLDER (install link): see the note in the header. -->
-          <a class="btn btn-quiet" href="#install" data-install>Get StreamSnag</a>
+          <a class="btn btn-go" href="demo/">Try the demo</a>
+          <a class="btn btn-soon" href="#install">Coming soon to Chrome, Edge and Brave</a>
           <p class="pc-foot" id="more-than"><a id="plans" href="downloader/">Everything the free downloader does</a></p>
         </div>
 
@@ -331,8 +362,8 @@
       <h2 id="install-title">Start with tonight's lecture.</h2>
       <p class="last-say">For Chrome, Edge and Brave on a computer.</p>
       <!-- PLACEHOLDER (install link): this is the main install button. It points at this section (#install) until the store listing or download exists. Replace the href of every [data-install] link on the site with the real install address. -->
-      <a class="btn btn-go btn-lg" href="#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
-      <p class="last-note"><b>Not released yet.</b> When StreamSnag 1.6 is out, this button will lead to your browser's store.</p>
+      <a class="btn btn-go btn-lg" href="demo/">Try the demo</a>
+      <p class="last-note"><b>Coming soon to Chrome, Edge and Brave.</b> StreamSnag 1.6 is not released yet. When it is, the install button will be here and lead to your browser's store.</p>
     </div>
   </section>
 </main>

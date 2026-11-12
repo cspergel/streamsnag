@@ -87,20 +87,18 @@
       <svg class="ic i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
     </button>
     <!-- PLACEHOLDER (install link): every link with data-install points at #install until the store listing or download exists. Replace the href of all [data-install] links with the real install address. -->
-    <a class="btn btn-quiet btn-sm" href="../#install" data-install>Get StreamSnag</a>
+    <a class="btn btn-quiet btn-sm" href="../demo/">Try the demo</a>
     <!-- On a phone or tablet the links above are folded into this one button. It works without JavaScript. -->
     <details class="menu">
       <summary>Menu</summary>
       <nav class="menu-list" aria-label="Site, as a menu">
         <a href="../how-it-works/">How it works</a>
         <a href="../study-tools/">Study tools</a>
-        <a href="../#gallery">Samples</a>
         <a href="../downloader/" aria-current="page">The downloader</a>
         <a href="../#pricing">Pricing</a>
-        <a href="../ai-costs/">What the AI costs</a>
         <a href="../guides/">Guides</a>
         <a href="../questions/">Questions</a>
-        <button class="menu-theme" type="button" data-theme-toggle>Light or dark</button>
+        <button class="menu-theme" type="button" data-theme-toggle data-theme-name>Dark theme</button>
       </nav>
     </details>
   </div>
@@ -121,7 +119,7 @@
       <p class="top-say">Only here for the downloader? It saves the video on the page you are watching to your own folders, with the slides and files beside it.</p>
       <div class="top-act">
         <!-- PLACEHOLDER (install link): see the note in the header. -->
-        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+        <div class="soon-act"><a class="btn btn-go btn-lg" href="../demo/">Try the demo</a> <a class="btn btn-soon" href="../#install">Coming soon to Chrome, Edge and Brave</a></div>
       </div>
       <p class="top-price">Unlimited video downloads, free forever. No ads, no account, and nothing held back to sell you Pro.</p>
 
@@ -136,7 +134,7 @@
               <span class="frame-url">course.example/law101/</span>
               <span class="frame-ext is-open"><svg class="mark"><use href="#i-mark"/></svg></span>
             </div>
-            <div class="frame-view"><picture class="shot"><source type="image/avif" srcset="../img/shots/course-law-1x.avif 1280w, ../img/shots/course-law-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/course-law-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="../img/shots/course-law-1x.webp" width="1280" height="760" alt="A course page in the browser, course.example: LAW101, Contract law, Unit 1: making a contract, ten recorded lectures and a short welcome, each a video with its title, from 1, What makes a promise binding, to 10, Revision: forming a contract." fetchpriority="high" decoding="async"></picture></div>
+            <div class="frame-view"><picture class="shot"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="../img/shots/course-law-1x.avif 1280w, ../img/shots/course-law-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/course-law-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="../img/shots/course-law-1x.webp" width="1280" height="760" alt="A course page in the browser, course.example: LAW101, Contract law, Unit 1: making a contract, ten recorded lectures and a short welcome, each a video with its title, from 1, What makes a promise binding, to 10, Revision: forming a contract." fetchpriority="high" decoding="async"></picture></div>
           </div>
           <div class="bubble hero-pop"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/popup-course-law-top-1x.avif 400w, ../img/shots/popup-course-law-top-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-course-law-top-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-course-law-top-1x.webp" width="400" height="450" alt="The StreamSnag popup on that course page. Unit 1: making a contract, 11 videos here, a row of squares: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/popup-course-law-top-dark-1x.avif 400w, ../img/shots/popup-course-law-top-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-course-law-top-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-course-law-top-dark-1x.webp" width="400" height="450" alt="The StreamSnag popup on that course page. Unit 1: making a contract, 11 videos here, a row of squares: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." loading="lazy" decoding="async"></picture></div>
         </div>
@@ -172,7 +170,7 @@
   <section class="calm dl-not" aria-labelledby="not-title">
     <div class="wrap calm-narrow qa-row">
       <h2 id="not-title">What it cannot save.</h2>
-      <p class="dl-not-say">Protected (DRM) streams. StreamSnag says so plainly and does not try to get round the protection. Live broadcasts cannot be saved either.</p>
+      <p class="dl-not-say">Protected (DRM) streams. StreamSnag says so plainly and does not try to get round the protection. Live streams are a different case: many can be recorded as they play. Press “Record live stream”, then “Stop &amp; save” when you have what you need.</p>
     </div>
   </section>
 
@@ -238,7 +236,7 @@
         <li><h3>Podcasts</h3><p>Audio is found and saved too, named after the episode. An MP3 can also be made from a saved video.</p></li>
         <li><h3>Recorded talks</h3><p>Conference and seminar recordings, with their captions saved as a transcript when the page has them.</p></li>
       </ul>
-      <p class="kinds-say kinds-say-p6">With Pro, a saved recording that has captions, or that you transcribe, can be turned into a reading edition and a study pack in the same way as a lecture. Those tools were built for, and tested on, someone teaching, usually with slides: a conversation or a panel reads less tidily. Live broadcasts and protected video stay out, as above.</p>
+      <p class="kinds-say kinds-say-p6">With Pro, a saved recording that has captions, or that you transcribe, can be turned into a reading edition and a study pack in the same way as a lecture. Those tools were built for, and tested on, someone teaching, usually with slides: a conversation or a panel reads less tidily. Protected video stays out, as above. A live stream, once recorded and saved, is a recording like any other.</p>
     </div>
   </section>
 
@@ -248,7 +246,7 @@
       <h2 id="dl-last-title">Save tonight's lecture.</h2>
       <p class="last-say">For Chrome, Edge and Brave on a computer.</p>
       <!-- PLACEHOLDER (install link): see the note in the header. -->
-      <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+      <div class="soon-act"><a class="btn btn-go btn-lg" href="../demo/">Try the demo</a> <a class="btn btn-soon" href="../#install">Coming soon to Chrome, Edge and Brave</a></div>
       <p class="dl-guides"><a href="../guides/save-a-lecture.html">How to download a lecture</a> <a href="../guides/download-a-whole-course.html">How to download a whole course</a></p>
       <p class="last-note">The free core is published under the GNU General Public License, version 3, so the code that runs can be read. <a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code</a>.</p>
     </div>

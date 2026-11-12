@@ -23,6 +23,11 @@
   function label(buttons) {
     var next = current() === 'dark' ? 'light' : 'dark';
     for (var i = 0; i < buttons.length; i += 1) {
+      // The phone menu's item says what it switches to ("Dark theme", "Light theme"); the header's icon is labelled.
+      if (buttons[i].hasAttribute('data-theme-name')) {
+        buttons[i].textContent = next === 'dark' ? 'Dark theme' : 'Light theme';
+        continue;
+      }
       buttons[i].setAttribute('aria-label', 'Switch to the ' + next + ' theme');
       buttons[i].setAttribute('title', 'Switch to the ' + next + ' theme');
     }
@@ -198,7 +203,9 @@
     });
     video.addEventListener('playing', function () { stage.classList.add('is-playing'); });
     stage.appendChild(video);
-    stage.appendChild(button);
+    // The button goes on the caption's line under the picture, never floating beside it.
+    var caption = stage.parentNode && stage.parentNode.querySelector('figcaption');
+    (caption || stage).appendChild(button);
     load();
     var inView = false;
     new IntersectionObserver(function (entries) {
@@ -338,4 +345,57 @@
     seen.observe(fig.querySelector('.fl-row'));
     window.addEventListener('beforeprint', function () { fig.classList.remove('fl-js'); });
   });
+})();
+
+// Pass 11 (2026-11-12): the home page's "Then study it" as three tabs switching one large picture. Without
+// JavaScript the three pictures stand one under another. The arrow keys, Home and End move between the tabs.
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    var boxes = document.querySelectorAll('[data-tabs]');
+    for (var b = 0; b < boxes.length; b += 1) setUp(boxes[b]);
+  });
+  function setUp(box) {
+    var list = box.querySelector('.stt-tabs');
+    if (!list) return;
+    var tabs = list.querySelectorAll('[data-for]');
+    var panels = [];
+    list.setAttribute('role', 'tablist');
+    list.setAttribute('aria-label', 'What Pro makes from one lecture');
+    for (var i = 0; i < tabs.length; i += 1) {
+      var panel = document.getElementById(tabs[i].getAttribute('data-for'));
+      panels.push(panel);
+      tabs[i].id = tabs[i].id || 'tab-' + panel.id;
+      tabs[i].setAttribute('role', 'tab');
+      tabs[i].setAttribute('aria-controls', panel.id);
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tabs[i].id);
+      panel.setAttribute('tabindex', '0');
+    }
+    var show = function (k, focus) {
+      for (var j = 0; j < tabs.length; j += 1) {
+        var on = j === k;
+        tabs[j].setAttribute('aria-selected', on ? 'true' : 'false');
+        tabs[j].tabIndex = on ? 0 : -1;
+        panels[j].hidden = !on;
+      }
+      if (focus) tabs[k].focus();
+    };
+    for (var t = 0; t < tabs.length; t += 1) {
+      (function (k) {
+        tabs[k].addEventListener('click', function () { show(k, false); });
+        tabs[k].addEventListener('keydown', function (e) {
+          var n = tabs.length;
+          if (e.key === 'ArrowRight') { e.preventDefault(); show((k + 1) % n, true); }
+          else if (e.key === 'ArrowLeft') { e.preventDefault(); show((k - 1 + n) % n, true); }
+          else if (e.key === 'Home') { e.preventDefault(); show(0, true); }
+          else if (e.key === 'End') { e.preventDefault(); show(n - 1, true); }
+        });
+      })(t);
+    }
+    list.hidden = false;
+    box.classList.add('is-tabs');
+    show(0, false);
+    window.addEventListener('beforeprint', function () { for (var j = 0; j < panels.length; j += 1) panels[j].hidden = false; });
+    window.addEventListener('afterprint', function () { for (var j = 0; j < tabs.length; j += 1) if (tabs[j].getAttribute('aria-selected') === 'true') show(j, false); });
+  }
 })();

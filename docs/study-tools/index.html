@@ -87,20 +87,18 @@
       <svg class="ic i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
     </button>
     <!-- PLACEHOLDER (install link): every link with data-install points at #install until the store listing or download exists. Replace the href of all [data-install] links with the real install address. -->
-    <a class="btn btn-quiet btn-sm" href="../#install" data-install>Get StreamSnag</a>
+    <a class="btn btn-quiet btn-sm" href="../demo/">Try the demo</a>
     <!-- On a phone or tablet the links above are folded into this one button. It works without JavaScript. -->
     <details class="menu">
       <summary>Menu</summary>
       <nav class="menu-list" aria-label="Site, as a menu">
         <a href="../how-it-works/">How it works</a>
         <a href="../study-tools/" aria-current="page">Study tools</a>
-        <a href="../#gallery">Samples</a>
         <a href="../downloader/">The downloader</a>
         <a href="../#pricing">Pricing</a>
-        <a href="../ai-costs/">What the AI costs</a>
         <a href="../guides/">Guides</a>
         <a href="../questions/">Questions</a>
-        <button class="menu-theme" type="button" data-theme-toggle>Light or dark</button>
+        <button class="menu-theme" type="button" data-theme-toggle data-theme-name>Dark theme</button>
       </nav>
     </details>
   </div>
@@ -113,7 +111,8 @@
        per step (scratchpad law/capture-law.mjs, the real extension in a throwaway profile), then the library: the
        study desk's shelves and "Add a video" / "Add a folder". Which parts are Pro, and that the AI parts run on the
        reader's own AI account, is said at the top and again at each step. Styles in pass9.css; the one animation
-       (the pack styles) in pass9.js. Pass 10: the flow in one glance under "One lecture" (pass10.css, pass10.js). -->
+       (the pack styles) in pass9.js. Pass 10: the flow in one glance under "One lecture" (pass10.css, pass10.js). Pass 11: the flow is the first
+       picture, large, and the photograph moved to the foot (site.css, site.js). -->
   <section class="top st-top" aria-labelledby="st-title">
     <div class="wrap">
       <p class="crumbs how-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Study tools</span></p>
@@ -121,32 +120,43 @@
       <p class="top-say">One lecture, step by step: its transcript, a reading edition, a study page with the slides in step, a study pack and a few cards a day. Then the library, for every lecture you have.</p>
       <div class="top-act">
         <!-- PLACEHOLDER (install link): see the note in the header. -->
-        <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
-        <a class="plain-link" href="#library">The library</a>
+        <a class="btn btn-go btn-lg" href="../demo/">Try the demo</a>
+        <a class="btn btn-soon" href="../#install">Coming soon to Chrome, Edge and Brave</a>
       </div>
-      <!-- Decorative (the heading says it): art generated for StreamSnag, docs/img/art/ART-CREDITS.md. -->
-      <picture class="art art-head at-mid" aria-hidden="true">
-        <source type="image/avif" srcset="../img/art/study-still-1x.avif 768w, ../img/art/study-still-2x.avif 1536w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)">
-        <source type="image/webp" srcset="../img/art/study-still-1x.webp 768w, ../img/art/study-still-2x.webp 1536w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)">
-        <img src="../img/art/study-still-1x.webp" width="768" height="432" alt="" decoding="async">
-      </picture>
+
+      <!-- Pass 10 (2026-11-12), moved to the first screen and made large in pass 11: the whole flow in one glance. The lecture card is drawn by the site (the lecture's own
+           course, number, title and length); the five pictures are the captures below, small. With JavaScript and
+           motion allowed, pass10.js plays it once as it comes into view (about four seconds), and Replay plays it
+           again; otherwise it is the finished row. -->
+      <figure class="fl fl-top" aria-labelledby="fl-cap">
+        <ol class="fl-row">
+          <li class="fl-item"><span class="fl-card" aria-hidden="true"><span class="fl-card-k">LAW101 · lecture 4</span><span class="fl-card-t">Offer and acceptance</span><span class="fl-card-m">23-minute video</span></span><span class="fl-l">The video lecture</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot"><source type="image/avif" srcset="../img/shots/transcript-law-1x.avif 1000w, ../img/shots/transcript-law-2x.avif 2000w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/transcript-law-1x.webp 1000w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/transcript-law-1x.webp" width="1000" height="620" alt="The transcript, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Transcript</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/read-law-1x.avif 1280w, ../img/shots/read-law-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/read-law-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/read-law-1x.webp" width="1280" height="860" alt="The reading edition, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/read-law-dark-1x.avif 1280w, ../img/shots/read-law-dark-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/read-law-dark-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/read-law-dark-1x.webp" width="1280" height="860" alt="The reading edition, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Reading edition</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/study-law-1x.avif 1280w, ../img/shots/study-law-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/study-law-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/study-law-1x.webp" width="1280" height="860" alt="The study page, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/study-law-dark-1x.avif 1280w, ../img/shots/study-law-dark-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/study-law-dark-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/study-law-dark-1x.webp" width="1280" height="860" alt="The study page, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Study page</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/guide-law-1x.avif 1280w, ../img/shots/guide-law-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-law-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/guide-law-1x.webp" width="1280" height="860" alt="The study guide, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/guide-law-dark-1x.avif 1280w, ../img/shots/guide-law-dark-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-law-dark-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/guide-law-dark-1x.webp" width="1280" height="860" alt="The study guide, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Study pack</span></li>
+          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/desk-review-1x.avif 1280w, ../img/shots/desk-review-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/desk-review-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/desk-review-1x.webp" width="1280" height="760" alt="The study desk's Review, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/desk-review-dark-1x.avif 1280w, ../img/shots/desk-review-dark-2x.avif 2560w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/desk-review-dark-1x.webp 1280w" sizes="(min-width: 464px) 400px, calc(100vw - 32px)"><img src="../img/shots/desk-review-dark-1x.webp" width="1280" height="760" alt="The study desk's Review, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Cards due today</span></li>
+        </ol>
+        <figcaption id="fl-cap" class="fl-cap">One lecture, all the way through. <button type="button" class="fl-again" hidden>Replay</button></figcaption>
+      </figure>
     </div>
   </section>
 
   <!-- ============ What is free, what is Pro, and whose AI ============ -->
-  <section class="calm st-intro" aria-label="What is free, what is Pro, and whose AI">
+  <section class="calm st-intro" aria-labelledby="st-plain-title">
     <div class="wrap">
+      <h2 class="vh" id="st-plain-title">What is free, what is Pro, and whose AI</h2>
       <div class="st-plain">
         <div>
-          <h2>Free</h2>
+          <h3>Free</h3>
           <p>Saving the lecture, and saving the captions it already has as a transcript. <b>No account, no limits.</b></p>
         </div>
         <div>
-          <h2>Pro</h2>
+          <h3>Pro</h3>
           <p>Everything else on this page: transcribing, the reading edition, the study page, the study pack, review, and studying videos you already had. <b>Your first lecture is free</b>, then US$39.97 a year.</p>
         </div>
         <div>
-          <h2>Your own AI</h2>
+          <h3>Your own AI</h3>
           <p>Only the study pack uses AI, and it runs on your own AI account. On a Claude or ChatGPT subscription you already have, <b>nothing extra</b>. With a pay-as-you-go key it is billed by your provider, never by StreamSnag.</p>
         </div>
       </div>
@@ -162,21 +172,6 @@
         <p class="st-lecture">LAW101, lecture 4: Offer and acceptance. <a href="../sample/law-reading-edition.html">Open its samples</a></p>
       </div>
 
-      <!-- Pass 10 (2026-11-12): the whole flow in one glance. The lecture card is drawn by the site (the lecture's own
-           course, number, title and length); the five pictures are the captures below, small. With JavaScript and
-           motion allowed, pass10.js plays it once as it comes into view (about four seconds), and Replay plays it
-           again; otherwise it is the finished row. -->
-      <figure class="fl" aria-labelledby="fl-cap">
-        <ol class="fl-row">
-          <li class="fl-item"><span class="fl-card" aria-hidden="true"><span class="fl-card-k">LAW101 · lecture 4</span><span class="fl-card-t">Offer and acceptance</span><span class="fl-card-m">23-minute video</span></span><span class="fl-l">The video lecture</span></li>
-          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot"><source type="image/avif" srcset="../img/shots/transcript-law-1x.avif 1000w, ../img/shots/transcript-law-2x.avif 2000w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/transcript-law-1x.webp 1000w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/transcript-law-1x.webp" width="1000" height="620" alt="The transcript, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Transcript</span></li>
-          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/read-law-1x.avif 1280w, ../img/shots/read-law-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/read-law-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/read-law-1x.webp" width="1280" height="860" alt="The reading edition, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/read-law-dark-1x.avif 1280w, ../img/shots/read-law-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/read-law-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/read-law-dark-1x.webp" width="1280" height="860" alt="The reading edition, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Reading edition</span></li>
-          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/study-law-1x.avif 1280w, ../img/shots/study-law-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/study-law-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/study-law-1x.webp" width="1280" height="860" alt="The study page, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/study-law-dark-1x.avif 1280w, ../img/shots/study-law-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/study-law-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/study-law-dark-1x.webp" width="1280" height="860" alt="The study page, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Study page</span></li>
-          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/guide-law-1x.avif 1280w, ../img/shots/guide-law-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-law-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/guide-law-1x.webp" width="1280" height="860" alt="The study guide, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/guide-law-dark-1x.avif 1280w, ../img/shots/guide-law-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/guide-law-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/guide-law-dark-1x.webp" width="1280" height="860" alt="The study guide, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Study pack</span></li>
-          <li class="fl-item"><span class="fl-th" aria-hidden="true"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/desk-review-1x.avif 1280w, ../img/shots/desk-review-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/desk-review-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/desk-review-1x.webp" width="1280" height="760" alt="The study desk's Review, small." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/desk-review-dark-1x.avif 1280w, ../img/shots/desk-review-dark-2x.avif 2560w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/desk-review-dark-1x.webp 1280w" sizes="(min-width: 264px) 200px, calc(100vw - 32px)"><img src="../img/shots/desk-review-dark-1x.webp" width="1280" height="760" alt="The study desk's Review, small." loading="lazy" decoding="async"></picture></span><span class="fl-l">Cards due today</span></li>
-        </ol>
-        <figcaption id="fl-cap" class="fl-cap">One lecture, all the way through. <button type="button" class="fl-again" hidden>Replay</button></figcaption>
-      </figure>
 
 
       <ol class="st-flow">
@@ -365,11 +360,17 @@
   <!-- ============ The button ============ -->
   <section class="calm last" aria-labelledby="st-last-title">
     <div class="wrap">
+      <!-- Decorative (the heading says it): art generated for StreamSnag, docs/img/art/ART-CREDITS.md. -->
+      <picture class="art art-desk art-foot" aria-hidden="true">
+        <source type="image/avif" srcset="../img/art/study-still-1x.avif 768w, ../img/art/study-still-2x.avif 1536w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)">
+        <source type="image/webp" srcset="../img/art/study-still-1x.webp 768w, ../img/art/study-still-2x.webp 1536w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)">
+        <img src="../img/art/study-still-1x.webp" width="768" height="432" alt="" loading="lazy" decoding="async">
+      </picture>
       <h2 id="st-last-title">Start with tonight's lecture.</h2>
       <p class="last-say">Saving is free, and Pro takes your first lecture from start to finish, free, with no card.</p>
       <p class="last-links"><a href="../how-it-works/">How it works</a> <a href="../#pricing">Pricing</a> <a href="../ai-costs/">What the AI costs</a></p>
       <!-- PLACEHOLDER (install link): see the note in the header. -->
-      <a class="btn btn-go btn-lg" href="../#install" data-install><svg class="ic ic-down" aria-hidden="true"><use href="#i-down"/></svg>Get StreamSnag, free</a>
+      <div class="soon-act"><a class="btn btn-go btn-lg" href="../demo/">Try the demo</a> <a class="btn btn-soon" href="../#install">Coming soon to Chrome, Edge and Brave</a></div>
     </div>
   </section>
 </main>

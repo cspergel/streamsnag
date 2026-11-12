@@ -76,6 +76,7 @@
       <span>StreamSnag</span>
     </a>
     <nav class="site-nav" aria-label="Site">
+      <a href="downloader/">Video downloader</a>
       <a href="how-it-works/">How it works</a>
       <a href="study-tools/">Study tools</a>
       <a href="#pricing">Pricing</a>
@@ -92,9 +93,9 @@
     <details class="menu">
       <summary>Menu</summary>
       <nav class="menu-list" aria-label="Site, as a menu">
+        <a href="downloader/">Video downloader</a>
         <a href="how-it-works/">How it works</a>
         <a href="study-tools/">Study tools</a>
-        <a href="downloader/">The downloader</a>
         <a href="#pricing">Pricing</a>
         <a href="guides/">Guides</a>
         <a href="questions/">Questions</a>
@@ -117,9 +118,10 @@
        are sent on by site.js, and each id is kept here on or around a link that leads to the new page, for a
        browser without JavaScript. The styles are in pass4.css and pass7.css beside the site tooling. -->
   <section class="top" aria-labelledby="hero-title">
-    <div class="wrap">
-      <h1 id="hero-title"><span class="h1-line">Save your online lectures</span> <span class="h1-line">and actually <mark class="hl">study</mark> from them.</span></h1>
-      <p class="top-say">A browser extension that saves the lecture you are watching and, with Pro, transcribes it into something you can read and study.</p>
+    <div class="wrap home-top">
+      <!-- Pass 20 (2026-11-12): the owner's headline, wider than lectures; the sentence says the two halves, free and Pro. -->
+      <h1 id="hero-title"><span class="h1-line">Save any video.</span> <span class="h1-line"><mark class="hl">Study</mark> the ones that matter.</span></h1>
+      <p class="top-say">A free video downloader for Chrome, Edge and Brave. With Pro, a lecture becomes a study guide, cheat sheet and flashcards.</p>
       <div class="top-act">
         <!-- PLACEHOLDER (install link): replace href="#install" on every [data-install] link with the real install address. -->
         <a class="btn btn-go btn-lg" href="demo/">Try the demo</a>
@@ -127,13 +129,37 @@
       </div>
       <p class="top-price">Unlimited video downloads, free forever. Pro from US$39.97 a year.</p>
 
+      <!-- Pass 20 (2026-11-12): two paths right under the price line, so the first look says what is free and what is
+           paid. The owner: "make sure the download video / save any video is super obvious and forward showing". So
+           Free comes first (left; on a phone on top), with a real button to downloader/, and is on the first screen at
+           1280 x 800; Pro second, the study tools with its price and the AI note, a text link to study-tools/. On a
+           phone the two follow the first picture instead (pass20.css), so the calm phone hero of pass 12 keeps the
+           popup's Download button above the browser's bar. The prices and the table stay in #pricing.
+           The reviewer's one product story, Save, Read, Learn, is in the two cards: Free is Save; Pro is Read (the
+           reading edition keeps what was said, every paragraph linked to its minute) and Learn (the study materials),
+           worded as a resource you keep, never as a summary. -->
+      <div class="paths">
+        <div class="path path-free">
+          <h2 class="path-h"><b>Save, free.</b> Download and keep your videos.</h2>
+          <p class="path-line">Video files and streams, whole courses in course order, and captions as a transcript. No limits, no ads and no account, forever.</p>
+          <p class="path-act"><a class="btn btn-primary" href="downloader/">See the video downloader <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+        </div>
+        <div class="path path-pro">
+          <h2 class="path-h"><b>Read and learn, with Pro.</b></h2>
+          <p class="path-line"><b>Read:</b> the reading edition keeps what was said, every paragraph linked to its minute. <b>Learn:</b> a study guide, cheat sheet, flashcards and mock exam, a resource you keep.</p>
+          <p class="path-line path-link">US$39.97 a year or US$4.99 a month, your first lecture free. The AI runs on your own account. <a href="study-tools/">The study tools <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+        </div>
+      </div>
+
       <!-- The one picture of the first screen: the lecture page of the invented course PHYS201 in a browser, and the
            real StreamSnag popup open on it after "Download", offering the reading edition next. The frame is drawn
            by the site; what is inside it is a screenshot.
            Pass 12 (2026-11-11): on a phone the whole popup after saving was a wall of controls under the headline,
            so a phone gets only the top of the real popup before saving (its header, the lecture, its size and the one
            button, Download · 129 MB), ending in a soft fade into the page (.crop-ph and .fade-ph in site.css). The
-           wide picture is never fetched on a phone, nor the phone one on a wide screen. -->
+           wide picture is never fetched on a phone, nor the phone one on a wide screen.
+           Pass 20 (2026-11-12): a wide screen too shows the popup before saving, whole, with its big Download button
+           (it showed the popup after saving, whose next step is the reading edition): saving a video comes first. -->
       <figure class="pic hero-pic">
         <div class="hero-stage fade-ph" data-film="img/film/hero">
           <div class="frame hero-browser">
@@ -144,7 +170,7 @@
             </div>
             <div class="frame-view"><picture class="shot"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/lecture-1x.avif 1280w, img/shots/lecture-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/lecture-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="img/shots/lecture-1x.webp" width="1280" height="760" alt="The lecture page of an invented course, PHYS201, lecture 6: Cardiac output and what sets it, with its video paused at 8:47 on the slide Preload and the Frank-Starling law." fetchpriority="high" decoding="async"></picture></div>
           </div>
-          <div class="bubble hero-pop crop-ph crop-dl"><span class="pop-narrow"><picture class="shot shot-l"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-lecture-1x.avif 400w, img/shots/popup-lecture-2x.avif 800w" sizes="360px"><source type="image/webp" srcset="img/shots/popup-lecture-1x.webp 400w" sizes="360px"><img src="img/shots/popup-lecture-1x.webp" width="400" height="503" alt="The top of the StreamSnag popup on that page: On this page, Cardiac output and what sets it, Video, 27 min, 129 MB, with Save transcript, 2 files on this page, and the one button Download, 129 MB." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-lecture-dark-1x.avif 400w, img/shots/popup-lecture-dark-2x.avif 800w" sizes="360px"><source type="image/webp" srcset="img/shots/popup-lecture-dark-1x.webp 400w" sizes="360px"><img src="img/shots/popup-lecture-dark-1x.webp" width="400" height="503" alt="The top of the StreamSnag popup on that page: On this page, Cardiac output and what sets it, Video, 27 min, 129 MB, with Save transcript, 2 files on this page, and the one button Download, 129 MB." loading="lazy" decoding="async"></picture></span><span class="pop-wide"><picture class="shot shot-l"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-saved-1x.avif 400w, img/shots/popup-saved-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-saved-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-saved-1x.webp" width="400" height="600" alt="The StreamSnag popup on that page after Download: Cardiac output and what sets it, Video, 27 min, 129 MB, saved to Downloads, StreamSnag. Pro from here, first lecture free. The one next step: Reading edition, the lecture as an article you can read instead of watching, with the button Read the lecture. Under it Save transcript and 2 files on this page, and More on this page: Captions and Files on this page." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-saved-dark-1x.avif 400w, img/shots/popup-saved-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-saved-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-saved-dark-1x.webp" width="400" height="600" alt="The StreamSnag popup on that page after Download: Cardiac output and what sets it, Video, 27 min, 129 MB, saved to Downloads, StreamSnag. Pro from here, first lecture free. The one next step: Reading edition, the lecture as an article you can read instead of watching, with the button Read the lecture. Under it Save transcript and 2 files on this page, and More on this page: Captions and Files on this page." loading="lazy" decoding="async"></picture></span></div>
+          <div class="bubble hero-pop crop-ph crop-dl"><span class="pop-narrow"><picture class="shot shot-l"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-lecture-1x.avif 400w, img/shots/popup-lecture-2x.avif 800w" sizes="360px"><source type="image/webp" srcset="img/shots/popup-lecture-1x.webp 400w" sizes="360px"><img src="img/shots/popup-lecture-1x.webp" width="400" height="503" alt="The top of the StreamSnag popup on that page: On this page, Cardiac output and what sets it, Video, 27 min, 129 MB, with Save transcript, 2 files on this page, and the one button Download, 129 MB." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-lecture-dark-1x.avif 400w, img/shots/popup-lecture-dark-2x.avif 800w" sizes="360px"><source type="image/webp" srcset="img/shots/popup-lecture-dark-1x.webp 400w" sizes="360px"><img src="img/shots/popup-lecture-dark-1x.webp" width="400" height="503" alt="The top of the StreamSnag popup on that page: On this page, Cardiac output and what sets it, Video, 27 min, 129 MB, with Save transcript, 2 files on this page, and the one button Download, 129 MB." loading="lazy" decoding="async"></picture></span><span class="pop-wide"><picture class="shot shot-l"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-lecture-1x.avif 400w, img/shots/popup-lecture-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-lecture-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-lecture-1x.webp" width="400" height="503" alt="The StreamSnag popup on that page before anything is pressed: On this page, Cardiac output and what sets it, Video, 27 min, 129 MB, and its one big button, Download, 129 MB. Under it Save transcript and 2 files on this page, and More on this page: Captions, Files on this page with Download all, and a line offering to study the lecture step by step." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/popup-lecture-dark-1x.avif 400w, img/shots/popup-lecture-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/popup-lecture-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="img/shots/popup-lecture-dark-1x.webp" width="400" height="503" alt="The StreamSnag popup on that page before anything is pressed: On this page, Cardiac output and what sets it, Video, 27 min, 129 MB, and its one big button, Download, 129 MB. Under it Save transcript and 2 files on this page, and More on this page: Captions, Files on this page with Download all, and a line offering to study the lecture step by step." loading="lazy" decoding="async"></picture></span></div>
         </div>
         <figcaption id="evening">StreamSnag itself, on an invented lecture. <a href="how-it-works/">How it works</a></figcaption>
       </figure>
@@ -178,6 +204,42 @@
     </div>
   </section>
 
+  <!-- ============ Pass 20 (2026-11-12): before and after, right after the film band. ============
+       Agreed by the owner on 2026-11-11. Real output only: the sample cardiac lecture at the start of its second
+       part, 06:22. On the left its caption file (tests/fixtures/studypack/cardiac-output.vtt, the file the sample was
+       made from) exactly as the file has it, cue numbers, times and voice tags included; on the right the same minute
+       in StreamSnag's own reading edition (sample/reading-edition.html#s2). Two pictures of one size, at 2x
+       (capture-ba.mjs, make-ba-shots.py). The captions keep their own punctuation: the reading edition does not add
+       punctuation without AI, so an unpunctuated stream here would promise more than it does.
+       Without JavaScript the two stand one under the other, each labelled; site.js lays one over the other with a
+       handle and a range input (drag, tap, arrow keys), starting half way. The two labels stand above both pictures
+       and the handle, so they show at every position. Nothing moves by itself. Lazy, below the fold. Styles and
+       script in pass20.css and pass20.js beside the site tooling. -->
+  <section class="ba" id="before-after" aria-labelledby="ba-title">
+    <div class="wrap">
+      <h2 id="ba-title">What the captions become.</h2>
+      <figure class="ba-fig">
+        <div class="ba-frame">
+          <div class="ba-card" data-ba>
+            <div class="ba-pane ba-raw">
+              <span class="ba-wide"><picture class="shot shot-l"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-raw-1x.avif 960w, img/shots/ba-raw-2x.avif 1920w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/ba-raw-1x.webp 960w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><img src="img/shots/ba-raw-1x.webp" width="960" height="540" alt="The caption file of the sample cardiac lecture from 06:22, as it is: each cue with its number and its start and end time, then the voice tag and the words, cut where the cues are cut. The first: 00:06:22, Lecturer, Okay. So what sets stroke volume? Then: Three things, and you need to know these three cold." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-raw-dark-1x.avif 960w, img/shots/ba-raw-dark-2x.avif 1920w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/ba-raw-dark-1x.webp 960w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><img src="img/shots/ba-raw-dark-1x.webp" width="960" height="540" alt="The caption file of the sample cardiac lecture from 06:22, as it is: each cue with its number and its start and end time, then the voice tag and the words, cut where the cues are cut. The first: 00:06:22, Lecturer, Okay. So what sets stroke volume? Then: Three things, and you need to know these three cold." loading="lazy" decoding="async"></picture></span>
+              <span class="ba-narrow"><picture class="shot shot-l"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-raw-phone-1x.avif 360w, img/shots/ba-raw-phone-2x.avif 720w" sizes="360px"><source type="image/webp" srcset="img/shots/ba-raw-phone-1x.webp 360w" sizes="360px"><img src="img/shots/ba-raw-phone-1x.webp" width="360" height="450" alt="The caption file of the sample cardiac lecture from 06:22, as it is: each cue with its number and its start and end time, then the voice tag and the words, cut where the cues are cut. The first: 00:06:22, Lecturer, Okay. So what sets stroke volume? Then: Three things, and you need to know these three cold." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-raw-phone-dark-1x.avif 360w, img/shots/ba-raw-phone-dark-2x.avif 720w" sizes="360px"><source type="image/webp" srcset="img/shots/ba-raw-phone-dark-1x.webp 360w" sizes="360px"><img src="img/shots/ba-raw-phone-dark-1x.webp" width="360" height="450" alt="The caption file of the sample cardiac lecture from 06:22, as it is: each cue with its number and its start and end time, then the voice tag and the words, cut where the cues are cut. The first: 00:06:22, Lecturer, Okay. So what sets stroke volume? Then: Three things, and you need to know these three cold." loading="lazy" decoding="async"></picture></span>
+            </div>
+            <span class="ba-label ba-label-raw">Raw captions</span>
+            <div class="ba-pane ba-read">
+              <span class="ba-wide"><picture class="shot shot-l"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-read-1x.avif 960w, img/shots/ba-read-2x.avif 1920w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/ba-read-1x.webp 960w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><img src="img/shots/ba-read-1x.webp" width="960" height="540" alt="The same minute in the reading edition StreamSnag made from those captions: the heading Three determinants of stroke volume, 06:22 to 14:07, then a paragraph at 06:22, Lecturer: Okay. So what sets stroke volume? Three things, and you need to know these three cold. Then the next paragraph at 06:44." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-read-dark-1x.avif 960w, img/shots/ba-read-dark-2x.avif 1920w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/ba-read-dark-1x.webp 960w" sizes="(min-width: 1008px) 944px, calc(100vw - 32px)"><img src="img/shots/ba-read-dark-1x.webp" width="960" height="540" alt="The same minute in the reading edition StreamSnag made from those captions: the heading Three determinants of stroke volume, 06:22 to 14:07, then a paragraph at 06:22, Lecturer: Okay. So what sets stroke volume? Three things, and you need to know these three cold. Then the next paragraph at 06:44." loading="lazy" decoding="async"></picture></span>
+              <span class="ba-narrow"><picture class="shot shot-l"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-read-phone-1x.avif 360w, img/shots/ba-read-phone-2x.avif 720w" sizes="360px"><source type="image/webp" srcset="img/shots/ba-read-phone-1x.webp 360w" sizes="360px"><img src="img/shots/ba-read-phone-1x.webp" width="360" height="450" alt="The same minute in the reading edition StreamSnag made from those captions: the heading Three determinants of stroke volume, 06:22 to 14:07, then a paragraph at 06:22, Lecturer: Okay. So what sets stroke volume? Three things, and you need to know these three cold. Then the next paragraph at 06:44." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/ba-read-phone-dark-1x.avif 360w, img/shots/ba-read-phone-dark-2x.avif 720w" sizes="360px"><source type="image/webp" srcset="img/shots/ba-read-phone-dark-1x.webp 360w" sizes="360px"><img src="img/shots/ba-read-phone-dark-1x.webp" width="360" height="450" alt="The same minute in the reading edition StreamSnag made from those captions: the heading Three determinants of stroke volume, 06:22 to 14:07, then a paragraph at 06:22, Lecturer: Okay. So what sets stroke volume? Three things, and you need to know these three cold. Then the next paragraph at 06:44." loading="lazy" decoding="async"></picture></span>
+            </div>
+            <span class="ba-label ba-label-read">Reading edition</span>
+            <input class="ba-range" type="range" min="0" max="100" step="1" value="50" aria-label="Raw captions or reading edition: move to compare" hidden>
+            <span class="ba-handle" aria-hidden="true" hidden><span class="ba-knob"><svg class="ic"><use href="#i-back"/></svg><svg class="ic"><use href="#i-fwd"/></svg></span></span>
+          </div>
+        </div>
+        <figcaption class="ba-cap">StreamSnag's own reading edition of our sample lecture, beside the caption file it was made from. Nothing is reworded. <a href="sample/reading-edition.html#s2">Open the sample</a></figcaption>
+      </figure>
+    </div>
+  </section>
+
   <!-- ============ The lecture as a document. The one the page makes the most of, straight after the first picture. ============ -->
   <section class="moment moment-read" id="gallery" aria-labelledby="read-title">
     <div class="wrap">
@@ -187,7 +249,7 @@
         <p class="read-strong">No minute limits.</p>
         <p class="read-links"><a href="sample/reading-edition.html">Open the sample</a> <a href="how-it-works/#read">Why read a lecture</a></p>
       </div>
-      <!-- Pass 8 (2026-11-11): what was said, and what you read. The words are the sample lecture's own, at 07:51
+      <!-- Pass 8 (2026-11-11): what was said, and what you read. The words are the sample lecture's own, at 07:59 (07:51 until the samples were made again in pass 13)
            (docs/sample/reading-edition.html, #s2-p4). With JavaScript and motion allowed, site.js plays it once as it
            scrolls in: the captions run in, then the paragraph sets itself (about five seconds), and Replay plays it
            again. Without either, it is simply the finished state. Styles in pass8.css. -->
@@ -207,7 +269,7 @@
           <div class="tx-read">
             <p class="tx-label">What you read</p>
             <p class="tx-h">Three determinants of stroke volume</p>
-            <div class="tx-para"><span class="tx-t">07:51</span><p><b>Lecturer:</b> So, preload first. Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction.</p></div>
+            <div class="tx-para"><span class="tx-t">07:59</span><p><b>Lecturer:</b> So, preload first. Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction.</p></div>
           </div>
         </div>
         <figcaption id="tx-cap" class="tx-cap">From the sample lecture: the captions as they were spoken, and the same words in its reading edition. <button type="button" class="tx-again" hidden>Replay</button></figcaption>
@@ -439,7 +501,7 @@
           <li><a href="how-it-works/#read">Read the lecture</a></li>
           <li><a href="study-tools/">Study tools and the library</a></li>
           <li><a href="#gallery">See what it makes</a></li>
-          <li><a href="downloader/">Only the downloader</a></li>
+          <li><a href="downloader/">The video downloader</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="ai-costs/">What the AI costs</a></li>
           <li><a href="questions/">Questions</a></li>
@@ -472,7 +534,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are screenshots of StreamSnag itself; a few diagrams are drawings, and the desk and still-life scenes at the top or foot of a few pages are illustrations made with an AI image model. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself; a few diagrams are drawings, and the desk and still-life scenes at the top or foot of a few pages are illustrations made with an AI image model. Every screenshot and sample comes from an invented lecture, course or film made for the purpose, not from anyone's course or site. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

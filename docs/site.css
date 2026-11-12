@@ -2175,3 +2175,144 @@ body { background: var(--tex-grain) 0 0 / 220px 220px, var(--bg); }
   :root:not([data-theme="light"]) .see-view { background: #2a2720; }
   :root:not([data-theme="light"]) .see-view img, :root:not([data-theme="light"]) .see-video { filter: brightness(.86) saturate(.92); }
 }
+
+/* ---------- Pass 19: /downloader/ on its own (three steps beside the popup, within the law, if you study) ---------- */
+.dl-steps-list { grid-template-columns: minmax(0, 1fr); gap: clamp(22px, 2.6vw, 32px); margin-top: 0; }
+.dl-steps-list li { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); column-gap: 14px; }
+.dl-steps-list li::before { grid-row: span 2; margin: 0; font-size: clamp(2.2rem, 3.4vw, 2.9rem); }
+@media (min-width: 760px) {
+  .dl-steps-row { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  .dl-steps-row .dl-steps-pic { order: -1; }
+}
+@media (max-width: 759px) {
+  .dl-steps-list li { grid-template-columns: 2.2rem minmax(0, 1fr); column-gap: 10px; }
+  .dl-steps-list li::before { font-size: 2.2rem; }
+}
+.law-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px clamp(32px, 6vw, 96px); margin-top: clamp(30px, 4vw, 52px); }
+.law-col h3 { font: 560 clamp(1.35rem, 2.1vw, 1.7rem)/1.15 var(--font-display); letter-spacing: -0.01em; }
+.law-list { margin-top: 14px; border-bottom: 1px solid var(--line); }
+.law-list li { padding: 13px 0; border-top: 1px solid var(--line); font-size: var(--t); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.law-note { max-width: 46em; margin-top: clamp(22px, 3vw, 32px); font-size: var(--t); line-height: 1.5; color: var(--ink-2); }
+.law-note a { color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); }
+.law-note a:hover { text-decoration-color: currentColor; }
+.dl-study .qa-row { align-items: baseline; }
+.dl-study-say p { max-width: 34em; font-size: var(--t); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.dl-study-say p + p { margin-top: 12px; }
+.dl-study-say .dl-study-links { display: flex; flex-wrap: wrap; gap: 0 30px; margin-top: 6px; }
+.dl-study-links a { display: inline-block; padding: 10px 0; font-weight: 600; color: var(--ink); text-decoration-color: var(--line-strong); }
+.dl-study-links a:hover { text-decoration-color: currentColor; }
+@media (max-width: 759px) {
+  .law-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------------------------------------------------------------- pass 20: the home page's top, tightened (2026-11-12)
+   Two paths right under the price line: Free first (download and keep your videos, with a real button to the
+   downloader page) on paper, Pro second (the study tools) on the forest green the price card uses. Side by side and on
+   the first screen at 1280 x 800; on a phone one under the other, after the first picture (the column becomes a flex
+   column and the paths move below the picture), so the phone hero's Download button stays above the browser's bar.
+   No borders, so the first screen's "nothing boxed" rule holds. */
+.paths { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(14px, 2vw, 24px); max-width: 1040px; margin: clamp(20px, 2vw, 26px) auto 0; text-align: left; }
+.path { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: clamp(20px, 2vw, 26px) clamp(22px, 2.4vw, 30px) clamp(16px, 1.6vw, 20px); border-radius: var(--r-xl); }
+.path-free { background: var(--surface); box-shadow: var(--sh-2); }
+.path-pro { background: var(--field); color: var(--on-field); box-shadow: var(--sh-2); }
+.path-h { font: 560 clamp(1.3rem, 1.7vw, 1.45rem)/1.18 var(--font-display); letter-spacing: -.012em; text-wrap: balance; overflow-wrap: break-word; }
+.path-h b { font-weight: 680; }
+.path-free .path-h b { color: var(--green-ink); }
+.path-line { font-size: var(--t-s); line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
+.path-pro .path-line { color: color-mix(in srgb, var(--on-field) 88%, var(--field)); }
+.path-link, .path-act { margin-top: auto; font-size: var(--t-s); }
+.path-act { padding-top: 4px; }
+.path-act .btn { min-height: 46px; }
+.path-link a { display: inline-block; padding: 11px 0; font-weight: 650; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: .2em; }
+.path-link a:hover { text-decoration-color: currentColor; }
+.path-link .ic { margin-left: 4px; vertical-align: -.2em; transition: transform .35s var(--ease); }
+.path-link a:hover .ic { transform: translateX(3px); }
+.path-pro .path-link a { color: var(--on-field); text-decoration-color: color-mix(in srgb, var(--on-field) 45%, transparent); }
+.path-pro :focus-visible { outline-color: var(--on-field); }
+.path-pro ::selection { background: var(--on-field); color: var(--field); }
+.home-top > .hero-pic { margin-top: clamp(20px, 2vw, 26px); }
+@media (max-width: 759px) {
+  .paths { grid-template-columns: minmax(0, 1fr); }
+  .home-top { display: flex; flex-direction: column; }
+  .home-top > .hero-pic { order: 1; }
+  .home-top > .paths { order: 2; width: 100%; margin-top: 28px; }
+  .path-act .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .path-link .ic { transition: none; } }
+
+/* The before-and-after slider, right after the film band: the sample cardiac lecture's caption file from 06:22 and
+   the same minute in StreamSnag's own reading edition, two pictures of one size. Without JavaScript they stand one
+   under the other, each with its label. site.js lays the captions over the reading edition, cut at the handle (raw
+   on the left, reading edition on the right), and a range input across the whole picture moves it: by dragging, a
+   tap, or the arrow keys; vertical swipes still scroll the page. The two labels stand above both pictures and the
+   handle, so both read at every position. Nothing moves by itself, so reduced motion needs nothing of its own. */
+.ba { padding: var(--section) 0; text-align: center; }
+.ba h2 { font: 560 clamp(1.9rem, 3.8vw, 3rem)/1.08 var(--font-display); letter-spacing: -0.013em; text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+.ba-fig { max-width: 960px; margin: clamp(24px, 3vw, 36px) auto 0; }
+.ba-frame { padding: 8px; border-radius: var(--r-xl); background: var(--paper); box-shadow: var(--sh-3); }
+.ba-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.ba-pane { position: relative; grid-column: 1; min-width: 0; overflow: hidden; border-radius: calc(var(--r-xl) - 8px); background: #f5f3ee; }
+.ba-raw, .ba-label-raw { grid-row: 1; }
+.ba-read, .ba-label-read { grid-row: 2; }
+.ba-wide { display: block; }
+.ba-narrow { display: none; }
+.ba-label {
+  position: relative; z-index: 1; grid-column: 1; align-self: start; justify-self: start; margin: 10px;
+  padding: 6px 11px; border-radius: 8px;
+  background: var(--surface); color: var(--ink); box-shadow: var(--sh-2);
+  font: 650 .875rem/1.2 var(--font-ui); letter-spacing: .01em; white-space: nowrap; pointer-events: none;
+}
+.ba-cap { max-width: 46em; margin: 16px auto 0; font-size: var(--t-s); line-height: 1.5; color: var(--ink-3); text-wrap: balance; }
+.ba-cap a { display: inline-block; padding: 10px 0; margin-left: .35em; color: var(--ink); font-weight: 600; text-decoration-color: var(--line-strong); }
+.ba-cap a:hover { text-decoration-color: currentColor; }
+@media (max-width: 759px) {
+  .ba-frame { padding: 6px; }
+  .ba-card { gap: 6px; }
+  .ba-pane { border-radius: calc(var(--r-xl) - 6px); }
+  .ba-wide { display: none; }
+  .ba-narrow { display: block; }
+  .ba-label { margin: 8px; }
+}
+
+/* With JavaScript: one picture, cut at the handle. --ba is the share of the width that shows the raw captions (0 to
+   1, set by site.js, half at first); the handle's centre follows the range input's own 48 px thumb, 24 px in from
+   either end. Layers, bottom to top: the reading edition, the captions (clipped), the handle, the labels, the input. */
+.ba-card.is-live { --ba: .5; --ba-x: calc(24px + (100% - 48px) * var(--ba)); display: block; position: relative; overflow: hidden; border-radius: calc(var(--r-xl) - 8px); }
+.ba-card.is-live .ba-pane { border-radius: 0; }
+.ba-card.is-live .ba-raw { position: absolute; inset: 0; z-index: 1; clip-path: inset(0 calc(100% - var(--ba-x)) 0 0); }
+.ba-card.is-live .ba-label { position: absolute; top: 0; z-index: 4; }
+.ba-card.is-live .ba-label-raw { left: 0; }
+.ba-card.is-live .ba-label-read { right: 0; }
+.ba-handle { position: absolute; top: 0; bottom: 0; left: var(--ba-x); z-index: 3; width: 0; pointer-events: none; }
+.ba-handle::before { content: ""; position: absolute; top: 0; bottom: 0; left: -1px; width: 2px; background: var(--green); }
+.ba-knob {
+  position: absolute; top: 50%; left: -24px; width: 48px; height: 48px; margin-top: -24px;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  border-radius: 50%; background: var(--surface); color: var(--green);
+  box-shadow: 0 0 0 2px var(--green), var(--sh-2);
+}
+.ba-knob .ic { width: 17px; height: 17px; stroke-width: 2.3; }
+.ba-range {
+  position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%; margin: 0; padding: 0;
+  -webkit-appearance: none; appearance: none; background: transparent; border-radius: inherit;
+  cursor: ew-resize; touch-action: pan-y; -webkit-tap-highlight-color: transparent;
+}
+.ba-range[hidden], .ba-handle[hidden] { display: none; }
+.ba-range::-webkit-slider-runnable-track { height: 48px; background: transparent; border: 0; }
+.ba-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 48px; height: 48px; border: 0; border-radius: 50%; background: transparent; cursor: ew-resize; }
+.ba-range::-moz-range-track { height: 48px; background: transparent; border: 0; }
+.ba-range::-moz-range-thumb { width: 48px; height: 48px; border: 0; border-radius: 50%; background: transparent; cursor: ew-resize; }
+.ba-range:focus { outline: none; }
+.ba-range:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+.ba-range:focus-visible ~ .ba-handle .ba-knob { box-shadow: 0 0 0 2px var(--surface), 0 0 0 5px var(--focus), var(--sh-2); }
+@media (max-width: 759px) {
+  .ba-card.is-live { border-radius: calc(var(--r-xl) - 6px); }
+}
+@media (forced-colors: active) {
+  .ba-handle::before { background: CanvasText; }
+  .ba-knob { border: 2px solid CanvasText; }
+  .ba-label { border: 1px solid CanvasText; }
+}
+/* The pictures are the reading edition's own paper; on the dark page its dark theme is shown (the -dark twins). */
+:root[data-theme="dark"] .ba-pane { background: #141716; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ba-pane { background: #141716; } }

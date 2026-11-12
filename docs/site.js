@@ -475,3 +475,36 @@
     button.hidden = false;
   });
 })();
+
+// ==== Pass 20 (2026-11-12): the home page's before-and-after slider. Kept in pass20.js beside the site tooling
+// (patch-p20.cjs appends it). Without JavaScript the two pictures stand one under the other. Here they become one
+// picture: the raw captions laid over the reading edition and cut at a handle, moved by the range input that covers
+// the picture (drag, tap, or the arrow keys, five points a press; Home and End go to either end). Nothing moves by
+// itself and there is no animation, so reduced motion changes nothing. Nothing is sent anywhere. ====
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.CSS || !CSS.supports || !CSS.supports('clip-path', 'inset(0 1px 0 0)')) return;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-ba]'), function (card) {
+      var range = card.querySelector('.ba-range');
+      var handle = card.querySelector('.ba-handle');
+      if (!range || !handle) return;
+      var set = function () {
+        var v = Math.max(0, Math.min(100, Math.round(Number(range.value) || 0)));
+        card.style.setProperty('--ba', String(v / 100));
+        range.setAttribute('aria-valuetext', v === 0 ? 'All reading edition' : v === 100 ? 'All raw captions' : 'Raw captions on the left ' + v + ' percent, reading edition on the right');
+      };
+      range.addEventListener('input', set);
+      range.addEventListener('keydown', function (e) {
+        var step = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5 }[e.key];
+        if (!step) return;
+        e.preventDefault();
+        range.value = String(Math.max(0, Math.min(100, Number(range.value) + step)));
+        set();
+      });
+      card.classList.add('is-live');
+      range.hidden = false;
+      handle.hidden = false;
+      set();
+    });
+  });
+})();

@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- This site loads nothing from other hosts: no CDN, hosted fonts, analytics, cookies or trackers. The policy below enforces it. Its two typefaces, Newsreader and Figtree (SIL Open Font License, licence texts in fonts/), are served from this site. The only scripts are site.js (the light and dark switch, the menu, old links to sections that now have pages of their own, the gentle reveal of the big pictures, and the short silent film on the home page, which comes from this site too) and nothing else. It sends nothing anywhere. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
-<title>Free video downloader for lectures and courses | StreamSnag</title>
-<meta name="description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
+<title>Free video downloader for Chrome, Edge and Brave | StreamSnag</title>
+<meta name="description" content="A free video downloader for Chrome, Edge and Brave: talks, tutorials, lectures, your own uploads, HLS and DASH streams and captions. No ads, account or limits.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f5f3ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141716" media="(prefers-color-scheme: dark)">
@@ -14,16 +14,16 @@
 <link rel="canonical" href="https://streamsnag.app/downloader/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="StreamSnag">
-<meta property="og:title" content="Free video downloader for lectures and courses">
-<meta property="og:description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
+<meta property="og:title" content="Free video downloader for Chrome, Edge and Brave">
+<meta property="og:description" content="A free video downloader for Chrome, Edge and Brave: talks, tutorials, lectures, your own uploads, HLS and DASH streams and captions. No ads, account or limits.">
 <meta property="og:url" content="https://streamsnag.app/downloader/">
 <meta property="og:image" content="https://streamsnag.app/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Free video downloader for lectures and courses">
-<meta name="twitter:description" content="The free StreamSnag video downloader saves lecture videos, HLS and DASH streams, whole courses, slides and captions. Open source, with no limits, ads or account.">
+<meta name="twitter:title" content="Free video downloader for Chrome, Edge and Brave">
+<meta name="twitter:description" content="A free video downloader for Chrome, Edge and Brave: talks, tutorials, lectures, your own uploads, HLS and DASH streams and captions. No ads, account or limits.">
 <meta name="twitter:image" content="https://streamsnag.app/img/og.png">
 <meta name="twitter:image:alt" content="StreamSnag: save your online lectures and actually study from them.">
 <link rel="icon" href="../favicon.ico" sizes="32x32">
@@ -34,7 +34,7 @@
 <link rel="preload" href="../fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../site.css">
 <script src="../site.js"></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"The downloader","item":"https://streamsnag.app/downloader/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreamSnag","item":"https://streamsnag.app/"},{"@type":"ListItem","position":2,"name":"Video downloader","item":"https://streamsnag.app/downloader/"}]}]}</script>
 </head>
 <body id="top">
 
@@ -76,6 +76,7 @@
       <span>StreamSnag</span>
     </a>
     <nav class="site-nav" aria-label="Site">
+      <a href="../downloader/" aria-current="page">Video downloader</a>
       <a href="../how-it-works/">How it works</a>
       <a href="../study-tools/">Study tools</a>
       <a href="../#pricing">Pricing</a>
@@ -92,9 +93,9 @@
     <details class="menu">
       <summary>Menu</summary>
       <nav class="menu-list" aria-label="Site, as a menu">
+        <a href="../downloader/" aria-current="page">Video downloader</a>
         <a href="../how-it-works/">How it works</a>
         <a href="../study-tools/">Study tools</a>
-        <a href="../downloader/" aria-current="page">The downloader</a>
         <a href="../#pricing">Pricing</a>
         <a href="../guides/">Guides</a>
         <a href="../questions/">Questions</a>
@@ -106,42 +107,94 @@
 
 <main id="main">
 <p class="prelaunch" role="note"><span class="pl-wide"><b>Launching soon.</b> StreamSnag 1.6 is not released yet, and Pro is not on sale yet.</span><span class="pl-narrow"><b>Launching soon.</b> 1.6 is not released. Pro is not on sale.</span></p>
-  <!-- Pass 5 (2026-11-11): this page in the home page's language. A strong top (headline, one sentence, one
-       button, one large picture of the popup on a lecture page), then a few calm sections: what it saves, what it
-       does not do, after you install it, Free and Pro (simplified), more than lectures, and the button again.
-       Until pass 4 it held, word for word, "Only here for the downloader?" (with "More than lectures") and "Free
-       and Pro, side by side" from the home page; every fact of those is still here, shorter. The ids
-       #downloader, #more-than, #first-steps and #plans are kept for old links. The styles are in pass5.css. -->
+  <!-- Pass 19 (2026-11-12, the owner: "a page showing how it can download videos regardless if you want to use for
+       study features or not"): the page stands on its own as a free video downloader. The top (headline, one
+       sentence, the buttons, the course page with the popup), what people save with it, three steps with the popup,
+       what it saves, what it cannot save, within the law (in the words of terms/ and questions/), a short "if you
+       study" pointer, and the buttons again. Until pass 19 it led with lectures and held the Free and Pro table
+       (_plans.html, still on the site's history); the prices and the table are on the home page and how-it-works/.
+       The ids #downloader, #more-than, #first-steps and #plans are kept for old links. The styles are in pass5.css
+       and pass19.css. Pass 19b: the pictures are the real popup on an invented film archive, openfilms.example, in the
+       site's own neutral look (dl/cap/capture-film.mjs). Pass 20: no site is named any more (see the note at "For
+       anything you are allowed to keep"). build-pages.mjs refuses the name of the one site the store edition leaves out. -->
   <section class="top dl-top" id="downloader" aria-labelledby="downloader-title">
     <div class="wrap">
-      <p class="crumbs dl-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>The downloader</span></p>
-      <h1 id="downloader-title"><span class="h1-line">Download your</span> <span class="h1-line">lecture videos, free.</span></h1>
-      <p class="top-say">Only here for the downloader? It saves the video on the page you are watching to your own folders, with the slides and files beside it.</p>
+      <p class="crumbs dl-crumbs"><a href="../">StreamSnag</a><span aria-hidden="true">/</span><span>Video downloader</span></p>
+      <h1 id="downloader-title"><span class="h1-line">Download the videos</span> <span class="h1-line">you like, free.</span></h1>
+      <p class="top-say">A video downloader for Chrome, Edge and Brave. It saves the video you are watching to your own folders, whether or not you ever study with it.</p>
       <div class="top-act">
         <!-- PLACEHOLDER (install link): see the note in the header. -->
         <div class="soon-act"><a class="btn btn-go btn-lg" href="../demo/">Try the demo</a> <a class="btn btn-soon" href="../#install">Coming soon to Chrome, Edge and Brave</a></div>
       </div>
-      <p class="top-price">Unlimited video downloads, free forever. No ads, no account, and nothing held back to sell you Pro.</p>
+      <p class="top-price">Unlimited video downloads, free forever. Open source, with no ads and no account.</p>
 
-      <!-- The one picture (pass 9): the course page of the invented course LAW101 in a browser, ten lectures and a trailer,
-           with the real StreamSnag popup open on it: the strip of squares and "Download the 6 missing…". The frame is drawn by
-           the site; what is inside it are screenshots (scratchpad law/capture-law.mjs). Until pass 9 it was lecture 6 of PHYS201. -->
+      <!-- The one picture (pass 19b): the page of an invented silent short, "A Trip Above the Rooftops", on the invented
+           archive openfilms.example, with the real StreamSnag popup open on it before anything is pressed (free, AI off).
+           The frame is drawn by the site; what is inside it are screenshots. Until pass 19 it was the LAW101 course page. -->
       <figure class="pic hero-pic dl-pic">
-        <div class="hero-stage">
+        <div class="hero-stage fade-ph">
           <div class="frame hero-browser">
             <div class="frame-bar" aria-hidden="true">
               <span class="frame-nav"><svg class="ic"><use href="#i-back"/></svg><svg class="ic"><use href="#i-fwd"/></svg><svg class="ic"><use href="#i-redo"/></svg></span>
-              <span class="frame-url">course.example/law101/</span>
+              <span class="frame-url">openfilms.example/films/a-trip-above-the-rooftops</span>
               <span class="frame-ext is-open"><svg class="mark"><use href="#i-mark"/></svg></span>
             </div>
-            <div class="frame-view"><picture class="shot"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="../img/shots/course-law-1x.avif 1280w, ../img/shots/course-law-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/course-law-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="../img/shots/course-law-1x.webp" width="1280" height="760" alt="A course page in the browser, course.example: LAW101, Contract law, Unit 1: making a contract, ten recorded lectures and a short welcome, each a video with its title, from 1, What makes a promise binding, to 10, Revision: forming a contract." fetchpriority="high" decoding="async"></picture></div>
+            <div class="frame-view"><picture class="shot"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="../img/shots/film-page-1x.avif 1280w, ../img/shots/film-page-2x.avif 2560w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/film-page-1x.webp 1280w" sizes="(min-width: 1004px) 940px, calc(100vw - 32px)"><img src="../img/shots/film-page-1x.webp" width="1280" height="760" alt="The page of an invented silent short on an invented film archive, openfilms.example: A Trip Above the Rooftops, Silent short, 12 min, Public domain, its title card in the player, and under it About this film and Licence: Public domain. Free to watch, download and share." fetchpriority="high" decoding="async"></picture></div>
           </div>
-          <div class="bubble hero-pop crop-ph crop-course"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/popup-course-law-top-1x.avif 400w, ../img/shots/popup-course-law-top-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-course-law-top-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-course-law-top-1x.webp" width="400" height="450" alt="The StreamSnag popup on that course page. Unit 1: making a contract, 11 videos here, a row of squares: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/popup-course-law-top-dark-1x.avif 400w, ../img/shots/popup-course-law-top-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-course-law-top-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-course-law-top-dark-1x.webp" width="400" height="450" alt="The StreamSnag popup on that course page. Unit 1: making a contract, 11 videos here, a row of squares: 4 saved, 6 to get, 1 to check, and the button Download the 6 missing, with the note You review the list first." loading="lazy" decoding="async"></picture></div>
+          <div class="bubble hero-pop crop-ph crop-dl"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/popup-film-1x.avif 400w, ../img/shots/popup-film-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-film-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-film-1x.webp" width="400" height="449" alt="The StreamSnag popup on that page. On this page: A Trip Above the Rooftops, Video, 12 min, 212 MB, with one button, Download, 212 MB, and under it Save transcript and the film's captions." fetchpriority="high" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/popup-film-dark-1x.avif 400w, ../img/shots/popup-film-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-film-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-film-dark-1x.webp" width="400" height="449" alt="The StreamSnag popup on that page. On this page: A Trip Above the Rooftops, Video, 12 min, 212 MB, with one button, Download, 212 MB, and under it Save transcript and the film's captions." loading="lazy" decoding="async"></picture></div>
         </div>
       </figure>
     </div>
   </section>
 
+  <!-- ============ What people save with it ============ -->
+  <section class="calm dl-more" id="more-than" aria-labelledby="more-than-title">
+    <div class="wrap calm-narrow">
+      <div class="calm-head">
+        <h2 id="more-than-title">For anything you are allowed to keep.</h2>
+        <p>It was made for lectures, and it saves any recording that plays in your browser, on a page you are allowed to save from.</p>
+      </div>
+      <!-- Pass 20 (2026-11-12): no site is named on this page. The Internet Archive, Wikimedia Commons, TED and MIT
+       OpenCourseWare stood here as examples in pass 19, but they are not yet confirmed on the live sites. The names can
+       come back once the owner's live test of the downloader page (the to-do in planning/STATUS.md) passes for each,
+       and only for the sites that pass; the line "The names above belong to their owners" comes back with them. -->
+      <ul class="kinds-big" aria-labelledby="more-than-title">
+        <li><h3>A talk</h3><p>A conference or event recording from its own page, with its captions saved as a transcript when the page has them.</p></li>
+        <li><h3>A tutorial</h3><p>A lesson in code, music or a craft, kept to follow at your own pace. A series saves in order with Download all.</p></li>
+        <li><h3>A recipe video</h3><p>Saved for the kitchen, where the connection drops. A smaller copy takes less room on a laptop.</p></li>
+        <li><h3>Your own uploads</h3><p>Videos you made and posted, back on your own computer when the original file is long gone.</p></li>
+        <li><h3>Public-domain and Creative Commons films</h3><p>Old films from public film archives and openly licensed videos from free media libraries, kept in your own folders.</p></li>
+        <li><h3>A course video, for offline</h3><p>A lecture from an open course, for a train or a plane, with the slides and handouts the page links to saved beside it.</p></li>
+      </ul>
+      <p class="kinds-say kinds-say-p6">The same goes for webinars, training videos behind your own login, and podcasts: audio is found and saved too, named after the episode, and an MP3 can be made from a saved video.</p>
+    </div>
+  </section>
+
+  <!-- ============ Three steps ============ -->
+  <section class="calm dl-steps" id="first-steps" aria-labelledby="first-steps-title">
+    <div class="wrap calm-narrow">
+      <div class="calm-head">
+        <h2 id="first-steps-title">Three steps.</h2>
+        <p>Once it is installed and pinned to your toolbar. The icon shows a number when a page has videos.</p>
+      </div>
+      <div class="saves-row dl-steps-row">
+        <ol class="steps-big dl-steps-list" aria-labelledby="first-steps-title">
+          <li><b>Open the page and press play.</b> Many players only load the video once it starts. A few seconds is enough.</li>
+          <li><b>Click the StreamSnag icon.</b> The video is at the top, under On this page, with what it is, how long and how big.</li>
+          <li><b>Press Download.</b> The button shows the size, or the quality for a stream. Downloads carry on when the popup closes, and the popup says where the file went.</li>
+        </ol>
+        <!-- Step 3 done: the popup on the invented film's page after Download, down to "Saved to Downloads › StreamSnag". -->
+        <div class="dl-review-pic dl-steps-pic">
+          <span class="bubble dl-review-shot"><picture class="shot shot-l"><source type="image/avif" srcset="../img/shots/popup-film-saved-1x.avif 400w, ../img/shots/popup-film-saved-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-film-saved-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-film-saved-1x.webp" width="400" height="168" alt="The top of the StreamSnag popup after Download: On this page, A Trip Above the Rooftops, Video, 12 min, 212 MB, Saved to Downloads, StreamSnag, with Show file beside it." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="../img/shots/popup-film-saved-dark-1x.avif 400w, ../img/shots/popup-film-saved-dark-2x.avif 800w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><source type="image/webp" srcset="../img/shots/popup-film-saved-dark-1x.webp 400w" sizes="(min-width: 424px) 360px, calc(100vw - 32px)"><img src="../img/shots/popup-film-saved-dark-1x.webp" width="400" height="168" alt="The top of the StreamSnag popup after Download: On this page, A Trip Above the Rooftops, Video, 12 min, 212 MB, Saved to Downloads, StreamSnag, with Show file beside it." loading="lazy" decoding="async"></picture></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pass 20 (2026-11-12): no site is named on this page. The Internet Archive, Wikimedia Commons, TED and MIT
+       OpenCourseWare stood on this page (downloader.page.html, "For anything you are allowed to keep") as examples in pass 19, but they are not yet confirmed on the live sites. The names can
+       come back once the owner's live test of the downloader page (the to-do in planning/STATUS.md) passes for each,
+       and only for the sites that pass; the line "The names above belong to their owners" comes back with them. -->
   <!-- ============ What it saves ============ -->
   <section class="calm dl-saves" aria-labelledby="saves-title">
     <div class="wrap calm-narrow">
@@ -152,11 +205,12 @@
       <div class="saves-row">
         <ul class="saves" aria-labelledby="saves-title">
           <li><h3>Video files</h3><p>The file a page plays, saved at the quality you choose.</p></li>
-          <li><h3>Streams</h3><p>HLS and DASH, the kinds most lecture players use, put together into one download.</p></li>
-          <li><h3>Whole courses</h3><p><b>Download all</b> opens a review step first: file names in course order, copies and previews left unticked. On a long page a row of squares shows what you already have.</p></li>
+          <li><h3>Streams</h3><p>HLS and DASH, the kinds most lecture and video players use, put together into one download.</p></li>
+          <li><h3>Whole courses and series</h3><p><b>Download all</b> opens a review step first: file names in course order, copies and previews left unticked. On a long page a row of squares shows what you already have.</p></li>
           <li><h3>The files on the page</h3><p>The PDFs, PowerPoint slides and handouts a lesson links to, saved beside the video.</p></li>
           <li><h3>Captions as a transcript</h3><p>A video's existing captions saved as text you can read and search, with times.</p></li>
           <li><h3>Converting</h3><p>An MP3 of the sound, or a smaller copy of the video.</p></li>
+          <li><h3>With the helper</h3><p>An optional small program on your computer joins picture and sound into one file and saves into any folder you choose.</p></li>
         </ul>
         <!-- The review step on a course page, as the real popup shows it (pass 9: LAW101, after "Download the 6 missing…"). -->
         <div class="dl-review-pic">
@@ -174,82 +228,60 @@
     </div>
   </section>
 
-  <!-- ============ After you install it ============ -->
-  <section class="calm dl-steps" id="first-steps" aria-labelledby="first-steps-title">
+  <!-- ============ Within the law ============ -->
+  <!-- In the words of terms/ (section 5: "You are responsible for having the right to save ... the site's terms and
+       copyright law still apply") and questions/; nothing here goes further than those pages, except the plain fact
+       that a saved copy is not a right to share it. -->
+  <section class="calm dl-law" id="within-the-law" aria-labelledby="law-title">
     <div class="wrap calm-narrow">
-      <h2 id="first-steps-title">After you install it.</h2>
-      <ol class="steps-big" aria-labelledby="first-steps-title">
-        <li><b>Pin it to your toolbar.</b> The icon shows a number when a page has videos.</li>
-        <li><b>Open a lecture and press play.</b> Many players only load the video once it starts.</li>
-        <li><b>Click the StreamSnag icon.</b> The lecture is at the top, under On this page, with one button.</li>
-      </ol>
+      <div class="calm-head">
+        <h2 id="law-title">Within the law.</h2>
+        <p>StreamSnag saves what your browser is already playing. Whether you may keep it is up to the site and the law, so save the videos you have the right to save.</p>
+      </div>
+      <div class="law-row">
+        <div class="law-col">
+          <h3>What to save</h3>
+          <ul class="law-list">
+            <li>Videos you made or uploaded yourself.</li>
+            <li>Videos the site lets you download or keep.</li>
+            <li>Films in the public domain, and videos under a Creative Commons licence, on the licence's terms.</li>
+            <li>A video to watch offline yourself, where the site's terms and the law allow it.</li>
+          </ul>
+        </div>
+        <div class="law-col">
+          <h3>Where the line is</h3>
+          <ul class="law-list">
+            <li>It does not get round DRM or any other copy protection, and it does not try to.</li>
+            <li>Each site's terms and copyright law still apply, and for a course, your school's rules too.</li>
+            <li>A saved copy is for you. Saving a video does not give you the right to share it or post it again.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="law-note">Having the right to save a video is yours to check. The <a href="../terms/">terms</a> say the same.</p>
     </div>
   </section>
 
-  <!-- ============ Free and Pro ============ -->
-  <!-- Pass 6: the two lines under the table are one paragraph. Simplified in pass 5: shorter row names, one row for the study page and its slide matching, and an AI tag
-       only on the rows that use an AI account. The longer wording of each Pro row is on how-it-works/. -->
-  <section class="calm dl-plans" id="plans" aria-labelledby="plans-title">
-    <div class="wrap calm-narrow">
-      <div class="calm-head">
-        <h2 id="plans-title">Free and Pro.</h2>
-        <p>Saving a lecture is free. Turning it into something you can study is Pro, and your first lecture is free.</p>
+  <!-- ============ And if you study ============ -->
+  <!-- A pointer, not a pitch. #plans is kept for old links to the Free and Pro table that stood here until pass 19. -->
+  <section class="calm dl-study" id="plans" aria-labelledby="plans-title">
+    <div class="wrap calm-narrow qa-row">
+      <h2 id="plans-title">And if you study.</h2>
+      <div class="dl-study-say">
+        <p>StreamSnag also has study tools, sold separately as Pro: transcription, a reading edition of a lecture, study packs and mock exams. You never need them to download anything, and your first lecture through them is free.</p>
+        <p>The parts that use AI run on your own AI account: what that costs goes to your provider, never to StreamSnag.</p>
+        <p class="dl-study-links"><a href="../study-tools/">The study tools</a> <a href="../#pricing">Pricing</a></p>
       </div>
-
-      <div class="fp-wrap">
-        <table class="fp fp-calm">
-          <caption class="vh">What is free and what is Pro</caption>
-          <thead>
-            <tr><th scope="col">What it does</th><th scope="col">Free</th><th scope="col">Pro</th></tr>
-          </thead>
-          <tbody>
-            <tr><th scope="row">Find and save videos: files and streams</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">Download all, with a review step first</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">PDFs and PowerPoint files on the page</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">Convert to an MP3 or a smaller copy</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">A video's existing captions, saved as a transcript</th><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row">Download limits, ads, nagging</th><td class="txt">None</td><td class="txt">None</td></tr>
-            <tr class="line-row"><td colspan="3"><p class="free-line"><span>Everything above this line is free</span><span>Everything below it is Pro</span></p></td></tr>
-            <tr><th scope="row"><b>Reading edition</b>: the lecture as a document to read</th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Transcription</b> for lectures with no captions. No minute limits</th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Study pack</b>: study guide, quiz, flashcards with Anki export, and a one-page cheat sheet <span class="tag tag-ai">Uses your AI</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Deep pack</b>: worked examples and simple diagrams <span class="tag tag-ai">Uses your AI</span></th><td class="txt">One lecture</td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Mock exam</b> across a course, from its study packs <span class="tag tag-ai">Uses your AI</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Study page</b>, with slide matching for PowerPoint and PDF slides</th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Review cards</b>: your due flashcards from every lecture</th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-            <tr><th scope="row"><b>Automation</b> after a download <span class="tag tag-ai">Your AI for the AI steps</span></th><td><svg class="ic ic-none" aria-hidden="true"><use href="#i-none"/></svg><span class="vh">Not included</span></td><td><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span class="vh">Included</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="plans-say">Free: US$0. Pro: US$39.97 a year, US$4.99 a month, or US$99.95 once. The steps tagged “your AI” run on your own AI account: nothing extra on a Claude or ChatGPT subscription you already have, a few cents to about US$1.50 a lecture with a pay-as-you-go key. Never to StreamSnag. <a href="../ai-costs/">What the AI costs</a></p>
-    </div>
-  </section>
-
-  <!-- ============ More than lectures ============ -->
-  <section class="calm dl-more" id="more-than" aria-labelledby="more-than-title">
-    <div class="wrap calm-narrow">
-      <div class="calm-head">
-        <h2 id="more-than-title">More than lectures.</h2>
-        <p>It is built for lectures, and it does the same things for other recordings that play in your browser, on a page you are allowed to save from.</p>
-      </div>
-      <ul class="kinds-big" aria-labelledby="more-than-title">
-        <li><h3>Webinars</h3><p>The recording from its replay page, with the slides or handouts the page links to.</p></li>
-        <li><h3>Training recordings</h3><p>Course and compliance videos behind your own login, saved in order with the names the page gives them.</p></li>
-        <li><h3>Podcasts</h3><p>Audio is found and saved too, named after the episode. An MP3 can also be made from a saved video.</p></li>
-        <li><h3>Recorded talks</h3><p>Conference and seminar recordings, with their captions saved as a transcript when the page has them.</p></li>
-      </ul>
-      <p class="kinds-say kinds-say-p6">With Pro, a saved recording that has captions, or that you transcribe, can be turned into a reading edition and a study pack in the same way as a lecture. Those tools were built for, and tested on, someone teaching, usually with slides: a conversation or a panel reads less tidily. Protected video stays out, as above. A live stream, once recorded and saved, is a recording like any other.</p>
     </div>
   </section>
 
   <!-- ============ Get it ============ -->
   <section class="calm last dl-last" aria-labelledby="dl-last-title">
     <div class="wrap">
-      <h2 id="dl-last-title">Save tonight's lecture.</h2>
-      <p class="last-say">For Chrome, Edge and Brave on a computer.</p>
+      <h2 id="dl-last-title">Save the next video you watch.</h2>
+      <p class="last-say">For Chrome, Edge and Brave on a computer. Free, with no limits.</p>
       <!-- PLACEHOLDER (install link): see the note in the header. -->
       <div class="soon-act"><a class="btn btn-go btn-lg" href="../demo/">Try the demo</a> <a class="btn btn-soon" href="../#install">Coming soon to Chrome, Edge and Brave</a></div>
-      <p class="dl-guides"><a href="../guides/save-a-lecture.html">How to download a lecture</a> <a href="../guides/download-a-whole-course.html">How to download a whole course</a></p>
+      <p class="dl-guides"><a href="../guides/save-a-lecture.html">How to download a lecture video</a> <a href="../guides/download-a-whole-course.html">How to download a whole course</a></p>
       <p class="last-note">The free core is published under the GNU General Public License, version 3, so the code that runs can be read. <a href="https://github.com/cspergel/streamsnag" rel="noopener">Source code</a>.</p>
     </div>
   </section>
@@ -272,7 +304,7 @@
           <li><a href="../how-it-works/#read">Read the lecture</a></li>
           <li><a href="../study-tools/">Study tools and the library</a></li>
           <li><a href="../#gallery">See what it makes</a></li>
-          <li><a href="../downloader/">Only the downloader</a></li>
+          <li><a href="../downloader/">The video downloader</a></li>
           <li><a href="../#pricing">Pricing</a></li>
           <li><a href="../ai-costs/">What the AI costs</a></li>
           <li><a href="../questions/">Questions</a></li>
@@ -305,7 +337,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are screenshots of StreamSnag itself; a few diagrams are drawings, and the desk and still-life scenes at the top or foot of a few pages are illustrations made with an AI image model. Every screenshot and sample comes from an invented lecture written for the purpose, not from anyone's course. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself; a few diagrams are drawings, and the desk and still-life scenes at the top or foot of a few pages are illustrations made with an AI image model. Every screenshot and sample comes from an invented lecture, course or film made for the purpose, not from anyone's course or site. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

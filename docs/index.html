@@ -240,47 +240,71 @@
     </div>
   </section>
 
-  <!-- ============ The lecture as a document. The one the page makes the most of, straight after the first picture. ============ -->
+  <!-- ============ The lecture as a document, to read instead of to listen to. ============
+       Pass 21 (2026-11-12): the owner: "show how it can then turn it directly into a page that is easy to navigate
+       and learn and read from instead of spending your hour listening". The band used to say "StreamSnag transcribes
+       the video lecture for you." with a small captions-to-paragraph card (pass 8), which the before-and-after slider
+       above (pass 20) now shows better; the card is gone (site.js leaves its script alone when there is no .tx).
+       The numbers are the sample's own: tests/fixtures/studypack/cardiac-output.vtt runs 28:13 and has 3,301 words;
+       at 238 words a minute (Brysbaert 2019, silent reading of non-fiction) that is 13.9 minutes, and the reading
+       edition itself says "14 min read" (it counts 230 a minute, lib/reading/build.js). What is said to need no AI is
+       checked against lib/reading/: the paragraphs, the headings (a slide's title, else the part's own most
+       distinctive terms, headings.js), the contents list and the minute links are all made by rule (build.js,
+       render.js); only "Tidy with AI" (tidy.js) and the study pack use the reader's AI. "Every word kept": only
+       hesitation sounds and doubled words are taken out (removeFillers, build.js), which the sample says at its top.
+       "No AI account": the speech-to-text runs on the reader's computer with no AI account (guides/lecture-transcript.html).
+       The picture is the real sample page (docs/sample/reading-edition.html) as it opens, without the sample banner
+       (capture-read-p21.mjs), light and dark, 2x, lazy. #read stays on the words with their links (old address). -->
   <section class="moment moment-read" id="gallery" aria-labelledby="read-title">
     <div class="wrap">
       <div class="read-words reveal" id="read">
-        <h2 id="read-title">StreamSnag transcribes the video lecture for you.</h2>
-        <p>Pro turns the speech into text and sets it out as a document you can read, with headings, a contents list and a time beside every paragraph.</p>
+        <h2 id="read-title">Read the lecture in about half the time, without missing a word.</h2>
+        <p>Pro transcribes the video lecture and sets it out to read. The 28-minute sample lecture is 3,300 words: about 14 minutes to read at an average pace.</p>
+        <ul class="read-points">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><b>Every word kept.</b> Only the ums and doubled words go.</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><b>Jump by the contents.</b> Every part has a heading and its minute.</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><b>Each paragraph opens the video</b> at the moment it was said.</span></li>
+        </ul>
         <p class="read-strong">No minute limits.</p>
         <p class="read-links"><a href="sample/reading-edition.html">Open the sample</a> <a href="how-it-works/#read">Why read a lecture</a></p>
       </div>
-      <!-- Pass 8 (2026-11-11): what was said, and what you read. The words are the sample lecture's own, at 07:59 (07:51 until the samples were made again in pass 13)
-           (docs/sample/reading-edition.html, #s2-p4). With JavaScript and motion allowed, site.js plays it once as it
-           scrolls in: the captions run in, then the paragraph sets itself (about five seconds), and Replay plays it
-           again. Without either, it is simply the finished state. Styles in pass8.css. -->
-      <figure class="tx"aria-labelledby="tx-cap">
-        <div class="tx-card">
-          <div class="tx-said">
-            <p class="tx-label">What was said</p>
-            <ol class="tx-lines" aria-label="The lecture's live captions">
-              <li>so preload first</li>
-              <li>preload is the stretch on the</li>
-              <li>ventricular muscle cells at the</li>
-              <li>end of diastole just before</li>
-              <li>contraction</li>
-            </ol>
-          </div>
-          <svg class="tx-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-5-5 5 5-5 5"/></svg>
-          <div class="tx-read">
-            <p class="tx-label">What you read</p>
-            <p class="tx-h">Three determinants of stroke volume</p>
-            <div class="tx-para"><span class="tx-t">07:59</span><p><b>Lecturer:</b> So, preload first. Preload is the stretch on the ventricular muscle cells at the end of diastole, just before contraction.</p></div>
-          </div>
-        </div>
-        <figcaption id="tx-cap" class="tx-cap">From the sample lecture: the captions as they were spoken, and the same words in its reading edition. <button type="button" class="tx-again" hidden>Replay</button></figcaption>
-      </figure>
-      <a class="read-pics reveal" href="sample/reading-edition.html" aria-label="Open the sample reading edition">
-        <span class="frame read-win">
+      <figure class="read-fig">
+        <a class="frame read-shot" href="sample/reading-edition.html" aria-label="Open the sample reading edition">
           <span class="frame-bar" aria-hidden="true"><span class="frame-file"><svg class="ic"><use href="#i-file"/></svg>Cardiac output and what sets it.read.html</span></span>
-          <span class="frame-view"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/read-1x.avif 1280w, img/shots/read-2x.avif 2560w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-1x.webp 1280w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><img src="img/shots/read-1x.webp" width="1280" height="860" alt="The reading edition StreamSnag made from the lecture: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture, a 14 minute read, 3,194 words, the contents list of four sections with their times, and the lecturer's own words in paragraphs, each with its time beside it." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/read-dark-1x.avif 1280w, img/shots/read-dark-2x.avif 2560w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-dark-1x.webp 1280w" sizes="(min-width: 1064px) 1000px, calc(100vw - 32px)"><img src="img/shots/read-dark-1x.webp" width="1280" height="860" alt="The reading edition StreamSnag made from the lecture: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture, a 14 minute read, 3,194 words, the contents list of four sections with their times, and the lecturer's own words in paragraphs, each with its time beside it." loading="lazy" decoding="async"></picture></span>
+          <span class="frame-view read-view"><span class="read-wide"><picture class="shot shot-l"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/read-p21-1x.avif 1200w, img/shots/read-p21-2x.avif 2400w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-p21-1x.webp 1200w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><img src="img/shots/read-p21-1x.webp" width="1200" height="760" alt="The sample reading edition StreamSnag made from the cardiac lecture, as it opens. Across the top, Watch, Read and Guide. On the left the contents list: Cardiac output and what sets it, 00:01; Three determinants of stroke volume, 06:22; Afterload, 14:13; The pressure-volume loop, 21:14; About 14 min left. On the right the title, with 28 min lecture, 14 min read and 3,295 words, then the first heading and its paragraphs, each with its minute beside it: 00:01, 00:30." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/read-p21-dark-1x.avif 1200w, img/shots/read-p21-dark-2x.avif 2400w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-p21-dark-1x.webp 1200w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><img src="img/shots/read-p21-dark-1x.webp" width="1200" height="760" alt="The sample reading edition StreamSnag made from the cardiac lecture, as it opens. Across the top, Watch, Read and Guide. On the left the contents list: Cardiac output and what sets it, 00:01; Three determinants of stroke volume, 06:22; Afterload, 14:13; The pressure-volume loop, 21:14; About 14 min left. On the right the title, with 28 min lecture, 14 min read and 3,295 words, then the first heading and its paragraphs, each with its minute beside it: 00:01, 00:30." loading="lazy" decoding="async"></picture></span><span class="read-narrow"><picture class="shot shot-l"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/read-p21-phone-1x.avif 360w, img/shots/read-p21-phone-2x.avif 720w" sizes="360px"><source type="image/webp" srcset="img/shots/read-p21-phone-1x.webp 360w" sizes="360px"><img src="img/shots/read-p21-phone-1x.webp" width="360" height="700" alt="The same sample reading edition on a phone: the contents list with its four parts and their minutes, from Cardiac output and what sets it at 00:01 to The pressure-volume loop at 21:14, then the first heading, 00:01 to 06:17, and its first paragraph with 00:01 beside it: Lecturer: Okay good morning everybody." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/read-p21-phone-dark-1x.avif 360w, img/shots/read-p21-phone-dark-2x.avif 720w" sizes="360px"><source type="image/webp" srcset="img/shots/read-p21-phone-dark-1x.webp 360w" sizes="360px"><img src="img/shots/read-p21-phone-dark-1x.webp" width="360" height="700" alt="The same sample reading edition on a phone: the contents list with its four parts and their minutes, from Cardiac output and what sets it at 00:01 to The pressure-volume loop at 21:14, then the first heading, 00:01 to 06:17, and its first paragraph with 00:01 beside it: Lecturer: Okay good morning everybody." loading="lazy" decoding="async"></picture></span></span>
+        </a>
+        <figcaption class="read-cap">Our sample lecture's reading edition, as StreamSnag made it.</figcaption>
+      </figure>
+      <p class="read-ai"><b>No AI account needed for any of this.</b> Connect your own AI and the study guide, cheat sheet and flashcards come with it. <a href="study-tools/">The study tools <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+      <p class="read-src">The average pace: adults read non-fiction silently at about 238 words a minute (Brysbaert, 2019, a review of 190 studies).</p>
+    </div>
+  </section>
+
+  <!-- ============ Pass 21b (2026-11-12): the study desk, right after the reading band. ============
+       The owner: the site showed no feature of the study desk's library, and asked for a picture like their own
+       42-lecture shelf. The picture is the real desk (extension/pro/desk.html) with an invented 30-lecture course,
+       MED 310 · Acute Medicine, captured by deskpics/tools/deskpics.mjs and approved by the owner; it is only cropped
+       (make-desk-p21b.py): the wide capture's top eight lectures, and on a phone the phone capture.
+       What is free and what is Pro is the extension's own rule (lib/entitlement.js): listing the desk and your own
+       files is free, and opening what was made is never locked; making new Pro things is Pro (study packs, written by
+       the reader's own AI; the mock exam, marked PRO on the shelf). Lectures sit in course order (desklogic.js:
+       natural order of their titles), grouped by the course name on the lectures' page (as the shelf itself says).
+       Not a .moment: the check of the three moments (check-pass4) stays as it was. Styles in pass21b.css. -->
+  <section class="desk-band" id="study-desk" aria-labelledby="desk-title">
+    <div class="wrap">
+      <div class="desk-words reveal">
+        <h2 id="desk-title">Every lecture of the course, on one desk.</h2>
+        <p>Each course gets a shelf, its lectures in course order, with small marks for what has been made for each and today's cards due across the course on top.</p>
+        <p>Your shelves are free to open. Study packs, and a mock exam across the whole course, come with Pro, written by your own AI.</p>
+        <p class="desk-link"><a href="study-tools/#library">The study desk, step by step</a></p>
+      </div>
+      <figure class="desk-fig">
+        <span class="frame desk-shot">
+          <span class="frame-bar" aria-hidden="true"><span class="frame-file">Study desk · MED 310</span></span>
+          <span class="frame-view desk-view"><span class="desk-wide"><picture class="shot shot-l"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/course-shelf-1x.avif 1280w, img/shots/course-shelf-2x.avif 2560w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/course-shelf-1x.webp 1280w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><img src="img/shots/course-shelf-1x.webp" width="1280" height="915" alt="The real study desk with an invented course: the shelf MED 310 · Acute Medicine, 30 lectures, grouped by the course name on the lectures' page, 3 of 30 studied, with the buttons Review 45 due cards, Open mock exam and Make a mock exam, marked Pro. A row of 30 squares: 3 studied, 3 packs ready, 23 saved, 1 not downloaded. Then the lectures in course order, from 01 The deteriorating patient to 08 Acute heart failure, each with small marks for what has been made and what is due: 6 due, Studied, 9 due, 18 due, 12 due, then Saved with its length." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(max-width: 759px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/course-shelf-dark-1x.avif 1280w, img/shots/course-shelf-dark-2x.avif 2560w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/course-shelf-dark-1x.webp 1280w" sizes="(min-width: 1104px) 1040px, calc(100vw - 32px)"><img src="img/shots/course-shelf-dark-1x.webp" width="1280" height="915" alt="The real study desk with an invented course: the shelf MED 310 · Acute Medicine, 30 lectures, grouped by the course name on the lectures' page, 3 of 30 studied, with the buttons Review 45 due cards, Open mock exam and Make a mock exam, marked Pro. A row of 30 squares: 3 studied, 3 packs ready, 23 saved, 1 not downloaded. Then the lectures in course order, from 01 The deteriorating patient to 08 Acute heart failure, each with small marks for what has been made and what is due: 6 due, Studied, 9 due, 18 due, 12 due, then Saved with its length." loading="lazy" decoding="async"></picture></span><span class="desk-narrow"><picture class="shot shot-l"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/course-shelf-phone-1x.avif 390w, img/shots/course-shelf-phone-2x.avif 780w" sizes="390px"><source type="image/webp" srcset="img/shots/course-shelf-phone-1x.webp 390w" sizes="390px"><img src="img/shots/course-shelf-phone-1x.webp" width="390" height="780" alt="The same shelf on a phone: MED 310 · Acute Medicine, 30 lectures, 3 of 30 studied, Review 45 due cards, Open mock exam, Make a mock exam marked Pro, the row of 30 squares, the filters, and the first lectures in course order with what is due: 6 due, Studied, 9 due, 18 due." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source media="(min-width: 760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><source type="image/avif" srcset="img/shots/course-shelf-phone-dark-1x.avif 390w, img/shots/course-shelf-phone-dark-2x.avif 780w" sizes="390px"><source type="image/webp" srcset="img/shots/course-shelf-phone-dark-1x.webp 390w" sizes="390px"><img src="img/shots/course-shelf-phone-dark-1x.webp" width="390" height="780" alt="The same shelf on a phone: MED 310 · Acute Medicine, 30 lectures, 3 of 30 studied, Review 45 due cards, Open mock exam, Make a mock exam marked Pro, the row of 30 squares, the filters, and the first lectures in course order with what is due: 6 due, Studied, 9 due, 18 due." loading="lazy" decoding="async"></picture></span></span>
         </span>
-        <span class="phone read-phone"><picture class="shot shot-l"><source type="image/avif" srcset="img/shots/read-phone-1x.avif 390w, img/shots/read-phone-2x.avif 780w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-phone-1x.webp 390w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><img src="img/shots/read-phone-1x.webp" width="390" height="844" alt="The same reading edition on a narrow screen: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture and a 14 minute read." loading="lazy" decoding="async"></picture><picture class="shot shot-d"><source type="image/avif" srcset="img/shots/read-phone-dark-1x.avif 390w, img/shots/read-phone-dark-2x.avif 780w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><source type="image/webp" srcset="img/shots/read-phone-dark-1x.webp 390w" sizes="(min-width: 444px) 380px, calc(100vw - 32px)"><img src="img/shots/read-phone-dark-1x.webp" width="390" height="844" alt="The same reading edition on a narrow screen: PHYS201, reading edition, Cardiac output and what sets it, a 27 minute lecture and a 14 minute read." loading="lazy" decoding="async"></picture></span>
-      </a>
+        <figcaption class="desk-cap">The real study desk, with an invented course, MED 310 · Acute Medicine, like every sample on this site.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -476,7 +500,7 @@
         <img src="img/art/evening-desk-1x.webp" width="768" height="432" alt="" loading="lazy" decoding="async">
       </picture>
       <h2 id="install-title">Start with tonight's lecture.</h2>
-      <p class="last-say">For Chrome, Edge and Brave on a computer.</p>
+      <p class="last-say">For Chrome, Edge and Brave.</p>
       <!-- PLACEHOLDER (install link): this is the main install button. It points at this section (#install) until the store listing or download exists. Replace the href of every [data-install] link on the site with the real install address. -->
       <a class="btn btn-go btn-lg" href="demo/">Try the demo</a>
       <p class="last-note"><b>Coming soon to Chrome, Edge and Brave.</b> StreamSnag 1.6 is not released yet. When it is, the install button will be here and lead to your browser's store.</p>
@@ -534,7 +558,7 @@
     </div>
     <div class="foot-notes">
       <p>© 2026 Spergel Health AI LLC. The free core of StreamSnag is open source under the GNU General Public License, version 3. StreamSnag Pro is licensed separately. StreamSnag refuses DRM-protected video and is meant for lectures you have the right to keep.</p>
-      <p>The product pictures on this site are screenshots of StreamSnag itself; a few diagrams are drawings, and the desk and still-life scenes at the top or foot of a few pages are illustrations made with an AI image model. Every screenshot and sample comes from an invented lecture, course or film made for the purpose, not from anyone's course or site. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
+      <p>The product pictures on this site are screenshots of StreamSnag itself. Every screenshot and sample comes from an invented lecture, course or film made for the purpose, not from anyone's course or site. Not affiliated with Anthropic, OpenAI, Google, DeepSeek, OpenRouter or Anki; product names belong to their owners. This site sets no cookies and has no analytics, ads or trackers.</p>
     </div>
   </div>
 </footer>

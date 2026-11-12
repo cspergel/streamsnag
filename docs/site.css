@@ -2316,3 +2316,57 @@ body { background: var(--tex-grain) 0 0 / 220px 220px, var(--bg); }
 /* The pictures are the reading edition's own paper; on the dark page its dark theme is shown (the -dark twins). */
 :root[data-theme="dark"] .ba-pane { background: #141716; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ba-pane { background: #141716; } }
+
+/* ---------- Pass 21 (2026-11-12): the green band, reading instead of listening ----------
+   The heading, the sample's numbers, three points with a tick, "No minute limits." and the two links; then one real
+   picture of the sample reading edition (a wide capture from 760 px up, a phone capture below), the AI line and the
+   source of the reading pace. The pass 8 card (.tx) and the pass 7 pictures (.read-pics) are no longer on the page. */
+.moment-read h2 { max-width: 15em; margin-inline: auto; text-wrap: balance; }
+.read-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px clamp(20px, 3vw, 36px); max-width: 58rem; margin: clamp(26px, 3vw, 36px) auto 0; padding: 0; list-style: none; text-align: left; }
+.read-points li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; font-size: var(--t); line-height: 1.45; color: color-mix(in srgb, var(--on-field) 88%, var(--field)); }
+.read-points li b { font-weight: 650; color: var(--on-field); }
+.read-points .ic { width: 22px; height: 22px; margin-top: .12em; padding: 3px; border-radius: 50%; stroke-width: 2.4; color: var(--field); background: var(--on-field); }
+.read-words .read-strong { margin-top: clamp(22px, 2.6vw, 30px); }
+.read-fig { max-width: 1040px; margin: clamp(36px, 4.6vw, 60px) auto 0; }
+/* (an old .frame rule from the first site sets 16:9; the picture keeps its own shape) */
+.read-shot { position: relative; aspect-ratio: auto; }
+.read-shot:hover, .read-shot:focus-visible { box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 34px 70px -24px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .12); }
+/* The picture ends mid-paragraph: it fades into the frame instead of stopping on a cut line. */
+.read-view { -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent); mask-image: linear-gradient(to bottom, #000 82%, transparent); }
+.read-narrow { display: none; }
+.read-cap { margin-top: 14px; font-size: var(--t-s); line-height: 1.5; text-align: center; color: color-mix(in srgb, var(--on-field) 78%, var(--field)); }
+.moment-read .read-ai { max-width: 36em; margin: clamp(30px, 3.6vw, 44px) auto 0; font-size: var(--t); line-height: 1.5; text-align: center; text-wrap: balance; color: color-mix(in srgb, var(--on-field) 88%, var(--field)); }
+.read-ai b { font-weight: 650; color: var(--on-field); }
+.read-ai a { padding: 10px 0; font-weight: 650; color: var(--on-field); text-decoration-color: color-mix(in srgb, var(--on-field) 45%, transparent); text-underline-offset: 3px; }
+.read-ai a:hover { text-decoration-color: currentColor; }
+.read-ai a .ic { width: 16px; height: 16px; margin-left: 4px; vertical-align: -2px; }
+.moment-read .read-src { max-width: 40em; margin: 18px auto 0; font-size: var(--t-s); line-height: 1.5; text-align: center; text-wrap: balance; color: color-mix(in srgb, var(--on-field) 78%, var(--field)); }
+@media (max-width: 759px) {
+  .read-points { grid-template-columns: minmax(0, 1fr); max-width: 26rem; }
+  .read-wide { display: none; }
+  .read-narrow { display: block; }
+  .read-fig { max-width: 360px; }
+  .read-shot .frame-bar { justify-content: center; }
+}
+
+/* ---------- Pass 21b (2026-11-12): the study desk band, after the reading band ----------
+   The heading, two lines and a link, centred; then one real picture of a course's shelf on the study desk (the wide
+   capture from 760 px up, the phone capture below), faded at its foot, and the line saying the course is invented. */
+.desk-band { padding: var(--section) 0; }
+.desk-words { max-width: 46rem; margin-inline: auto; text-align: center; }
+.desk-band h2 { font: 540 clamp(2rem, 4.5vw, 3.5rem)/1.06 var(--font-display); letter-spacing: -.018em; text-wrap: balance; overflow-wrap: break-word; }
+.desk-words p { max-width: 34em; margin: 16px auto 0; font-size: var(--t); line-height: 1.5; letter-spacing: -.003em; color: var(--ink-2); text-wrap: balance; }
+.desk-words .desk-link { margin-top: 8px; }
+.desk-link a { display: inline-block; padding: 10px 0; font-weight: 600; color: var(--ink); text-decoration-color: var(--line-strong); }
+.desk-link a:hover { text-decoration-color: currentColor; }
+.desk-fig { max-width: 1040px; margin: clamp(32px, 4.4vw, 56px) auto 0; }
+/* (the old .frame rule sets 16:9; the picture keeps its own shape) */
+.desk-shot { aspect-ratio: auto; }
+.desk-view { -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent); mask-image: linear-gradient(to bottom, #000 84%, transparent); }
+.desk-narrow { display: none; }
+.desk-cap { margin-top: 14px; font-size: var(--t-s); line-height: 1.5; text-align: center; color: var(--ink-3); }
+@media (max-width: 759px) {
+  .desk-wide { display: none; }
+  .desk-narrow { display: block; }
+  .desk-fig { max-width: 390px; }
+}

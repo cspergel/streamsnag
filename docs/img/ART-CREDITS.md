@@ -2,8 +2,8 @@
 
 The site's product pictures are screenshots of StreamSnag itself (`img/shots/`). This file documents the one other
 kind of picture: art generated for StreamSnag with an AI image model (`img/art/`). Every image is decorative
-(`alt=""`, `aria-hidden`), dimmed slightly in dark mode by CSS, and named in the site's footer as an illustration
-made with an AI image model, so nobody takes it for a photograph of a real desk or user.
+(`alt=""`, `aria-hidden`) and dimmed slightly in dark mode by CSS. Until 2026-11-12 the site's footer named them as illustrations
+made with an AI image model; the owner took that clause out of the footer in pass 21, and this file is now where it is said.
 
 ## The images on the site
 
@@ -114,6 +114,7 @@ OpenAI Services Agreement, version "ONLINE v.010126" (effective 1 January 2026),
   ours to use but not guaranteed exclusive, and (in the United States at least) a purely generated image may not be
   protected by copyright.
 - Use must stay within OpenAI's Usage Policies and Sharing and Publication Policy (named in the agreement as the
-  "OpenAI Policies"). The site's footer says these scenes were made with an AI image model.
+  "OpenAI Policies"). The site's footer said these scenes were made with an AI image model until pass 21 (2026-11-12), when the owner
+  took the clause out; whether the policies ask for a visible note on the site is worth a look before launch.
 
 This is a plain reading for the owner, not legal advice.

@@ -109,17 +109,27 @@ test('set up again over itself, then a newer version replaces the older folder',
   assert.ok(fs.existsSync(path.join(home, '1.6.0', 'host.js')));
 });
 
-test('removed: the registration, the Installed apps entry and the folder are gone', { skip }, async () => {
+test('removed: the registration, the Installed apps entry, the folder and the helper\'s data are gone', { skip }, async () => {
   assert.ok(pkg, 'the set-up test ran first');
   const before = REAL_KEYS.map(regDefault);
+  // What a helper that has been used keeps in its data folder: a transcription model, covers, its caches and
+  // the folders the user chose. A file beside the data folder is not the helper's, and stays.
+  const data = path.join(work, 'data');
+  for (const f of ['stt/model-small/model.bin', 'covers/0a1b2c.jpg', 'durations.json', 'sources.json']) {
+    fs.mkdirSync(path.dirname(path.join(data, f)), { recursive: true });
+    fs.writeFileSync(path.join(data, f), 'x');
+  }
+  fs.writeFileSync(path.join(work, 'not-the-helpers.txt'), 'x');
   // (Removed by the installed copy, the way Installed apps runs it.)
   const un = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(home, '1.6.0', 'setup.ps1'), '-Uninstall'], {
-    encoding: 'utf8', env: { ...process.env, STREAMSNAG_TEST_HOME: home, STREAMSNAG_TEST_REG_ROOT: ROOT_KEY }, timeout: 120000,
+    encoding: 'utf8', env: { ...process.env, STREAMSNAG_TEST_HOME: home, STREAMSNAG_TEST_REG_ROOT: ROOT_KEY, STREAMSNAG_TEST_DATA: data }, timeout: 120000,
   });
   assert.equal(un.status, 0, un.stdout + un.stderr);
   assert.equal(regDefault(`HKCU\\Software\\${ROOT_KEY}\\NativeMessagingHosts\\${HOST}`), '');
   assert.equal(regValue(`HKCU\\Software\\${ROOT_KEY}\\Uninstall\\StreamSnagHelper`, 'DisplayName'), '');
   assert.ok(!fs.existsSync(home), 'the helper\'s folder is gone');
+  assert.ok(!fs.existsSync(data), 'the helper\'s data folder is gone');
+  assert.ok(fs.existsSync(path.join(work, 'not-the-helpers.txt')), 'and nothing beside it');
   assert.deepEqual(REAL_KEYS.map(regDefault), before);
 });
 

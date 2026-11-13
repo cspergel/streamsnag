@@ -1006,7 +1006,9 @@ async function dispatch(msg) {
 }
 
 // Only start the stdin loop when run as the host (not when imported by tests).
-const norm = (p) => (IS_WIN ? path.resolve(p).toLowerCase() : path.resolve(p));
+// (By the real path, as install.js: on macOS /var/… is /private/var/… to Node.)
+const real = (p) => { try { return fs.realpathSync(p); } catch { return path.resolve(p); } };
+const norm = (p) => (IS_WIN ? real(p).toLowerCase() : real(p));
 const isMain = !!process.argv[1] && norm(process.argv[1]) === norm(fileURLToPath(import.meta.url));
 if (isMain) {
   // @site-edition

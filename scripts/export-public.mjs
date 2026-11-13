@@ -46,6 +46,9 @@ export const PRO_FILES = [
   // The browser checks (scripts/e2e*.js) all lean on Pro's own (the licence's test server, the study tools'
   // lessons): they stay private for now. The unit tests (tests/) are public.
   /^scripts\/e2e[\w-]*\.js$/,
+  // The fresh-computer run (it uses the study tools on the sample lecture) and the workflow that runs it.
+  /^scripts\/clean-install\.mjs$/,
+  /^\.github\/workflows\/clean-install\.yml$/,
 ];
 
 /** The words a public file must never contain: a Pro file's path, or a secret's shape. */

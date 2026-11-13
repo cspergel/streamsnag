@@ -63,14 +63,20 @@ if ($Uninstall) {
     exit 1
   }
   Remove-Item -LiteralPath $appKey -Recurse -Force -ErrorAction SilentlyContinue
-  for ($try = 0; ($try -lt 20) -and (Test-Path -LiteralPath $base); $try++) {
+  # The helper's own data goes too: %LOCALAPPDATA%\StreamSnag holds the transcription models (hundreds of MB),
+  # the desk's covers, a few caches and the list of folders the user let StreamSnag read (a fresh computer
+  # check found it left behind, 2026-11-13). The helper's folder is inside it. (Tests name their own.)
+  $data = if ($env:STREAMSNAG_TEST_HOME) { $env:STREAMSNAG_TEST_DATA } else { Join-Path $env:LOCALAPPDATA 'StreamSnag' }
+  $gone = @($base, $data) | Where-Object { $_ }
+  $left = { @($gone | Where-Object { Test-Path -LiteralPath $_ }) }
+  for ($try = 0; ($try -lt 20) -and (& $left).Count; $try++) {
     if ($try) { Start-Sleep -Milliseconds 300 }
-    Remove-Item -LiteralPath $base -Recurse -Force -ErrorAction SilentlyContinue
+    & $left | ForEach-Object { Remove-Item -LiteralPath $_ -Recurse -Force -ErrorAction SilentlyContinue }
   }
-  if (Test-Path -LiteralPath $base) {
+  if ((& $left).Count) {
     Write-Host 'The browsers no longer use the helper, but a few of its files are still open.' -ForegroundColor Yellow
     Write-Host 'Close any window showing its folder, then delete this folder:' -ForegroundColor Yellow
-    Write-Host "  $base"
+    Write-Host "  $((& $left)[-1])"
     exit 1
   }
   Write-Host 'StreamSnag helper removed.' -ForegroundColor Green

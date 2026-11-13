@@ -110,6 +110,9 @@ function main() {
     }
   } else if (uninstall) {
     for (const d of unixDirs()) fs.rmSync(path.join(d, `${HOST_NAME}.json`), { force: true });
+    // The helper's own data too (host.js DATA_DIR: transcription models, covers, caches, the folders the user
+    // chose). On Windows, setup.ps1 -Uninstall removes it, after this. (Tests name their own folder.)
+    fs.rmSync(process.env.STREAMSNAG_TEST_DATA || path.join(os.homedir(), '.local', 'share', 'StreamSnag'), { recursive: true, force: true });
   }
   if (uninstall) {
     console.log('StreamSnag helper unregistered.');
@@ -136,7 +139,10 @@ function main() {
   console.log('Restart Chrome, then use Settings -> Local helper -> "Check helper".');
 }
 
-const isMain = process.argv[1] && path.resolve(process.argv[1]).toLowerCase() === fileURLToPath(import.meta.url).toLowerCase();
+// (By the real path: on macOS a folder such as /var/… is /private/var/… to Node, and a run from a linked folder
+// otherwise did nothing at all, without a word; found by the fresh-computer run, 2026-11-13.)
+const realOf = (p) => { try { return fs.realpathSync(p); } catch { return path.resolve(p); } };
+const isMain = process.argv[1] && realOf(process.argv[1]).toLowerCase() === realOf(fileURLToPath(import.meta.url)).toLowerCase();
 if (isMain) {
   try {
     main();

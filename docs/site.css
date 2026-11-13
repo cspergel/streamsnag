@@ -2375,3 +2375,6 @@ body { background: var(--tex-grain) 0 0 / 220px 220px, var(--bg); }
 .prose a.btn { text-decoration: none; }
 .prose a.btn-go, .prose a.btn-go:hover { color: var(--on-go); }
 .prose .dl-line { display: flex; flex-wrap: wrap; align-items: center; gap: .4em 1em; margin: .9em 0; }
+
+/* Pass 23 (2026-11-13): the sample lecture on the try/ page. */
+.prose .try-video { display: block; width: 100%; height: auto; border-radius: 12px; background: var(--night); margin: 0 0 1.5em; }

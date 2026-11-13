@@ -2939,7 +2939,7 @@ function renderLibrary() {
   const one = vids.length === 1;
   const noun = nounFor(vids, 1);
   const text = lib?.error
-    ? `Your folders could not be checked: ${lib.error}`
+    ? `Your folders could not be checked. ${lib.error}`.replace(/[.!?]\s*$/, '')
     : [found ? (one ? `This ${noun} was found in your folders` : `${found} of the ${vids.length} ${nounFor(vids, vids.length)} here ${found === 1 ? 'was' : 'were'} found in your folders`) : '',
       gone ? (one ? `This ${noun} is no longer where it was saved` : `${gone} ${gone === 1 ? 'is' : 'are'} no longer where ${gone === 1 ? 'it was' : 'they were'} saved`) : '',
       maybe && !found ? (one ? `This ${noun} may already be in your folders` : `${maybe} may already be in your folders`) : ''].filter(Boolean).join(' · ');

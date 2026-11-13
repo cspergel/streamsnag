@@ -46,12 +46,31 @@ Write-Host '-----------------------'
 # ------------------------------------------------------------------ remove
 if ($Uninstall) {
   Set-Location -LiteralPath ([IO.Path]::GetTempPath()) # (a folder that is in use cannot be removed)
-  & (Join-Path $here 'node.exe') (Join-Path $here 'install.js') --uninstall
+  $nodeHere = Join-Path $here 'node.exe'
+  if (Test-Path -LiteralPath $nodeHere) { & $nodeHere (Join-Path $here 'install.js') --uninstall }
+  # Windows (or a virus scanner) can hold node.exe for a moment after it exits, and a running helper holds
+  # it for as long as the browser keeps it open (seen on GitHub's Windows runner, 2026-11-13). So node.exe
+  # goes first, tried for a few seconds; while one stays held, nothing else is removed, so this script and
+  # the Installed apps entry are still there to remove it again.
+  $held = { @(Get-ChildItem -LiteralPath $base -Recurse -File -Filter 'node.exe' -ErrorAction SilentlyContinue) }
+  for ($try = 0; ($try -lt 20) -and (& $held).Count; $try++) {
+    if ($try) { Start-Sleep -Milliseconds 300 }
+    & $held | ForEach-Object { Remove-Item -LiteralPath $_.FullName -Force -ErrorAction SilentlyContinue }
+  }
+  if ((& $held).Count) {
+    Write-Host 'The browsers no longer use the helper, but it is still running.' -ForegroundColor Yellow
+    Write-Host 'Close your browser, then remove StreamSnag helper again (Settings > Apps > Installed apps).' -ForegroundColor Yellow
+    exit 1
+  }
   Remove-Item -LiteralPath $appKey -Recurse -Force -ErrorAction SilentlyContinue
-  if (Test-Path -LiteralPath $base) { Remove-Item -LiteralPath $base -Recurse -Force -ErrorAction SilentlyContinue }
+  for ($try = 0; ($try -lt 20) -and (Test-Path -LiteralPath $base); $try++) {
+    if ($try) { Start-Sleep -Milliseconds 300 }
+    Remove-Item -LiteralPath $base -Recurse -Force -ErrorAction SilentlyContinue
+  }
   if (Test-Path -LiteralPath $base) {
     Write-Host 'The browsers no longer use the helper, but a few of its files are still open.' -ForegroundColor Yellow
-    Write-Host 'Close your browser and run this again to remove them.' -ForegroundColor Yellow
+    Write-Host 'Close any window showing its folder, then delete this folder:' -ForegroundColor Yellow
+    Write-Host "  $base"
     exit 1
   }
   Write-Host 'StreamSnag helper removed.' -ForegroundColor Green

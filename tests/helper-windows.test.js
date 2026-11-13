@@ -123,6 +123,52 @@ test('removed: the registration, the Installed apps entry and the folder are gon
   assert.deepEqual(REAL_KEYS.map(regDefault), before);
 });
 
+/** setup.ps1 -Uninstall run by the installed copy, without blocking (so the test can let go of a file meanwhile). */
+function uninstallLater() {
+  return new Promise((resolve) => {
+    const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(home, '1.6.0', 'setup.ps1'), '-Uninstall'], {
+      env: { ...process.env, STREAMSNAG_TEST_HOME: home, STREAMSNAG_TEST_REG_ROOT: ROOT_KEY }, stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let out = '';
+    child.stdout.on('data', (d) => { out += d; });
+    child.stderr.on('data', (d) => { out += d; });
+    child.on('close', (status) => resolve({ status, out }));
+  });
+}
+/** The installed node.exe kept running, which holds its file the way a busy helper does. */
+const holdNode = () => spawn(path.join(home, '1.6.0', 'node.exe'), ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
+const exited = (child) => new Promise((r) => { if (child.exitCode !== null || child.signalCode) r(); else child.once('exit', r); });
+
+test('removing waits a few seconds for a file held a moment longer, and says so when one stays held', { skip }, async () => {
+  assert.ok(pkg, 'the set-up test ran first');
+  // Held for 1.5 s after removing starts: removed all the same.
+  assert.equal(setup(pkg.folder, ['-SkipFfmpeg']).status, 0);
+  const brief = holdNode();
+  const done = uninstallLater();
+  setTimeout(() => brief.kill(), 1500);
+  const r = await done;
+  assert.equal(r.status, 0, r.out);
+  assert.ok(!fs.existsSync(home), 'the helper\'s folder is gone');
+  // Held throughout: unregistered and it says why, but nothing else is removed, so it can be removed again
+  // from Installed apps once the helper has stopped.
+  assert.equal(setup(pkg.folder, ['-SkipFfmpeg']).status, 0);
+  const app = `HKCU\\Software\\${ROOT_KEY}\\Uninstall\\StreamSnagHelper`;
+  const held = holdNode();
+  try {
+    const stuck = await uninstallLater();
+    assert.equal(stuck.status, 1, stuck.out);
+    assert.match(stuck.out, /still running/);
+    assert.equal(regDefault(`HKCU\\Software\\${ROOT_KEY}\\NativeMessagingHosts\\${HOST}`), '');
+    assert.equal(regValue(app, 'DisplayName'), 'StreamSnag helper', 'still in Installed apps');
+    for (const f of ['node.exe', 'setup.ps1', 'install.js']) assert.ok(fs.existsSync(path.join(home, '1.6.0', f)), f);
+  } finally { held.kill(); }
+  await exited(held);
+  const again = await uninstallLater();
+  assert.equal(again.status, 0, again.out);
+  assert.ok(!fs.existsSync(home));
+  assert.equal(regValue(app, 'DisplayName'), '');
+});
+
 test('without an extension id, setup asks for one and, with no one to answer, stops before registering anything', { skip }, async () => {
   const bare = await buildWindowsHelper({ out: path.join(work, 'pkg3'), zip: false, nodeExe: process.execPath, config: writeConfig('') });
   const r = setup(bare.folder, ['-SkipFfmpeg']);

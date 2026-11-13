@@ -2370,3 +2370,8 @@ body { background: var(--tex-grain) 0 0 / 220px 220px, var(--bg); }
   .desk-narrow { display: block; }
   .desk-fig { max-width: 390px; }
 }
+
+/* Pass 22 (2026-11-12): a button inside running text (the testers' page, get/) keeps its own look. */
+.prose a.btn { text-decoration: none; }
+.prose a.btn-go, .prose a.btn-go:hover { color: var(--on-go); }
+.prose .dl-line { display: flex; flex-wrap: wrap; align-items: center; gap: .4em 1em; margin: .9em 0; }

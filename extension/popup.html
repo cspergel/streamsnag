@@ -10,43 +10,78 @@
   <header class="bar">
     <div class="brand">
       <span class="logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 4.5v8.5m0 0-3.7-3.7M12 13l3.7-3.7"/><circle class="logo-stop" cx="12" cy="18.4" r="1.9"/></svg>
       </span>
-      <div>
-        <strong>StreamSnag</strong>
-        <span id="site" class="muted"></span>
-      </div>
+      <strong>StreamSnag</strong>
+      <span id="site" class="muted"></span>
     </div>
+    <button id="btn-back" class="back" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg>
+      <span id="back-text">Back</span>
+    </button>
     <div class="bar-actions">
-      <button id="btn-tools" class="icon ai" title="AI and more tools" aria-label="AI and more tools" aria-haspopup="menu" aria-expanded="false" aria-controls="tools-menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/><path d="m18.5 15.5.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7Z"/></svg>
+      <button id="btn-clear" class="link small" hidden>Clear finished</button>
+      <button id="btn-desk-top" class="icon" title="Open the study desk" aria-label="Open the study desk" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5c2.6-1.2 5.3-1.2 8 .4 2.7-1.6 5.4-1.6 8-.4V18c-2.6-1.2-5.3-1.2-8 .4-2.7-1.6-5.4-1.6-8-.4Z"/><path d="M12 6.9v11.5"/></svg>
       </button>
-      <button id="btn-rescan" class="icon" title="Scan again: page, frames and embedded players (no page reload)" aria-label="Scan again">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+      <button id="btn-small" class="small-win" title="Small window: close this sidebar. The StreamSnag icon then opens the small window." aria-label="Small window" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M13 9.5h4.5V14H13z"/></svg>
+        <span>Small window</span>
       </button>
-      <button id="btn-sidebar" class="icon" title="Open in sidebar (more room, stays open)" aria-label="Open in sidebar">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M15 4.5v15"/></svg>
+      <button id="btn-panel" class="icon" title="Open in the side panel: more room, and it stays open while you browse" aria-label="Open in the side panel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M14.5 5v14"/></svg>
       </button>
-      <button id="btn-settings" class="icon" title="Settings" aria-label="Settings">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+      <button id="btn-tools" class="icon" title="More: scan again, ask your AI, side panel" aria-label="More tools" aria-haspopup="menu" aria-expanded="false" aria-controls="tools-menu">
+        <svg class="dots" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg>
       </button>
     </div>
-    <div id="tools-menu" class="menu-pop" role="menu" aria-label="AI and more tools" hidden>
+    <div id="tools-menu" class="menu-pop" role="menu" aria-label="More tools" hidden>
+      <button id="btn-rescan" role="menuitem" title="Look at the page again. Nothing reloads.">
+        <strong>Scan this page again</strong>
+        <span class="muted small">Looks at the whole page again. Nothing reloads.</span>
+      </button>
       <button id="btn-ai" role="menuitem">
-        <strong>Find videos with AI</strong>
-        <span class="muted small">For players StreamSnag can't see on its own</span>
+        <strong>Ask your AI to find it</strong>
+        <span class="muted small">For a video StreamSnag can't see by itself. You see what is sent first.</span>
       </button>
       <button id="btn-summarize" role="menuitem">
-        <strong>Summarize this video</strong>
-        <span class="muted small">From its captions</span>
+        <strong>Summarize this lecture</strong>
+        <span class="muted small">From its captions, with your AI. You see what is sent first.</span>
       </button>
       <hr>
-      <button id="btn-ytdlp" role="menuitem">
-        <strong>Download this page with yt-dlp</strong>
-        <span class="muted small">Through the local helper, for sites the browser can't handle</span>
+      <button id="btn-view" role="menuitem" hidden>
+        <strong id="view-title">Downloads only</strong>
+        <span id="view-note" class="muted small"></span>
       </button>
+      <button id="btn-sidebar" role="menuitem" title="Open in the side panel (more room, stays open)">
+        <strong>Open in the side panel</strong>
+        <span class="muted small">More room, and it stays open while you browse</span>
+      </button>
+      <!-- @site-edition -->
+      <hr>
+      <button id="btn-tools-adv" role="menuitem" aria-expanded="false" aria-controls="tools-adv">
+        <strong>Advanced</strong>
+      </button>
+      <div id="tools-adv" class="menu-adv" hidden>
+        <button id="btn-ytdlp" role="menuitem">
+          <strong>Download this page with yt-dlp</strong>
+          <span class="muted small">Through the local helper, for sites the browser can't handle</span>
+        </button>
+      </div>
+      <!-- @end-site-edition -->
     </div>
   </header>
+
+  <!-- "Small window" while the icon opens this sidebar: one line first. -->
+  <div id="small-ask" class="panel-pref small-ask" role="group" aria-labelledby="small-ask-text" hidden>
+    <span id="small-ask-text">The StreamSnag icon opens this sidebar. Turn that off?</span>
+    <span class="row-btns"><button id="small-off" class="secondary">Turn off</button><button id="small-keep" class="quiet">Keep</button></span>
+  </div>
+
+  <div id="panel-pref" class="panel-pref" hidden>
+    <label class="check"><input type="checkbox" id="panel-always"> <strong>Always open here</strong></label>
+    <span class="muted small">When on, clicking the StreamSnag icon opens this sidebar instead of the small window.</span>
+  </div>
 
   <div id="banner" class="banner" role="status" hidden></div>
 
@@ -56,7 +91,11 @@
     </span>
     <div>
       <strong>Finish setup: add the local helper</strong>
+      <!-- @site-edition -->
       <p class="muted small">Save into your own folders, merge HD video with audio, and download whole playlists. It takes about two minutes.</p>
+      <!-- @store-edition -->
+      <!-- <p class="muted small">Save into your own folders and merge HD video with audio. It takes about two minutes.</p> -->
+      <!-- @end-site-edition -->
       <div class="row-btns">
         <button id="btn-setup" class="primary">Set up the helper</button>
         <button id="btn-setup-later" class="link">Later</button>
@@ -65,7 +104,22 @@
   </section>
 
   <section class="main">
-    <ul id="hero" class="list items" aria-label="Latest video"></ul>
+    <ul id="hero" class="list items" aria-label="The recording on this page"></ul>
+    <!-- When what is listed is not the video that was meant: the same two ways out as on an empty page. -->
+    <div id="wrong" class="wrong" hidden>
+      <button id="btn-wrong" class="link" aria-expanded="false" aria-controls="wrong-box">Not the right video?</button>
+      <div id="wrong-box" class="rescue" role="group" aria-label="Look again" hidden></div>
+    </div>
+
+    <div id="course" class="course" hidden>
+      <div class="course-head">
+        <strong id="course-name" dir="auto"></strong>
+        <span id="course-count" class="eyebrow"></span>
+      </div>
+      <div id="strip" class="strip" role="img"></div>
+      <ul id="strip-legend" class="legend" aria-hidden="true"></ul>
+    </div>
+    <div id="bulk" class="bulk" role="group" aria-label="Download all" hidden></div>
 
     <div id="list-head" class="list-head" hidden>
       <h2>On this page <span id="media-count" class="count"></span></h2>
@@ -75,9 +129,9 @@
       </button>
     </div>
     <div id="listbar" class="listbar" hidden>
-      <input id="search" type="search" placeholder="Search names…" aria-label="Search this page's videos" spellcheck="false">
+      <input id="search" type="search" placeholder="Search names…" aria-label="Search this page's list" spellcheck="false">
       <select id="sort" aria-label="Sort the list">
-        <option value="default">Streams first</option>
+        <option value="default">Suggested order</option>
         <option value="page">Order found</option>
         <option value="name">Name A–Z</option>
         <option value="status">Not downloaded first</option>
@@ -85,41 +139,33 @@
         <option value="section">Group by tab / section</option>
       </select>
     </div>
-    <div id="bulk" class="bulk" role="group" aria-label="Download all" hidden></div>
     <p id="removed" class="muted small removed" hidden></p>
-
-    <div id="box" class="box" hidden>
-      <ul id="media" class="list items rows"></ul>
-      <div id="subs-box" class="subs" hidden>
-        <button id="subs-toggle" class="subs-toggle" aria-expanded="false" aria-controls="subs">
-          <span class="thumb cc" aria-hidden="true">CC</span>
-          <span class="subs-text">
-            <strong>Subtitle files <span id="subs-count" class="count"></span></strong>
-            <span class="muted small">Already saved with stream downloads</span>
-          </span>
-          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </button>
-        <ul id="subs" class="list items rows" hidden></ul>
-      </div>
-    </div>
 
     <div id="empty" class="empty" hidden>
       <span class="empty-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m10 9.5 4.5 2.5-4.5 2.5Z"/></svg>
       </span>
-      <p><strong>No media found yet.</strong></p>
-      <p class="muted">Press play on the video, then open StreamSnag again. Many players only load their video once it starts.</p>
-      <div id="empty-actions" class="row-btns center">
-        <button id="btn-scan" class="secondary">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
-          Scan again
+      <p><strong>No video on this page.</strong></p>
+      <p class="muted">Open a lecture to save it.</p>
+      <!-- "Scan again", then "Ask your AI to find it" (or one quiet line on setting an AI account up): built by popup.js. -->
+      <div id="empty-actions" class="rescue" role="group" aria-label="Look again"></div>
+      <p id="empty-tip" class="muted small">Tip: Alt+Shift+D opens StreamSnag.<span id="desk-tip" hidden> Alt+Shift+S opens the study desk.</span></p>
+    </div>
+
+    <p id="more-head" class="more-head" hidden>More on this page</p>
+    <div id="box" class="box" hidden>
+      <ul id="media" class="list items rows"></ul>
+      <p id="folded" class="folded muted small" role="status" hidden></p>
+      <div id="subs-box" class="subs" hidden>
+        <button id="subs-toggle" class="subs-toggle" aria-expanded="false" aria-controls="subs">
+          <span class="thumb cc" aria-hidden="true">CC</span>
+          <span class="subs-text">
+            <strong id="subs-head">Captions</strong>
+          </span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </button>
-        <button id="btn-ai-empty" class="secondary ai">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/></svg>
-          Find with AI
-        </button>
+        <ul id="subs" class="list items rows" hidden></ul>
       </div>
-      <p id="empty-tip" class="muted small">Tip: Alt+Shift+D opens StreamSnag. Protected (DRM) videos can't be saved.</p>
     </div>
 
     <div id="docs-box" class="box docs" hidden>
@@ -129,17 +175,25 @@
             <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4M10 12h5M10 16h5"/></svg>
           </span>
           <span class="subs-text">
-            <strong>Files on this page <span id="docs-count" class="count"></span></strong>
+            <strong><span id="docs-title">Files on this page</span> <span id="docs-count" class="count"></span></strong>
             <span id="docs-note" class="muted small"></span>
           </span>
           <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </button>
-        <button id="docs-all" class="secondary" title="Download every file here that you don't have yet" hidden>Download all</button>
+        <button id="docs-all" class="secondary" title="Review the files here that you don't have yet, then download them" aria-haspopup="dialog" hidden>Download all</button>
       </div>
+      <input id="docs-search" class="docs-search" type="search" placeholder="Find a file by name…" aria-label="Find a file by name" spellcheck="false" hidden>
       <ul id="docs" class="list items rows" hidden></ul>
+      <p id="docs-none" class="muted small docs-none" hidden>No file names match.</p>
+      <button id="docs-more" class="link docs-more" aria-expanded="false" hidden></button>
     </div>
 
     <div id="library" class="muted small libline" hidden></div>
+
+    <button id="view-row" class="more-row" hidden>
+      <span>Study this lecture step by step: transcript, study page, flashcards. <b>Show the path</b></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6"/></svg>
+    </button>
   </section>
 
   <section id="folder-section" hidden>
@@ -150,8 +204,8 @@
   </section>
 
   <section id="ai-section" hidden>
-    <h2>AI analysis <span id="ai-via" class="muted small"></span></h2>
-    <div id="ai-panel" class="panel"></div>
+    <h2 id="ai-title">Your AI's answer</h2>
+    <div id="ai-panel" class="panel" aria-live="polite"></div>
   </section>
 
   <section id="summary-section" hidden>
@@ -159,28 +213,113 @@
     <div id="summary-panel" class="panel"></div>
   </section>
 
-  <section id="jobs-section" hidden>
-    <h2>Downloads <button id="btn-clear" class="link small">Clear finished</button></h2>
+  <section id="study-section" hidden>
+    <h2 id="study-title">Transcript</h2>
+    <div id="study-panel" class="panel" aria-live="polite"></div>
+  </section>
+
+  <section id="jobs-section" aria-label="Activity" hidden>
+    <p id="jobs-none" class="muted jobs-none" hidden><span id="jobs-none-text"></span> <button id="btn-jobs-history" class="link" hidden>Open History</button></p>
+    <ul id="jobs-earlier" class="list compact" aria-label="Saved from this page earlier" hidden></ul>
     <ul id="jobs" class="list"></ul>
+    <p class="muted small jobs-note">Everything here keeps going when this window closes.</p>
   </section>
 
   <section id="history-section" hidden>
-    <h2>Downloaded before <button id="btn-history-all" class="link small">All history</button></h2>
+    <h2><span>Your recent downloads (all sites)</span> <button id="btn-history-all" class="link small">All history</button></h2>
     <ul id="history" class="list compact"></ul>
   </section>
 
-  <footer id="recipe-bar" class="foot" hidden></footer>
-
-  <div id="tray" class="tray" hidden>
-    <div class="tray-top">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg>
-      <span id="tray-title" class="tray-title"></span>
-      <span id="tray-pct" class="tray-pct"></span>
+  <div id="foot" class="foot-dock">
+    <div id="tray" class="tray" hidden>
+      <div class="progress thin"><div id="tray-bar"></div></div>
+      <div class="tray-top">
+        <span id="tray-title" class="tray-title" dir="auto"></span>
+        <span id="tray-pct" class="tray-pct"></span>
+      </div>
+      <div class="tray-foot">
+        <span id="tray-summary"></span>
+        <button id="btn-tray" class="link small">See all</button>
+      </div>
     </div>
-    <div class="progress thin"><div id="tray-bar"></div></div>
-    <div class="tray-foot">
-      <span id="tray-summary"></span>
-      <button id="btn-tray" class="link small">See downloads</button>
+    <nav class="dock" aria-label="Activity, flashcards, study desk and settings">
+      <button id="btn-activity" aria-expanded="false" aria-controls="jobs-section">
+        <span id="activity-dot" class="live-dot" hidden></span>
+        <span>Activity</span>
+        <span id="activity-note" class="dock-note">· idle</span>
+      </button>
+      <button id="btn-review" hidden></button>
+      <button id="btn-desk" title="Your study desk: every lecture you saved, by course, and what to study today" hidden>Study desk</button>
+      <button id="btn-settings" class="dock-icon" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></svg>
+      </button>
+    </nav>
+  </div>
+
+  <!-- "Download all" opens this sheet over the list: what would be saved, under which names, before anything starts. -->
+  <div id="review" class="review" role="dialog" aria-modal="true" aria-labelledby="review-title" tabindex="-1" hidden>
+    <div class="rv-head">
+      <div class="rv-heading">
+        <h2 id="review-title" class="rv-title">Review before downloading</h2>
+        <p id="review-summary" class="muted small" role="status"></p>
+      </div>
+      <button id="review-close" class="icon" title="Close without downloading" aria-label="Close without downloading">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="rv-body">
+      <div id="review-where" class="rv-where" hidden></div>
+      <div id="rv-ready" class="rv-group" role="group" aria-labelledby="rv-ready-h" hidden>
+        <div class="rv-group-h">
+          <h3 id="rv-ready-h">Ready to download <span class="count"></span></h3>
+          <button class="link small" data-pick="ready" data-to="all">Select all</button>
+          <button class="link small" data-pick="ready" data-to="none">Select none</button>
+        </div>
+        <ul class="rv-list" aria-describedby="rv-keys"></ul>
+      </div>
+      <div id="rv-check" class="rv-group" role="group" aria-labelledby="rv-check-h" hidden>
+        <div class="rv-group-h">
+          <h3 id="rv-check-h">Check these <span class="count"></span></h3>
+          <button class="link small" data-pick="check" data-to="all">Select all</button>
+          <button class="link small" data-pick="check" data-to="none">Select none</button>
+        </div>
+        <p class="muted small rv-hint">Left out unless you tick them.</p>
+        <ul class="rv-list" aria-describedby="rv-keys"></ul>
+      </div>
+      <div id="rv-blocked" class="rv-group" role="group" aria-labelledby="rv-blocked-h" hidden>
+        <div class="rv-group-h"><h3 id="rv-blocked-h">Can't be downloaded <span class="count"></span></h3></div>
+        <ul class="rv-list"></ul>
+      </div>
+      <p id="rv-have" class="rv-have muted small" hidden></p>
+      <div id="rv-files" class="rv-group" role="group" aria-labelledby="rv-files-h" hidden>
+        <div class="rv-group-h"><h3 id="rv-files-h">Files</h3></div>
+        <div class="rv-box">
+          <div class="rv-row">
+            <input type="checkbox" id="rv-docs-all">
+            <label for="rv-docs-all" id="rv-docs-label" class="rv-main rv-plain"></label>
+            <button id="rv-docs-toggle" class="icon sm rv-chev" title="Show the files" aria-label="Show the files" aria-expanded="false" aria-controls="rv-docs">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+            </button>
+          </div>
+          <ul id="rv-docs" class="rv-list inner" aria-describedby="rv-keys" hidden></ul>
+        </div>
+      </div>
+      <div id="rv-options" class="rv-group" role="group" aria-labelledby="rv-options-h" hidden>
+        <div class="rv-group-h"><h3 id="rv-options-h">Options</h3></div>
+        <div class="rv-box">
+          <div class="rv-row">
+            <input type="checkbox" id="rv-number">
+            <label for="rv-number" class="rv-main rv-plain">Number them in page order (01, 02, …)
+              <span class="rv-sub">For the selected ones that have no lecture number in their name.</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rv-foot">
+      <p id="rv-keys" class="muted small rv-keys">Arrows move between rows · Space ticks · Right arrow renames</p>
+      <span id="review-total" class="muted small rv-total" role="status"></span>
+      <button id="review-cancel" class="secondary">Cancel</button>
+      <button id="review-go" class="primary" disabled>Download 0</button>
     </div>
   </div>
 

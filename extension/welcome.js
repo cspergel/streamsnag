@@ -12,9 +12,14 @@ async function checkHelper() {
   }
   const h = res?.ok ? res.data : null;
   if (h?.ok) {
-    const missing = [!h.tools?.ffmpeg && 'ffmpeg', !h.tools?.ytdlp && 'yt-dlp'].filter(Boolean);
+    const missing = [!h.tools?.ffmpeg && 'ffmpeg', /* @site-edition */ !h.tools?.ytdlp && 'yt-dlp', /* @end-site-edition */ ].filter(Boolean);
     status.className = 'small ok';
-    status.textContent = missing.length ? `Helper found. Not installed yet: ${missing.join(' and ')}.` : 'Helper found, with ffmpeg and yt-dlp. You are all set.';
+    status.textContent = missing.length ? `Helper found. Not installed yet: ${missing.join(' and ')}.`
+      // @site-edition
+      : 'Helper found, with ffmpeg and yt-dlp. You are all set.';
+      // @store-edition
+      // : 'Helper found, with ffmpeg. You are all set.';
+      // @end-site-edition
   } else {
     status.className = 'small bad';
     status.textContent = 'Not set up yet. StreamSnag works without it; you can add it any time.';

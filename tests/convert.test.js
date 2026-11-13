@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodeMessage, createDecoder } from '../native-host/protocol.js';
-import { findTool } from '../native-host/host.js';
+import { findTool, convertPartName, listMediaFiles } from '../native-host/host.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ffmpeg = findTool('ffmpeg');
@@ -88,10 +88,48 @@ test('helper convert: closing the connection stops ffmpeg and the helper', { ski
   const got = await ask({ type: 'convert', input: src, mode: 'small' }, { closeAfterMs: 500 });
   assert.ok(Date.now() - started < 8000, `helper exited promptly (${Date.now() - started} ms)`);
   assert.equal(got.some((m) => m.type === 'result'), false, 'no result after a cancel');
-  // ffmpeg was stopped too: its output file stops growing (and can be deleted, which a live writer would block on Windows).
-  await new Promise((r) => setTimeout(r, 700));
-  const out = path.join(dir, 'long (720p).mp4');
-  if (fs.existsSync(out)) fs.rmSync(out);
-  assert.equal(fs.existsSync(out), false);
+  // ffmpeg was stopped too, and the half-made copy went with it: only the original is in the folder.
+  // (It used to stay behind as "long (720p).mp4", looking like a finished video.)
+  assert.deepEqual(fs.readdirSync(dir), ['long.mp4']);
+  fs.rmSync(dir, { recursive: true, force: true });
+});
+
+test('helper convert: the copy is written under a ".part" name and only gets its real name when it is whole', { skip }, async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-convh-'));
+  const src = clip(dir, 'talk.mp4', 240);
+  assert.equal(convertPartName(src, 'small'), path.join(dir, 'talk (720p).mp4.part'));
+  assert.equal(convertPartName(src, 'audio'), path.join(dir, 'talk.mp3.part'));
+  assert.throws(() => convertPartName(src, 'gif'), /Unknown conversion/);
+  // What a run that crashed (the computer went to sleep, the helper was killed) left behind.
+  fs.writeFileSync(convertPartName(src, 'small'), 'half a video from last week');
+  const seen = [];
+  const watch = setInterval(() => { try { seen.push(fs.readdirSync(dir).sort().join('|')); } catch { /* being renamed */ } }, 20);
+  const res = (await ask({ type: 'convert', input: src, mode: 'small' })).at(-1);
+  clearInterval(watch);
+  assert.equal(res.type, 'result', JSON.stringify(res));
+  assert.equal(res.output, path.join(dir, 'talk (720p).mp4'));
+  // While it ran, the folder never held a "talk (720p).mp4" that was not finished.
+  assert.ok(seen.includes('talk (720p).mp4.part|talk.mp4'), `seen: ${[...new Set(seen)].join(' / ')}`);
+  const early = seen.slice(0, seen.indexOf('talk (720p).mp4|talk.mp4') < 0 ? seen.length : seen.indexOf('talk (720p).mp4|talk.mp4'));
+  assert.ok(early.every((s) => s === 'talk (720p).mp4.part|talk.mp4' || s === 'talk.mp4'), `seen: ${[...new Set(seen)].join(' / ')}`);
+  // Afterwards: the original and the finished copy, a real video, and no ".part" (the stale one was replaced, not kept).
+  assert.deepEqual(fs.readdirSync(dir).sort(), ['talk (720p).mp4', 'talk.mp4']);
+  assert.ok(fs.statSync(res.output).size > 5000);
+  assert.notEqual(fs.readFileSync(res.output).subarray(0, 27).toString(), 'half a video from last week');
+  // The folder check lists media files by their ending: a ".part" is never one of them.
+  fs.writeFileSync(path.join(dir, 'other (720p).mp4.part'), 'x'.repeat(100));
+  assert.deepEqual(listMediaFiles([dir]).map((f) => f.name).sort(), ['talk (720p).mp4', 'talk.mp4']);
+  fs.rmSync(dir, { recursive: true, force: true });
+});
+
+test('helper convert: a conversion that fails leaves no ".part" and no copy', { skip }, async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ss-convh-'));
+  // Named like a video, but not one: ffmpeg cannot read it.
+  const bad = path.join(dir, 'broken.mp4');
+  fs.writeFileSync(bad, 'this is not a video file at all');
+  const res = (await ask({ type: 'convert', input: bad, mode: 'audio' })).at(-1);
+  assert.equal(res.type, 'error', JSON.stringify(res));
+  assert.match(res.error, /^ffmpeg failed: /);
+  assert.deepEqual(fs.readdirSync(dir), ['broken.mp4']);
   fs.rmSync(dir, { recursive: true, force: true });
 });

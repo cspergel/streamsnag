@@ -2,17 +2,17 @@
 .welcome-page main { max-width: 640px; padding-top: 48px; }
 .hello { text-align: center; margin-bottom: 28px; }
 .hello img { border-radius: 14px; }
-.hello h1 { margin: 14px 0 4px; font-size: 26px; letter-spacing: -.02em; }
-.hello p { margin: 0; font-size: 15px; }
+.hello h1 { margin: 14px 0 4px; font: 500 1.875rem/1.15 var(--serif); letter-spacing: -.015em; }
+.hello p { margin: 0; font-size: 0.9375rem; }
 .guide { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .guide > li { display: flex; gap: 14px; align-items: flex-start; }
-.guide h2, .facts h2 { margin: 0 0 4px; font-size: 15px; color: var(--text); text-transform: none; letter-spacing: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.guide h2, .facts h2 { margin: 0 0 4px; font: 600 0.9375rem/1.35 var(--sans); color: var(--text); text-transform: none; letter-spacing: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .guide p { margin: 0; }
 .num {
   flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 13px; margin-top: 1px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 0.8125rem; margin-top: 1px;
 }
-.tag { font-size: 11px; font-weight: 500; color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 2px 8px; }
+.tag { font: 500 0.72rem/1.4 var(--sans); letter-spacing: 0; text-transform: none; color: var(--muted); background: var(--surface-2); border: 0; border-radius: 999px; padding: 2px 8px; margin: 0; }
 .how { margin: 8px 0 12px; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 .facts ul { margin: 6px 0 14px; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
 .facts strong, .how strong, .guide p strong { color: var(--text); }
@@ -20,3 +20,13 @@
 #helper.bad { color: var(--warn); }
 .welcome-page code { white-space: nowrap; }
 .how { list-style: disc; }
+
+/* ---------------------------------------------------------------- forced colours (Windows contrast themes) */
+@media (forced-colors: active) {
+  .hello h1, .hello p, .guide h2, .facts h2, .guide p, .facts strong, .how strong, .guide p strong, .facts li, .how li { color: CanvasText; }
+  /* The step numbers: drawn by this page, so they are given the system's highlight. */
+  .num { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  .tag { border: 1px solid CanvasText; background: Canvas; color: CanvasText; }
+  #helper.ok, #helper.bad { color: CanvasText; }
+  .welcome-page a { color: LinkText; }
+}

@@ -1,14 +1,14 @@
 {
   "name": "streamsnag",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "private": true,
-  "description": "StreamSnag: a free, open-source video download helper for Chromium browsers, with optional Claude AI link finding",
-  "license": "MIT",
+  "description": "StreamSnag: a free, open-source video downloader for Chrome, Edge and Brave",
+  "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
     "url": "https://github.com/cspergel/streamsnag.git"
   },
-  "homepage": "https://github.com/cspergel/streamsnag",
+  "homepage": "https://streamsnag.app",
   "bugs": "https://github.com/cspergel/streamsnag/issues",
   "type": "module",
   "engines": {
@@ -19,11 +19,12 @@
     "build": "node scripts/build-sdk.js && node scripts/make-icons.js",
     "install-helper": "node native-host/install.js",
     "uninstall-helper": "node native-host/install.js --uninstall",
-    "e2e": "node scripts/e2e.js"
+    "build:release": "node scripts/build-release.mjs"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^1.6.0",
     "esbuild": "^0.28.2",
+    "pdfjs-dist": "6.5.438",
     "puppeteer-core": "^25.16.0"
   }
 }

@@ -43,6 +43,41 @@ export function docExtOf(url) {
   return DOC_TYPES.has(ext) ? ext : '';
 }
 
+/**
+ * The address that gives the file itself, for the two well-known sites whose links open a viewer page
+ * instead: a Dropbox share link ("dl=0", or no "dl" at all) becomes "dl=1", and a GitHub ".../blob/..."
+ * link becomes ".../raw/...". Only on those hosts; every other address is returned as it is.
+ */
+export function directDocUrl(url) {
+  let u;
+  try {
+    u = new URL(url);
+  } catch {
+    return url;
+  }
+  const host = u.hostname.toLowerCase();
+  if (host === 'dropbox.com' || host === 'www.dropbox.com') {
+    if (u.searchParams.get('dl') === '1') return url;
+    u.searchParams.set('dl', '1');
+    return u.href;
+  }
+  if (host === 'github.com') {
+    const m = /^(\/[^/]+\/[^/]+)\/blob\/(.+)$/.exec(u.pathname);
+    if (!m) return url;
+    u.pathname = `${m[1]}/raw/${m[2]}`;
+    return u.href;
+  }
+  return url;
+}
+
+/** What a finished document download says when the link gave a web page (a viewer, a sign-in page) and no file. */
+export const WEB_PAGE_NOT_FILE = 'This link opens a web page, not the file itself. Open the link and download the file from that page.';
+
+/** Did the server send a web page? (By the type of what was downloaded, as the browser reports it.) */
+export function isWebPageMime(mime) {
+  return /^(text\/html|application\/xhtml\+xml)\b/i.test(String(mime || '').trim());
+}
+
 /** One document, however it is linked: "#page=2" and a fresh signature on the link don't make it another file. */
 export function docKey(url) {
   return dedupeKey(url);
@@ -57,14 +92,31 @@ const stripExt = (s) => s.replace(/\.([a-z0-9]{1,8})$/i, (all, e) => (DOC_TYPES.
 
 // Words that say "this is a link to a file" without saying which file.
 const GENERIC = new Set(('download downloads here click tap this that the a an file files link view open get save see read more as in to '
-  + 'new tab window document attachment format version full text and or for of now it').split(' '));
+  + 'new tab window document attachment format version full text and or for of now it embedded embed viewer preview').split(' '));
+// A language on its own ("English" under a transcript button) says which copy, not which file.
+const LANGUAGES = new Set(('english spanish español french français german deutsch italian italiano portuguese português russian русский japanese 日本語 '
+  + 'chinese 中文 简体中文 繁體中文 korean 한국어 arabic العربية hindi हिन्दी dutch nederlands turkish türkçe polish polski greek ελληνικά hebrew עברית').split(' '));
+// A file size as pages write it: "2.4 MB", "801.7K", "5.2G", "714.0B".
+const SIZE = /(?<![\p{L}\p{N}.])(\d+(?:[.,]\d+)?)\s*(bytes?|[kmgt]i?b|[kmgt]|b)(?![\p{L}\p{N}])/giu;
+const UNIT = { b: 1, k: 1024, m: 1024 ** 2, g: 1024 ** 3, t: 1024 ** 4 };
 
-/** Link text that doesn't name the file: "Download", "click here", "PDF", "Download (PDF, 2.4 MB)", "[1]". */
+/** The file size a link's text gives ("5.2G", "Download (PDF, 2.4 MB)"), in bytes; 0 when it gives none. */
+export function docSize(text) {
+  // "M2 macrophages" and "5G networks" are words: a bare letter only counts as a unit when the number has a decimal point.
+  for (const m of tidy(text).matchAll(SIZE)) {
+    const unit = m[2].toLowerCase();
+    if (unit.length === 1 && !/[.,]/.test(m[1])) continue;
+    return Math.round(Number(m[1].replace(',', '.')) * UNIT[unit[0]]);
+  }
+  return 0;
+}
+
+/** Link text that doesn't name the file: "Download", "click here", "PDF", "Download (PDF, 2.4 MB)", "2.2M", "English", "[1]". */
 export function isGenericText(text) {
   const words = tidy(text).toLowerCase()
-    .replace(/\d+(?:[.,]\d+)?\s*(?:kb|mb|gb|kib|mib|bytes?)\b/g, ' ') // a file size
+    .replace(SIZE, (all, n, unit) => (unit.length === 1 && !/[.,]/.test(n) ? all : ' ')) // a file size
     .split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-  return words.every((w) => GENERIC.has(w) || DOC_TYPES.has(w) || /^\d+$/.test(w));
+  return words.every((w) => GENERIC.has(w) || LANGUAGES.has(w) || DOC_TYPES.has(w) || /^\d+$/.test(w));
 }
 
 /** The file's own name from its address, decoded, without the extension: ".../Week%203%20notes.pdf" → "Week 3 notes". */
@@ -78,16 +130,39 @@ export function nameFromUrl(url) {
   try {
     last = decodeURIComponent(last);
   } catch { /* a stray "%": keep it as written */ }
-  return clip(stripExt(tidy(last.replace(/[\\/]+/g, ' '))));
+  // A storage id put in front of the real name ("ff296575da32c406c2e56131e1e38997_MIT6_041SCF13_L01.pdf") is not part of it.
+  return clip(stripExt(tidy(last.replace(/[\\/]+/g, ' '))).replace(/^[0-9a-f]{24,}[_-]+(?=.)/i, ''));
 }
+
+// "Download transcript: English" names its file from the second word on.
+const LEAD = /^(?:download|view|open|get|save|read|see)\s+(?:the\s+|this\s+|a\s+)?/i;
 
 /** What the link itself says the file is: its visible text, else its tooltip/label. '' when neither says. */
 function linkName({ text, alt } = {}) {
   for (const raw of [text, alt]) {
     const t = clip(stripExt(tidy(raw)));
-    if (t && !isGenericText(t) && !/^(?:https?:\/\/|www\.)/i.test(t)) return t;
+    if (!t || isGenericText(t) || /^(?:https?:\/\/|www\.)/i.test(t)) continue;
+    const rest = t.replace(LEAD, '');
+    return rest !== t && !isGenericText(rest) ? `${rest[0].toUpperCase()}${rest.slice(1)}` : t;
   }
   return '';
+}
+
+/** A bundle of files (a .zip): listed for what it is, and left out of "Download all" for the page's documents. */
+export const isBundle = (ext) => String(ext || '').toLowerCase() === 'zip';
+
+/** May "Download all" for the page's files start this one? Not an archive: those can be gigabytes, and are downloaded from their own row. */
+export function inDocsBulk(d) {
+  return !!d && !d.bundle;
+}
+
+/** The line under "Files on this page": what kind of files they are. */
+export function docsNote(docs) {
+  const all = docs || [];
+  const n = all.filter((d) => d.bundle).length;
+  const archives = `${n} archive${n === 1 ? '' : 's'}`;
+  if (n && n === all.length) return `${archives} (${n === 1 ? 'a bundle' : 'bundles'} of files)`;
+  return n ? `PDFs, slides, handouts · ${archives}` : 'PDFs, slides, handouts';
 }
 
 /**
@@ -115,20 +190,24 @@ export function docFilename(name, ext) {
 export function cleanDocs(reported, max = MAX_DOCS) {
   const byKey = new Map();
   for (const it of (Array.isArray(reported) ? reported : []).slice(0, max * 5)) {
-    const url = typeof it?.url === 'string' && it.url.length <= MAX_URL ? it.url : '';
-    const ext = docExtOf(url);
+    const linked = typeof it?.url === 'string' && it.url.length <= MAX_URL ? it.url : '';
+    const ext = docExtOf(linked);
     if (!ext) continue;
+    const url = directDocUrl(linked); // a viewer link (Dropbox, GitHub) becomes the link to the file itself
     const key = docKey(url);
     const named = linkName(it);
+    const size = docSize(it.text) || docSize(it.alt); // what the page says the file weighs, when it says
     const prev = byKey.get(key);
     if (prev) {
       if (!prev.named && named) Object.assign(prev, { name: named, named: true });
+      if (!prev.size && size) prev.size = size;
       continue;
     }
     if (byKey.size >= max) continue;
-    byKey.set(key, { key, url: url.split('#')[0], ext, name: named || nameFromUrl(url) || 'document', named: !!named });
+    byKey.set(key, { key, url: url.split('#')[0], ext, name: named || nameFromUrl(url) || 'document', named: !!named, size });
   }
-  return [...byKey.values()].map(({ named, ...d }) => d);
+  // `size` and `bundle` are only there when they say something (most links give no size, most files are no archive).
+  return [...byKey.values()].map(({ named, size, ...d }) => ({ ...d, ...(size ? { size } : {}), ...(isBundle(d.ext) ? { bundle: true } : {}) }));
 }
 
 /**

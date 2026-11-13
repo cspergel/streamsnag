@@ -1,0 +1,4 @@
+{
+  "//": "Applied to the store edition's manifest.json by scripts/build-release.mjs (a JSON merge patch: null removes a key). The Chrome Web Store gives the extension its own key and id, and does not accept a package that carries one.",
+  "key": null
+}

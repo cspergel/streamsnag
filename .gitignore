@@ -9,3 +9,13 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
+# Personal API keys and other secrets: never commit these
+deepseek.txt
+cloudflare.txt
+gpt.txt
+*token*.txt
+*.key
+*apikey*
+*api-key*
+.env
+.env.*

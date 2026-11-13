@@ -67,6 +67,22 @@ test('helper moves finished files into the chosen folder + subfolder without ove
   const bad = await helper({ type: 'move', files: [], dest: 'relative\\dir' });
   assert.equal(bad.type, 'error');
 
+  // Only the kinds of file StreamSnag saves are moved (security review, 2026-11-12): a video, a document from the
+  // page, a subtitle file, a page or note it made. Anything else is left where it is.
+  const kinds = ['Notes.pdf', 'Deck.pptx', 'Lecture.transcript.md', 'Lecture.guide.html', 'Lecture.vtt', 'Course.zip', 'tool.exe', 'lib.dll', 'run.bat', 'setup.ps1', 'noext'];
+  for (const n of kinds) fs.writeFileSync(path.join(dl, n), 'x');
+  const mixed = await helper({ type: 'move', files: kinds.map((n) => path.join(dl, n)), dest, subfolder: 'Kinds' });
+  assert.equal(mixed.type, 'result', mixed.error);
+  assert.deepEqual(mixed.moved.map((m) => (m ? path.basename(m) : null)), ['Notes.pdf', 'Deck.pptx', 'Lecture.transcript.md', 'Lecture.guide.html', 'Lecture.vtt', 'Course.zip', null, null, null, null, null]);
+  for (const n of ['tool.exe', 'lib.dll', 'run.bat', 'setup.ps1', 'noext']) assert.ok(fs.existsSync(path.join(dl, n)), `${n} stays where it was`);
+
+  // Merging takes video and audio files only, and so can only ever delete those after merging.
+  const notMedia = path.join(dl, 'tool.exe');
+  const mux = await helper({ type: 'mux', inputs: [notMedia], outputName: 'out.mp4', deleteInputs: true });
+  assert.equal(mux.type, 'error');
+  assert.match(mux.error, /not a video or audio file/);
+  assert.ok(fs.existsSync(notMedia), 'nothing was deleted');
+
   const ok = await helper({ type: 'checkFolder', path: path.join(work, 'new', 'deeper') });
   assert.equal(ok.writable, true);
   assert.ok(fs.existsSync(path.join(work, 'new', 'deeper')));

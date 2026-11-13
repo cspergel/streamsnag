@@ -57,6 +57,9 @@ function classify(as, rep) {
   return 'video';
 }
 
+// Stands in for $Number$ / $Time$ while the shape of a segment address is worked out.
+const PLACE = '7730077300773';
+
 function segmentsFromTemplate(tpl, rep, base, periodDuration) {
   const a = tpl.attrs;
   const timescale = Number(a.timescale) || 1;
@@ -65,6 +68,10 @@ function segmentsFromTemplate(tpl, rep, base, periodDuration) {
   const init = a.initialization ? { url: resolveUrl(fillTemplate(a.initialization, vars), base), range: null } : null;
   const segments = [];
   if (!a.media) return { init, segments };
+  // The shape of every segment's address: what comes before and after its number (or time). A live stream
+  // lists no segments and a long one lists thousands: the shape names them all (lib/parts.js).
+  const shaped = (resolveUrl(fillTemplate(a.media, { ...vars, number: PLACE, time: PLACE }), base) || '').split(PLACE);
+  const pattern = shaped.length === 2 ? shaped : null;
 
   if (tpl.timeline) {
     let number = startNumber;
@@ -98,7 +105,7 @@ function segmentsFromTemplate(tpl, rep, base, periodDuration) {
       });
     }
   }
-  return { init, segments };
+  return { init, segments, pattern };
 }
 
 function segmentsFromList(list, base) {
@@ -139,9 +146,10 @@ export function parseMPD(text, mpdUrl) {
       if (kind === 'image') continue;
       let init = null;
       let segments = [];
+      let pattern = null; // [before, after] the number in a templated segment address
       const tpl = mergedTemplate(period, as, rep);
       const list = child(rep, 'SegmentList') || child(as, 'SegmentList');
-      if (tpl) ({ init, segments } = segmentsFromTemplate(tpl, rep, base, periodDuration));
+      if (tpl) ({ init, segments, pattern = null } = segmentsFromTemplate(tpl, rep, base, periodDuration));
       else if (list) ({ init, segments } = segmentsFromList(list, base));
       else segments = [{ url: base }]; // SegmentBase or plain BaseURL: one whole file.
 
@@ -157,6 +165,7 @@ export function parseMPD(text, mpdUrl) {
         label: child(as, 'Label')?.text || '',
         init,
         segments,
+        pattern,
       };
       (kind === 'subtitle' ? out.subtitles : out[kind]).push(entry);
     }

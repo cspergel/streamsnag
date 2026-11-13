@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DOC_EXTS, MAX_DOCS, docExtOf, docLabel, docKey, isGenericText, nameFromUrl, docName, docFilename,
-  cleanDocs, frameDocs, mergeDocs, sameDoc, docStatus,
+  cleanDocs, frameDocs, mergeDocs, sameDoc, docStatus, directDocUrl, isWebPageMime, WEB_PAGE_NOT_FILE,
 } from '../extension/lib/files.js';
 import { sameItem } from '../extension/lib/match.js';
 import { pickPlaying } from '../extension/lib/util.js';
@@ -188,4 +188,62 @@ test('documents never count as a video: not as its download, and not as what is 
   assert.equal(docStatus(doc, [{ status: 'done', mediaUrl: video.url, mediaKeys: [video.key] }], []), 'new');
   // "Now playing" only ever looks at the media list; a page that plays nothing has nothing playing.
   assert.equal(pickPlaying([video], [{ frameId: 0, src: doc.url, page: `${SITE}/lesson`, playing: true }]), null);
+});
+
+test('directDocUrl: a Dropbox share link becomes the link to the file itself', () => {
+  assert.equal(directDocUrl('https://www.dropbox.com/s/abc123/slides.pdf?dl=0'), 'https://www.dropbox.com/s/abc123/slides.pdf?dl=1');
+  assert.equal(directDocUrl('https://dropbox.com/s/abc123/slides.pdf?dl=0'), 'https://dropbox.com/s/abc123/slides.pdf?dl=1');
+  // The new kind of share link keeps its key.
+  assert.equal(directDocUrl('https://www.dropbox.com/scl/fi/xyz/Week%203.pptx?rlkey=k9&st=abc&dl=0'), 'https://www.dropbox.com/scl/fi/xyz/Week%203.pptx?rlkey=k9&st=abc&dl=1');
+  // No "dl" at all opens the viewer too.
+  assert.equal(directDocUrl('https://www.dropbox.com/s/abc123/slides.pdf'), 'https://www.dropbox.com/s/abc123/slides.pdf?dl=1');
+  // Already the file: untouched, character for character.
+  assert.equal(directDocUrl('https://www.dropbox.com/s/abc123/slides.pdf?dl=1'), 'https://www.dropbox.com/s/abc123/slides.pdf?dl=1');
+});
+
+test('directDocUrl: a GitHub "blob" page becomes the "raw" file', () => {
+  assert.equal(directDocUrl('https://github.com/prof/course/blob/main/hw1.ipynb'), 'https://github.com/prof/course/raw/main/hw1.ipynb');
+  assert.equal(directDocUrl('https://github.com/prof/course/blob/v2.1/week%203/notes.pdf?x=1'), 'https://github.com/prof/course/raw/v2.1/week%203/notes.pdf?x=1');
+  // Only the "blob" right after owner/repo: a folder that happens to be called blob stays.
+  assert.equal(directDocUrl('https://github.com/prof/course/raw/main/blob/hw1.ipynb'), 'https://github.com/prof/course/raw/main/blob/hw1.ipynb');
+  assert.equal(directDocUrl('https://github.com/prof/course/releases/download/v1/slides.pdf'), 'https://github.com/prof/course/releases/download/v1/slides.pdf');
+});
+
+test('directDocUrl: only on those two sites; every other link is returned exactly as it was', () => {
+  for (const url of [
+    'https://learn.example.com/files/slides.pdf?dl=0',
+    'https://learn.example.com/prof/course/blob/main/hw1.ipynb',
+    'https://notdropbox.com/s/abc/slides.pdf?dl=0',
+    'https://dropbox.com.evil.example/s/abc/slides.pdf?dl=0',
+    'https://evil.example/?u=https://www.dropbox.com/s/abc/slides.pdf?dl=0',
+    'https://gist.github.com/prof/abc/blob/main/hw1.ipynb',
+    'https://raw.githubusercontent.com/prof/course/main/hw1.ipynb',
+    'https://github.com.evil.example/prof/course/blob/main/hw1.ipynb',
+    'https://dl.dropboxusercontent.com/s/abc/slides.pdf',
+    'not a url', '',
+  ]) assert.equal(directDocUrl(url), url, url);
+});
+
+test('cleanDocs lists a viewer link as the file behind it, once, whichever way it is linked', () => {
+  const docs = cleanDocs([
+    { url: 'https://www.dropbox.com/s/abc123/slides.pdf?dl=0', text: 'Lecture slides' },
+    { url: 'https://www.dropbox.com/s/abc123/slides.pdf?dl=1', text: 'Slides again' },
+    { url: 'https://github.com/prof/course/blob/main/hw1.ipynb', text: 'Homework 1' },
+    { url: `${SITE}/files/plain.pdf?dl=0`, text: 'Plain' },
+  ]);
+  assert.deepEqual(docs.map((d) => [d.name, d.url, d.ext]), [
+    ['Lecture slides', 'https://www.dropbox.com/s/abc123/slides.pdf?dl=1', 'pdf'],
+    ['Homework 1', 'https://github.com/prof/course/raw/main/hw1.ipynb', 'ipynb'],
+    ['Plain', `${SITE}/files/plain.pdf?dl=0`, 'pdf'],
+  ]);
+  // A page that is not a document on those sites is still not one.
+  assert.deepEqual(cleanDocs([{ url: 'https://github.com/prof/course/blob/main/README.md', text: 'Readme' }, { url: 'https://www.dropbox.com/s/abc/setup.exe?dl=0', text: 'Tool' }]), []);
+});
+
+test('isWebPageMime: a "document" that arrived as a web page is told apart from a real file', () => {
+  for (const mime of ['text/html', 'text/html; charset=utf-8', 'TEXT/HTML', ' text/html ', 'application/xhtml+xml']) assert.equal(isWebPageMime(mime), true, mime);
+  for (const mime of ['application/pdf', 'application/octet-stream', 'application/zip', 'text/plain', 'text/csv', 'text/htmlx', 'application/vnd.ms-powerpoint', '', null, undefined]) {
+    assert.equal(isWebPageMime(mime), false, String(mime));
+  }
+  assert.match(WEB_PAGE_NOT_FILE, /^This link opens a web page, not the file itself\./);
 });

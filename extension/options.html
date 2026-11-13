@@ -14,7 +14,7 @@
       <img src="icons/icon48.png" alt="" width="36" height="36">
       <div>
         <h1>StreamSnag</h1>
-        <p class="muted">Video download helper with optional Claude-powered link finding.</p>
+        <p class="muted">Save your online lectures and study from them. Study packs use an AI account you choose.</p>
       </div>
       <div id="theme" class="filters theme-pick" role="group" aria-label="Theme">
         <button class="chip" data-theme-choice="system" title="Follow your computer's light or dark setting">System</button>
@@ -24,24 +24,27 @@
     </header>
 
     <nav class="tabs" role="tablist">
-      <button role="tab" data-tab="ai" aria-selected="true">AI</button>
-      <button role="tab" data-tab="downloads">Downloads</button>
+      <button role="tab" data-tab="downloads" aria-selected="true">Downloads</button>
+      <button role="tab" data-tab="ai">AI</button>
       <button role="tab" data-tab="helper">Local helper</button>
-      <button role="tab" data-tab="recipes">Site recipes</button>
       <button role="tab" data-tab="history">History</button>
       <button role="tab" data-tab="backup">Backup &amp; advanced</button>
     </nav>
 
     <!-- AI -->
-    <section class="tab-panel" data-panel="ai">
+    <section class="tab-panel" data-panel="ai" hidden>
       <div class="card stack">
         <h3>AI provider</h3>
-        <p class="muted">AI powers “Find with AI”, “Ask AI why” on failed downloads, summaries and study notes, smart filenames, and it writes reusable site recipes. It is off until you choose one of these, and nothing is sent until you use an AI action.</p>
+        <p class="muted">AI powers study packs, summaries, “Ask your AI to find it” (for a video StreamSnag can't see by itself), “Ask AI why” on a failed download, and tidier file names. It is off until you choose one of these, and nothing is sent until you use an AI action.</p>
+        <p id="ai-which" class="muted small">For study packs: a Google Gemini key works within Google's free daily allowance, so you can try them without paying. A Claude or ChatGPT subscription gives the fullest experience, with no bill for each lecture.</p>
         <label class="choice"><input type="radio" name="aiProvider" value="off"> <span><strong>Off</strong><br><span class="muted">No AI features.</span></span></label>
         <label class="choice"><input type="radio" name="aiProvider" value="subscription"> <span><strong>My Claude subscription</strong> (Pro / Max)<br><span class="muted">Runs through the Claude Code CLI on this computer via the local helper. No API billing — uses your plan's usage. Requires the helper (see “Local helper” tab) and that you've signed in to <code>claude</code> once.</span></span></label>
         <label class="choice"><input type="radio" name="aiProvider" value="chatgpt"> <span><strong>My ChatGPT subscription</strong> (Plus / Pro)<br><span class="muted">Runs through OpenAI's Codex CLI on this computer via the local helper. No API billing — uses your plan's usage. Requires the helper, <code>npm i -g @openai/codex</code>, and <code>codex login</code> once (choose “Sign in with ChatGPT”).</span></span></label>
         <label class="choice"><input type="radio" name="aiProvider" value="api"> <span><strong>Anthropic API key</strong> (Claude)<br><span class="muted">Pay-per-use via the official SDK. The key is stored only in this browser profile.</span></span></label>
         <label class="choice"><input type="radio" name="aiProvider" value="openai"> <span><strong>OpenAI API key</strong> (ChatGPT's models)<br><span class="muted">Pay-per-use, sent straight to OpenAI. The key is stored only in this browser profile.</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="gemini"> <span><strong>Google Gemini API key</strong> (free to start)<br><span class="muted">Google gives each key a free daily allowance, so this is the way to try the AI features without paying. Get a key at Google AI Studio. Sent straight to Google; the key is stored only in this browser profile.</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="deepseek"> <span><strong>DeepSeek API key</strong> (cheapest)<br><span class="muted">Pay-per-use at a few cents per lecture. Sent straight to DeepSeek, a company based in China, whose servers process the text: check that this is acceptable for your course material. The key is stored only in this browser profile.</span></span></label>
+        <label class="choice"><input type="radio" name="aiProvider" value="openrouter"> <span><strong>OpenRouter API key</strong> (any model)<br><span class="muted">One key, and you choose the model from the hundreds OpenRouter offers. Pay-per-use through OpenRouter, which passes the text on to the model's provider. The key is stored only in this browser profile.</span></span></label>
       </div>
 
       <div class="card stack" data-when="openai">
@@ -55,6 +58,40 @@
             <option value="gpt-6-luna">GPT-6 Luna (cheapest)</option>
           </select>
         </label>
+      </div>
+
+      <div class="card stack" data-when="deepseek">
+        <h3>DeepSeek API settings</h3>
+        <label>API key <input type="password" id="deepseekKey" placeholder="sk-…" autocomplete="off" spellcheck="false"></label>
+        <label>Model
+          <select id="deepseekModel">
+            <option value="deepseek-flash">DeepSeek Flash (default, cheapest)</option>
+            <option value="deepseek-v4-pro">DeepSeek V4 Pro (stronger, several times the price)</option>
+          </select>
+        </label>
+        <p class="muted small">A one-hour lecture's study pack cost about 4 to 8 US cents with Flash when this was measured in November 2026. Prices change.</p>
+      </div>
+
+      <div class="card stack" data-when="openrouter">
+        <h3>OpenRouter API settings</h3>
+        <label>API key <input type="password" id="openrouterKey" placeholder="sk-or-…" autocomplete="off" spellcheck="false"></label>
+        <label>Model
+          <input type="text" id="openrouterModel" placeholder="vendor/model, exactly as OpenRouter lists it" spellcheck="false" autocomplete="off">
+        </label>
+        <p class="muted small">Copy the model's id from OpenRouter's model list, for example the part that looks like <code>vendor/model-name</code>. Study packs need a model that follows instructions well and returns JSON; small or very old models give poor results.</p>
+      </div>
+
+      <div class="card stack" data-when="gemini">
+        <h3>Gemini API settings</h3>
+        <label>API key <input type="password" id="geminiKey" placeholder="AIza…" autocomplete="off" spellcheck="false"></label>
+        <label>Model
+          <select id="geminiModel">
+            <option value="gemini-3.6-flash">Gemini 3.6 Flash (default)</option>
+            <option value="gemini-3.8-flash">Gemini 3.8 Flash (newest, most capable Flash)</option>
+            <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (fastest, smallest allowance use)</option>
+          </select>
+        </label>
+        <p class="muted small">The free allowance has daily and per-minute limits that Google sets and can change. Long lectures may need more than it allows in one day; StreamSnag tells you when the limit is reached, and what is already done is kept.</p>
       </div>
 
       <div class="card stack" data-when="chatgpt">
@@ -93,6 +130,7 @@
         </label>
       </div>
 
+
       <div class="card stack">
         <label class="check"><input type="checkbox" id="aiFilenames"> Use AI to clean up file names (one small extra request per download)</label>
         <div class="row-actions">
@@ -103,7 +141,7 @@
     </section>
 
     <!-- Downloads -->
-    <section class="tab-panel" data-panel="downloads" hidden>
+    <section class="tab-panel" data-panel="downloads">
       <div class="card stack">
         <h3>Files</h3>
         <label>Save to
@@ -115,9 +153,7 @@
         </label>
         <p id="folder-status" class="muted small">Any folder on your PC, e.g. <code>D:\Videos</code>. Chrome can only save inside Downloads, so the local helper moves each finished file here right after it is merged.</p>
         <label>Subfolder <input type="text" id="subfolder" placeholder="StreamSnag (empty = no subfolder)" spellcheck="false"></label>
-        <p class="muted small">Use <code>/</code> for nested folders. Tokens: <code>{site}</code> <code>{course}</code> <code>{date}</code> <code>{kind}</code>. Example: <code>StreamSnag/{site}</code> makes one folder per website, and <code>StreamSnag/{course}</code> one per course.</p>
-        <label>File name template <input type="text" id="filenameTemplate" placeholder="{title} - {quality}"></label>
-        <p class="muted small">Tokens: <code>{title}</code> (the lecture/episode name found on the page) <code>{number}</code> and <code>{name}</code> (the two halves of a numbered title like "009: C. diff") <code>{course}</code> <code>{page}</code> (tab title) <code>{quality}</code> <code>{host}</code> <code>{date}</code> <code>{kind}</code>. Examples: <code>{course} - {title}</code>, <code>{number} - {name}</code></p>
+        <p class="muted small">A folder inside the one above. For one folder per course, use <code>StreamSnag/{course}</code>; for one per website, <code>StreamSnag/{site}</code>.</p>
         <label>Downloads at once <input type="number" id="maxParallel" min="1" max="6"></label>
         <p class="muted small">More than this wait in the queue and start as others finish (live recordings don't count).</p>
         <label>Quality to pick first
@@ -132,19 +168,28 @@
         <p class="muted small">The quality already chosen when a video has several, and the one "Download all" uses. You can still pick another on the video's card.</p>
       </div>
       <div class="card stack">
-        <h3>Rules for specific sites</h3>
-        <p class="muted small">Use a different folder or file name on one site, e.g. a course site: folder <code>Courses/{course}</code>, name <code>{number} - {name}</code>. A rule for <code>example.com</code> also covers <code>learn.example.com</code>. Leave a field empty to use the general setting (a folder of <code>.</code> means no subfolder).</p>
-        <table class="rules">
-          <thead><tr><th>Site</th><th>Subfolder</th><th>File name</th><th></th></tr></thead>
-          <tbody id="siteRules"></tbody>
-        </table>
-        <div class="row-actions">
-          <input type="text" id="ruleSite" placeholder="example.com" spellcheck="false" aria-label="Site">
-          <input type="text" id="ruleFolder" placeholder="Courses/{course}" spellcheck="false" aria-label="Subfolder">
-          <input type="text" id="ruleTemplate" placeholder="{number} - {name}" spellcheck="false" aria-label="File name template">
-          <button type="button" id="addRule" class="secondary">Add rule</button>
-        </div>
-        <span id="ruleStatus" class="muted small"></span>
+        <h3>Transcripts</h3>
+        <label>Transcript format
+          <select id="transcriptFormat">
+            <option value="md">Markdown with timestamps</option>
+            <option value="txt">Plain text</option>
+          </select>
+        </label>
+        <p class="muted small">“Save transcript” (on a lecture's path in the popup) turns its captions into a text file you can read and search, saved next to the video.</p>
+      </div>
+      <div class="card stack" id="opening-card">
+        <h3>Opening StreamSnag</h3>
+        <label class="check"><input type="checkbox" id="sidebarOnClick"> Open StreamSnag in the sidebar <span class="muted small">(clicking the toolbar icon opens the side panel instead of the small window; the sidebar has the same switch)</span></label>
+      </div>
+      <div class="card stack">
+        <h3>What gets saved</h3>
+        <label class="check"><input type="checkbox" id="includeSubtitles"> Save a video's captions with it</label>
+        <label class="check"><input type="checkbox" id="useFfmpeg"> Save one finished video file, with picture and sound joined <span class="muted small">(needs the local helper)</span></label>
+        <label class="check"><input type="checkbox" id="embedSubtitles"> Put the captions inside the video file</label>
+        <label class="check"><input type="checkbox" id="keepSubtitleFiles"> Also keep the captions as separate files</label>
+        <label class="check"><input type="checkbox" id="showDocuments"> List the files a page links to <span class="muted small">(PDFs, slides, handouts)</span></label>
+        <label class="check"><input type="checkbox" id="showEverything"> Always show everything <span class="muted small">(second copies, sound-only copies, previews and short clips stay in the list instead of folding into one line at its end)</span></label>
+        <label class="check"><input type="checkbox" id="notify"> Tell me when downloads finish</label>
       </div>
       <div class="card stack">
         <h3>Videos you already have</h3>
@@ -157,21 +202,35 @@
           <span id="library-status" class="muted small"></span>
         </div>
       </div>
-      <div class="card stack">
-        <h3>Detection & streams</h3>
-        <div class="grid2">
-          <label>Ignore files smaller than (KB) <input type="number" id="minSizeKB" min="0" step="50"></label>
-          <label>Parallel segment downloads <input type="number" id="concurrency" min="1" max="16"></label>
-        </div>
-        <label class="check"><input type="checkbox" id="includeSubtitles"> Also save subtitles with stream downloads</label>
-        <label class="check"><input type="checkbox" id="useFfmpeg"> Merge separate video + audio and convert .ts to .mp4 with ffmpeg (needs local helper)</label>
-        <label class="check"><input type="checkbox" id="embedSubtitles"> Embed subtitles inside the merged video</label>
-        <label class="check"><input type="checkbox" id="keepSubtitleFiles"> Also keep the separate subtitle files</label>
-        <label class="check"><input type="checkbox" id="autoRecipes"> Run saved site recipes automatically when a page loads</label>
-        <label class="check"><input type="checkbox" id="notify"> Notify me when downloads finish</label>
-        <label class="check"><input type="checkbox" id="showDocuments"> Show documents linked on the page (PDF, slides, …)</label>
-      </div>
-      <p class="muted small">StreamSnag never downloads DRM-protected (Widevine/PlayReady/FairPlay) or encrypted streams. Only save content you have the right to keep.</p>
+      <details class="card adv" id="downloads-advanced">
+          <summary><h3>Advanced</h3> <span class="muted small">File-name patterns, rules for one site, stream settings</span></summary>
+          <div class="stack adv-body">
+          <h4>File names</h4>
+          <label>File name template <input type="text" id="filenameTemplate" placeholder="{title} - {quality}"></label>
+          <p class="muted small">Words in braces are filled in for each download: <code>{title}</code> (the lecture/episode name found on the page) <code>{number}</code> and <code>{name}</code> (the two halves of a numbered title like "009: C. diff") <code>{course}</code> <code>{page}</code> (tab title) <code>{quality}</code> <code>{host}</code> <code>{date}</code> <code>{kind}</code>. Examples: <code>{course} - {title}</code>, <code>{number} - {name}</code></p>
+          <p class="muted small">In a subfolder (above) you can use <code>{site}</code> <code>{course}</code> <code>{date}</code> <code>{kind}</code>, and <code>/</code> for nested folders.</p>
+          <h4>Rules for specific sites</h4>
+          <p class="muted small">Use a different folder or file name on one site, e.g. a course site: folder <code>Courses/{course}</code>, name <code>{number} - {name}</code>. A rule for <code>example.com</code> also covers <code>learn.example.com</code>. Leave a field empty to use the general setting (a folder of <code>.</code> means no subfolder).</p>
+          <table class="rules">
+          <thead><tr><th>Site</th><th>Subfolder</th><th>File name</th><th></th></tr></thead>
+          <tbody id="siteRules"></tbody>
+          </table>
+          <div class="row-actions">
+          <input type="text" id="ruleSite" placeholder="example.com" spellcheck="false" aria-label="Site">
+          <input type="text" id="ruleFolder" placeholder="Courses/{course}" spellcheck="false" aria-label="Subfolder">
+          <input type="text" id="ruleTemplate" placeholder="{number} - {name}" spellcheck="false" aria-label="File name template">
+          <button type="button" id="addRule" class="secondary">Add rule</button>
+          </div>
+          <span id="ruleStatus" class="muted small"></span>
+          <h4>Finding and downloading</h4>
+          <div class="grid2">
+            <label>Ignore files smaller than (KB) <input type="number" id="minSizeKB" min="0" step="50"></label>
+            <label>Pieces of a stream fetched at once <input type="number" id="concurrency" min="1" max="16"></label>
+          </div>
+          <label class="check"><input type="checkbox" id="autoRecipes"> Use site recipes automatically when a page loads <span class="muted small">(your own and the built-in ones; they are under Backup &amp; advanced)</span></label>
+          </div>
+      </details>
+      <p class="muted small">StreamSnag never downloads protected (DRM) videos. Only save what you have the right to keep.</p>
     </section>
 
     <!-- Backup & advanced -->
@@ -187,6 +246,17 @@
           <span id="backupStatus" class="muted small"></span>
         </div>
       </div>
+      <div class="card stack" id="recipes-card">
+        <h3>Site recipes</h3>
+        <p class="muted">A recipe tells StreamSnag where the video is on one website where it can't find it by itself, and, where the site says so, what the lecture is called and where its captions are. You never have to write one: when “Ask your AI to find it” finds a video, what worked is saved for that site by itself and used from then on (StreamSnag says so at the time, with an Undo). The ones you have are listed here, so you can remove one that has stopped working.</p>
+        <p class="muted small">A recipe is a short list of places to look on the page, never a program. It only applies to its own site, and the only other address it may ask is one on that same site.</p>
+        <div class="row-actions">
+          <button class="secondary" id="newRecipe">New recipe</button>
+          <button class="secondary" id="exportRecipes">Export all</button>
+          <label class="secondary file-btn">Import <input type="file" id="importRecipes" accept="application/json" hidden></label>
+        </div>
+      </div>
+      <div id="recipeList" class="stack"></div>
       <div class="card stack">
         <h3>Diagnostics</h3>
         <label class="check"><input type="checkbox" id="debugMode"> Keep a diagnostic snapshot of the last page (what was detected, merged and why)</label>
@@ -202,37 +272,35 @@
     <section class="tab-panel" data-panel="helper" hidden>
       <div class="card stack">
         <h3>Local helper</h3>
-        <p class="muted">A small program your browser starts when it's needed. With it you can save into any folder, get one finished MP4 (video and audio merged with ffmpeg), download playlists and hard sites with yt-dlp, see which videos you already have, and use your Claude subscription for AI.</p>
+        <p class="muted">A small program your browser starts when it's needed. With it you can save into any folder, get one finished MP4 (video and audio merged with ffmpeg)<!-- @site-edition -->, download playlists and hard sites with yt-dlp<!-- @end-site-edition -->, see which videos you already have, convert them, and use your Claude or ChatGPT subscription for AI.</p>
+        <!-- @site-edition -->
         <ol class="steps">
           <li>Open the StreamSnag folder you downloaded (the one that holds the <code>extension</code> folder).</li>
           <li><strong>Windows:</strong> double-click <code>Set up StreamSnag helper.cmd</code>. It checks for Node.js and offers to install ffmpeg and yt-dlp.<br>
             <strong>macOS / Linux:</strong> run <code>sh setup.sh</code> in that folder (it needs <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a> 18 or newer).</li>
           <li>Restart the browser, come back here and press <strong>Check helper</strong>.</li>
         </ol>
-        <p class="muted small">For AI with your Claude subscription, also run <code>npm i -g @anthropic-ai/claude-code</code>, then <code>claude</code> once to sign in.</p>
+        <!-- @store-edition -->
+        <!-- <ol class="steps"> -->
+        <!--   <li><strong>Windows:</strong> <a href="https://streamsnag.app/helper/" target="_blank" rel="noopener">download the helper</a>, open the zip and double-click <code>Set up StreamSnag helper.cmd</code>. It brings everything it needs, offers to install ffmpeg, and needs no admin rights.<br> -->
+        <!--     <strong>macOS / Linux:</strong> the same page has the helper for computers with <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a> 20 or newer.</li> -->
+        <!--   <li>Restart the browser, come back here and press <strong>Check helper</strong>.</li> -->
+        <!--   <li>To remove it later: Windows Settings &gt; Apps &gt; Installed apps &gt; StreamSnag helper.</li> -->
+        <!-- </ol> -->
+        <!-- @end-site-edition -->
+        <p class="muted small">For AI with your Claude subscription, also run <code>npm i -g @anthropic-ai/claude-code</code>, then <code>claude</code> once to sign in. For your ChatGPT subscription: <code>npm i -g @openai/codex</code>, then <code>codex login</code>.</p>
         <p class="muted small">Extension ID: <code id="extId"></code></p>
         <div class="row-actions">
           <button class="primary" id="checkHelper">Check helper</button>
+          <!-- @site-edition -->
           <button class="secondary" id="updateYtdlp" title="Sites change often; an old yt-dlp stops working on them">Update yt-dlp</button>
+          <!-- @end-site-edition -->
         </div>
         <div id="helperResult"></div>
         <div id="toolVersions" class="muted small"></div>
       </div>
     </section>
 
-    <!-- Recipes -->
-    <section class="tab-panel" data-panel="recipes" hidden>
-      <div class="card stack">
-        <h3>Site recipes</h3>
-        <p class="muted">Recipes are small JSON rule sets (CSS selectors, regexes, same-site fetches) that find media on a specific site. “Find with AI” writes them for you; you can edit them here. They are data only — never code.</p>
-        <div class="row-actions">
-          <button class="secondary" id="newRecipe">New recipe</button>
-          <button class="secondary" id="exportRecipes">Export all</button>
-          <label class="secondary file-btn">Import <input type="file" id="importRecipes" accept="application/json" hidden></label>
-        </div>
-      </div>
-      <div id="recipeList" class="stack"></div>
-    </section>
 
     <!-- History -->
     <section class="tab-panel" data-panel="history" hidden>

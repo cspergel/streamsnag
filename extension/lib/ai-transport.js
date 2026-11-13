@@ -4,9 +4,14 @@
 import { Anthropic } from '../vendor/anthropic-sdk.js';
 import { extractJson } from './ai.js';
 import { buildOpenAiRequest, readOpenAiResponse, jsonOnlySystem } from './openai.js';
+import { buildGeminiRequest, readGeminiResponse } from './gemini.js';
+import { buildChatRequest, readChatResponse, chatUsage, CHAT_PROVIDERS } from './chatapi.js';
 
 export const HELPER_NAME = 'com.streamsnag.helper';
+/** What every helper request answers while the helper is not installed (Settings has the steps for each system). */
+export const HELPER_MISSING = 'The local helper is not installed. The steps to set it up are in Settings, on the Local helper tab.';
 import { DEFAULT_MODEL } from './settings.js';
+import { withKeepAlive } from './keepalive.js';
 
 export { DEFAULT_MODEL };
 // Models that accept the server-side refusal fallback ("fallbacks": "default").
@@ -46,7 +51,7 @@ export function helperRequest(message, { onProgress, onPort, timeoutMs = 300000 
       const err = chrome.runtime.lastError?.message;
       done(reject, new Error(
         err && /not found|forbidden|specified native/i.test(err)
-          ? 'Local helper is not installed. Run "npm run install-helper" in the project folder (see README).'
+          ? HELPER_MISSING
           : `Local helper disconnected${err ? `: ${err}` : ''}`,
       ));
     });
@@ -104,6 +109,25 @@ async function viaOpenAi(settings, prompt) {
   return { data: extractJson(text), usage: body?.usage || null, via: `OpenAI API · ${body?.model || settings.openaiModel}` };
 }
 
+/** Google Gemini with your own key (Google AI Studio keys come with a free allowance). */
+async function viaGemini(settings, prompt) {
+  const { url, init } = buildGeminiRequest(settings, prompt);
+  const res = await fetch(url, init);
+  const body = await res.json().catch(() => null);
+  const text = readGeminiResponse(res.status, body);
+  return { data: extractJson(text), usage: body?.usageMetadata || null, via: `Gemini API · ${settings.geminiModel || 'gemini'}` };
+}
+
+/** DeepSeek or OpenRouter with your own key (the common chat-completions format). */
+const viaChat = (provider) => async (settings, prompt) => {
+  const { url, init } = buildChatRequest(provider, settings, prompt);
+  const res = await fetch(url, init);
+  const body = await res.json().catch(() => null);
+  const text = readChatResponse(provider, res.status, body);
+  const p = CHAT_PROVIDERS[provider];
+  return { data: extractJson(text), usage: chatUsage(body), via: `${p.name} · ${body?.model || settings[p.modelSetting] || p.defaultModel}` };
+};
+
 /** Your ChatGPT plan, through the Codex CLI on this computer (the helper runs it with its tools switched off). */
 async function viaChatGpt(settings, { system, user, schema }) {
   const res = await helperRequest(
@@ -114,13 +138,13 @@ async function viaChatGpt(settings, { system, user, schema }) {
 }
 
 /**
- * @param settings {aiProvider:'api'|'subscription'|'openai'|'chatgpt'|'off', apiKey, model, effort, subscriptionModel, openaiKey, openaiModel, chatgptModel}
+ * @param settings {aiProvider:'api'|'subscription'|'openai'|'chatgpt'|'gemini'|'off', apiKey, model, effort, subscriptionModel, openaiKey, openaiModel, chatgptModel, geminiKey, geminiModel}
  * @param prompt   {system, user, schema, maxTokens?}
  */
 export async function callAI(settings, prompt) {
-  if (settings.aiProvider === 'api') return viaApi(settings, prompt);
-  if (settings.aiProvider === 'subscription') return viaSubscription(settings, prompt);
-  if (settings.aiProvider === 'openai') return viaOpenAi(settings, prompt);
-  if (settings.aiProvider === 'chatgpt') return viaChatGpt(settings, prompt);
-  throw new Error('AI is turned off. Choose a provider in StreamSnag settings.');
+  const route = { api: viaApi, subscription: viaSubscription, openai: viaOpenAi, chatgpt: viaChatGpt, gemini: viaGemini, deepseek: viaChat('deepseek'), openrouter: viaChat('openrouter') }[settings.aiProvider];
+  if (!route) throw new Error('AI is turned off. Choose a provider in StreamSnag settings.');
+  // One long request makes no extension calls while it waits, and the browser stops a worker that is quiet
+  // for 30 seconds (with the popup closed nothing else keeps it up): a cheap call every 20 seconds does.
+  return withKeepAlive(() => route(settings, prompt), { ping: () => chrome.runtime.getPlatformInfo(() => {}) });
 }

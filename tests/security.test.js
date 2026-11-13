@@ -77,7 +77,9 @@ test('the browser-level local-network block covers the same hosts as isPrivateHo
   const res = PRIVATE_URL_PATTERNS.map((x) => new RegExp(x, 'i'));
   const re = { test: (u) => res.some((r) => r.test(u)) };
   const local = ['localhost', 'LOCALHOST', 'app.localhost', '127.0.0.1', '127.9.9.9', '10.0.0.5', '0.0.0.0', '172.16.3.4', '172.31.255.1', '192.168.1.1',
-    '169.254.1.1', '100.64.0.1', '100.127.255.254', '[::1]', '[fd12:3456::1]', '[fe80::1]', 'router.local', 'nas.lan', 'wiki.corp', 'printer.home'];
+    '169.254.1.1', '100.64.0.1', '100.127.255.254', '[::1]', '[fd12:3456::1]', '[fe80::1]', 'router.local', 'nas.lan', 'wiki.corp', 'printer.home',
+    // IPv4 written as IPv6 (security review, 2026-11-12): mapped, the unspecified address, and NAT64 to a local address.
+    '[::]', '[::ffff:7f00:1]', '[::ffff:c0a8:101]', '[::ffff:127.0.0.1]', '[::ffff:192.168.1.1]', '[::7f00:1]', '[64:ff9b::c0a8:101]'];
   for (const h of local) {
     assert.equal(isPrivateHost(h), true, `isPrivateHost ${h}`);
     for (const u of [`http://${h}/`, `https://${h}:8443/x.mp4?a=1`, `http://${h}`, `http://${h}?reboot=1`, `http://user:pw@${h}/x`]) assert.equal(re.test(u), true, u);

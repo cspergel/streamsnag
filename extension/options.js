@@ -1,7 +1,9 @@
-import { DEFAULT_SETTINGS, getSettings } from './lib/settings.js';
-import { normalizeRecipe } from './lib/recipes.js';
+import { DEFAULT_SETTINGS, getSettings, sttModelOf, migrateSettings } from './lib/settings.js';
+import { normalizeRecipe, recipeWords } from './lib/recipes.js';
+import { BUILTIN_RECIPES } from './lib/builtin-recipes.js';
 import { formatBytes, isHttpUrl, importableFolder, cleanHistoryEntry } from './lib/util.js';
 import { QUALITY_PREFS } from './lib/quality.js';
+import { plainNote } from './lib/wording.js';
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -36,20 +38,31 @@ $$('.tabs button').forEach((b) => b.addEventListener('click', () => {
   $$('.tabs button').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
   $$('.tab-panel').forEach((p) => { p.hidden = p.dataset.panel !== b.dataset.tab; });
   if (b.dataset.tab === 'history') renderHistory();
-  if (b.dataset.tab === 'recipes') renderRecipes();
+  if (b.dataset.tab === 'backup') renderRecipes();
   history.replaceState(null, '', `#${b.dataset.tab}`);
 }));
-const initialTab = location.hash.slice(1);
+// Settings opens on Downloads. A link may name another tab ("#ai", "#helper"); site recipes moved in with
+// Backup & advanced, so an old link to "#recipes" lands there.
+const initialTab = { recipes: 'backup' }[location.hash.slice(1)] || location.hash.slice(1);
 if (initialTab) document.querySelector(`.tabs button[data-tab="${initialTab}"]`)?.click();
 
 // ---------------------------------------------------------------- settings form
-const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'openaiKey', 'openaiModel', 'chatgptModel', 'minSizeKB', 'concurrency',
+const FIELDS = ['apiKey', 'model', 'effort', 'subscriptionModel', 'openaiKey', 'openaiModel', 'geminiKey', 'geminiModel', 'deepseekKey', 'deepseekModel', 'openrouterKey', 'openrouterModel', 'chatgptModel', 'minSizeKB', 'concurrency',
   'includeSubtitles', 'useFfmpeg', 'embedSubtitles', 'keepSubtitleFiles', 'aiFilenames', 'filenameTemplate', 'subfolder', 'saveFolder', 'notify',
-  'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode', 'showDocuments', 'preferredQuality'];
+  'autoRecipes', 'checkDownloads', 'maxParallel', 'debugMode', 'showDocuments', 'showEverything', 'preferredQuality', 'transcriptFormat',
+  'autoTranscript', 'autoTranscribe', 'autoStudyPack', 'autoStudyPage', 'autoRead',
+  'packCardsPerHour', 'packDepth', 'packGuide', 'packSheets', 'packQuiz', 'packCards', 'packFigures', 'packTranscript', 'packRead', 'readTidy', 'packBeyond', 'packEffort', 'reviewNewPerDay', 'sidebarOnClick'];
 
 function syncProviderSections(provider) {
   $$('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== provider; });
+  syncAutoPack(provider);
 }
+
+/**
+ * Under "AI effort for study packs": what a one-hour lecture takes with the chosen account, at both
+ * settings, and which models each uses. Worked out here from the same numbers a real run starts from.
+ */
+function paintPackEstimate() {} // (the study tools are not in this copy)
 
 async function loadForm() {
   const s = await getSettings();
@@ -61,6 +74,7 @@ async function loadForm() {
     if (el.type === 'checkbox') el.checked = !!s[f];
     else el.value = s[f] ?? '';
   }
+  paintPackEstimate(s);
 }
 
 async function saveForm() {
@@ -80,11 +94,13 @@ async function saveForm() {
   if (!QUALITY_PREFS.includes(s.preferredQuality)) s.preferredQuality = DEFAULT_SETTINGS.preferredQuality;
   await chrome.storage.local.set({ settings: s });
   syncProviderSections(s.aiProvider);
+  paintPackEstimate(s);
   flashSaved();
 }
 
 document.addEventListener('change', (e) => {
   if (e.target.closest('#siteRules, .rules ~ .row-actions')) return; // the rule editor saves itself
+  if (e.target.closest('#pack-styles-slot')) return; // so does the list of pack styles
   if (e.target.closest('[data-panel="ai"], [data-panel="downloads"]') || e.target.id === 'debugMode') saveForm();
 });
 
@@ -247,7 +263,7 @@ const BACKUP_KEYS = ['settings', 'recipes', 'history', 'marks'];
 
 $('#exportAll').addEventListener('click', async () => {
   const data = await chrome.storage.local.get(BACKUP_KEYS);
-  if (data.settings && !$('#exportKey').checked) data.settings = { ...data.settings, apiKey: '', openaiKey: '' };
+  if (data.settings && !$('#exportKey').checked) data.settings = { ...data.settings, apiKey: '', openaiKey: '', geminiKey: '', deepseekKey: '', openrouterKey: '' };
   const file = { app: 'StreamSnag', version: chrome.runtime.getManifest().version, exportedAt: new Date().toISOString(), ...data };
   const blob = new Blob([JSON.stringify(file, null, 1)], { type: 'application/json' });
   h('a', { href: URL.createObjectURL(blob), download: `streamsnag-backup-${new Date().toISOString().slice(0, 10)}.json` }).click();
@@ -269,7 +285,8 @@ $('#importAll').addEventListener('change', async (e) => {
       // Only known settings, with their usual types; folder paths must be plain local folders.
       const plainFolder = importableFolder;
       const clean = {};
-      for (const [k, v] of Object.entries(data.settings)) {
+      // A backup from before study packs: its "study notes after a download" switch carries over.
+      for (const [k, v] of Object.entries(migrateSettings(data.settings))) {
         if (!(k in DEFAULT_SETTINGS)) continue;
         const want = DEFAULT_SETTINGS[k];
         if (Array.isArray(want) ? Array.isArray(v) : typeof v === typeof want) clean[k] = v;
@@ -280,6 +297,10 @@ $('#importAll').addEventListener('change', async (e) => {
       next.settings = { ...(cur.settings || {}), ...clean };
       if (!clean.apiKey) next.settings.apiKey = cur.settings?.apiKey || '';
       if (!clean.openaiKey) next.settings.openaiKey = cur.settings?.openaiKey || '';
+      if (!clean.geminiKey) next.settings.geminiKey = cur.settings?.geminiKey || '';
+      if (!clean.deepseekKey) next.settings.deepseekKey = cur.settings?.deepseekKey || '';
+      if (!clean.openrouterKey) next.settings.openrouterKey = cur.settings?.openrouterKey || '';
+      if (clean.openrouterModel && !/^[a-z0-9][a-z0-9.\-_]*(?:\/[a-z0-9][a-z0-9.\-_]*)?(?::[a-z0-9][a-z0-9.\-_]*)?$/i.test(clean.openrouterModel)) delete next.settings.openrouterModel;
       if (clean.chatgptModel && !/^[a-z0-9][a-z0-9.\-_]*$/i.test(clean.chatgptModel)) delete next.settings.chatgptModel;
     }
     if (data.recipes && typeof data.recipes === 'object') {
@@ -324,13 +345,14 @@ async function showVersions() {
   const box = $('#toolVersions');
   try {
     const v = await send('toolVersions');
-    box.textContent = [`helper ${v.helper}`, `Node ${v.node}`, v.ytdlp && `yt-dlp ${v.ytdlp}`, v.ffmpeg && `ffmpeg ${v.ffmpeg}`, v.claude && `Claude CLI ${v.claude}`]
+    box.textContent = [`helper ${v.helper}`, `Node ${v.node}`, /* @site-edition */ v.ytdlp && `yt-dlp ${v.ytdlp}`, /* @end-site-edition */ v.ffmpeg && `ffmpeg ${v.ffmpeg}`, v.claude && `Claude CLI ${v.claude}`]
       .filter(Boolean).join(' · ');
   } catch {
     box.textContent = '';
   }
 }
 
+// @site-edition
 $('#updateYtdlp').addEventListener('click', async (e) => {
   const btn = e.currentTarget;
   const box = $('#toolVersions');
@@ -346,6 +368,7 @@ $('#updateYtdlp').addEventListener('click', async (e) => {
     btn.disabled = false;
   }
 });
+// @end-site-edition
 $('#checkHelper').addEventListener('click', async () => {
   const box = $('#helperResult');
   box.replaceChildren(h('p', { class: 'muted' }, 'Checking…'));
@@ -362,13 +385,20 @@ $('#checkHelper').addEventListener('click', async () => {
       h('ul', { class: 'tool-list' },
         tool('claude', r.tools.claude, 'AI through your Claude subscription'),
         tool('ffmpeg', r.tools.ffmpeg, 'merge video + audio, convert .ts → .mp4'),
-        tool('yt-dlp', r.tools.ytdlp, 'fallback downloader for 1000+ sites, playlists')),
+        // @site-edition
+        tool('yt-dlp', r.tools.ytdlp, 'fallback downloader for 1000+ sites, playlists'),
+        // @end-site-edition
+      ),
     );
     showVersions();
+    refreshStt(); // the helper may have just been set up
   } catch (e) {
     box.replaceChildren(h('p', { class: 'bad' }, e.message));
   }
 });
+
+let refreshStt = () => {}; // (the study tools, with transcription, are not in this copy)
+function syncAutoPack() {}
 
 // ---------------------------------------------------------------- recipes
 async function getRecipes() {
@@ -379,27 +409,47 @@ async function renderRecipes() {
   const recipes = await getRecipes();
   const list = $('#recipeList');
   const entries = Object.values(recipes).sort((a, b) => a.site.localeCompare(b.site));
-  if (!entries.length) {
-    list.replaceChildren(h('p', { class: 'muted' }, 'No recipes yet. Use “Find with AI” on a site and save the recipe it suggests.'));
-    return;
-  }
-  list.replaceChildren(...entries.map((r) => recipeCard(r)));
+  const mine = new Set(entries.map((r) => r.site));
+  list.replaceChildren(...[
+    entries.length ? null : h('p', { class: 'muted', id: 'recipes-none' }, 'No recipes of your own yet. When “Ask your AI to find it” finds a video on a site, what worked is saved here by itself.'),
+    ...entries.map((r) => recipeCard(r)),
+    builtinCard(mine),
+  ].filter(Boolean));
+}
+
+/**
+ * The recipes that come with StreamSnag, for course sites where it was tested: listed, never edited. One
+ * of your own for the same site is used instead of the built-in one, and the list says so.
+ */
+function builtinCard(mine) {
+  if (!BUILTIN_RECIPES.length) return null;
+  return h('div', { class: 'card stack', id: 'builtin-recipes' },
+    h('h3', {}, 'Built in'),
+    h('p', { class: 'muted small' }, 'These come with StreamSnag, for course sites where it was tested. They cannot be changed; a recipe of your own for the same site is used instead.'),
+    h('ul', { class: 'builtin-list' }, BUILTIN_RECIPES.map((r) => h('li', {},
+      h('strong', {}, r.site), ' ', h('span', { class: 'muted small' }, recipeWords(r), mine.has(r.site) ? ' Your own recipe for this site is used instead.' : '')))));
 }
 
 function recipeCard(r, isNew = false) {
   const area = h('textarea', { spellcheck: 'false' });
-  area.value = JSON.stringify({ site: r.site, description: r.description, rules: r.rules }, null, 2);
+  // (The title's and the captions' parts are only written out when the recipe has them.)
+  area.value = JSON.stringify({ site: r.site, description: r.description, rules: r.rules, ...(r.title ? { title: r.title } : {}), ...(r.captions ? { captions: r.captions } : {}) }, null, 2);
   const err = h('div', { class: 'err-text' });
-  const card = h('div', { class: 'card stack' },
+  // The recipe itself is folded away; "Save changes" is only there while it is open.
+  const fold = h('details', { class: 'recipe-fold', open: isNew }, h('summary', {}, 'Show the recipe'), area);
+  fold.addEventListener('toggle', () => { card.querySelector('.recipe-save').hidden = !fold.open; });
+  const card = h('div', { class: 'card stack recipe-card', 'data-site': r.site || '' },
     h('div', { class: 'recipe-head' },
       h('h3', {}, r.site || 'new recipe'),
-      h('span', { class: 'muted small' }, r.savedAt ? `saved ${new Date(r.savedAt).toLocaleString()}` : ''),
+      h('span', { class: 'muted small' }, [r.by === 'ai' ? 'saved by itself after your AI found the video' : '', r.savedAt ? `saved ${new Date(r.savedAt).toLocaleString()}` : ''].filter(Boolean).join(' · ')),
     ),
-    area,
+    // What it does, in plain words; the recipe itself is one click away.
+    isNew ? null : h('p', { class: 'muted recipe-words' }, recipeWords(r)),
+    fold,
     err,
     h('div', { class: 'row-actions' },
       h('button', {
-        class: 'primary',
+        class: 'primary recipe-save', hidden: !isNew,
         onclick: async () => {
           try {
             const parsed = normalizeRecipe(JSON.parse(area.value));
@@ -413,9 +463,9 @@ function recipeCard(r, isNew = false) {
             err.textContent = e.message;
           }
         },
-      }, 'Save'),
+      }, 'Save changes'),
       h('button', {
-        class: 'secondary danger',
+        class: 'secondary danger recipe-delete', title: isNew ? null : 'StreamSnag stops using it on this site',
         onclick: async () => {
           const recipes = await getRecipes();
           delete recipes[r.site];
@@ -473,10 +523,12 @@ async function renderHistory() {
     list.replaceChildren(h('li', { class: 'muted' }, 'Nothing downloaded yet.'));
     return;
   }
+  // A name comes from the page it was saved from: it is laid out in its own direction (Arabic and Hebrew
+  // start on the right). What else was done to the file is said in plain words; what the tool reported is the tooltip.
   list.replaceChildren(...history.map((it) => h('li', {},
-    h('strong', {}, it.title || '(untitled)'),
-    h('span', { class: 'muted small' }, `${new Date(it.at).toLocaleString()}${it.bytes ? ` · ${formatBytes(it.bytes)}` : ''}${it.note ? ` · ${it.note}` : ''}`),
-    h('span', { class: 'files' }, (it.files || []).filter(Boolean).join('  ·  ')),
+    h('strong', { dir: 'auto' }, it.title || '(untitled)'),
+    h('span', { class: 'muted small', title: plainNote(it.note).detail || null }, `${new Date(it.at).toLocaleString()}${it.bytes ? ` · ${formatBytes(it.bytes)}` : ''}${it.note ? ` · ${plainNote(it.note).text}` : ''}`),
+    h('span', { class: 'files', dir: 'auto' }, (it.files || []).filter(Boolean).join('  ·  ')),
     isHttpUrl(it.pageUrl) ? h('a', { href: it.pageUrl, target: '_blank', rel: 'noreferrer', class: 'small' }, it.pageUrl) : null,
   )));
 }

@@ -48,6 +48,11 @@ function isMidFileRange(contentRange) {
   return !!m && Number(m[1]) > 0;
 }
 
+/** A file type that is only ever a piece of a stream (.ts, .m4s…): never listed, whatever its size. */
+export function isSegmentType(url) {
+  return SEGMENT_EXT.has(extFromUrl(url));
+}
+
 export function isLikelySegment(url, size) {
   const ext = extFromUrl(url);
   if (SEGMENT_EXT.has(ext)) return true;
@@ -148,15 +153,52 @@ export function dedupeKey(url) {
  * Do two detected items look like the same file? Used to merge duplicates whose URLs differ in ways
  * dedupeKey can't know about (different CDN host, renamed path). Direct files: identical byte size
  * (over 256 KB) and the same type. Streams: the same fingerprint of what the manifest lists.
+ * Not two sound files the page links to side by side: a talk's recordings in two languages are as long
+ * as each other, and at a fixed bitrate exactly as big.
  */
 export function sameMedia(a, b) {
   if (!a || !b || a === b) return false;
   if (a.kind === 'subtitle' || b.kind === 'subtitle') return false;
   if (a.kind !== b.kind) return false;
   if (a.kind === 'direct') {
+    if (a.linked && b.linked && (a.mediaType === 'audio' || b.mediaType === 'audio')) return false;
     return a.size > 256 * 1024 && a.size === b.size && (a.ext || '') === (b.ext || '');
   }
   return !!a.fingerprint && a.fingerprint === b.fingerprint;
+}
+
+const fileOf = (url) => {
+  try {
+    return decodeURIComponent(new URL(url).pathname.split('/').pop() || '').toLowerCase();
+  } catch {
+    return '';
+  }
+};
+// The site a host belongs to, near enough: its last two labels ("dn801204.us.archive.org" → "archive.org").
+const siteOf = (url) => {
+  try {
+    return new URL(url).hostname.toLowerCase().split('.').slice(-2).join('.');
+  } catch {
+    return '';
+  }
+};
+const TOLD_BY_PAGE = ['list', 'link']; // found written in the page (a playlist, a link), never loaded: no size to compare
+// (`unasked`: named in the page's markup, a <source> or its video data, and not loaded by the page: nothing has been asked of it either.)
+const toldOnly = (m) => TOLD_BY_PAGE.includes(m.source) || !!m.unasked;
+
+/**
+ * Is a file the page only names (a playlist entry, a download link, a file in its markup that it has not loaded) the file a player then loaded from
+ * another address of the same site? ("/download/Course/lec01_300k.mp4" and the storage server's
+ * ".../items/Course/lec01_300k.mp4".) The same file name, one that says something (not "video.mp4"), on
+ * the same site, and exactly one of the two known only from the page: two files that were both loaded
+ * are told apart by their size.
+ */
+export function sameNamedFile(a, b) {
+  if (!a || !b || a === b || a.kind !== 'direct' || b.kind !== 'direct') return false;
+  if (toldOnly(a) === toldOnly(b)) return false;
+  const name = fileOf(a.url);
+  if (name.length < 12 || name !== fileOf(b.url) || !/[a-z]/.test(name) || !/\d/.test(name)) return false;
+  return !!siteOf(a.url) && siteOf(a.url) === siteOf(b.url);
 }
 
 /** Host-independent fingerprint of a stream: the paths of what its manifest points at. */
@@ -171,3 +213,126 @@ export function streamFingerprint(urls, extra = '') {
   if (!paths.length) return '';
   return `${extra}|${paths.slice(0, 12).join('|')}|${paths.length}`;
 }
+
+/**
+ * What a body is by how it starts: 'hls' (a playlist), 'dash' (a manifest) or '' (neither). An address
+ * that ends in ".m3u8" can answer with something else: Kaltura's player asks its "playManifest" for JSON.
+ */
+export function manifestKind(text) {
+  const head = String(text ?? '').slice(0, 4000).replace(/^﻿/, '');
+  if (/^\s*#EXTM3U/.test(head)) return 'hls';
+  // After the XML declaration, a document type and any comments, the first element is <MPD>.
+  return /^\s*(?:<\?xml[^>]*\?>\s*|<!DOCTYPE[^>]*>\s*|<!--[\s\S]*?-->\s*)*<MPD[\s>]/.test(head) ? 'dash' : '';
+}
+
+const DATA_DEPTH = 8;
+const DATA_NODES = 4000;
+
+/**
+ * The stream address a JSON answer plainly holds ('' when it holds none): a value that is the web
+ * address of a playlist or a manifest. Of several (one per picture size) the tallest picture, then the
+ * highest bitrate, then the first. `text` may be wrapped in a callback's name (JSONP); a relative
+ * address is read against `base`, the address the answer came from. Nothing is guessed from loose text.
+ */
+export function streamInData(text, base) {
+  const raw = String(text ?? '').trim();
+  if (!raw || raw.length > 2_000_000) return '';
+  const body = /^[\w$.]{1,80}\(([\s\S]*)\)\s*;?$/.exec(raw)?.[1] ?? raw; // cb({...})
+  if (!/^[[{]/.test(body)) return '';
+  let data;
+  try {
+    data = JSON.parse(body);
+  } catch {
+    return '';
+  }
+  const found = [];
+  let seen = 0;
+  const walk = (node, depth) => {
+    if (!node || typeof node !== 'object' || depth > DATA_DEPTH || ++seen > DATA_NODES) return;
+    for (const v of Object.values(node)) {
+      if (typeof v === 'string') {
+        if (v.length > 4000 || /\s/.test(v) || !/\.(?:m3u8|mpd)(?:$|[?#])/i.test(v)) continue; // an address, not a sentence that names one
+        let url = '';
+        try { url = new URL(v, base).href; } catch { /* not an address */ }
+        const kind = classifyUrl(url)?.kind;
+        if (kind === 'hls' || kind === 'dash') found.push({ url, height: Number(node.height) || 0, rate: Number(node.bitrate ?? node.bandwidth) || 0, at: found.length });
+      } else walk(v, depth + 1);
+    }
+  };
+  walk(data, 0);
+  return found.sort((a, b) => b.height - a.height || b.rate - a.rate || a.at - b.at)[0]?.url || '';
+}
+
+// What a file of thumbnails for a player's seek bar is called, and the folders such files are kept in.
+const IMAGE_TRACK_WORDS = new Set(['storyboard', 'storyboards', 'thumbnail', 'thumbnails', 'thumbs', 'sprite', 'sprites']);
+const IMAGE_TRACK_DIRS = new Set(['strips', 'thumbnails', 'thumbs', 'storyboards', 'sprites']);
+
+/**
+ * Does a caption file's address say it is a thumbnail index (a player's seek-bar pictures: "storyboard.vtt",
+ * "….thumbnails.vtt", "/strips/abc-120.vtt"), not captions? By its folder, or by the last word of its name
+ * (a language or a number after it aside): "thumbnail-design-lecture.vtt" is a lecture.
+ */
+export function isImageTrack(url) {
+  let path;
+  try {
+    path = decodeURIComponent(new URL(url).pathname).toLowerCase();
+  } catch {
+    return false;
+  }
+  const parts = path.split('/').filter(Boolean);
+  const file = parts.pop() || '';
+  if (!/\.(?:vtt|webvtt)$/.test(file)) return false;
+  if (IMAGE_TRACK_DIRS.has(parts.at(-1))) return true;
+  const words = file.replace(/\.(?:vtt|webvtt)$/, '').split(/[^a-z0-9]+/).filter(Boolean);
+  while (words.length > 1 && (/^\d+$/.test(words.at(-1)) || /^[a-z]{2,3}$/.test(words.at(-1)))) words.pop();
+  return IMAGE_TRACK_WORDS.has(words.at(-1));
+}
+
+// ---------------------------------------------------------------- a player that fetches its video in pieces
+// Such a player fetches its video in pieces from /videoplayback: the picture and the sound apart (two
+// "files" per video, each only part of it, behind links that expire). Listed as they come, every video
+// would show twice (a silent picture and a sound-only copy). They are never listed.
+// @site-edition
+// (On a YouTube watch page the video is listed once, as the page's own (yt-dlp downloads it), and in a
+// YouTube player embedded in another page the player itself is the item.)
+// @end-site-edition
+
+// The same player may stream the video instead, as HLS playlists: …/api/manifest/hls_variant/…, hls_playlist/…
+// (and dash/…), with its pieces' details in their paths (…/videoplayback/id/…/itag/312/source/…/) instead of
+// after "?". Those playlists are the same video again, never a stream of its own (found 2026-11-12: a signed-in
+// session listed the page's video three times).
+
+/** Is this a piece of such a player (…/videoplayback?…&itag=…, or one of its playlists), never a file of its own? */
+export function playerPiece(url) {
+  try {
+    const u = new URL(url);
+    if (/^\/api\/manifest\/(?:hls_variant|hls_playlist|dash)\//i.test(u.pathname)) return true;
+    if (/^\/videoplayback\/(?:.*\/)?itag\/\d+(?:\/|$)/i.test(u.pathname)) return !/\/source\/webdrive(?:\/|$)/i.test(u.pathname);
+    if (!/\/videoplayback$/i.test(u.pathname)) return false;
+    // @site-edition
+    return u.searchParams.get('source') === 'youtube' || (/\.googlevideo\.com$/i.test(u.hostname) && u.searchParams.has('itag'));
+    // @store-edition
+    // // (Google Drive's player is not one of them: it sends each of its videos whole.)
+    // return u.searchParams.has('itag') && u.searchParams.get('source') !== 'webdrive';
+    // @end-site-edition
+  } catch {
+    return false;
+  }
+}
+
+// @site-edition
+/** The video id of a YouTube watch page (…/watch?v=<11 characters>), else ''. */
+export function youTubeWatchId(pageUrl) {
+  try {
+    const u = new URL(pageUrl);
+    if (!/^\/watch\/?$/i.test(u.pathname)) return '';
+    const v = u.searchParams.get('v') || '';
+    return /^[\w-]{11}$/.test(v) ? v : '';
+  } catch {
+    return '';
+  }
+}
+
+/** A YouTube watch page's title without the site's " - YouTube" at its end. */
+export const youTubeTitle = (title) => String(title || '').replace(/\s+[-–—]\s+YouTube(?: Music)?\s*$/i, '').trim();
+// @end-site-edition

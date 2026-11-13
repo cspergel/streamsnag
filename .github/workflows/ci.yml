@@ -23,7 +23,14 @@ jobs:
           cache: npm
       - name: Install ffmpeg (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        # The runner's package servers sometimes fail to answer: try three times, and never hang for long.
+        timeout-minutes: 10
+        run: |
+          for i in 1 2 3; do
+            sudo apt-get update && sudo apt-get install -y ffmpeg && exit 0
+            echo "apt failed (try $i), waiting"; sleep 20
+          done
+          exit 1
       - run: npm ci
       - name: Syntax check
         shell: bash

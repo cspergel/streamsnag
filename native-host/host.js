@@ -1,20 +1,27 @@
 #!/usr/bin/env node
 // StreamSnag local helper (Chrome native messaging host).
 // Chrome starts this on demand. It can:
+// @site-edition
 //   ping   -> report which tools are installed (claude, ffmpeg, yt-dlp)
+// @store-edition
+// //   ping   -> report which tools are installed (claude, ffmpeg)
+// @end-site-edition
 //   claude -> run a prompt through the Claude Code CLI on the user's Claude subscription
 //   mux    -> merge video + audio / convert .ts to .mp4 with ffmpeg (stream copy, no re-encode)
+// @site-edition
 //   ytdlp  -> download a page with yt-dlp, streaming progress back
+// @end-site-edition
+//   covers / coverPut -> the study desk's small picture of each lecture, kept in StreamSnag's own data folder (covers.js)
 // stdout is reserved for protocol frames; diagnostics go to a log file in the temp directory.
 import { spawn, execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { encodeMessage, createDecoder } from './protocol.js';
 
-export const VERSION = '1.4.0';
+export const VERSION = '1.6.0';
 const IS_WIN = process.platform === 'win32';
 const LOG = path.join(os.tmpdir(), 'streamsnag-helper.log');
 
@@ -66,7 +73,7 @@ function wingetTool(name) {
   const pkgs = path.join(base, 'Packages');
   let dirs = [];
   try { dirs = fs.readdirSync(pkgs); } catch { return null; }
-  // Prefer the package named after the tool (Gyan.FFmpeg, yt-dlp.yt-dlp), then anything else.
+  // Prefer the package named after the tool (Gyan.FFmpeg for ffmpeg), then anything else.
   dirs.sort((a, b) => Number(!a.toLowerCase().includes(name)) - Number(!b.toLowerCase().includes(name)));
   for (const d of dirs) {
     for (const rel of [exe, path.join('bin', exe)]) {
@@ -99,7 +106,21 @@ export function findTool(name) {
 }
 
 function tools() {
-  return { claude: findTool('claude'), codex: findTool('codex'), ffmpeg: findTool('ffmpeg'), ytdlp: findTool('yt-dlp') };
+  return { claude: findTool('claude'), codex: findTool('codex'), ffmpeg: findTool('ffmpeg'), /* @site-edition */ ytdlp: findTool('yt-dlp'), /* @end-site-edition */ };
+}
+
+const PACKAGES = { /* @site-edition */ 'yt-dlp': { win: 'yt-dlp.yt-dlp', other: 'yt-dlp' }, /* @end-site-edition */ ffmpeg: { win: 'Gyan.FFmpeg', other: 'ffmpeg' } };
+
+/**
+ * What to install (or, with `verb` 'upgrade', update) a tool with on this kind of computer, to finish a
+ * sentence like "Install it with …": winget on Windows, Homebrew on a Mac, the package manager elsewhere.
+ */
+export function installHint(tool, platform = process.platform, verb = 'install') {
+  const pkg = Object.hasOwn(PACKAGES, tool) ? PACKAGES[tool] : null;
+  if (!pkg) return 'your package manager';
+  if (platform === 'win32') return `"winget ${verb} ${pkg.win}"`;
+  if (platform === 'darwin') return `"brew ${verb} ${pkg.other}"`;
+  return verb === 'install' ? `your package manager (for example "sudo apt install ${pkg.other}")` : 'your package manager';
 }
 
 // ------------------------------------------------------------------ process helper
@@ -125,16 +146,38 @@ export function cmdShimCommandLine(cmd, args) {
 /** Programs this helper started that are still running. */
 const children = new Set();
 
-function run(cmd, args, { input, onLine, timeoutMs = 10 * 60 * 1000, cwd, env } = {}) {
+/**
+ * Stop a program this helper started, and whatever that program started itself. Killing only the program
+ * is not enough: a downloader runs ffmpeg, a .cmd shim runs the real tool, and a packaged .exe is often a
+ * launcher around a second process, all of which would keep working after a Cancel. (On Windows
+ * they do end when the helper itself exits; away from Windows, and when a program is stopped while the
+ * helper lives on, such as on a timeout, nothing else ends them.)
+ */
+export function killTree(child) {
+  if (!child?.pid || child.exitCode != null || child.signalCode != null) return;
+  try {
+    if (IS_WIN) {
+      execFileSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true, timeout: 10000 });
+      return;
+    }
+    process.kill(-child.pid, 'SIGTERM'); // its whole process group (see `detached` in run)
+    return;
+  } catch { /* no such group, or taskkill is not there: stop at least the program itself */ }
+  try { child.kill(); } catch { /* already gone */ }
+}
+
+export function run(cmd, args, { input, onLine, timeoutMs = 10 * 60 * 1000, cwd, env } = {}) {
   return new Promise((resolve, reject) => {
     const isShim = IS_WIN && /\.(cmd|bat)$/i.test(cmd);
+    // Away from Windows each program leads its own process group, so killTree can stop the group in one go.
+    const detached = !IS_WIN;
     let child;
     try {
       child = isShim
         ? spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', cmdShimCommandLine(cmd, args)], {
           cwd, windowsHide: true, windowsVerbatimArguments: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...childEnv(), ...env },
         })
-        : spawn(cmd, args, { cwd, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...childEnv(), ...env } });
+        : spawn(cmd, args, { cwd, windowsHide: true, detached, stdio: ['pipe', 'pipe', 'pipe'], env: { ...childEnv(), ...env } });
     } catch (e) {
       reject(e);
       return;
@@ -146,7 +189,7 @@ function run(cmd, args, { input, onLine, timeoutMs = 10 * 60 * 1000, cwd, env } 
     let stderr = '';
     let lineBuf = '';
     const timer = setTimeout(() => {
-      child.kill();
+      killTree(child);
       reject(new Error(`${path.basename(cmd)} timed out`));
     }, timeoutMs);
     const onData = (d, isErr) => {
@@ -317,11 +360,13 @@ function checkInput(p) {
 }
 
 async function handleMux(msg) {
-  const ffmpeg = findTool('ffmpeg');
-  if (!ffmpeg) throw new Error('ffmpeg not found');
   const inputs = Array.isArray(msg.inputs) ? msg.inputs : [];
   if (!inputs.length || inputs.length > 4) throw new Error('Expected 1-4 input files');
+  // Video and audio only: the inputs are deleted after merging (security review, 2026-11-12).
+  if (inputs.some((p) => typeof p !== 'string' || !MEDIA_EXT.test(p))) throw new Error('That is not a video or audio file');
   inputs.forEach(checkInput);
+  const ffmpeg = findTool('ffmpeg');
+  if (!ffmpeg) throw new Error('ffmpeg not found');
   const subtitles = (Array.isArray(msg.subtitles) ? msg.subtitles : []).slice(0, 8)
     .filter((s) => /\.(vtt|srt)$/i.test(s?.path || ''));
   subtitles.forEach((s) => checkInput(s.path));
@@ -361,17 +406,39 @@ export function convertOutputName(input, mode) {
   return path.join(dir, `${name}${spec.suffix}.${spec.ext}`);
 }
 
+/**
+ * The file a conversion writes while it runs: "<final name>.part", next to the original. The copy only
+ * gets its real name once it is whole, so a cancelled or crashed conversion never leaves something that
+ * looks like a finished video (the ".part" ending also keeps it out of the folder check).
+ */
+export function convertPartName(input, mode) {
+  return `${convertOutputName(input, mode)}.part`;
+}
+
 export function buildConvertArgs({ input, output, mode, subtitles = true }) {
   // -progress pipe:1 prints "out_time_us=..." lines we turn into a percentage.
   const head = ['-hide_banner', '-nostdin', '-y', '-loglevel', 'error', '-nostats', '-progress', 'pipe:1', '-i', input];
-  if (mode === 'audio') return [...head, '-vn', '-sn', '-dn', '-map', '0:a:0', '-c:a', 'libmp3lame', '-q:a', '2', output];
+  // The format is named outright: ffmpeg can't tell it from a name that ends in ".part".
+  const to = Object.hasOwn(CONVERSIONS, mode) ? ['-f', CONVERSIONS[mode].ext, output] : [];
+  if (mode === 'audio') return [...head, '-vn', '-sn', '-dn', '-map', '0:a:0', '-c:a', 'libmp3lame', '-q:a', '2', ...to];
   if (mode === 'small') {
     return [...head, '-map', '0:v:0', '-map', '0:a:0?', ...(subtitles ? ['-map', '0:s?', '-c:s', 'mov_text'] : []),
       // Never upscale; keep the width even (H.264 needs it).
       '-vf', "scale=-2:'min(720,ih)'", '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26', '-pix_fmt', 'yuv420p',
-      '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', output];
+      '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', ...to];
   }
   throw new Error('Unknown conversion');
+}
+
+/** Half-written files of the conversions running in this helper; removed if it is told to stop. */
+const partFiles = new Set();
+
+function removePartFiles() {
+  for (const p of [...partFiles]) {
+    partFiles.delete(p);
+    // The program that was writing it has just been stopped; Windows may hold the file a moment longer.
+    try { fs.rmSync(p, { force: true, maxRetries: 10, retryDelay: 100 }); } catch { /* the next run of this conversion removes it */ }
+  }
 }
 
 /** Seconds of output written so far, from one line of ffmpeg's -progress output (or null). */
@@ -385,7 +452,10 @@ async function handleConvert(msg) {
   if (!ffmpeg) throw new Error('ffmpeg not found');
   checkInput(msg.input);
   if (!MEDIA_EXT.test(msg.input)) throw new Error('That is not a video or audio file');
-  const output = uniquePath(convertOutputName(msg.input, msg.mode));
+  // Written under a ".part" name and renamed when it is whole. One left by a run that crashed is removed first.
+  const part = convertPartName(msg.input, msg.mode);
+  fs.rmSync(part, { force: true });
+  partFiles.add(part);
   const ffprobe = findTool('ffprobe') || path.join(path.dirname(ffmpeg), path.basename(ffmpeg).replace(/ffmpeg/i, 'ffprobe'));
   const total = fs.existsSync(ffprobe) ? await ffprobeDuration(ffprobe, msg.input).catch(() => 0) : 0;
   let last = -1;
@@ -396,25 +466,46 @@ async function handleConvert(msg) {
     if (percent !== last) reply({ id: msg.id, type: 'progress', percent });
     last = percent;
   };
-  const attempt = (subtitles) => run(ffmpeg, buildConvertArgs({ input: msg.input, output, mode: msg.mode, subtitles }), { onLine, timeoutMs: 6 * 60 * 60 * 1000 });
-  let res = await attempt(true);
-  if (res.code !== 0 && msg.mode === 'small') {
-    // Picture-based subtitles can't go into an MP4: the copy matters more than its subtitles.
-    try { fs.unlinkSync(output); } catch { /* ignore */ }
-    res = await attempt(false);
+  const attempt = (subtitles) => run(ffmpeg, buildConvertArgs({ input: msg.input, output: part, mode: msg.mode, subtitles }), { onLine, timeoutMs: 6 * 60 * 60 * 1000 });
+  try {
+    let res = await attempt(true);
+    if (res.code !== 0 && msg.mode === 'small') {
+      // Picture-based subtitles can't go into an MP4: the copy matters more than its subtitles.
+      fs.rmSync(part, { force: true });
+      res = await attempt(false);
+    }
+    if (res.code !== 0) {
+      throw new Error(/Unknown encoder|Encoder .* not found/i.test(res.stderr)
+        ? `This ffmpeg build cannot make that kind of file. Install a full ffmpeg build with ${installHint('ffmpeg')}.`
+        : `ffmpeg failed: ${res.stderr.trim().slice(-400)}`);
+    }
+    // Never over a file that is already there: a second copy gets "(1)".
+    const output = uniquePath(convertOutputName(msg.input, msg.mode));
+    fs.renameSync(part, output);
+    return { output };
+  } finally {
+    partFiles.delete(part);
+    fs.rmSync(part, { force: true }); // gone already after a rename; this removes what a failed run wrote
   }
-  if (res.code !== 0) {
-    try { fs.unlinkSync(output); } catch { /* ignore */ }
-    throw new Error(/Unknown encoder|Encoder .* not found/i.test(res.stderr)
-      ? 'This ffmpeg build cannot make that kind of file. Install a full ffmpeg build (winget install Gyan.FFmpeg).'
-      : `ffmpeg failed: ${res.stderr.trim().slice(-400)}`);
-  }
-  return { output };
 }
 
+// @site-edition
 export function parseYtdlpProgress(line) {
   const m = /\[download\]\s+(\d+(?:\.\d+)?)%/.exec(line);
   return m ? Number(m[1]) : null;
+}
+
+/**
+ * yt-dlp's format sorting (-S) for the "Quality to pick first" setting: a number is a cap ("res:720" is
+ * the best quality not above 720p, or the lowest there is when all are above it), 'smallest' the smallest
+ * file, and 'best' (or anything unknown) yt-dlp's own choice, which is the best. The same rule the
+ * extension's own downloads follow (lib/quality.js).
+ */
+export function ytdlpFormatArgs(quality) {
+  const q = String(quality ?? '');
+  if (/^(1080|720|480)$/.test(q)) return ['-S', `res:${q}`];
+  if (q === 'smallest') return ['-S', '+size,+br'];
+  return [];
 }
 
 async function handleYtdlp(msg) {
@@ -436,19 +527,38 @@ async function handleYtdlp(msg) {
       ? path.join(dirT, '%(playlist_title,playlist_id|Playlist).80B', '%(playlist_index)03d - %(title).140B [%(id)s].%(ext)s')
       : path.join(dirT, '%(title).150B [%(id)s].%(ext)s');
   const args = [
-    msg.url, msg.playlist === true || items ? '--yes-playlist' : '--no-playlist', '--newline', '--progress', '--print', 'after_move:filepath',
+    // Each saved file is printed after our mark, in UTF-8 (a title that is not ASCII came out in the console's code page).
+    msg.url, msg.playlist === true || items ? '--yes-playlist' : '--no-playlist', '--newline', '--progress', '--encoding', 'utf-8',
+    '--print', `after_move:${YTDLP_FILE_MARK}%(filepath)s`,
     '-o', template,
   ];
   if (items) args.push('--playlist-items', items);
+  // The quality set in Settings ("Quality to pick first").
+  const format = ytdlpFormatArgs(msg.quality);
+  args.push(...format);
   // Tests: pretend to download (no network), writing a small file under the requested name.
   if (process.env.STREAMSNAG_FAKE_YTDLP === '1') {
+    const free = () => uniquePath(path.join(outDir, `${(name || 'video').replace(/%%/g, '%')}.mp4`));
+    const asked = format.length ? ` (${format.join(' ')})` : '';
+    // A slow one, for the Cancel test: a real program that starts another, which writes the file ten
+    // seconds later (and its own process id next to it at once, so the test can see that it was stopped).
+    const slow = process.env.STREAMSNAG_FAKE_YTDLP_SLOW;
+    if (slow && msg.url.includes(slow)) {
+      const out = free();
+      reply({ id: msg.id, type: 'progress', percent: 10, line: `fake yt-dlp 10%${asked}` });
+      const work = "const fs=require('fs');const out=process.argv[1];fs.writeFileSync(out+'.pid',String(process.pid));setTimeout(()=>fs.writeFileSync(out,Buffer.alloc(300*1024,9)),10000)";
+      const launch = "const c=require('child_process').spawn(process.execPath,['-e',process.argv[1],process.argv[2]],{stdio:'ignore'});c.on('exit',(code)=>process.exit(code||0))";
+      const res = await run(process.execPath, ['-e', launch, work, out], { timeoutMs: 60000 });
+      if (res.code !== 0 || !fs.existsSync(out)) throw new Error('yt-dlp failed: the fake download was stopped');
+      return { files: [out], warning: '', args };
+    }
     for (const percent of [30, 80]) {
-      reply({ id: msg.id, type: 'progress', percent, line: `fake yt-dlp ${percent}%` });
+      reply({ id: msg.id, type: 'progress', percent, line: `fake yt-dlp ${percent}%${asked}` });
       await new Promise((r) => setTimeout(r, 600));
     }
-    const out = uniquePath(path.join(outDir, `${(name || 'video').replace(/%%/g, '%')}.mp4`));
+    const out = free();
     fs.writeFileSync(out, Buffer.alloc(300 * 1024 + out.length, 9));
-    return { files: [out], warning: '' };
+    return { files: [out], warning: '', args };
   }
   if (msg.playlist === true && !items) args.push('--ignore-errors'); // one private/removed video shouldn't stop the rest
   if (/^https?:\/\//i.test(msg.referer || '')) args.push('--referer', msg.referer);
@@ -471,14 +581,36 @@ async function handleYtdlp(msg) {
       if (pct != null) {
         const overall = playlistPos ? ((playlistPos.i - 1) + pct / 100) / playlistPos.n * 100 : pct;
         reply({ id: msg.id, type: 'progress', percent: overall, line: playlistPos ? `Video ${playlistPos.i} of ${playlistPos.n} · ${pct.toFixed(0)}%` : line });
-      } else if (path.isAbsolute(line.trim()) && fs.existsSync(line.trim())) files.push(line.trim());
-      else reply({ id: msg.id, type: 'progress', line });
+      } else if (line.trim().startsWith(YTDLP_FILE_MARK)) {
+        const saved = ytdlpSavedFile(line, outDir);
+        if (saved && fs.existsSync(saved)) files.push(saved);
+      } else reply({ id: msg.id, type: 'progress', line });
     },
   });
   const tail = res.stderr.trim().split(/\r?\n/).slice(-3).join(' ').slice(0, 500);
   // With --ignore-errors a playlist can partly succeed: keep what was saved and say what failed.
   if (res.code !== 0 && !(msg.playlist === true && files.length)) throw new Error(`yt-dlp failed: ${tail}`);
   return { files, warning: res.code !== 0 ? tail : '' };
+}
+
+/** What yt-dlp is asked to print before the path of each file it saved (`--print after_move:…`). */
+export const YTDLP_FILE_MARK = 'STREAMSNAG-FILE:';
+
+/**
+ * The file yt-dlp saved, from one line of its output: only a line with our mark, and only a full path inside the
+ * folder it was told to save in (a playlist's own folder inside it is fine). '' for anything else. Any other line
+ * that happens to be a path, whatever a page made yt-dlp print, is never taken for a saved file (security review,
+ * 2026-11-12).
+ */
+export function ytdlpSavedFile(line, outDir) {
+  const s = String(line ?? '').trim();
+  if (!s.startsWith(YTDLP_FILE_MARK)) return '';
+  const p = s.slice(YTDLP_FILE_MARK.length).trim();
+  if (!p || !path.isAbsolute(p) || /^\\\\|^\/\//.test(p)) return '';
+  const full = path.resolve(p);
+  const base = path.resolve(String(outDir || ''));
+  const norm = (x) => (IS_WIN ? x.toLowerCase() : x);
+  return norm(full).startsWith(norm(base.endsWith(path.sep) ? base : base + path.sep)) ? full : '';
 }
 
 /** A file name for a yt-dlp output template: no folders, no characters Windows refuses, "%" escaped. */
@@ -521,6 +653,7 @@ async function handleYtdlpList(msg) {
   if (res.code !== 0) throw new Error(`yt-dlp could not list it: ${res.stderr.trim().split(/\r?\n/).slice(-2).join(' ').slice(0, 400)}`);
   return parseFlatPlaylist(res.stdout);
 }
+// @end-site-edition
 
 /** Versions of the tools the helper uses (Settings → Local helper). */
 async function handleToolVersions() {
@@ -534,10 +667,16 @@ async function handleToolVersions() {
       return '?';
     }
   };
+  // @site-edition
   const [ytdlp, ffmpeg, claude] = await Promise.all([first('yt-dlp', ['--version']), first('ffmpeg', ['-version']), first('claude', ['--version'])]);
   return { helper: VERSION, node: process.version, ytdlp, ffmpeg: ffmpeg.replace(/^ffmpeg version\s+/i, '').split(' ')[0], claude };
+  // @store-edition
+  // const [ffmpeg, claude] = await Promise.all([first('ffmpeg', ['-version']), first('claude', ['--version'])]);
+  // return { helper: VERSION, node: process.version, ffmpeg: ffmpeg.replace(/^ffmpeg version\s+/i, '').split(' ')[0], claude };
+  // @end-site-edition
 }
 
+// @site-edition
 /** Sites change often and an old yt-dlp stops working: update it in place. */
 async function handleUpdateYtdlp() {
   const ytdlp = findTool('yt-dlp');
@@ -547,12 +686,13 @@ async function handleUpdateYtdlp() {
   const last = out.split(/\r?\n/).filter(Boolean).slice(-3).join(' ').slice(0, 400);
   if (res.code !== 0) {
     const hint = /pip/i.test(out) ? 'It was installed with pip: run "pip install -U yt-dlp".'
-      : /winget|package manager|not supported/i.test(out) ? 'Update it with your package manager, e.g. "winget upgrade yt-dlp.yt-dlp".' : '';
+      : /winget|package manager|not supported/i.test(out) ? `Update it with ${installHint('yt-dlp', process.platform, 'upgrade')}.` : '';
     throw new Error(`${last}${hint ? ` ${hint}` : ''}`);
   }
   toolCache.delete('yt-dlp');
   return { output: last, upToDate: /up to date/i.test(out) };
 }
+// @end-site-edition
 
 // ------------------------------------------------------------------ custom save folder
 
@@ -575,8 +715,15 @@ export function joinInside(base, sub) {
   return out;
 }
 
-function moveFile(src, destDir) {
-  const target = uniquePath(path.join(destDir, path.basename(src)));
+/** The files a study pack saves next to a video. Only these may replace a file of the same name when moved. */
+export const PACK_FILE = /\.(?:guide\.html|guide\.md|study\.html|slides\.md|flashcards\.txt|transcript\.md)$/i;
+
+function moveFile(src, destDir, { replace = false } = {}) {
+  const wanted = path.join(destDir, path.basename(src));
+  // A study pack made again takes the place of the one before it (its guide links to "<name>.study.html" by name).
+  const over = replace && PACK_FILE.test(wanted) && fs.statSync(wanted, { throwIfNoEntry: false })?.isFile();
+  if (over) fs.rmSync(wanted, { force: true });
+  const target = over ? wanted : uniquePath(wanted);
   try {
     fs.renameSync(src, target);
   } catch (e) {
@@ -592,9 +739,9 @@ async function handleMove(msg) {
   fs.mkdirSync(dir, { recursive: true });
   const files = (Array.isArray(msg.files) ? msg.files : []).slice(0, 12);
   const moved = files.map((f) => {
-    if (typeof f !== 'string' || !path.isAbsolute(f) || !fs.statSync(f, { throwIfNoEntry: false })?.isFile()) return null;
+    if (typeof f !== 'string' || !path.isAbsolute(f) || !MOVE_EXT.test(f) || !fs.statSync(f, { throwIfNoEntry: false })?.isFile()) return null;
     if (path.dirname(path.resolve(f)).toLowerCase() === dir.toLowerCase()) return f;
-    return moveFile(f, dir);
+    return moveFile(f, dir, { replace: msg.replace === true });
   });
   return { dir, moved };
 }
@@ -630,6 +777,11 @@ async function handlePickFolder(msg) {
 // ------------------------------------------------------------------ library scan (what's already downloaded)
 
 const MEDIA_EXT = /\.(mp4|m4v|mkv|webm|mov|ts|avi|flv|wmv|m4a|mp3|aac|flac|wav|ogg|opus)$/i;
+/**
+ * What "move" moves: only the kinds of file StreamSnag saves (a video or audio file, a document from the page as
+ * lib/files.js lists them, a subtitle file, a page or note it made). Anything else is left where it is.
+ */
+const MOVE_EXT = /\.(mp4|m4v|mkv|webm|mov|ts|avi|flv|wmv|m4a|mp3|aac|flac|wav|ogg|opus|vtt|srt|pdf|ppt|pptx|pps|ppsx|key|odp|doc|docx|odt|rtf|pages|xls|xlsx|csv|ods|numbers|epub|zip|ipynb|html|md|txt)$/i;
 const DATA_DIR = path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), '.local', 'share'), 'StreamSnag');
 const DURATION_CACHE = path.join(DATA_DIR, 'durations.json');
 
@@ -640,6 +792,7 @@ export function listMediaFiles(dirs, { maxDepth = 6, maxFiles = 20000 } = {}) {
     if (out.size >= maxFiles || depth > maxDepth) return;
     let entries = [];
     try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    const names = new Set(entries.map((e) => e.name.toLowerCase()));
     for (const e of entries) {
       if (out.size >= maxFiles) return;
       if (e.name.startsWith('.') || e.name.startsWith('$') || e.name === 'node_modules') continue;
@@ -648,7 +801,12 @@ export function listMediaFiles(dirs, { maxDepth = 6, maxFiles = 20000 } = {}) {
       else if (e.isFile() && MEDIA_EXT.test(e.name) && !out.has(p.toLowerCase())) {
         try {
           const st = fs.statSync(p);
-          if (st.size > 0) out.set(p.toLowerCase(), { path: p, name: e.name, size: st.size, mtimeMs: Math.round(st.mtimeMs) });
+          if (st.size > 0) {
+            const file = { path: p, name: e.name, size: st.size, mtimeMs: Math.round(st.mtimeMs) };
+            // Captions saved beside it under the same name ("Lecture 3.vtt"), e.g. by "Transcribe on this computer".
+            if (names.has(`${path.parse(e.name).name}.vtt`.toLowerCase())) file.vtt = true;
+            out.set(p.toLowerCase(), file);
+          }
         } catch { /* vanished */ }
       }
     }
@@ -702,7 +860,10 @@ async function handleScanFolder(msg) {
   }
   const compact = files.map((f) => {
     const d = cache[`${f.size}:${f.mtimeMs}`];
-    return d ? { path: f.path, size: f.size, mtimeMs: f.mtimeMs, duration: d } : { path: f.path, size: f.size, mtimeMs: f.mtimeMs };
+    const c = { path: f.path, size: f.size, mtimeMs: f.mtimeMs };
+    if (d) c.duration = d;
+    if (f.vtt) c.vtt = true;
+    return c;
   });
   // Chrome takes at most 1 MB per message from a helper: a big library is handed over in pages.
   const first = scanPage(compact, 0);
@@ -764,9 +925,52 @@ async function handleReveal(msg) {
   return { shown: p };
 }
 
+/** A study page, study guide, cheat sheet or mock exam StreamSnag saved: the only kind of file the helper will open in the browser. */
+// (The same pages as the extension's isPackPage, lib/decks.js: the reading edition too.)
+const PACK_PAGE = /\.(?:study|guide|read|cheatsheet|mock-exam-\d{4}-\d{2}-\d{2})(?: \(\d+\))?\.html$/i;
+
+/**
+ * The small page that sends the browser on to a study page at a minute and a slide: a file can go to
+ * another file, where an extension (without "Allow access to file URLs") may not. `file`: the study
+ * page's full path; `t` seconds; `slide` the slide's number. Returns { html, target }.
+ */
+export function redirectPage(file, { t, slide } = {}) {
+  const p = String(file || '');
+  if (!path.isAbsolute(p) || /["<>\r\n\u0000]/.test(p) || !PACK_PAGE.test(p)) throw new Error('That is not a study page StreamSnag saved.');
+  const parts = [Number.isFinite(t) && t >= 0 ? `t=${Math.floor(t)}` : '', Number.isInteger(slide) && slide > 0 && slide < 10000 ? `slide=${slide}` : ''].filter(Boolean);
+  const target = `${pathToFileURL(p).href}${parts.length ? `#${parts.join('&')}` : ''}`;
+  const safe = target.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  const html = `<!doctype html>\n<meta charset="utf-8">\n<meta http-equiv="refresh" content="0;url=${safe}">\n<title>Opening your lecture</title>\n<p><a href="${safe}">Open the study page</a></p>\n`;
+  return { html, target };
+}
+
+/**
+ * "Show me in the lecture" when the browser will not let the extension open a file itself: opens the
+ * saved study page in the default browser, at the card's minute and slide.
+ */
+async function handleOpenPage(msg) {
+  const p = String(msg.path || '');
+  const { html, target } = redirectPage(p, { t: Number(msg.t), slide: Number(msg.slide) });
+  if (!fs.statSync(p, { throwIfNoEntry: false })?.isFile()) throw new Error('File not found');
+  const dir = path.join(os.tmpdir(), 'streamsnag-open');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const old of fs.readdirSync(dir)) {
+    // Yesterday's are no use to anyone.
+    try { if (Date.now() - fs.statSync(path.join(dir, old)).mtimeMs > 86400000) fs.rmSync(path.join(dir, old), { force: true }); } catch { /* in use */ }
+  }
+  const go = path.join(dir, `open-${crypto.randomUUID()}.html`);
+  fs.writeFileSync(go, html);
+  if (process.env.STREAMSNAG_TEST_NO_OPEN !== '1') {
+    if (IS_WIN) spawn('explorer.exe', [go], { detached: true, stdio: 'ignore' }).unref();
+    else spawn(process.platform === 'darwin' ? 'open' : 'xdg-open', [go], { detached: true, stdio: 'ignore' }).unref();
+  }
+  return { opened: target, via: go };
+}
+
 const HANDLERS = {
   ping: async () => ({ version: VERSION, tools: tools(), platform: process.platform }),
   reveal: handleReveal,
+  openPage: handleOpenPage,
   move: handleMove,
   scanFolder: handleScanFolder,
   scanPage: handleScanPageRequest,
@@ -777,10 +981,12 @@ const HANDLERS = {
   codex: handleCodex,
   mux: handleMux,
   convert: handleConvert,
+  toolVersions: handleToolVersions,
+  // @site-edition
   ytdlp: handleYtdlp,
   ytdlpList: handleYtdlpList,
-  toolVersions: handleToolVersions,
   updateYtdlp: handleUpdateYtdlp,
+  // @end-site-edition
 };
 
 async function dispatch(msg) {
@@ -803,11 +1009,18 @@ async function dispatch(msg) {
 const norm = (p) => (IS_WIN ? path.resolve(p).toLowerCase() : path.resolve(p));
 const isMain = !!process.argv[1] && norm(process.argv[1]) === norm(fileURLToPath(import.meta.url));
 if (isMain) {
-  log('started', process.argv.slice(2).join(' '), process.env.STREAMSNAG_FAKE_YTDLP === '1' ? '(test mode: fake yt-dlp)' : '');
+  // @site-edition
+  log('started', process.argv.slice(2).join(' '), process.env.STREAMSNAG_FAKE_YTDLP === '1' ? '(test mode: fake yt-dlp)' : '',
+    process.env.STREAMSNAG_FAKE_STT === '1' ? '(test mode: fake transcription)' : '');
+  // @store-edition
+  // log('started', process.argv.slice(2).join(' '), process.env.STREAMSNAG_FAKE_STT === '1' ? '(test mode: fake transcription)' : '');
+  // @end-site-edition
   process.stdin.on('data', createDecoder((m) => { dispatch(m); }, (e) => log('decode error', e.message)));
   process.stdin.on('end', () => {
-    // Chrome closed the connection (the request was cancelled, or the browser quit): stop what we started.
-    for (const c of children) { try { c.kill(); } catch { /* already gone */ } }
+    // Chrome closed the connection (the request was cancelled, or the browser quit): stop what we started,
+    // and whatever those programs started, then remove the half-written files they leave.
+    for (const c of [...children]) killTree(c);
+    removePartFiles();
     process.exit(0);
   });
 }

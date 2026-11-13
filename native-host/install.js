@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 // Registers the StreamSnag local helper with Chrome (and Edge/Brave/Chromium) for the current user.
+// @site-edition
 //   node native-host/install.js            install
 //   node native-host/install.js --uninstall
 //   node native-host/install.js --id <extension-id>   (only if you changed the manifest "key")
+// @store-edition
+// //   node install.js                        install
+// //   node install.js --uninstall
+// //   node install.js --id <extension-id>    (only when this copy was made without the extension's id)
+// @end-site-edition
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -23,6 +29,7 @@ export function extensionIdFromKey(base64Key) {
   return [...hex].map((c) => String.fromCharCode(97 + parseInt(c, 16))).join('');
 }
 
+// @site-edition
 function extensionId() {
   const i = args.indexOf('--id');
   if (i >= 0 && args[i + 1]) return args[i + 1];
@@ -30,6 +37,17 @@ function extensionId() {
   if (!manifest.key) throw new Error('manifest.json has no "key"; pass --id <extension id> from chrome://extensions');
   return extensionIdFromKey(manifest.key);
 }
+// @store-edition
+// /** The id the Chrome Web Store gave the extension; the release build writes it in (scripts/helper.store.json). */
+// export const STORE_EXTENSION_ID = '__STORE_EXTENSION_ID__';
+//
+// function extensionId() {
+//   const i = args.indexOf('--id');
+//   const id = i >= 0 && args[i + 1] ? args[i + 1] : STORE_EXTENSION_ID;
+//   if (!/^[a-p]{32}$/.test(id)) throw new Error('No extension id: pass --id <the 32-letter id shown in chrome://extensions>');
+//   return id;
+// }
+// @end-site-edition
 
 function writeLauncher() {
   const node = process.execPath;
@@ -48,7 +66,11 @@ function writeLauncher() {
 function writeManifest(launcher, id) {
   const manifest = {
     name: HOST_NAME,
+    // @site-edition
     description: 'StreamSnag local helper (Claude CLI, ffmpeg, yt-dlp)',
+    // @store-edition
+    // description: 'StreamSnag local helper (Claude CLI, ffmpeg)',
+    // @end-site-edition
     path: launcher,
     type: 'stdio',
     allowed_origins: [`chrome-extension://${id}/`],
@@ -58,7 +80,10 @@ function writeManifest(launcher, id) {
   return file;
 }
 
-const WIN_KEYS = [
+// Tests register under a key of their own (STREAMSNAG_TEST_REG_ROOT, one word) instead of the browsers' keys,
+// so a test never replaces the registration the browsers really use.
+const TEST_ROOT = /^[\w-]{1,64}$/.test(process.env.STREAMSNAG_TEST_REG_ROOT || '') ? process.env.STREAMSNAG_TEST_REG_ROOT : '';
+const WIN_KEYS = TEST_ROOT ? [`HKCU\\Software\\${TEST_ROOT}\\NativeMessagingHosts`] : [
   'HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts',
   'HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts',
   'HKCU\\Software\\BraveSoftware\\Brave-Browser\\NativeMessagingHosts',

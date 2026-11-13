@@ -121,7 +121,7 @@ export function pickPlaying(media, reports) {
       if (here.length) return found(newest(here));
       if (same.length === 1) return found(same[0]);
     }
-    // 3. An embedded player (YouTube, Vimeo…): the frame's own address names the video.
+    // 3. An embedded player (Vimeo, Wistia…): the frame's own address names the video.
     const embed = list.find((m) => {
       if (m.kind !== 'embed') return false;
       let token = '';
@@ -263,6 +263,7 @@ function qName(s) {
   return `"${String(s).replace(/[$`"\\!'%]/g, '').trim() || 'video.mp4'}"`;
 }
 
+// @site-edition
 export function ytdlpCommand(url, { referer, output } = {}) {
   const parts = ['yt-dlp'];
   if (referer) parts.push('--referer', qUrl(referer));
@@ -270,6 +271,7 @@ export function ytdlpCommand(url, { referer, output } = {}) {
   parts.push(qUrl(url));
   return parts.join(' ');
 }
+// @end-site-edition
 
 export function ffmpegCommand(url, { referer, output = 'video.mp4' } = {}) {
   const parts = ['ffmpeg'];
@@ -311,6 +313,9 @@ export function isPrivateHost(host) {
   if (!h) return false;
   if (h === 'localhost' || h.endsWith('.localhost') || /\.(local|lan|internal|home|corp|intranet)$/.test(h)) return true;
   if (h === '::1' || /^f[cd][0-9a-f]{2}:/.test(h) || /^fe80:/.test(h)) return true;
+  // IPv4 written as IPv6: "::" itself, IPv4-mapped "::ffff:c0a8:101" (192.168.1.1) and the old "::7f00:1" form all
+  // begin with "::" (no public address does), and NAT64 "64:ff9b::…" can lead to a local IPv4 address too.
+  if (h.startsWith('::') || /^64:ff9b:/.test(h)) return true;
   const m = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(h);
   if (!m) return false;
   const [a, b] = [Number(m[1]), Number(m[2])];

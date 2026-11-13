@@ -1,35 +1,35 @@
-body.options-page { width: auto; max-height: none; overflow: visible; font-size: 14px; }
+body.options-page { width: auto; max-height: none; overflow: visible; font-size: 0.875rem; }
 main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
 .page-head { display: flex; gap: 14px; align-items: center; margin-bottom: 20px; }
-.page-head h1 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
+.page-head h1 { margin: 0; font: 500 1.625rem/1.15 var(--serif); letter-spacing: -.015em; }
 .page-head p { margin: 2px 0 0; }
 .theme-pick { margin-left: auto; flex: none; }
-.theme-pick .chip { font-size: 13px; padding: 5px 10px; }
+.theme-pick .chip { font-size: 0.8125rem; padding: 5px 10px; }
 @media (max-width: 560px) { .page-head { flex-wrap: wrap; } .theme-pick { margin-left: 0; } }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 16px; overflow-x: auto; }
+/* The tabs wrap onto a second line when the window is narrow: none is ever out of sight. */
+.tabs { display: flex; flex-wrap: wrap; gap: 0 4px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
 .tabs button { border: 0; background: none; padding: 10px 12px; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
 .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
 .tab-panel { display: flex; flex-direction: column; gap: 14px; padding: 0; }
 .card { padding: 16px; }
 .stack { display: flex; flex-direction: column; gap: 10px; }
-h3 { margin: 0; font-size: 15px; }
+h3 { margin: 0; font-size: 0.9375rem; font-weight: 600; }
 label { display: flex; flex-direction: column; gap: 4px; font-weight: 500; }
 input[type="text"], input[type="password"], input[type="number"], select, textarea {
   font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--line);
   border-radius: 8px; padding: 8px 10px; width: 100%;
 }
-textarea { font: 12px/1.45 ui-monospace, Consolas, monospace; min-height: 180px; resize: vertical; }
+textarea { font: 0.75rem/1.45 ui-monospace, Consolas, monospace; min-height: 180px; resize: vertical; }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
 .choice { flex-direction: row; align-items: flex-start; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; font-weight: 400; cursor: pointer; }
 .choice:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
-.choice input { margin-top: 3px; }
 .check { flex-direction: row; align-items: center; gap: 8px; font-weight: 400; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
 .row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .row-actions.spread { justify-content: space-between; }
 .steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
-code { font: 12px ui-monospace, Consolas, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+code { font: 0.75rem ui-monospace, Consolas, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
 .file-btn { flex-direction: row; display: inline-flex; font-weight: 400; cursor: pointer; }
 .tool-list { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .tool-list li { display: flex; gap: 8px; }
@@ -38,17 +38,80 @@ code { font: 12px ui-monospace, Consolas, monospace; background: var(--surface-2
 .history { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .history li { padding: 8px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
 .history li:first-child { border-top: 0; }
-.history .files { font-size: 12px; color: var(--muted); word-break: break-all; }
-.saved { position: fixed; bottom: 16px; right: 16px; background: var(--text); color: var(--bg); padding: 6px 12px; border-radius: 8px; font-size: 13px; }
-.recipe-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.err-text { color: var(--err); font-size: 12px; }
+.history .files { font-size: 0.75rem; color: var(--muted); word-break: break-all; }
+.saved { position: fixed; bottom: 16px; right: 16px; background: var(--text); color: var(--bg); padding: 6px 12px; border-radius: 8px; font-size: 0.8125rem; }
+.recipe-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.recipe-fold > summary { cursor: pointer; font-size: 0.8125rem; color: var(--muted); min-height: 24px; }
+.recipe-fold[open] > summary { margin-bottom: 6px; }
+.recipe-words { margin: 0; }
+.builtin-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.err-text { color: var(--err); font-size: 0.75rem; }
 .inline { display: flex; gap: 6px; align-items: center; font-weight: 400; }
 .inline input { flex: 1; min-width: 0; }
 .folder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.folder-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.folder-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.folder-list .link { flex: none; white-space: nowrap; } /* the button stays whole on one line; the path beside it gives way */
 .folder-list code { min-width: 0; overflow-wrap: anywhere; }
-.rules { width: 100%; border-collapse: collapse; font-size: 12px; }
+.rules { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
 .rules th { text-align: left; color: var(--muted); font-weight: 600; padding: 4px 6px; border-bottom: 1px solid var(--line); }
 .rules td { padding: 5px 6px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
 .rules ~ .row-actions input { flex: 1; min-width: 120px; }
-input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); width: 18px; height: 18px; flex: none; margin: 0; }
+.choice input { margin-top: 1px; }
+/* The expert settings, behind one line. */
+.adv > summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; cursor: pointer; list-style: none; min-height: 24px; }
+.adv > summary::-webkit-details-marker { display: none; }
+.adv > summary::before { content: "›"; color: var(--muted); font-size: 1.125rem; line-height: 1; width: 12px; transition: transform .15s; }
+.adv[open] > summary::before { transform: rotate(90deg); }
+.adv-body { margin-top: 14px; }
+.adv-body h4 { margin: 8px 0 0; font-size: 0.875rem; font-weight: 600; }
+.adv-body h4:first-child { margin-top: 0; }
+/* Long paths and addresses wrap instead of pushing the page sideways. */
+code, .history a, .history strong, #folder-status, #library-status, .tool-list li, #toolVersions { overflow-wrap: anywhere; }
+.history li { min-width: 0; }
+.inline { flex-wrap: wrap; }
+.inline input { flex: 1 1 180px; }
+.rules { table-layout: fixed; }
+@media (max-width: 560px) {
+  /* A switch's small note goes under its words, not beside them in a column of its own. */
+  .check { display: grid; grid-template-columns: 18px minmax(0, 1fr); }
+  .check > .muted { grid-column: 2; }
+  main { padding: 20px 12px 56px; }
+  .card { padding: 12px; }
+  .rules ~ .row-actions input { min-width: 0; flex: 1 1 100%; }
+}
+/* The parts of a study pack: a list of switches under one heading. */
+.parts { margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; display: flex; flex-direction: column; gap: 7px; }
+.parts legend { padding: 0 4px; font-weight: 500; }
+.parts p { margin: 2px 0 0; }
+/* A hint under a switched-off checkbox, lined up with its text. */
+.hint { margin: -6px 0 0 22px; }
+.check:has(input:disabled) { color: var(--muted); }
+#stt-card .progress { margin: 0; }
+
+
+/* ---------------------------------------------------------------- forced colours (Windows contrast themes) */
+/* popup.css names the variables after the system's colours and lets the system choose light or dark. Here:
+   what this page draws itself, and what it told apart by colour alone. */
+@media (forced-colors: active) {
+  body.options-page { background: Canvas; color: CanvasText; }
+  .page-head h1, .page-head p, h3, h4, label, legend, .history strong, .history .files, .rules th, .rules td, .recipe-fold > summary, .adv > summary, code, .tool-list li { color: CanvasText; }
+  .card, .choice, .parts, .saved, code { border: 1px solid CanvasText; }
+  .tabs { border-bottom-color: CanvasText; }
+  .tabs button { color: ButtonText; border-bottom-color: transparent; }
+  /* The open tab and the chosen option: the system's highlight, not a tint. */
+  .tabs button[aria-selected="true"] { border-bottom-color: Highlight; }
+  .choice:has(input:checked) { outline: 2px solid Highlight; outline-offset: -2px; background: Canvas; }
+  input[type="text"], input[type="password"], input[type="number"], select, textarea { background: Field; color: FieldText; border: 1px solid FieldText; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid Highlight; border-color: FieldText; }
+  .history a, a.small { color: LinkText; }
+  /* "Found" and "missing" are said in words next to their mark; the colour is the system's. */
+  .ok, .bad, .err-text, .check:has(input:disabled) { color: CanvasText; }
+  .adv > summary::before { color: CanvasText; }
+  .saved { background: Canvas; color: CanvasText; }
+}
+.pack-styles-box h4 { margin: 4px 0 2px; }
+.style-list { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.style-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; }
+.style-list .style-name { flex: 1; min-width: 12em; }
+.style-edit { display: flex; flex-direction: column; gap: 4px; width: 100%; }

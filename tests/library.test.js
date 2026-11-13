@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { findInLibrary, sameItem, nameKey, serviceId } from '../extension/lib/match.js';
+import { findInLibrary, sameItem, nameKey, serviceId, savedPathsOf } from '../extension/lib/match.js';
 import { listMediaFiles, findTool } from '../native-host/host.js';
 import { encodeMessage, createDecoder } from '../native-host/protocol.js';
 
@@ -154,4 +154,26 @@ test('helper scan measures real video lengths and keeps them after a rename', { 
   assert.equal(second.files[0].path, renamed);
   assert.equal(second.files[0].duration, first.files[0].duration); // from the cache: same size + modified time
   fs.rmSync(work, { recursive: true, force: true });
+});
+
+test('savedPathsOf: the files a page\'s videos are shown as downloaded from, to check they are still there', () => {
+  const history = [
+    { mediaId: 'a', outputs: [{ path: 'C:\V\A.mp4', size: 10 }] },
+    { mediaUrl: 'https://x/b.m3u8', outputs: [{ path: 'C:\V\B.mp4' }, { path: 'C:\V\B.vtt' }] },
+    { mediaId: 'zzz', outputs: [{ path: 'C:\V\Other.mp4' }] },
+  ];
+  const media = [
+    { id: 'a', url: 'https://x/a.mp4', kind: 'direct' }, // saved, no scan match yet: its recorded file
+    { id: 'b', url: 'https://x/b.m3u8', kind: 'hls' }, // every file recorded for it
+    { id: 'c', url: 'https://x/c.mp4', kind: 'direct', library: { path: 'D:\Lib\C renamed.mp4', how: 'renamed' } }, // the scan's file, not the record's
+    { id: 'd', url: 'https://x/d.mp4', kind: 'direct', library: { missing: true, path: 'C:\V\D.mp4' } }, // already known gone
+    { id: 'e', url: 'https://x/e.mp4', kind: 'direct', mark: 'done', library: { path: '', how: 'manual' } }, // your own mark
+    { id: 'f', url: 'https://x/f.mp4', kind: 'direct' }, // never saved
+    { id: 'g', url: 'https://x/g.vtt', kind: 'subtitle', library: { path: 'C:\V\g.vtt' } },
+  ];
+  assert.deepEqual(savedPathsOf(media, history), ['C:\V\A.mp4', 'C:\V\B.mp4', 'C:\V\B.vtt', 'D:\Lib\C renamed.mp4']);
+  // At most `max`, and nothing from nothing.
+  assert.deepEqual(savedPathsOf(media, history, 2), ['C:\V\A.mp4', 'C:\V\B.mp4']);
+  assert.deepEqual(savedPathsOf([], history), []);
+  assert.deepEqual(savedPathsOf(media, []), ['D:\Lib\C renamed.mp4']);
 });

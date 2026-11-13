@@ -66,3 +66,21 @@ test('yt-dlp output names cannot leave the folder or inject template fields', ()
   assert.throws(() => ytdlpSafeName('   '), /Empty/);
   assert.ok(ytdlpSafeName('x'.repeat(400)).length <= 150);
 });
+
+test('the file yt-dlp saved is read only from its own marked line, and only inside the folder it was told to save in', async () => {
+  const { ytdlpSavedFile, YTDLP_FILE_MARK } = await import('../native-host/host.js');
+  const os = await import('node:os');
+  const path = await import('node:path');
+  const out = path.join(os.tmpdir(), 'StreamSnag out');
+  const inside = path.join(out, 'Lecture 6 [abc].mp4');
+  assert.equal(YTDLP_FILE_MARK, 'STREAMSNAG-FILE:');
+  assert.equal(ytdlpSavedFile(`${YTDLP_FILE_MARK}${inside}`, out), inside);
+  assert.equal(ytdlpSavedFile(`${YTDLP_FILE_MARK}${path.join(out, 'Playlist', '001 - Café [x].mp4')}`, out), path.join(out, 'Playlist', '001 - Café [x].mp4'), 'a playlist folder inside, and a name that is not ASCII');
+  // A plain path line (what any line of yt-dlp's output could be made to say) is not a saved file.
+  assert.equal(ytdlpSavedFile(inside, out), '');
+  // Outside the folder, by a path or by climbing out of it, or on a network share: not a saved file.
+  for (const bad of [path.join(os.tmpdir(), 'elsewhere.mp4'), path.join(out, '..', 'escape.mp4'), '\\\\server\\share\\x.mp4', 'relative\\x.mp4', '', `${out}x${path.sep}sibling.mp4`]) {
+    assert.equal(ytdlpSavedFile(`${YTDLP_FILE_MARK}${bad}`, out), '', bad);
+  }
+  assert.equal(ytdlpSavedFile(null, out), '');
+});

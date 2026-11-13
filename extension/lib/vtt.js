@@ -64,7 +64,9 @@ export function captionsToText(vttOrSrt, everySec = 30) {
       .replace(/&nbsp;/g, ' ')
       .split('\n')
       .map((l) => l.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      // A machine-made cue identifier copied into the text by a converter is not something that was said.
+      .filter((l) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:-\d+)?$/i.test(l));
     for (const t of text) {
       if (t === last) continue;
       last = t;

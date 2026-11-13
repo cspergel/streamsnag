@@ -22,6 +22,25 @@ export function sameItem(m, rec) {
   return mine.length > 0 && contentIds([rec.mediaUrl, ...(rec.mediaKeys || []), rec.fingerprint]).some((id) => mine.includes(id));
 }
 
+/**
+ * The files a page's videos are shown as downloaded from: the file the folder scan found for each, or, before
+ * a scan has found it, every file StreamSnag recorded saving for it. (Not your own marks, nor a file the scan
+ * already knows is gone.) Opening StreamSnag checks these are still there, so a file deleted a moment ago is
+ * not shown as downloaded until the next scan.
+ */
+export function savedPathsOf(media = [], history = [], max = 20) {
+  const out = new Set();
+  for (const m of media) {
+    if (!m || m.mark || m.kind === 'subtitle') continue;
+    if (m.library) {
+      if (m.library.path && !m.library.missing) out.add(m.library.path);
+      continue;
+    }
+    for (const h of history) if (sameItem(m, h)) for (const o of h.outputs || []) if (o?.path) out.add(o.path);
+  }
+  return [...out].slice(0, max);
+}
+
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 
 /**
@@ -59,7 +78,7 @@ export function nameKey(s) {
   return String(s || '')
     .replace(/^.*[\\/]/, '') // folder
     .replace(/\.[a-z0-9]{2,4}$/i, '') // extension
-    .replace(/\[[^\]]*\]/g, ' ') // yt-dlp "[id]"
+    .replace(/\[[^\]]*\]/g, ' ') // a download tool's "[id]"
     .replace(/\(\d{1,3}\)/g, ' ') // Windows "(1)" copies
     .replace(/^\s*\d{1,4}\s*[-.)_]\s+/, '') // playlist index "003 - "
     .normalize('NFKD').replace(/[̀-ͯ]/g, '')
@@ -169,7 +188,9 @@ export function serviceId(m) {
   if (m.embedId && /^[\w-]{6,}$/.test(m.embedId)) return m.embedId;
   const u = String(m.embedUrl || m.url || '');
   return /vimeo\.com\/(?:video\/)?(\d{6,})(?:[/?#]|$)/i.exec(u)?.[1]
+    // @site-edition
     || /(?:youtube(?:-nocookie)?\.com\/(?:embed\/|shorts\/|watch\?(?:.*&)?v=)|youtu\.be\/)([\w-]{11})/i.exec(u)?.[1]
+    // @end-site-edition
     || /wistia\.(?:net|com)\/(?:embed\/)?(?:iframe|medias)\/([a-z0-9]{8,})/i.exec(u)?.[1]
     || '';
 }
@@ -182,7 +203,8 @@ export function serviceId(m) {
  * @param scannedDirs folders the scan covered (to tell "deleted" from "not scanned")
  * @param scannedAt  when that scan started: a file saved after it can't be in it yet
  * @param opts.nameIsUnique  false when other items on the page share this name (then a name proves nothing)
- * @returns {{path, how:'history'|'renamed'|'id'|'size'|'length'|'name'} | {missing:true, path} | null}
+ * @returns {{path, how:'history'|'renamed'|'id'|'size'|'length'|'name', probable?:true} | {missing:true, path} | null}
+ *          `probable`: only the length agrees, so it may be this video: never shown as downloaded.
  */
 export function findInLibrary(m, history = [], files = [], scannedDirs = [], scannedAt = Infinity, opts = {}) {
   if (!m || m.kind === 'subtitle' || !files) return null;
@@ -203,7 +225,7 @@ export function findInLibrary(m, history = [], files = [], scannedDirs = [], sca
       if (hit) return { path: hit.path, how: norm(hit.path) === norm(o.path) ? 'history' : 'renamed' };
     }
   }
-  // 2. yt-dlp (and many other tools) put the video's id in the name: "Keynote [123456789].mp4".
+  // 2. Many download tools put the video's id in the name: "Keynote [123456789].mp4".
   const id = m.playlist ? '' : serviceId(m);
   if (id) {
     const hit = files.find((f) => fileName(f).includes(`[${id}]`));
@@ -222,10 +244,15 @@ export function findInLibrary(m, history = [], files = [], scannedDirs = [], sca
   // 4. A stream: one video in the folder with the same length (the name, or a clearly closer length, settles a tie).
   //    Lectures can be within a fraction of a second of each other, so a file whose name clearly says it is
   //    another lecture ("012 Interstitial Lung..." for "009: C. diff") never counts.
+  //    The length alone proves nothing (two films of 10:35 are not the same film): only together with the
+  //    file's name is it "found". A lone file of the same length is reported as `probable`, for a note.
+  let probable = null;
   if ((m.kind === 'hls' || m.kind === 'dash' || m.kind === 'embed') && want > 20 && !live) {
     const hits = files.filter((f) => lengthMatches(want, f.duration) && !(title && nameContradicts(title, f, files)));
-    const hit = onlyOne(hits) || onlyOne(hits.filter((f) => named.includes(f))) || clearlyClosest(hits, want);
-    if (hit) return { path: hit.path, how: 'length' };
+    const sure = onlyOne(hits.filter((f) => named.includes(f)));
+    if (sure) return { path: sure.path, how: 'length' };
+    const maybe = onlyOne(hits) || clearlyClosest(hits, want);
+    if (maybe) probable = { path: maybe.path, how: 'length', probable: true };
   }
   // 5. The file carries this video's own name, and nothing contradicts it (a known, different length).
   if (named.length) {
@@ -238,5 +265,5 @@ export function findInLibrary(m, history = [], files = [], scannedDirs = [], sca
   const dirs = scannedDirs.map(norm);
   const lost = saved.find((p) => dirs.some((d) => norm(p).startsWith(d.endsWith('\\') ? d : `${d}\\`)));
   if (lost) return { missing: true, path: lost };
-  return null;
+  return probable;
 }

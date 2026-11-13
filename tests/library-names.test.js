@@ -58,7 +58,8 @@ test('a lecture is not "downloaded" just because another lecture happens to have
   assert.match(findInLibrary(stream('012: Pericardial and Myocardial Disease', 2781.8), [], withLengths, []).path, /012 Pericardial/);
   assert.match(findInLibrary(stream('008: Recent Advances in Lipid Management', 3860.7), [], withLengths, []).path, /008 - Recent/);
   const bare = [{ path: `${D}\\video (3).mp4`, name: 'video (3).mp4', size: 5, duration: 2781.9 }];
-  assert.equal(findInLibrary(stream('009: Updates in the Diagnosis and Management of Atrial Fibrillation', 2781.77), [], bare, []).how, 'length');
+  // (By its length alone, so only as "probably this one": it is not shown as downloaded. See tests/realsites.test.js, B9.)
+  assert.deepEqual(findInLibrary(stream('009: Updates in the Diagnosis and Management of Atrial Fibrillation', 2781.77), [], bare, []), { path: bare[0].path, how: 'length', probable: true });
 });
 
 test('a lecture number is read from the start of a name, not from dates or times', () => {

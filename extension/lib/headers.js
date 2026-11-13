@@ -28,7 +28,8 @@ export const PRIVATE_URL_PATTERNS = [
   '192\\.168\\.[0-9.]+',
   '169\\.254\\.[0-9.]+',
   '100\\.(?:6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\\.[0-9.]+',
-  '\\[(?:::1|f[cd][0-9a-f][0-9a-f]:[0-9a-f:.]*|fe80:[0-9a-f:.]*)\\]',
+  // (Any address that begins with "::": ::1, ::, IPv4-mapped ::ffff:…; and NAT64 64:ff9b::…, as isPrivateHost.)
+  '\\[(?:::[0-9a-f:.]*|f[cd][0-9a-f][0-9a-f]:[0-9a-f:.]*|fe80:[0-9a-f:.]*|64:ff9b:[0-9a-f:.]*)\\]',
 ].map((host) => `^https?://(?:[^/@]*@)?${host}(?::[0-9]+)?(?:[/?#]|$)`);
 
 export async function installLocalGuard() {
@@ -89,7 +90,7 @@ export async function applyRefererRules(urls, pageUrl, clicked = false) {
       requestDomains: [host],
       tabIds: [chrome.tabs.TAB_ID_NONE],
       // Never touch our own AI calls.
-      excludedRequestDomains: ['anthropic.com', 'openai.com'],
+      excludedRequestDomains: ['anthropic.com', 'openai.com', 'generativelanguage.googleapis.com', 'api.deepseek.com', 'openrouter.ai'],
     },
   }));
   await chrome.declarativeNetRequest.updateSessionRules({

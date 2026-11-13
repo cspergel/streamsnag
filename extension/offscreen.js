@@ -1,6 +1,6 @@
 // Offscreen document: downloads stream segments in parallel, joins them into one Blob and hands a
 // blob: URL back to the service worker (which cannot create object URLs itself).
-import { parseM3U8 } from './lib/hls.js';
+import { parseM3U8, liveStart } from './lib/hls.js';
 import { mergeVttSegments } from './lib/vtt.js';
 
 const active = new Map(); // jobId -> { controller, stopController, stopLive }
@@ -90,6 +90,7 @@ async function runLive(job, plan, report) {
   const parts = [];
   let initPart = null;
   let lastSeq = -1;
+  let started = false; // the first playlist has been read
   let bytes = 0;
   let ended = false;
   let failures = 0;
@@ -108,6 +109,11 @@ async function runLive(job, plan, report) {
     }
     if (media.type !== 'media') throw new Error('Live playlist is not a media playlist');
     if (!initPart && media.init) initPart = await fetchPart(media.init, signal);
+    // A recording starts from now: of the window of the past a live playlist holds, only its last pieces.
+    if (!started) {
+      started = true;
+      lastSeq = liveStart(media.segments);
+    }
     const fresh = media.segments.filter((s) => s.sequence > lastSeq);
     for (const seg of fresh) {
       if (signal.aborted) break;
@@ -147,8 +153,12 @@ async function runTrack(msg) {
   }
 }
 
-chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  if (msg?.target !== 'offscreen') return;
+// Only the extension's own pages and its worker may ask this page for anything (a content script may not): it
+// fetches and reads files with the extension's rights. (Security review, 2026-11-12.)
+const fromExtension = (sender) => sender?.id === chrome.runtime.id && String(sender?.url || '').startsWith(chrome.runtime.getURL(''));
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg?.target !== 'offscreen' || !fromExtension(sender)) return;
   if (msg.type === 'runTrack') {
     runTrack(msg);
     sendResponse({ ok: true });
@@ -173,4 +183,14 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   } else if (msg.type === 'ping') {
     sendResponse({ ok: true });
   }
+});
+
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg?.target !== 'offscreen' || !fromExtension(sender)) return false;
+  if (msg.type === 'textBlob') {
+    const type = msg.mime === 'text/html' ? 'text/html;charset=utf-8' : 'text/plain;charset=utf-8';
+    sendResponse({ ok: true, blobUrl: URL.createObjectURL(new Blob([String(msg.text ?? '')], { type })) });
+  }
+  return false;
 });

@@ -83,6 +83,18 @@ function parseMaster(lines, baseUrl) {
       i = j;
     }
   }
+  // A master that states no picture size at all, but keeps each quality under a name that is its height
+  // (".../720p/video.m3u8", "video_1080p.m3u8"): those are the heights. Only when every quality has one of
+  // its own: a folder they all share ("/1080p-master/") says nothing of any of them.
+  if (variants.length > 1 && variants.every((v) => !v.height && !v.width)) {
+    const named = variants.map((v) => {
+      let path = '';
+      try { path = decodeURIComponent(new URL(v.url).pathname); } catch { /* no address */ }
+      const h = Number(/(?:^|[/_.-])(\d{3,4})p(?=[/_.-]|$)/i.exec(path)?.[1]) || 0;
+      return h >= 144 && h <= 4320 ? h : 0;
+    });
+    if (named.every(Boolean) && new Set(named).size === named.length) variants.forEach((v, i) => { v.height = named[i]; });
+  }
   variants.sort((x, y) => y.height - x.height || y.bandwidth - x.bandwidth);
   return { type: 'master', variants, audio, subtitles, protected: isProtected };
 }
@@ -154,4 +166,14 @@ export function outputExtForMedia(media, role = 'video') {
   if (['aac', 'mp3', 'ac3', 'ec3'].includes(media.segmentExt)) return media.segmentExt;
   if (media.segmentExt === 'vtt' || media.segmentExt === 'webvtt') return 'vtt';
   return 'ts';
+}
+
+/**
+ * Where a live recording starts: the sequence number after which segments are taken. A live playlist
+ * holds a window of the past (minutes, sometimes hours); a recording starts now, so only its last `keep`
+ * segments are taken (about where a player is). -1: take them all (the stream has only just begun).
+ */
+export function liveStart(segments, keep = 3) {
+  const list = segments || [];
+  return list.length > keep ? list[list.length - keep - 1].sequence : -1;
 }

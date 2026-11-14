@@ -1,6 +1,6 @@
 {
   "name": "streamsnag",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "description": "StreamSnag: a free, open-source video downloader for Chrome, Edge and Brave",
   "license": "GPL-3.0-only",

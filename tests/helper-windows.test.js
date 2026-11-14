@@ -16,6 +16,8 @@ const skip = process.platform !== 'win32' && 'Windows only';
 const ID = 'ponmlkjihgfedcbaponmlkjihgfedcba';
 const ROOT_KEY = `StreamSnagTest-${process.pid}`;
 const HOST = 'com.streamsnag.helper';
+// The version the package is built with (its folder's name, Installed apps, the helper's ping).
+const V = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'streamsnag-winhelper-'));
 const home = path.join(work, 'home');
@@ -76,7 +78,7 @@ test('set up for real: copied into its folder, registered, in Installed apps, th
   pkg = await buildWindowsHelper({ out: path.join(work, 'pkg2'), zip: false, nodeExe: process.execPath, config: writeConfig(ID) });
   const r = setup(pkg.folder, ['-SkipFfmpeg']);
   assert.equal(r.status, 0, r.stdout + r.stderr);
-  const dest = path.join(home, '1.6.0');
+  const dest = path.join(home, V);
   for (const f of ['node.exe', 'host.js', 'install.js', 'setup.ps1', 'host.bat', `${HOST}.json`]) assert.ok(fs.existsSync(path.join(dest, f)), f);
   // The launcher runs the helper's own node.exe from its own folder (not the Node that ran the test, not the zip's folder).
   const bat = fs.readFileSync(path.join(dest, 'host.bat'), 'utf8');
@@ -88,12 +90,12 @@ test('set up for real: copied into its folder, registered, in Installed apps, th
   assert.equal(manifest.path, path.join(dest, 'host.bat'));
   const app = `HKCU\\Software\\${ROOT_KEY}\\Uninstall\\StreamSnagHelper`;
   assert.equal(regValue(app, 'DisplayName'), 'StreamSnag helper');
-  assert.equal(regValue(app, 'DisplayVersion'), '1.6.0');
+  assert.equal(regValue(app, 'DisplayVersion'), V);
   assert.match(regValue(app, 'UninstallString'), /setup\.ps1" -Uninstall$/);
   assert.deepEqual(REAL_KEYS.map(regDefault), before, 'the browsers\' own registration is as it was');
   const pong = await pingThrough(manifest.path);
   assert.equal(pong?.type, 'result');
-  assert.equal(pong.version, '1.6.0');
+  assert.equal(pong.version, V);
   assert.deepEqual(Object.keys(pong.tools).sort(), ['claude', 'codex', 'ffmpeg']);
 });
 
@@ -106,7 +108,7 @@ test('set up again over itself, then a newer version replaces the older folder',
   const r = setup(pkg.folder, ['-SkipFfmpeg']);
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.ok(!fs.existsSync(old), 'an older copy is removed');
-  assert.ok(fs.existsSync(path.join(home, '1.6.0', 'host.js')));
+  assert.ok(fs.existsSync(path.join(home, V, 'host.js')));
 });
 
 test('removed: the registration, the Installed apps entry, the folder and the helper\'s data are gone', { skip }, async () => {
@@ -121,7 +123,7 @@ test('removed: the registration, the Installed apps entry, the folder and the he
   }
   fs.writeFileSync(path.join(work, 'not-the-helpers.txt'), 'x');
   // (Removed by the installed copy, the way Installed apps runs it.)
-  const un = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(home, '1.6.0', 'setup.ps1'), '-Uninstall'], {
+  const un = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(home, V, 'setup.ps1'), '-Uninstall'], {
     encoding: 'utf8', env: { ...process.env, STREAMSNAG_TEST_HOME: home, STREAMSNAG_TEST_REG_ROOT: ROOT_KEY, STREAMSNAG_TEST_DATA: data }, timeout: 120000,
   });
   assert.equal(un.status, 0, un.stdout + un.stderr);
@@ -136,7 +138,7 @@ test('removed: the registration, the Installed apps entry, the folder and the he
 /** setup.ps1 -Uninstall run by the installed copy, without blocking (so the test can let go of a file meanwhile). */
 function uninstallLater() {
   return new Promise((resolve) => {
-    const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(home, '1.6.0', 'setup.ps1'), '-Uninstall'], {
+    const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(home, V, 'setup.ps1'), '-Uninstall'], {
       env: { ...process.env, STREAMSNAG_TEST_HOME: home, STREAMSNAG_TEST_REG_ROOT: ROOT_KEY }, stdio: ['ignore', 'pipe', 'pipe'],
     });
     let out = '';
@@ -146,7 +148,7 @@ function uninstallLater() {
   });
 }
 /** The installed node.exe kept running, which holds its file the way a busy helper does. */
-const holdNode = () => spawn(path.join(home, '1.6.0', 'node.exe'), ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
+const holdNode = () => spawn(path.join(home, V, 'node.exe'), ['-e', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
 const exited = (child) => new Promise((r) => { if (child.exitCode !== null || child.signalCode) r(); else child.once('exit', r); });
 
 test('removing waits a few seconds for a file held a moment longer, and says so when one stays held', { skip }, async () => {
@@ -170,7 +172,7 @@ test('removing waits a few seconds for a file held a moment longer, and says so 
     assert.match(stuck.out, /still running/);
     assert.equal(regDefault(`HKCU\\Software\\${ROOT_KEY}\\NativeMessagingHosts\\${HOST}`), '');
     assert.equal(regValue(app, 'DisplayName'), 'StreamSnag helper', 'still in Installed apps');
-    for (const f of ['node.exe', 'setup.ps1', 'install.js']) assert.ok(fs.existsSync(path.join(home, '1.6.0', f)), f);
+    for (const f of ['node.exe', 'setup.ps1', 'install.js']) assert.ok(fs.existsSync(path.join(home, V, f)), f);
   } finally { held.kill(); }
   await exited(held);
   const again = await uninstallLater();
@@ -183,9 +185,18 @@ test('without an extension id, setup asks for one and, with no one to answer, st
   const bare = await buildWindowsHelper({ out: path.join(work, 'pkg3'), zip: false, nodeExe: process.execPath, config: writeConfig('') });
   const r = setup(bare.folder, ['-SkipFfmpeg']);
   assert.notEqual(r.status, 0);
-  assert.match(r.stdout + r.stderr, /No extension id/);
+  // It asks first, without a failure shown before the question, and says plainly that nothing was set up.
+  const said = r.stdout + r.stderr;
+  assert.match(said, /Settings > Local helper/);
+  assert.match(said, /No ID was given, so nothing was set up/);
+  assert.doesNotMatch(said, /Install failed/);
+  assert.ok(said.indexOf('Settings > Local helper') < said.indexOf('No ID was given'));
+  // A mistyped ID is refused in words a person can act on, and nothing is registered.
+  const typo = setup(bare.folder, ['-SkipFfmpeg', '-Id', 'abc123']);
+  assert.notEqual(typo.status, 0);
+  assert.match(typo.stdout + typo.stderr, /"abc123" is not StreamSnag's ID: it is 32 letters, a to p/);
   assert.equal(regDefault(`HKCU\\Software\\${ROOT_KEY}\\NativeMessagingHosts\\${HOST}`), '');
-  assert.ok(!fs.existsSync(path.join(home, '1.6.0', `${HOST}.json`)));
+  assert.ok(!fs.existsSync(path.join(home, V, `${HOST}.json`)));
   // Given with -Id, the same copy registers.
   const ok = setup(bare.folder, ['-SkipFfmpeg', '-Id', ID]);
   assert.equal(ok.status, 0, ok.stdout + ok.stderr);
@@ -202,7 +213,7 @@ test('the website edition\'s package: the full helper, registered for the extens
   const r = setup(site.folder, ['-SkipFfmpeg']); // no -Id: id.txt gives it
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.match(r.stdout, /yt-dlp (found|\. You can install it later)|Skipped yt-dlp/);
-  const manifest = JSON.parse(fs.readFileSync(path.join(home, '1.6.0', `${HOST}.json`), 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(path.join(home, V, `${HOST}.json`), 'utf8'));
   assert.deepEqual(manifest.allowed_origins, [`chrome-extension://${manifestKeyId}/`]);
   const pong = await pingThrough(manifest.path);
   assert.ok('ytdlp' in pong.tools, 'the installed helper has the other downloader');

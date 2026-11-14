@@ -1,6 +1,6 @@
 {
   "//": "The id the Chrome Web Store gives the extension (the dashboard shows it once the item is created, before it is published). The release build writes it into the store helper's installer, so the helper answers that extension and no other. Until it is set, the installer asks for --id.",
-  "extensionId": "",
+  "extensionId": "gknppdninaiiggeoopfiaodfebhdnlgi",
   "// node": "The official Node.js the Windows helper package carries (scripts/build-helper-windows.mjs). To move to a newer one: the version, and the sha256 of win-x64/node.exe from https://nodejs.org/dist/v<version>/SHASUMS256.txt and of the LICENSE at that tag.",
   "node": {
     "version": "22.23.5",

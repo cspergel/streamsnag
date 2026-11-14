@@ -226,8 +226,16 @@ test('the store helper\'s installer: without an id it stops before writing anyth
   for (const extra of [[], ['--id', 'not-an-id'], ['--id', 'ABCDEFGHIJKLMNOPABCDEFGHIJKLMNOP']]) {
     const r = spawnSync(process.execPath, [path.join(bare, 'install.js'), ...extra], { encoding: 'utf8' });
     assert.equal(r.status, 1, extra.join(' '));
-    assert.match(r.stderr, /No extension id/, extra.join(' '));
+    // None given: how to give one; a mistyped one: what an ID looks like and where it is shown.
+    assert.match(r.stderr, extra.length ? new RegExp(`"${extra[1]}" is not StreamSnag's ID: it is 32 letters, a to p`) : /No extension id: pass --id/, extra.join(' '));
   }
+  // `--needs-id` says it by its exit code alone, with nothing printed: 3 here (setup then asks before trying).
+  const needs = spawnSync(process.execPath, [path.join(bare, 'install.js'), '--needs-id'], { encoding: 'utf8' });
+  assert.deepEqual([needs.status, needs.stdout, needs.stderr], [3, '', '']);
+  // A copy with the id built in: 0, and nothing registered by the question.
+  const known = spawnSync(process.execPath, [path.join(HELPER, 'install.js'), '--needs-id'], { encoding: 'utf8' });
+  assert.deepEqual([known.status, known.stdout, known.stderr], [0, '', '']);
+  assert.ok(!fs.existsSync(path.join(HELPER, 'com.streamsnag.helper.json')));
   // Nothing was written next to it (no launcher, no host manifest).
   assert.deepEqual(listFiles(bare), [...HELPER_FILES, 'package.json', 'README.txt'].sort());
   assert.throws(() => buildHelper(path.join(work, 'store-helper-bad'), undefined, helperConfig('abc')), /is not an extension id/);

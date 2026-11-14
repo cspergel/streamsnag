@@ -121,15 +121,24 @@ $install = Join-Path $dest 'install.js'
 # A package made for an extension whose id is known says it in id.txt (otherwise install.js knows it, or asks).
 $idFile = Join-Path $dest 'id.txt'
 if (-not $Id -and (Test-Path -LiteralPath $idFile)) { $Id = (Get-Content -Raw -LiteralPath $idFile).Trim() }
+if (-not $Id) {
+  # A copy made before the extension had its store id asks for it, before trying (install.js says by its exit
+  # code alone whether it knows one: 3 = it doesn't).
+  & $node $install --needs-id
+  if ($LASTEXITCODE -eq 3) {
+    Write-Host 'StreamSnag shows its ID in Settings > Local helper.' -ForegroundColor Yellow
+    $answer = $null
+    try { $answer = Read-Host 'Paste the ID here' } catch { }
+    $Id = "$answer".Trim()
+    if (-not $Id) {
+      Write-Host 'No ID was given, so nothing was set up. Run setup again and paste the ID when it asks.' -ForegroundColor Red
+      exit 1
+    }
+  }
+}
 $idArgs = @()
 if ($Id) { $idArgs = @('--id', $Id) }
 & $node $install @idArgs
-if ($LASTEXITCODE -ne 0 -and -not $Id) {
-  # (A copy made before the extension had its store id: ask for it once.)
-  Write-Host 'StreamSnag shows its ID in Settings > Local helper.' -ForegroundColor Yellow
-  $Id = (Read-Host 'Paste the ID here').Trim()
-  & $node $install --id $Id
-}
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 # ------------------------------------------------------------------ 4. an entry in Installed apps, and older copies removed

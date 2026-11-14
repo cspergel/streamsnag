@@ -44,6 +44,7 @@ function extensionId() {
 // function extensionId() {
 //   const i = args.indexOf('--id');
 //   const id = i >= 0 && args[i + 1] ? args[i + 1] : STORE_EXTENSION_ID;
+//   if (i >= 0 && args[i + 1] && !/^[a-p]{32}$/.test(id)) throw new Error(`"${id}" is not StreamSnag's ID: it is 32 letters, a to p, shown in StreamSnag's Settings > Local helper`);
 //   if (!/^[a-p]{32}$/.test(id)) throw new Error('No extension id: pass --id <the 32-letter id shown in chrome://extensions>');
 //   return id;
 // }
@@ -101,6 +102,12 @@ function unixDirs() {
 }
 
 function main() {
+  // `--needs-id`: says by its exit code alone (0 known, 3 not) whether this copy knows the extension's id, so
+  // setup can ask for it first instead of showing a failure before the question.
+  if (args.includes('--needs-id')) {
+    try { extensionId(); } catch { process.exit(3); }
+    return;
+  }
   if (process.platform === 'win32') {
     for (const k of WIN_KEYS) {
       const key = `${k}\\${HOST_NAME}`;

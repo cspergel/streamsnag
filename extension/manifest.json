@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "StreamSnag: free video downloader",
   "short_name": "StreamSnag",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Save the videos you watch: files, HLS and DASH streams, captions as readable transcripts, and the files a page links to. Free and open source.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5u5+Vmif/2ZE2Y3amSPLR6yumB8yoafpc6Ck2UDJlTP5+nVlMJxlZANMEzZPso0EVc7zmba/NpfwuYh0iZSTUBNREXDMHGc1nBkcUgEodE7Wsrm2R4Jr2ELgakNoX5XWoZEFTAWqcTr2+4HYzslbofL8fq1yoqSzGHsOFlyZPF/8gJDnTkQc9mutE1q/6IPShyQQVBOR5CN66mgGrmgpeVB4Zh7eFhBXvSs8LqvBrGR5qhykwXjnawPf5YFtsk+EJNaz9Ju3/0stbZ9XGWtzgDRFH88WyDdhJ2NQ8j3rgm47fLe5mCjx82kUMwdrosDh+NOJO+6KmIr/BGmmyJIkcwIDAQAB",
   "minimum_chrome_version": "116",

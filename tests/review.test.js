@@ -395,6 +395,11 @@ test('folderTrail, reviewSummary and docKinds: the words on the sheet', () => {
   assert.equal(reviewSummary({ selected: 0, files: 1, blocked: 2 }), '1 file selected · 2 can\'t be downloaded');
   assert.equal(reviewSummary({ selected: 0, check: 4 }), 'Nothing selected · 4 need a look');
   assert.equal(reviewSummary(), 'Nothing selected');
+  // E8: a video and its two smaller copies is not "2 need a look".
+  assert.equal(reviewSummary({ selected: 1, check: 2, copies: 2 }), '1 video selected · 2 are copies');
+  assert.equal(reviewSummary({ selected: 1, check: 1, copies: 1 }), '1 video selected · 1 is a copy');
+  assert.equal(reviewSummary({ selected: 4, check: 3, copies: 1, blocked: 2 }), '4 videos selected · 2 need a look · 1 is a copy · 2 can\'t be downloaded');
+  assert.equal(reviewSummary({ selected: 2, check: 1, copies: 5 }), '2 videos selected · 1 is a copy', 'never more copies than there are rows to check');
   // C6: a page of sound files is not "videos"; a sheet about the page's files alone counts no videos at all.
   assert.equal(reviewSummary({ selected: 3, noun: 'audio file' }), '3 audio files selected');
   assert.equal(reviewSummary({ selected: 1, files: 2, noun: 'recording' }), '1 recording and 2 files selected');

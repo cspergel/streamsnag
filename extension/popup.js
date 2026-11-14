@@ -1684,6 +1684,7 @@ function renderReview() {
   const byId2 = new Map(offered.map(({ m }) => [m.id, m]));
   const summary = reviewSummary({
     selected: picked.length, files: pickedDocs.length, check: groups.check.length, blocked: groups.blocked.length, only: r.only,
+    copies: groups.check.filter((c) => c.reason === 'copy').length,
     noun: nounFor(picked.map(({ id }) => byId2.get(id)), 1),
   });
   if ($('#review-summary').textContent !== summary) $('#review-summary').textContent = summary;

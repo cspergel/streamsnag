@@ -330,13 +330,18 @@ const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 /**
  * The sheet's one-line summary: "12 videos selected · 3 need a look · 1 can't be downloaded".
  * `noun`: what the selected recordings are ("video", "audio file", "recording"); `only`: 'files' when the
- * sheet is about the page's files alone (then no videos are counted at all).
+ * sheet is about the page's files alone (then no videos are counted at all). `copies`: how many of `check`
+ * are only a copy of another video on the sheet ("Same as another one"): said as copies, not as something
+ * to look at ("1 video selected · 2 are copies", not "· 2 need a look" for a video and its smaller files).
  */
-export function reviewSummary({ selected = 0, files = 0, check = 0, blocked = 0, noun = 'video', only = '' } = {}) {
+export function reviewSummary({ selected = 0, files = 0, check = 0, copies = 0, blocked = 0, noun = 'video', only = '' } = {}) {
   const what = [(selected || !files) && only !== 'files' ? plural(selected, noun) : '', files || only === 'files' ? plural(files, 'file') : ''].filter(Boolean).join(' and ');
+  const same = Math.max(0, Math.min(copies, check));
+  const look = check - same;
   return [
     selected || files ? `${what} selected` : 'Nothing selected',
-    check ? `${check} ${check === 1 ? 'needs' : 'need'} a look` : '',
+    look ? `${look} ${look === 1 ? 'needs' : 'need'} a look` : '',
+    same ? (same === 1 ? '1 is a copy' : `${same} are copies`) : '',
     blocked ? `${blocked} can't be downloaded` : '',
   ].filter(Boolean).join(' · ');
 }

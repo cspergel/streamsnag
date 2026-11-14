@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { encodeMessage, createDecoder } from './protocol.js';
 
-export const VERSION = '1.6.0';
+export const VERSION = '1.7.0';
 const IS_WIN = process.platform === 'win32';
 const LOG = path.join(os.tmpdir(), 'streamsnag-helper.log');
 

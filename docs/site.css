@@ -1723,6 +1723,8 @@ a { text-decoration-thickness: .06em; text-underline-offset: .22em; }
 .pc-alt span, .pc-alt a { font-variant-numeric: tabular-nums lining-nums; }
 /* The monthly and lifetime prices are links to their Gumroad pages (2026-11-17). */
 .pc-alt a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+/* A 40 px tall place to press, without moving the line: the padding is taken back by the margin. */
+.pc-alt a { display: inline-block; padding: 10px 2px; margin: -10px 0; }
 .pc-alt a:hover { text-decoration-thickness: 2px; }
 .trust { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink); }
 .calm-head .trust { margin-top: 10px; }

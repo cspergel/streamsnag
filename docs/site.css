@@ -1720,7 +1720,10 @@ a { text-decoration-thickness: .06em; text-underline-offset: .22em; }
 .pcs { align-items: stretch; }
 .pc-ticks { flex-grow: 1; align-content: start; }
 .pc-alt { margin-top: -6px; font-size: var(--t); font-weight: 600; color: var(--ink); }
-.pc-alt span { font-variant-numeric: tabular-nums lining-nums; }
+.pc-alt span, .pc-alt a { font-variant-numeric: tabular-nums lining-nums; }
+/* The monthly and lifetime prices are links to their Gumroad pages (2026-11-17). */
+.pc-alt a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.pc-alt a:hover { text-decoration-thickness: 2px; }
 .trust { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink); }
 .calm-head .trust { margin-top: 10px; }
 .trust .ic { flex: none; width: 18px; height: 18px; color: var(--green); }

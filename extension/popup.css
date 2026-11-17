@@ -181,6 +181,8 @@ b, strong { font-weight: 600; }
 
 .banner { margin: 8px 16px 0; padding: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line-2); font-size: 0.7812rem; color: var(--ink-2); }
 .banner.err { background: var(--bad-wash); border-color: var(--bad-line); color: var(--bad); }
+/* The one button that fixes what the strip or a job's note says (Set up helper, Choose folder, AI settings…). */
+.banner .fix-btn, .job-note .fix-btn { font-weight: 650; white-space: nowrap; color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 
 /* ---------------------------------------------------------------- setup card */
 .setup { margin: 10px 16px 0; padding: 12px; display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }

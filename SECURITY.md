@@ -14,7 +14,7 @@ do with it. You'll get a reply as soon as possible, and credit in the release no
 * A web page (or its content, URLs, titles, or a site recipe) making the extension or helper run commands,
   write or delete files outside the folders you chose, or reach other sites.
 * Leaking your API key, history or file paths to anyone other than you (and, for AI features you turned on,
-  Anthropic), or your licence key to anyone but Lemon Squeezy.
+  Anthropic), or your licence key to anyone but the licence check and Gumroad.
 * Anything that lets another extension or program talk to the helper.
 
 ## Design notes for reviewers
@@ -71,13 +71,16 @@ do with it. You'll get a reply as soon as possible, and credit in the release no
 * The Claude Code and Codex CLIs are run with their tools switched off (no shell, no browser, read-only
   sandbox), so text from a web page can only produce an answer.
 * StreamSnag never downloads DRM-protected or encrypted streams.
-* Pro's licence key is checked with Lemon Squeezy's public licence API, which takes only the key the buyer
-  typed: no API key or other secret of the store is in the extension. The worker sends the key, a generic
-  name for the copy ("StreamSnag in Chrome on Windows") and the instance id, form-encoded, with
-  `credentials: 'omit'`, only to `https://api.lemonsqueezy.com/v1/licenses/{validate,activate,deactivate}`
-  (already covered by the extension's host access: no new permission). A key is accepted only when the
-  answer names StreamSnag's store (521270) and product (1519030) and one of its three variants. The key and
-  the instance id live only in `chrome.storage.local` and are left out of backups.
+* Pro's licence key is checked through the licence Worker (`licence-worker/`, a Cloudflare Worker at
+  `https://licence.streamsnag.app/v1/{activate,validate,deactivate}`), which holds the seller's Gumroad
+  access token (needed only to give a computer back) and makes only those three calls: no secret is in the
+  extension, and nothing in it names the shop. The extension's worker sends the key, a
+  generic name for the copy ("StreamSnag in Chrome on Windows") and the instance id, as JSON, with
+  `credentials: 'omit'` (already covered by the extension's host access: no new permission). The Worker
+  accepts a key only when Gumroad finds it under one of StreamSnag's Pro products (Gumroad receives only the key
+  and the product id), gives back the use of a refused or over-limit key, stores and logs nothing, and answers
+  503 ("offline" to the extension, never "refused") when Gumroad is down or refuses the Worker's own token. The key and the instance id live only in
+  `chrome.storage.local` and are left out of backups.
 * Nothing but a stored activation unlocks Pro: there is no setting, address, flag or test switch for it in
   the shipped code (the browser checks answer the licence API themselves, from outside the extension). A
   check dated in the future counts as no check. The lock is a fair-use lock in an open extension, not DRM.

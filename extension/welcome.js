@@ -24,6 +24,14 @@ async function checkHelper() {
     status.className = 'small bad';
     status.textContent = 'Not set up yet. StreamSnag works without it; you can add it any time.';
   }
+  // Something missing: the steps for this computer are one click away (Settings opens on its Local helper tab).
+  if (!h?.ok || status.textContent.includes('Not installed yet')) {
+    const steps = document.createElement('button');
+    steps.className = 'link fix-btn';
+    steps.textContent = 'Set-up steps';
+    steps.addEventListener('click', () => chrome.tabs.create({ url: chrome.runtime.getURL('options.html#helper') }));
+    status.append(' ', steps);
+  }
 }
 
 document.getElementById('check').addEventListener('click', checkHelper);

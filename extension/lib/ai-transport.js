@@ -6,6 +6,7 @@ import { extractJson } from './ai.js';
 import { buildOpenAiRequest, readOpenAiResponse, jsonOnlySystem } from './openai.js';
 import { buildGeminiRequest, readGeminiResponse } from './gemini.js';
 import { buildChatRequest, readChatResponse, chatUsage, CHAT_PROVIDERS } from './chatapi.js';
+import { claudeCliProblem } from './wording.js';
 
 export const HELPER_NAME = 'com.streamsnag.helper';
 /** What every helper request answers while the helper is not installed (Settings has the steps for each system). */
@@ -97,15 +98,29 @@ async function viaSubscription(settings, { system, user, schema }) {
   const res = await helperRequest(
     { type: 'claude', system: fullSystem, prompt: user, model: settings.subscriptionModel || '' },
     { timeoutMs: 240000 },
-  );
+  ).catch((e) => {
+    // The CLI's own failure ("Invalid API key · Please run /login") in words a student can act on.
+    if (/^Claude CLI error:/i.test(e.message)) throw Object.assign(new Error(claudeCliProblem(e.message)), { raw: e.message });
+    throw e;
+  });
   return { data: extractJson(res.text), usage: res.usage || null, via: 'Claude subscription (local)' };
+}
+
+/** Reads an answer; a failure carries the HTTP status, so callAI can tell "busy, wait" from "refused". */
+function read(res, body, fn) {
+  try {
+    return fn();
+  } catch (e) {
+    e.status = res.status;
+    throw e;
+  }
 }
 
 async function viaOpenAi(settings, prompt) {
   const { url, init } = buildOpenAiRequest(settings, prompt);
   const res = await fetch(url, init);
   const body = await res.json().catch(() => null);
-  const text = readOpenAiResponse(res.status, body);
+  const text = read(res, body, () => readOpenAiResponse(res.status, body));
   return { data: extractJson(text), usage: body?.usage || null, via: `OpenAI API · ${body?.model || settings.openaiModel}` };
 }
 
@@ -114,7 +129,7 @@ async function viaGemini(settings, prompt) {
   const { url, init } = buildGeminiRequest(settings, prompt);
   const res = await fetch(url, init);
   const body = await res.json().catch(() => null);
-  const text = readGeminiResponse(res.status, body);
+  const text = read(res, body, () => readGeminiResponse(res.status, body));
   return { data: extractJson(text), usage: body?.usageMetadata || null, via: `Gemini API · ${settings.geminiModel || 'gemini'}` };
 }
 
@@ -123,7 +138,7 @@ const viaChat = (provider) => async (settings, prompt) => {
   const { url, init } = buildChatRequest(provider, settings, prompt);
   const res = await fetch(url, init);
   const body = await res.json().catch(() => null);
-  const text = readChatResponse(provider, res.status, body);
+  const text = read(res, body, () => readChatResponse(provider, res.status, body));
   const p = CHAT_PROVIDERS[provider];
   return { data: extractJson(text), usage: chatUsage(body), via: `${p.name} · ${body?.model || settings[p.modelSetting] || p.defaultModel}` };
 };
@@ -141,10 +156,28 @@ async function viaChatGpt(settings, { system, user, schema }) {
  * @param settings {aiProvider:'api'|'subscription'|'openai'|'chatgpt'|'gemini'|'off', apiKey, model, effort, subscriptionModel, openaiKey, openaiModel, chatgptModel, geminiKey, geminiModel}
  * @param prompt   {system, user, schema, maxTokens?}
  */
-export async function callAI(settings, prompt) {
+export async function callAI(settings, prompt, { wait = (ms) => new Promise((r) => setTimeout(r, ms)) } = {}) {
   const route = { api: viaApi, subscription: viaSubscription, openai: viaOpenAi, chatgpt: viaChatGpt, gemini: viaGemini, deepseek: viaChat('deepseek'), openrouter: viaChat('openrouter') }[settings.aiProvider];
   if (!route) throw new Error('AI is turned off. Choose a provider in StreamSnag settings.');
   // One long request makes no extension calls while it waits, and the browser stops a worker that is quiet
   // for 30 seconds (with the popup closed nothing else keeps it up): a cheap call every 20 seconds does.
-  return withKeepAlive(() => route(settings, prompt), { ping: () => chrome.runtime.getPlatformInfo(() => {}) });
+  const once = () => withKeepAlive(() => route(settings, prompt), { ping: () => chrome.runtime.getPlatformInfo(() => {}) });
+  try {
+    return await once();
+  } catch (e) {
+    // A provider that says "busy" or "slow down" (429, 5xx) is asked once more after a pause; nothing it
+    // refused is charged. (The API-key route's own client already retries; the pipelines retry other failures.)
+    if (settings.aiProvider === 'api' || !busyError(e)) throw e;
+    await wait(BUSY_PAUSE_MS);
+    return once();
+  }
+}
+
+export const BUSY_PAUSE_MS = 5000;
+
+/** An AI failure worth one more try after a pause: rate-limited or the provider's servers busy. */
+export function busyError(e) {
+  const s = Number(e?.status) || 0;
+  if (s === 429 || s >= 500) return true;
+  return /rate-limiting|overloaded|busy right now|RESOURCE_EXHAUSTED|temporarily unavailable/i.test(String(e?.message || ''));
 }

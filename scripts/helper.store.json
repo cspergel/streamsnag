@@ -1,6 +1,8 @@
 {
   "//": "The id the Chrome Web Store gives the extension (the dashboard shows it once the item is created, before it is published). The release build writes it into the store helper's installer, so the helper answers that extension and no other. Until it is set, the installer asks for --id.",
   "extensionId": "gknppdninaiiggeoopfiaodfebhdnlgi",
+  "// publicKey": "The store item's public key (dashboard > Package > View public key; public, not a secret), as base64 without its BEGIN/END lines. Only the fresh-computer run uses it: put into an unpacked copy's manifest as \"key\", it gives that copy the store's id, so the helper with the store id answers it. The store package itself carries no key.",
+  "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA54HXgkJlRqvpqAxQhySlPmg7XWtBq6HKrnPkT3l231nT79GFvAMWpNvp8RCuZhpLV2tERGuStrzZW8V6ujTuFcJMrnapds6kyPzjNbDUTAW++FcBNRbOKld0ATNEYblgnzXkHK7+RNV3geUIPQsqJ6SvleOHX5SHzrwb00kPIEN9lQPwCuGAOXII3ImgR+TLibF0ruEvNiHMdw2ZNR/FLPlLWyjiX9rweUgoODK8jVDWl0K04KV9Dzwg5uGibYKWNGeg5gzs21wCPTACeFEggtzj+L16kV6ngP3qurghbG1HzymIT/Qyoy9D/wD9g4y0NFn+WxGyByp05zJU38AOkQIDAQAB",
   "// node": "The official Node.js the Windows helper package carries (scripts/build-helper-windows.mjs). To move to a newer one: the version, and the sha256 of win-x64/node.exe from https://nodejs.org/dist/v<version>/SHASUMS256.txt and of the LICENSE at that tag.",
   "node": {
     "version": "22.23.5",

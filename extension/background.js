@@ -25,7 +25,7 @@ import { playerAt, playerFrames, playerVideo, playerPlaceholder, joinPlayer } fr
 import { graceStart, splitAtChange, comeBack, leftBehind } from './lib/pagechange.js';
 import { noteLinks, linksWaiting, linksLeftOut, linkName, listSort, sameLecture, formatTwins, talkName } from './lib/linked.js';
 import { groupVariants, variantOptions, variantChoice, heightOf, pagePlaylists } from './lib/variants.js';
-import { LIVE_DASH, noCaptions } from './lib/wording.js';
+import { LIVE_DASH, noCaptions, folderProblem } from './lib/wording.js';
 import { newRate, feedRate, readRate } from './lib/rate.js';
 import { buildTranscript, hasWords, imageCues } from './lib/transcript.js';
 import { companionFilename } from './lib/study.js';
@@ -2223,6 +2223,27 @@ function failJob(jobId, error, extra = {}) {
   persistJobs(true);
   toOffscreen({ type: 'jobFinished', jobId }).catch(() => {});
   pumpQueue();
+  retryStaleLink(job, extra);
+}
+
+/**
+ * A link that expired or was refused partway (401, 403, 410) is asked for once more by itself, with fresh
+ * links, as "Retry" does. The failed row goes once the new try has started; a second refusal of the same
+ * item within ten minutes is shown as usual, with its Retry.
+ */
+const autoRetried = new Map(); // `${tabId}:${mediaId}` → when it was last retried by itself
+const STALE_LINK = new Set([401, 403, 410]);
+function retryStaleLink(job, extra = {}) {
+  if (extra.canceled || !STALE_LINK.has(Number(extra.status)) || !job.mediaId || !['hls', 'dash', 'direct'].includes(job.kind)) return;
+  const key = `${job.tabId}:${job.mediaId}`;
+  if (Date.now() - (autoRetried.get(key) || 0) < 10 * 60 * 1000) return;
+  autoRetried.set(key, Date.now());
+  enqueueDownload(job.tabId, job.mediaId, job.optionId || 'file').then((started) => {
+    if (started && started.id !== job.id && jobs.get(job.id)?.status === 'error') {
+      jobs.delete(job.id);
+      persistJobs(true);
+    }
+  }).catch(() => { /* the page has moved on: the failure stays, with its Retry */ });
 }
 
 /**
@@ -2328,7 +2349,7 @@ async function moveToSaveFolder(job, settings) {
     job.savedTo = res.dir;
     job.note = [job.note, `Saved to ${res.dir}`].filter(Boolean).join(' · ');
   } catch (e) {
-    job.note = [job.note, `Couldn't move to ${settings.saveFolder} (${e.message}); left in Downloads.`].filter(Boolean).join(' · ');
+    job.note = [job.note, `Couldn't move to ${settings.saveFolder}, so it was left in Downloads. ${folderProblem(e.message)}`].filter(Boolean).join(' · ');
   }
 }
 
@@ -2544,7 +2565,17 @@ chrome.downloads.onChanged.addListener(async (delta) => {
   } else if (delta.state?.current === 'interrupted') {
     const [item] = await chrome.downloads.search({ id: delta.id });
     const reason = item?.error || 'interrupted';
-    failJob(job.id, reason === 'USER_CANCELED' ? 'Canceled' : `Download failed: ${reason}`, { canceled: reason === 'USER_CANCELED' });
+    // A dropped connection: Chrome can often carry on from where it stopped. Once, by itself, before saying so.
+    if (/^NETWORK_/.test(reason) && item?.canResume && !tr.resumed) {
+      tr.resumed = true;
+      persistJobs(true);
+      try {
+        await chrome.downloads.resume(delta.id);
+        return;
+      } catch { /* it could not: said below */ }
+    }
+    const status = { SERVER_FORBIDDEN: 403, SERVER_UNAUTHORIZED: 401 }[reason] || 0;
+    failJob(job.id, reason === 'USER_CANCELED' ? 'Canceled' : `Download failed: ${reason}`, { canceled: reason === 'USER_CANCELED', status });
   }
 });
 
@@ -3060,7 +3091,9 @@ let helperCache = { at: 0, value: null };
 async function helperStatus(force = false) {
   if (!force && helperCache.value && Date.now() - helperCache.at < 60000) return helperCache.value;
   try {
-    const res = await helperRequest({ type: 'ping' }, { timeoutMs: 8000 });
+    // A helper that is there but slow to wake (a cold start, a busy computer) is asked once more before it is called missing.
+    const res = await helperRequest({ type: 'ping' }, { timeoutMs: 8000 })
+      .catch((e) => (/timed out|disconnected/i.test(e.message) ? helperRequest({ type: 'ping' }, { timeoutMs: 8000 }) : Promise.reject(e)));
     helperCache = { at: Date.now(), value: { ok: true, version: res.version, tools: res.tools || {}, stt: res.stt || null } };
   } catch (e) {
     helperCache = { at: Date.now(), value: { ok: false, error: e.message } };
@@ -3590,7 +3623,7 @@ async function saveCompanions(target, parts, settings) {
           delete f.downloadId; // Chrome's entry now points at the old location
         });
       } catch (e) {
-        note = `Couldn't move to ${dest} (${e.message}); left in Downloads.`;
+        note = `Couldn't move to ${dest}, so it was left in Downloads. ${folderProblem(e.message)}`;
       }
     }
   }

@@ -674,7 +674,24 @@
       const t = clean(el.getAttribute('data-title') || el.getAttribute('data-video-title') || '');
       if (usable(t)) return t;
     }
-    return '';
+    return dialogName(p);
+  }
+
+  // A pop-up window over the page: a gallery's lightbox, a "watch" overlay.
+  const DIALOG = '[role="dialog"], [role="alertdialog"], dialog, [aria-modal="true"]';
+  const MEDIA_FILE_EXT = /\.(?:ogv|ogg|oga|webm|mp4|m4v|m4a|mov|mkv|mp3|wav|flac|opus)$/i;
+  /**
+   * The name a pop-up window holding the player gives itself (its aria-label, or the text of what it is
+   * aria-labelledby), without a media file's extension: Wikimedia Commons opens a gallery's video in a window
+   * titled "Here Is China Part 2.ogv", over a page whose heading is the gallery's. '' when the player is in none.
+   */
+  function dialogName(p) {
+    const box = p?.closest?.(DIALOG);
+    if (!box) return '';
+    const by = (box.getAttribute('aria-labelledby') || '').split(/\s+/).filter(Boolean)
+      .map((id) => document.getElementById(id)?.textContent || '').join(' ');
+    const t = clean(box.getAttribute('aria-label') || by).replace(MEDIA_FILE_EXT, '');
+    return usable(t) ? t : '';
   }
 
   /** The heading closest to the player (lecture pages usually title the video right above or below it). */
@@ -692,9 +709,12 @@
   }
 
   function nearestHeading(p) {
-    const hs = [...document.querySelectorAll('h1, h2, h3, [role="heading"]')].filter((hd) => visible(hd) && !furniture(hd));
+    // A player in a pop-up window: only that window's own headings are about it, not the page's behind it.
+    const box = p?.closest?.(DIALOG);
+    const hs = box ? [...box.querySelectorAll('h1, h2, h3, [role="heading"]')].filter(visible)
+      : [...document.querySelectorAll('h1, h2, h3, [role="heading"]')].filter((hd) => visible(hd) && !furniture(hd));
     const pr = p?.getBoundingClientRect();
-    if (!hs.length) return titleBy(pr);
+    if (!hs.length) return box ? '' : titleBy(pr);
     let best = null;
     for (const hd of hs) {
       const t = clean(hd.textContent);

@@ -411,6 +411,69 @@ const TECH = /\b(HLS|DASH|MPD|m3u8|EXTM3U|manifest|ffmpeg|ffprobe|yt-dlp|codec|m
  * really reported is `detail` (shown under Details, for bug reports).
  */
 export function plainProblem(raw) {
+  const p = plainProblemText(raw);
+  return { ...p, fix: fixFor(raw) };
+}
+
+/**
+ * What would fix a problem, as one kind of button (the popup's and the desk's message strips show it):
+ *  'helper'       the local helper is missing, or something needs it: "Set up helper" (Settings, Local helper);
+ *  'checkHelper'  the helper stopped answering, or a tool was just installed: "Check helper" (asks it again);
+ *  'folder'       the file could not be written or moved: "Choose folder" (Settings, Downloads);
+ *  'ai'           the AI account refused, ran out, or is not set: "AI settings";
+ *  'rescan'       the page changed under StreamSnag: "Scan again";
+ *  ''             nothing a button would fix (try again, or it cannot be saved at all).
+ */
+export function fixFor(raw) {
+  const text = String(raw ?? '');
+  if (!text.trim() || /\bDRM\b|encrypted|protected by the site/i.test(text)) return '';
+  if (/Local helper (timed out|disconnected)|helper did not answer/i.test(text)) return 'checkHelper';
+  // (The AI on this computer, missing: installed from a terminal, then tried from AI settings.)
+  if (/Claude Code CLI not found|Codex CLI not found/i.test(text)) return 'ai';
+  if (/Install it with|brew install|apt install/i.test(text)) return 'checkHelper';
+  if (/local helper is not installed|needs the local helper|Set up the local helper|Install the local helper|Local helper not available|Transcription is not set up/i.test(text)) return 'helper';
+  if (/FILE_|could not be written|not enough room on the disk|Couldn't move to|not writable|EACCES|EPERM/i.test(text)) return 'folder';
+  if (/did not accept the API key|API key|out of credit|credit balance|usage limit|not signed in|sign-in has expired|AI is turned off|Choose a provider|Set up an AI account/i.test(text)) return 'ai';
+  if (/media item is gone|reload the page and press play\.?$/i.test(text) && !/try again/i.test(text)) return 'rescan';
+  // @site-edition
+  // 'ytdlp': the other downloader failed, and an update of it often fixes that ("Update yt-dlp").
+  if (/yt-dlp|other way of downloading could not/i.test(text)) return 'ytdlp';
+  // @end-site-edition
+  return '';
+}
+
+/**
+ * Why a folder could not be used, from the system's own report ("EACCES: permission denied, open 'D:\…'"),
+ * in words: Settings' folder check and "Couldn't move to …" say this instead of the code.
+ */
+export function folderProblem(raw) {
+  const text = String(raw ?? '').trim();
+  if (/EACCES|EPERM|permission denied|access is denied/i.test(text)) return 'StreamSnag is not allowed to write there. Choose a folder of your own, such as one in Documents or Videos.';
+  if (/ENOSPC|no space/i.test(text)) return 'That drive is full. Free some space, or choose a folder on another drive.';
+  if (/EROFS|read-only/i.test(text)) return 'That drive can only be read, not written to. Choose another folder.';
+  if (/ENOENT|ENOTDIR|no such file|cannot find the path/i.test(text)) return 'That folder\'s drive or parent folder is not there (an unplugged drive?). Plug it in, or choose another folder.';
+  if (/EBUSY|resource busy|being used by another process/i.test(text)) return 'Another program is using that folder or file. Close it, then try again.';
+  return text || 'That folder cannot be used. Choose another one.';
+}
+
+/**
+ * The Claude Code CLI's own failure (the "Claude subscription" route) in words a student can act on. Its raw
+ * text ("Invalid API key · Please run /login", "OAuth token has expired…", "Claude AI usage limit reached|…",
+ * "API Error: 529 Overloaded") used to reach the popup as "Claude CLI error: …".
+ */
+export function claudeCliProblem(raw) {
+  const text = String(raw ?? '').replace(/^Claude CLI error:\s*/i, '').trim();
+  if (/\/login|oauth|token (has )?expired|not logged in|authenticat|invalid api key|\b401\b/i.test(text)) {
+    return 'Claude on this computer is not signed in, or its sign-in has expired. Open a terminal, run "claude" once and sign in, then try again.';
+  }
+  if (/usage limit|limit reached|rate.?limit|\b429\b/i.test(text)) return 'Your Claude plan has reached its usage limit for now. Try again when it resets, or choose another AI provider in StreamSnag settings.';
+  if (/credit balance|billing/i.test(text)) return 'Your Claude account is out of credit. Add credit to it, or choose another AI provider in StreamSnag settings.';
+  if (/overloaded|\b5\d\d\b/i.test(text)) return 'Claude is busy right now. Try again in a minute.';
+  const short = text.split(/\r?\n/).filter(Boolean).pop()?.slice(0, 160) || 'no reason given';
+  return `Claude on this computer could not answer (${short}). Try again; if it keeps happening, check that "claude" works in a terminal.`;
+}
+
+function plainProblemText(raw) {
   const text = String(raw ?? '').trim();
   if (!text) return { text: 'Something went wrong. Try again.', detail: '' };
   if (/\bDRM\b|encrypted/i.test(text)) return { text: 'This one is protected by the site, so it can\'t be saved.', detail: text };

@@ -31,7 +31,7 @@ export const BLOCKED = {
   live: 'Live stream: record it from its own card.',
   playlist: 'A playlist: list its videos from its own card.',
   unreadable: 'The link may have expired. Reload the page and press play.',
-  slow: 'Reading it took too long. Close this and try again.',
+  slow: 'Reading it took too long.',
   other: 'StreamSnag can\'t download this one from here.',
 };
 

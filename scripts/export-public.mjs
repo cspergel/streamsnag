@@ -43,6 +43,9 @@ export const PRO_FILES = [
   /^tests\/fixtures\/(studypack|pptx)\//,
   /^tests\/desk[\w-]*\.test\.js$/,
   /^tests\/export-public\.test\.js$/, // (it needs the private repository: it checks what the export leaves out of it)
+  // The licence check's Worker (it sits between the licence screen and Gumroad) and its checks.
+  /^licence-worker\//,
+  /^tests\/licence-worker\.test\.js$/,
   // The browser checks (scripts/e2e*.js) all lean on Pro's own (the licence's test server, the study tools'
   // lessons): they stay private for now. The unit tests (tests/) are public.
   /^scripts\/e2e[\w-]*\.js$/,

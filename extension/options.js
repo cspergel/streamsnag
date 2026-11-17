@@ -3,7 +3,7 @@ import { normalizeRecipe, recipeWords } from './lib/recipes.js';
 import { BUILTIN_RECIPES } from './lib/builtin-recipes.js';
 import { formatBytes, isHttpUrl, importableFolder, cleanHistoryEntry } from './lib/util.js';
 import { QUALITY_PREFS } from './lib/quality.js';
-import { plainNote } from './lib/wording.js';
+import { plainNote, folderProblem } from './lib/wording.js';
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -144,7 +144,7 @@ async function checkSaveFolder() {
   } catch (e) {
     folderStatus(/helper/i.test(e.message)
       ? `${e.message} A custom folder needs the local helper (Settings → Local helper).`
-      : `✗ ${e.message}`, 'bad');
+      : `✗ ${folderProblem(e.message)}`, 'bad');
   }
 }
 

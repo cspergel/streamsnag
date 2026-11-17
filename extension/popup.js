@@ -11,7 +11,7 @@ import {
 } from './lib/review.js';
 import {
   emptyState, captionsTravel, captionsHeading, captionLabels, cardLine, kindWord, nounFor, fileTypeWord, fileTypeHint, qualityRows, savedTrail, savedTo,
-  progressWords, activityEmpty, samePage, protectedWords, plainProblem, /* @site-edition */ OTHER_WAY, /* @end-site-edition */ docRows, ASIDE_GROUP, isAudio, flagWords, plainNote, sectionUnder,
+  progressWords, activityEmpty, samePage, protectedWords, plainProblem, fixFor, /* @site-edition */ OTHER_WAY, /* @end-site-edition */ docRows, ASIDE_GROUP, isAudio, flagWords, plainNote, sectionUnder,
 } from './lib/wording.js';
 import { STRIP_MIN, stripCells, stripCounts, stripLegend, stripSummary, stripLayout, stripAction } from './lib/strip.js';
 import { SCAN_AGAIN, ASK_AI, SET_UP_AI, ASK_AI_NOTE, rememberedLine, forgottenLine, ONCE_ONLY, findOutcome, plainAdvice, wrongWords, setUpAiWords } from './lib/rescue.js';
@@ -149,9 +149,60 @@ function banner(text, isError = false) {
   const problem = isError ? plainProblem(text) : null;
   b.textContent = problem ? problem.text : text;
   b.title = problem?.detail || '';
+  // With the one button that fixes it, when there is one (Set up helper, Choose folder, AI settings…).
+  const fix = problem ? fixButton(problem.fix) : null;
+  if (fix) b.append(' ', fix);
   clearTimeout(banner.t);
-  banner.t = setTimeout(() => { b.hidden = true; }, isError ? 9000 : 4000);
+  banner.t = setTimeout(() => { b.hidden = true; }, fix ? 16000 : isError ? 9000 : 4000);
 }
+
+/**
+ * The button that fixes a kind of problem (lib/wording.js fixFor), or null. `cls`: 'link' in the message strip,
+ * 'secondary' beside a job's other buttons.
+ */
+function fixButton(kind, cls = 'link') {
+  const settings = (tab) => () => chrome.tabs.create({ url: chrome.runtime.getURL(`options.html#${tab}`) });
+  const fixes = {
+    helper: ['Set up helper', 'The steps for this computer, in Settings', settings('helper')],
+    checkHelper: ['Check helper', 'Asks the local helper again whether it is there and what it has', checkHelperNow],
+    folder: ['Choose folder', 'Where downloads are saved, in Settings', settings('downloads')],
+    ai: ['AI settings', 'Your AI account and its key or sign-in, with "Test connection"', () => openAiSettings()],
+    rescan: ['Scan again', 'Looks through the page, its frames and players again', () => deepScan()],
+    // @site-edition
+    ytdlp: ['Update yt-dlp', 'Updates the other downloader; it often fixes a site that changed', updateYtdlpNow],
+    // @end-site-edition
+  };
+  const f = Object.hasOwn(fixes, kind) ? fixes[kind] : null;
+  return f ? h('button', { class: `${cls} fix-btn`, 'data-fix': kind, title: f[1], onclick: f[2] }, f[0]) : null;
+}
+
+/** A job's note that something was left undone carries the button that does it (a folder or the helper only). */
+function fixOfNote(j) {
+  const kind = fixFor(plainNote(j.note).text) || fixFor(j.note);
+  return kind === 'helper' || kind === 'folder' ? fixButton(kind) : null;
+}
+
+async function checkHelperNow() {
+  banner('Asking the local helper…');
+  const r = await send('helperStatus', { force: true }).catch((e) => ({ ok: false, error: e.message }));
+  if (r?.ok) {
+    banner('The local helper answered. Try again now.');
+    refresh().catch(() => {});
+  } else banner(r?.error || HELPER_GONE, true);
+}
+const HELPER_GONE = 'The local helper is not installed. The steps to set it up are in Settings, on the Local helper tab.';
+
+// @site-edition
+async function updateYtdlpNow() {
+  banner('Updating yt-dlp…');
+  try {
+    const r = await send('updateYtdlp');
+    banner(r?.upToDate ? 'yt-dlp is already up to date. Try again; if it still fails, the site may not be supported.' : 'yt-dlp is updated. Try again now.');
+  } catch (e) {
+    banner(e.message, true);
+  }
+}
+// @end-site-edition
 
 async function copy(text, what = 'Copied') {
   await navigator.clipboard.writeText(text);
@@ -1477,8 +1528,13 @@ function reviewRow(e) {
   const { m, row } = e;
   const name = displayName(m);
   if (e.group === 'blocked') {
+    // Read too slowly, or its link went stale: asked again from right here (a stale link after a fresh scan of the page).
+    const planned = review?.rows.has(e.id);
+    const again = planned && e.why === 'slow' ? h('button', { class: 'link fix-btn', title: 'Reads this one again', onclick: () => planReview([e.id]) }, 'Read again')
+      : planned && e.why === 'unreadable' ? h('button', { class: 'link fix-btn', title: 'Looks through the page again for fresh links, then reads this one again', onclick: async () => { await deepScan(); if (review?.rows.has(e.id)) planReview([e.id]); } }, 'Scan again')
+        : null;
     return h('li', { class: 'rv-row off' }, h('span', { class: 'rv-no' }, ICON.no()),
-      h('div', { class: 'rv-main' }, fileNameEl(name), h('span', { class: 'rv-sub' }, e.reason)));
+      h('div', { class: 'rv-main' }, fileNameEl(name), h('span', { class: 'rv-sub' }, e.reason, ...(again ? [' ', again] : []))));
   }
   const p = row.plan?.ok ? row.plan : null;
   const file = (p && (p.filename || p.title)) || name;
@@ -1843,6 +1899,7 @@ function jobCard(j) {
   const cls = j.status === 'error' ? 'err' : j.status === 'done' ? 'ok' : '';
   const reported = j.status === 'error' ? j.detail || plainProblem(j.error).detail : '';
   const note = plainNote(j.note);
+  const noteFix = note.text ? fixOfNote(j) : null;
   const card = h('li', { class: `card${j.status === 'error' ? ' needs' : ''}${active && (j.kind === 'studypack' || j.kind === 'reading') ? ' is-ai' : ''}` },
     h('div', { class: 'meta' },
       nameEl(j.title || j.filename, `j:${j.id}`),
@@ -1853,7 +1910,8 @@ function jobCard(j) {
     h('div', { class: `status ${cls}` }, h('span', { class: 'job-words', title: j.status === 'error' ? reported || null : j.status === 'done' ? j.outputs?.[0]?.path || null : null }, jobWords(j)), h('span', {}, detail.join(' · '))),
     PANEL && j.status === 'error' && reported ? h('div', { class: 'status job-detail' }, `Details: ${reported}`) : null,
     // What else was done to it, in plain words; what the tool itself reported is the tooltip (lib/wording.js).
-    note.text ? h('div', { class: 'status job-note', title: note.detail || null }, note.text) : null,
+    // A note that something was left undone ("needs the local helper", "Couldn't move to…") carries its fix.
+    note.text ? h('div', { class: 'status job-note', title: note.detail || null }, note.text, ...(noteFix ? [' ', noteFix] : [])) : null,
   );
   // The speed and time left go next to "Downloading", and are painted in place on every tick.
   if (j.status === 'running') card.querySelector('.status > span').append(h('span', { class: 'job-rate' }));
@@ -1868,6 +1926,11 @@ function jobCard(j) {
       title: 'Try this download again (fresh links are fetched)',
       onclick: () => send('download', { mediaId: j.mediaId, optionId: j.optionId || 'file' }).then(() => { banner('Trying again'); refresh(); }).catch((e) => banner(e.message, true)),
     }, '↻ Retry'));
+  }
+  // The button that fixes what stopped it, when Retry alone would fail the same way (the folder, the helper, the AI account).
+  if (j.status === 'error') {
+    const fix = fixButton(fixFor(j.error) || fixFor(j.detail), 'secondary');
+    if (fix) actions.append(fix);
   }
   if (j.kind === 'studypack' && j.status === 'done' && j.pack?.guide) actions.append(h('button', { class: 'primary', onclick: () => openGuide(j) }, 'Open study guide'));
   if (j.kind === 'reading' && j.status === 'done' && j.reading?.read) actions.append(h('button', { class: 'primary', onclick: () => openRead({ jobId: j.id }) }, 'Open reading edition'));
@@ -2213,7 +2276,7 @@ function aiSheet(c) {
         row('Looks for', h('b', {}, c.looks)),
         row('Sends', h('b', { class: 'ask-sends' }, c.sends), h('span', { class: 'ask-sub ask-detail' }, c.detail), show, exact),
         row('To', h('span', { class: 'ask-line' }, h('b', { class: 'ask-to' }, c.to), h('button', { class: 'link', title: 'Choose another AI account in Settings', onclick: openAiSettings }, 'Change')),
-          h('span', { class: 'ask-sub' }, 'Sent from this computer. StreamSnag has no servers.')),
+          h('span', { class: 'ask-sub' }, 'Sent from this computer. StreamSnag never sees it.')),
         row('AI use', h('b', { class: 'ask-usage' }, c.usage)),
         row('Cost', h('span', { class: 'ask-cost' }, h('b', {}, c.cost.lead), ` ${c.cost.rest}`)),
         c.then ? row('Then', h('span', { class: 'ask-then' }, c.then)) : [],
@@ -2366,7 +2429,10 @@ function renderStudy() {
     panel.append(h('div', { class: 'loading' }, h('div', { class: 'spinner' }),
       notes ? 'Reading captions and writing study notes. This can take a minute…' : 'Reading captions…'));
   } else if (studyState.error) {
-    panel.append(h('p', { class: 'status err' }, studyState.error), h('div', { class: 'job-actions' }, close));
+    // (Captions turned on in the player since, or the helper set up: one click makes it again.)
+    const { mediaId } = studyState;
+    const again = studyState.what === 'transcript' && mediaId ? h('button', { class: 'secondary', onclick: () => saveTranscript(mediaId) }, 'Try again') : null;
+    panel.append(h('p', { class: 'status err' }, studyState.error), h('div', { class: 'job-actions' }, ...[again, fixButton(fixFor(studyState.error), 'secondary'), close].filter(Boolean)));
   } else {
     const r = studyState.result;
     const c = r.counts || {};
@@ -2435,7 +2501,9 @@ function renderStudyPage(sec, panel) {
   if (studyState.loading) {
     panel.append(h('div', { class: 'loading' }, h('div', { class: 'spinner' }), 'Reading the slides and lining them up with the captions…'));
   } else if (studyState.error) {
-    panel.append(h('p', { class: 'status err' }, studyState.error), h('div', { class: 'job-actions' }, close));
+    const { mediaId } = studyState;
+    const again = mediaId ? h('button', { class: 'secondary', onclick: () => makeStudyPage(mediaId) }, 'Try again') : null;
+    panel.append(h('p', { class: 'status err' }, studyState.error), h('div', { class: 'job-actions' }, ...[again, fixButton(fixFor(studyState.error), 'secondary'), close].filter(Boolean)));
   } else if (studyState.choose) {
     const { choose, guess, mediaId } = studyState;
     const option = (id, label, hint, type) => h('label', { class: 'pick-doc' },
@@ -2601,7 +2669,7 @@ function renderStudyPack(sec, panel) {
   if (s.loading) {
     panel.append(h('div', { class: 'loading' }, h('div', { class: 'spinner' }), 'Getting the lecture ready…'));
   } else if (s.error) {
-    panel.append(h('p', { class: 'status err' }, s.error), h('div', { class: 'job-actions' }, ...[again('Try again'), close].filter(Boolean)));
+    panel.append(h('p', { class: 'status err' }, s.error), h('div', { class: 'job-actions' }, ...[again('Try again'), fixButton(fixFor(s.error), 'secondary'), close].filter(Boolean)));
   } else if (s.choose) {
     const option = (id, label, hint, type) => h('label', { class: 'pick-doc' },
       h('input', { type: 'radio', name: 'pack-doc', value: id, checked: id === s.guess }),
@@ -2771,7 +2839,7 @@ function renderReading(sec, panel) {
     panel.append(h('div', { class: 'loading' }, h('div', { class: 'spinner' }), s.tidy ? 'Getting the lecture ready…' : 'Making the reading edition…'));
   } else if (s.error) {
     panel.append(h('p', { class: 'status err' }, s.error),
-      h('div', { class: 'job-actions' }, ...[media ? h('button', { class: 'secondary', onclick: () => readLecture(media) }, 'Try again') : null, close].filter(Boolean)));
+      h('div', { class: 'job-actions' }, ...[media ? h('button', { class: 'secondary', onclick: () => readLecture(media) }, 'Try again') : null, fixButton(fixFor(s.error), 'secondary'), close].filter(Boolean)));
   } else if (s.choose) {
     const option = (id, label, hint, type) => h('label', { class: 'pick-doc' },
       h('input', { type: 'radio', name: 'read-doc', value: id, checked: id === s.guess }),
@@ -2952,8 +3020,11 @@ function renderLibrary() {
   libSig = sig;
   box.title = dirs.length ? `Folders checked:\n${dirs.join('\n')}` : '';
   box.classList.toggle('err', !!lib?.error);
+  // A check that failed for want of the helper offers the helper's setup, not the folder list it could not read.
+  const needsHelper = !!lib?.error && fixFor(lib.error) === 'helper';
   box.replaceChildren(ICON.folder(), h('span', { class: 'lib-text' }, `${text}.`),
-    h('button', { class: 'link small', id: 'lib-settings', title: 'Which folders are checked, and "Check now", are in Settings on the Downloads tab', onclick: () => chrome.tabs.create({ url: chrome.runtime.getURL('options.html#downloads') }) }, 'Folder settings'));
+    needsHelper ? h('button', { class: 'link small', id: 'lib-settings', title: 'The steps for this computer, in Settings', onclick: () => chrome.tabs.create({ url: chrome.runtime.getURL('options.html#helper') }) }, 'Set up helper')
+      : h('button', { class: 'link small', id: 'lib-settings', title: 'Which folders are checked, and "Check now", are in Settings on the Downloads tab', onclick: () => chrome.tabs.create({ url: chrome.runtime.getURL('options.html#downloads') }) }, 'Folder settings'));
 }
 
 function folderCard(f) {

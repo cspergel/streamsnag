@@ -278,7 +278,7 @@ test('U8: an error is one plain sentence plus what to do; what was reported is k
   assert.match(plainProblem('FILE_NO_SPACE').text, /room on the disk/);
   // A sentence that is already plain is left alone, with nothing to hide.
   const plain = 'The link expired or the site refused it. Reload the page, press play, and try again.';
-  assert.deepEqual(plainProblem(plain), { text: plain, detail: '' });
+  assert.deepEqual(plainProblem(plain), { text: plain, detail: '', fix: '' });
   // Setup instructions name the tool they install: kept as they are.
   const setup = 'yt-dlp was not found. Install it with "winget install yt-dlp.yt-dlp", then try again.';
   assert.equal(plainProblem(setup).text, setup);

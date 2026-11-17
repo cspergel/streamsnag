@@ -1,6 +1,7 @@
 # Privacy
 
-StreamSnag has no servers, no accounts, no analytics and no tracking. It works on your computer. The one
+StreamSnag has no accounts, no analytics and no tracking, and no server of ours ever receives your
+lectures, transcripts or study materials. It works on your computer. The one
 thing sent anywhere for Pro is the licence key (see "Pro's licence key" below).
 
 ## What stays on your computer
@@ -21,8 +22,8 @@ thing sent anywhere for Pro is the licence key (see "Pro's licence key" below).
   pack). Nothing about these files leaves your computer, except the transcript (and slide text) of a
   lecture you send to your own AI account after the sheet that shows what is sent. "Stop listing" removes a
   folder from the list and leaves its files alone.
-* **Pro's licence key and the free lecture.** The key you paste, the id Lemon Squeezy gives this copy
-  when it is activated, the plan, how many of its computers it is on and when it was last checked are kept
+* **Pro's licence key and the free lecture.** The key you paste, the id this copy is given when it is
+  activated, the plan, how many of its computers it is on and when it was last checked are kept
   in extension storage (`chrome.storage.local`) only, never in a backup or a file. Which lecture was your one
   free lecture (the keys StreamSnag already knows it by, and its name) is kept there too.
 * **Pack styles** and which style each lecture and course was last made with are kept in extension storage.
@@ -48,16 +49,18 @@ thing sent anywhere for Pro is the licence key (see "Pro's licence key" below).
 * **Transcription setup** (optional). When you click **Set up transcription**, the helper downloads the
   open-source sherpa-onnx speech-to-text program and a model from GitHub and checks them against a known
   fingerprint. Transcribing itself happens on your computer: the audio is never uploaded.
-* **Pro's licence key.** StreamSnag Pro is sold by Lemon Squeezy, and the key is checked with Lemon
-  Squeezy's public licence API (`https://api.lemonsqueezy.com/v1/licenses`). Exactly three things are
-  ever sent, and only to it: the key you pasted, a plain name for this copy ("StreamSnag in Chrome on
-  Windows": the browser and the system, never your name or your computer's), and the id Lemon Squeezy gave
-  this copy. They are sent when you click **Activate** (the key is looked up, then this copy is activated),
+* **Pro's licence key.** StreamSnag Pro is sold by Gumroad, and the key is checked through StreamSnag's
+  licence check (`https://licence.streamsnag.app`), a small service of ours that asks Gumroad's licence API
+  about the key (Gumroad receives only the key and which Pro product it is for). It keeps nothing: no
+  database, no logs. Exactly three things are ever sent to it: the key you pasted, a plain name for this copy
+  ("StreamSnag in Chrome on Windows": the browser and the system, never your name or your computer's), and
+  the id this copy was given. They are sent when you click **Activate**,
   at most once a day when you start a Pro action, when the browser opens and the last check is more than a
   week old, and when you click **Remove this key from this computer**. No cookies or other identifiers go
   with them, and nothing about your lectures, files or use. Without a key nothing is sent at all; the free
-  lecture is counted on your computer. Lemon Squeezy's privacy policy applies to what it receives and to
-  your purchase.
+  lecture is counted on your computer. Like any web request, it reaches the licence check from your
+  internet address, which is not kept. Gumroad's privacy policy applies to what it receives and to your
+  purchase.
 * **AI features are off by default.** They use an AI account that you choose in Settings, and nothing is
   sent until you use an AI action (or turn on an "after a download" step that uses AI). What is sent
   depends on the action:
@@ -84,7 +87,7 @@ thing sent anywhere for Pro is the licence key (see "Pro's licence key" below).
   applies to your own AI account too. Using these features is your choice and your responsibility.
 * **Study materials and review progress stay on your computer.** Study guides, transcripts, flashcards and
   study pages are files next to your videos. Your flashcard decks and review history are kept in the
-  extension's storage. StreamSnag has no servers, so none of it can go to us.
+  extension's storage. None of it is ever sent to us.
 
 ## Permissions and why they are needed
 

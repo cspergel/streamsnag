@@ -1726,6 +1726,8 @@ a { text-decoration-thickness: .06em; text-underline-offset: .22em; }
 /* A 40 px tall place to press, without moving the line: the padding is taken back by the margin. */
 .pc-alt a { display: inline-block; padding: 10px 2px; margin: -10px 0; }
 .pc-alt a:hover { text-decoration-thickness: 2px; }
+/* The home's "install it from this site" link (2026-11-18): the same 40 px tall place to press. */
+.last-note a[href="direct/"] { display: inline-block; padding: 11px 2px; margin: -11px 0; }
 .trust { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink); }
 .calm-head .trust { margin-top: 10px; }
 .trust .ic { flex: none; width: 18px; height: 18px; color: var(--green); }

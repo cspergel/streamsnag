@@ -65,5 +65,4 @@ Public License as published by the Free Software Foundation, version 3 of the Li
 in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See [LICENSE](LICENSE) for the full text.
 
-Versions up to 1.4.0 were published under the MIT License, and those copies stay under it.
 Not affiliated with any video platform or with Anthropic.
